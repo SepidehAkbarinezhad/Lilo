@@ -14,7 +14,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
@@ -28,7 +27,6 @@ fun App() {
             AnimatedVisibility(showContent) {
                 val greeting = remember { Greeting().greet() }
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose: $greeting")
                 }
             }
