@@ -2,4 +2,5 @@
 <resources>
     <string name="search_hint">search...</string>
     <string name="close_hint">clear search</string>
+    <string name="all_tasks">all</string>
 </resources>
