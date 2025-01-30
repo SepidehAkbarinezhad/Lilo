@@ -17,6 +17,7 @@ class TaskListViewModel : ViewModel() {
                 _state.update { it.copy(searchQuery = action.query) }
                 _state.value=TaskListState(searchQuery = action.query)
             }
+            is TaskListAction.OnTabSelected -> TODO()
         }
     }
 }

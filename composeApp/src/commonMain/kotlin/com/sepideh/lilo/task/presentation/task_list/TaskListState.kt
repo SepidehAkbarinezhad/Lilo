@@ -6,6 +6,7 @@ import com.sepideh.lilo.task.domain.Task
 data class TaskListState(
     val searchQuery: String = "",
     val searchResults: List<Task> = emptyList(),
+    val selectedTabIndex : Int = 0,
     val isLoading: Boolean = false,
     val errorMessage: UiText? = null
 )

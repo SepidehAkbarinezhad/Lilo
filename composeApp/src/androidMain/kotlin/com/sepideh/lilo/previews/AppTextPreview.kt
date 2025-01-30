@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextType
 
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF)
 @Composable
 fun AppTextPreview(modifier: Modifier = Modifier) {
     Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
