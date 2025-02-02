@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_list.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +21,7 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onTaskClick: () -> U
         modifier = modifier.clickable(onClick = onTaskClick), shape = RoundedCornerShape(16.dp),
         color = Color.Blue.copy(alpha = .2f)
     ) {
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(Modifier.fillMaxWidth().padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             AppText(text = task.title, textType = TextType.SubTitle, )
             AppText(text = task.description, textType = TextType.Body)
         }
