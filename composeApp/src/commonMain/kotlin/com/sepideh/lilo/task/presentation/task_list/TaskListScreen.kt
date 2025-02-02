@@ -2,12 +2,17 @@ package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -15,6 +20,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,8 +34,11 @@ import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextType
 import com.sepideh.lilo.task.domain.Task
+import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.all_tasks
+import lilo.composeapp.generated.resources.no_search_result
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -55,6 +64,13 @@ fun TaskListScreen(
     onAction: (TaskListAction) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val pagerState = rememberPagerState { 2 }
+    val searchResultListState = rememberLazyListState()
+
+    LaunchedEffect(key1 = searchResultListState){
+        searchResultListState.animateScrollToItem(0)
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().background(Color.Blue).statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -107,6 +123,40 @@ fun TaskListScreen(
                             modifier = Modifier.padding(12.dp),
                             color = Color.Unspecified
                         )
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                ) { pageIndex ->
+                    when (pageIndex) {
+                        0 -> {
+                            if (state.isLoading) {
+                            } else {
+                                when {
+                                    state.isLoading -> {}
+                                    state.searchResults.isEmpty() -> {
+                                        AppText(
+                                            text = stringResource(Res.string.no_search_result),
+                                            textType = TextType.SubTitle
+                                        )
+                                    }
+
+                                    else -> {
+                                        TaskList(
+                                            tasks = state.searchResults,
+                                            onTaskClick = { onAction(TaskListAction.OnTaskClick(it)) },
+                                            modifier = Modifier.fillMaxSize(),
+                                            scrollState = searchResultListState
+                                        )
+                                    }
+                                }
+                            }
+
+                        }
+
+                        1 -> {}
                     }
                 }
             }

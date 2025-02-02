@@ -2,6 +2,7 @@ package com.sepideh.lilo.task.presentation.task_list.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -28,7 +29,7 @@ fun TaskList(
     ) {
         items(items = tasks, key = {it.id}) {task->
             TaskListItem(
-                modifier = Modifier.fillMaxWidth().widthIn(700.dp),
+                modifier = Modifier.fillMaxWidth().widthIn(700.dp).padding(horizontal = 12.dp),
                 task = task,
                 onTaskClick = {onTaskClick(task)}
             )
