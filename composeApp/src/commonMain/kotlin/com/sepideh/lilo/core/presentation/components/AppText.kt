@@ -14,8 +14,9 @@ import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun AppText(
-    modifier: Modifier = Modifier,
     text: String,
+    textType: TextType,
+    modifier: Modifier = Modifier,
     color: Color = Color.Black,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
@@ -24,7 +25,7 @@ fun AppText(
     overflow: TextOverflow = TextOverflow.Ellipsis,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
-    textType: TextType) {
+) {
     Text(
         text = text,
         modifier = modifier,
@@ -47,11 +48,11 @@ sealed interface TextType {
 }
 
 @Composable
-fun TextType.style(): TextStyle{
-    return when(this){
-        TextType.Title-> MaterialTheme.typography.titleMedium
-        TextType.SubTitle-> MaterialTheme.typography.titleSmall
-        TextType.Body-> MaterialTheme.typography.bodyMedium
+fun TextType.style(): TextStyle {
+    return when (this) {
+        TextType.Title -> MaterialTheme.typography.titleMedium
+        TextType.SubTitle -> MaterialTheme.typography.titleSmall
+        TextType.Body -> MaterialTheme.typography.bodyMedium
     }
 }
 
