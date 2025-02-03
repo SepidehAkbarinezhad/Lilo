@@ -3,5 +3,5 @@
     <string name="search_hint">search...</string>
     <string name="close_hint">clear search</string>
     <string name="all_tasks">all</string>
-    <string name="no_search_result">no search result</string>
+    <string name="no_result">no result</string>
 </resources>

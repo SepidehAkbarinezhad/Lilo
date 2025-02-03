@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,8 +38,7 @@ import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.all_tasks
-import lilo.composeapp.generated.resources.no_search_result
-import org.jetbrains.compose.resources.StringResource
+import lilo.composeapp.generated.resources.no_result
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -67,8 +67,17 @@ fun TaskListScreen(
     val pagerState = rememberPagerState { 2 }
     val searchResultListState = rememberLazyListState()
 
-    LaunchedEffect(key1 = searchResultListState){
+    LaunchedEffect(key1 = state.searchResults) {
         searchResultListState.animateScrollToItem(0)
+    }
+    LaunchedEffect(state.selectedTabIndex) {
+        //when click on tabs,switch the pager
+        pagerState.animateScrollToPage(state.selectedTabIndex)
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        //when switch the pager,change selected tab
+        onAction(TaskListAction.OnTabSelected(pagerState.currentPage))
     }
 
     Column(
@@ -112,13 +121,13 @@ fun TaskListScreen(
                     }
                     Tab(
                         selected = state.selectedTabIndex == 1,
-                        onClick = { onAction(TaskListAction.OnTabSelected(0)) },
+                        onClick = { onAction(TaskListAction.OnTabSelected(1)) },
                         modifier = Modifier.weight(1f),
                         selectedContentColor = Yellow,
                         unselectedContentColor = Black.copy(alpha = .5f)
                     ) {
                         AppText(
-                            text = stringResource(Res.string.all_tasks),
+                            text = "2",
                             textType = TextType.SubTitle,
                             modifier = Modifier.padding(12.dp),
                             color = Color.Unspecified
@@ -130,19 +139,18 @@ fun TaskListScreen(
                     state = pagerState,
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) { pageIndex ->
-                    when (pageIndex) {
-                        0 -> {
-                            if (state.isLoading) {
-                            } else {
-                                when {
+                    Box(Modifier.fillMaxSize()){
+                        when (pageIndex) {
+                            0 -> {
+                                when{
                                     state.isLoading -> {}
                                     state.searchResults.isEmpty() -> {
                                         AppText(
-                                            text = stringResource(Res.string.no_search_result),
-                                            textType = TextType.SubTitle
+                                            text = stringResource(Res.string.no_result),
+                                            textType = TextType.SubTitle,
+                                            modifier = Modifier.align(Alignment.Center)
                                         )
                                     }
-
                                     else -> {
                                         TaskList(
                                             tasks = state.searchResults,
@@ -152,16 +160,18 @@ fun TaskListScreen(
                                         )
                                     }
                                 }
+
                             }
-
+                            1 -> {
+                                AppText(text = "empty", textType = TextType.Body)
+                            }
                         }
-
-                        1 -> {}
                     }
                 }
             }
         }
     }
 }
+
 
 
