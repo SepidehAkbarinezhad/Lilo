@@ -31,10 +31,10 @@ import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextType
-import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.all_tasks
@@ -45,15 +45,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TaskListScreenRoot(
     viewModel: TaskListViewModel,
-    onTaskClicked: (Task) -> Unit
+    onNavigateTo : (AppDestinations)->Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     TaskListScreen(state = state, onAction = { action ->
-        when (action) {
-            is TaskListAction.OnTaskClick -> onTaskClicked(action.task)
-            else -> Unit
-        }
         viewModel.onAction(action)
     })
 }
