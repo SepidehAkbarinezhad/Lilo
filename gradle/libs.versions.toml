@@ -16,6 +16,7 @@ junit = "4.13.2"
 kotlin = "2.1.0"
 navigation-compose="2.8.0-alpha10"
 kotlin-serialization-json="1.7.3"
+coil="3.0.4"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -34,6 +35,10 @@ androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle
 navigation-compose={module="org.jetbrains.androidx.navigation:navigation-compose",version.ref="navigation-compose"}
 kotlin-serialization-json={module="org.jetbrains.kotlinx:kotlinx-serialization-json",version.ref="kotlin-serialization-json"}
 
+coil-compose={group="io.coil-kt.coil3",name="coil-compose",version.ref="coil"}
+coil-okhttp={group="io.coil-kt.coil3",name="coil-network-okhttp",version.ref="coil"}
+
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -41,3 +46,6 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-mu
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = {id = "org.jetbrains.kotlin.plugin.serialization",version.ref="kotlin"}
+
+[bundles]
+coil = ["coil-compose","coil-okhttp"]
