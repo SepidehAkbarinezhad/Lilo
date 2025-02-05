@@ -46,7 +46,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.navigation.compose)
             implementation(libs.kotlin.serialization.json)
-            implementation(libs.bundles.coil)
         }
     }
 }
