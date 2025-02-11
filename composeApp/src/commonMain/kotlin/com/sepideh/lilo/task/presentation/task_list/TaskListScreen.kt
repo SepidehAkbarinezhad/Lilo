@@ -43,6 +43,7 @@ import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextType
+import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.all_tasks
@@ -57,14 +58,13 @@ fun TaskListScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    TaskListScreen(state = state, onEvent = { action ->
-        viewModel.onAction(action)
-    })
+    TaskListScreen(state = state, newTask = viewModel.newTask, onEvent = viewModel::onAction)
 }
 
 @Composable
 fun TaskListScreen(
     state: TaskListState,
+    newTask: Task?,
     onEvent: (TaskListEvent) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -90,8 +90,10 @@ fun TaskListScreen(
                 onClick = { onEvent(TaskListEvent.OnAddNewTaskClick) },
                 shape = RoundedCornerShape(20.dp)
             ) {
-                Icon(Icons.Rounded.Add,
-                    contentDescription = "Add task")
+                Icon(
+                    Icons.Rounded.Add,
+                    contentDescription = "Add task"
+                )
             }
         },
     ) {
@@ -170,7 +172,13 @@ fun TaskListScreen(
                                         else -> {
                                             TaskList(
                                                 tasks = state.searchResults,
-                                                onTaskClick = { onEvent(TaskListEvent.OnSelectTask(it)) },
+                                                onTaskClick = {
+                                                    onEvent(
+                                                        TaskListEvent.OnSelectTask(
+                                                            it
+                                                        )
+                                                    )
+                                                },
                                                 modifier = Modifier.fillMaxSize(),
                                                 scrollState = searchResultListState
                                             )
@@ -189,7 +197,6 @@ fun TaskListScreen(
             }
         }
     }
-
 
 
 }

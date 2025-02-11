@@ -14,5 +14,5 @@ private val tasks = (1..100).map {
 @Preview
 @Composable
 fun TaskListScreenPreview(modifier: Modifier = Modifier) {
-    TaskListScreen(state = TaskListState(searchResults = tasks)) { }
+    TaskListScreen(state = TaskListState(searchResults = tasks), newTask = null) { }
 }
