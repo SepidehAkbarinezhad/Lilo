@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextType
@@ -19,10 +19,13 @@ import com.sepideh.lilo.task.domain.Task
 fun TaskListItem(modifier: Modifier = Modifier, task: Task, onTaskClick: () -> Unit) {
     Surface(
         modifier = modifier.clickable(onClick = onTaskClick), shape = RoundedCornerShape(16.dp),
-        color = Color.Blue.copy(alpha = .2f)
+        color = MaterialTheme.colorScheme.primary.copy(alpha = .1f)
     ) {
-        Column(Modifier.fillMaxWidth().padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            AppText(text = task.title, textType = TextType.SubTitle, )
+        Column(
+            Modifier.fillMaxWidth().padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            AppText(text = task.title, textType = TextType.SubTitle)
             AppText(text = task.description, textType = TextType.Body)
         }
     }
