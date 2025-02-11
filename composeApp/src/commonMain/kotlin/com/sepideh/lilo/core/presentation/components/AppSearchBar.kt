@@ -38,8 +38,8 @@ fun AppSearchBar(
 ) {
     CompositionLocalProvider(
         value = LocalTextSelectionColors provides  TextSelectionColors(
-            handleColor = Color.Yellow,
-            backgroundColor = Color.Yellow
+            handleColor = Color.Blue,
+            backgroundColor = Color.Blue
         )
     ){
         OutlinedTextField(
@@ -50,7 +50,7 @@ fun AppSearchBar(
             shape = RoundedCornerShape(100),
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            colors = OutlinedTextFieldDefaults.colors(cursorColor = Color.Blue, focusedBorderColor = Color.Yellow),
+            colors = OutlinedTextFieldDefaults.colors(cursorColor = Color.Blue, focusedBorderColor = Color.Blue),
             placeholder = { Text(text = stringResource(Res.string.search_hint
             )) },
             leadingIcon = {

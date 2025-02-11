@@ -1,8 +1,10 @@
 package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,10 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -35,6 +44,7 @@ import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextType
+import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.all_tasks
@@ -45,19 +55,18 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TaskListScreenRoot(
     viewModel: TaskListViewModel,
-    onNavigateTo : (AppDestinations)->Unit
+    onNavigateTo: (AppDestinations) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    TaskListScreen(state = state, onAction = { action ->
-        viewModel.onAction(action)
-    })
+    TaskListScreen(state = state, newTask = viewModel.newTask, onEvent = viewModel::onAction)
 }
 
 @Composable
 fun TaskListScreen(
     state: TaskListState,
-    onAction: (TaskListAction) -> Unit
+    newTask: Task?,
+    onEvent: (TaskListEvent) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val pagerState = rememberPagerState { 2 }
@@ -73,93 +82,116 @@ fun TaskListScreen(
 
     LaunchedEffect(pagerState.currentPage) {
         //when switch the pager,change selected tab
-        onAction(TaskListAction.OnTabSelected(pagerState.currentPage))
+        onEvent(TaskListEvent.OnTabSelected(pagerState.currentPage))
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().background(Color.Blue).statusBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onEvent(TaskListEvent.OnAddNewTaskClick) },
+                shape = RoundedCornerShape(20.dp),
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ) {
+                Icon(
+                    Icons.Rounded.Add,
+                    contentDescription = "Add task"
+                )
+            }
+        },
     ) {
-        AppSearchBar(
-            modifier = Modifier.fillMaxWidth().width(400.dp).padding(16.dp),
-            searchQuery = state.searchQuery,
-            onSearchQueryChange = { onAction(TaskListAction.OnSearchQueryChange(it)) },
-            onImeSearch = { keyboardController?.hide() })
-        Surface(
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        Column(
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary).statusBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                TabRow(
-                    selectedTabIndex = state.selectedTabIndex,
-                    modifier = Modifier.fillMaxWidth().widthIn(700.dp),
-                    indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            color = Yellow,
-                            modifier = Modifier.tabIndicatorOffset(
-                                tabPositions[state.selectedTabIndex]
+            AppSearchBar(
+                modifier = Modifier.fillMaxWidth().width(400.dp).padding(16.dp),
+                searchQuery = state.searchQuery,
+                onSearchQueryChange = { onEvent(TaskListEvent.OnSearchQueryChange(it)) },
+                onImeSearch = { keyboardController?.hide() })
+            Surface(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    TabRow(
+                        selectedTabIndex = state.selectedTabIndex,
+                        modifier = Modifier.fillMaxWidth().widthIn(700.dp),
+                        indicator = { tabPositions ->
+                            TabRowDefaults.SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(
+                                    tabPositions[state.selectedTabIndex]
+                                )
                             )
-                        )
-                    }
-                ) {
-                    Tab(
-                        selected = state.selectedTabIndex == 0,
-                        onClick = { onAction(TaskListAction.OnTabSelected(0)) },
-                        modifier = Modifier.weight(1f),
-                        selectedContentColor = Yellow,
-                        unselectedContentColor = Black.copy(alpha = .5f)
+                        }
                     ) {
-                        AppText(
-                            text = stringResource(Res.string.all_tasks),
-                            textType = TextType.SubTitle,
-                            color = Color.Unspecified
-                        )
+                        Tab(
+                            selected = state.selectedTabIndex == 0,
+                            onClick = { onEvent(TaskListEvent.OnTabSelected(0)) },
+                            modifier = Modifier.weight(1f),
+                            selectedContentColor =  MaterialTheme.colorScheme.primary,
+                            unselectedContentColor = Black.copy(alpha = .5f)
+                        ) {
+                            AppText(
+                                text = stringResource(Res.string.all_tasks),
+                                textType = TextType.SubTitle,
+                                color = Color.Unspecified
+                            )
+                        }
+                        Tab(
+                            selected = state.selectedTabIndex == 1,
+                            onClick = { onEvent(TaskListEvent.OnTabSelected(1)) },
+                            modifier = Modifier.weight(1f),
+                            selectedContentColor = MaterialTheme.colorScheme.primary,
+                            unselectedContentColor = Black.copy(alpha = .5f)
+                        ) {
+                            AppText(
+                                text = "2",
+                                textType = TextType.SubTitle,
+                                modifier = Modifier.padding(12.dp),
+                                color = Color.Unspecified
+                            )
+                        }
                     }
-                    Tab(
-                        selected = state.selectedTabIndex == 1,
-                        onClick = { onAction(TaskListAction.OnTabSelected(1)) },
-                        modifier = Modifier.weight(1f),
-                        selectedContentColor = Yellow,
-                        unselectedContentColor = Black.copy(alpha = .5f)
-                    ) {
-                        AppText(
-                            text = "2",
-                            textType = TextType.SubTitle,
-                            modifier = Modifier.padding(12.dp),
-                            color = Color.Unspecified
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth().weight(1f)
-                ) { pageIndex ->
-                    Box(Modifier.fillMaxSize()){
-                        when (pageIndex) {
-                            0 -> {
-                                when{
-                                    state.isLoading -> {}
-                                    state.searchResults.isEmpty() -> {
-                                        AppText(
-                                            text = stringResource(Res.string.no_result),
-                                            textType = TextType.SubTitle,
-                                            modifier = Modifier.align(Alignment.Center)
-                                        )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxWidth().weight(1f)
+                    ) { pageIndex ->
+                        Box(Modifier.fillMaxSize()) {
+                            when (pageIndex) {
+                                0 -> {
+                                    when {
+                                        state.isLoading -> {}
+                                        state.searchResults.isEmpty() -> {
+                                            AppText(
+                                                text = stringResource(Res.string.no_result),
+                                                textType = TextType.SubTitle,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+
+                                        else -> {
+                                            TaskList(
+                                                tasks = state.searchResults,
+                                                onTaskClick = {
+                                                    onEvent(
+                                                        TaskListEvent.OnSelectTask(
+                                                            it
+                                                        )
+                                                    )
+                                                },
+                                                modifier = Modifier.fillMaxSize(),
+                                                scrollState = searchResultListState
+                                            )
+                                        }
                                     }
-                                    else -> {
-                                        TaskList(
-                                            tasks = state.searchResults,
-                                            onTaskClick = { onAction(TaskListAction.OnTaskClick(it)) },
-                                            modifier = Modifier.fillMaxSize(),
-                                            scrollState = searchResultListState
-                                        )
-                                    }
+
                                 }
 
-                            }
-                            1 -> {
-                                AppText(text = "empty", textType = TextType.Body)
+                                1 -> {
+                                    AppText(text = "empty", textType = TextType.Body)
+                                }
                             }
                         }
                     }
@@ -167,6 +199,8 @@ fun TaskListScreen(
             }
         }
     }
+
+
 }
 
 
