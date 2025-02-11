@@ -10,17 +10,26 @@ class TaskListViewModel : ViewModel() {
     private val _state = MutableStateFlow(TaskListState())
     val state = _state.asStateFlow()
 
-    fun onAction(action: TaskListAction){
+    fun onAction(action: TaskListEvent){
         when(action){
-            is TaskListAction.OnTaskClick->{}
-            is TaskListAction.OnSearchQueryChange->{
+            is TaskListEvent.OnSearchQueryChange->{
                 _state.update { it.copy(searchQuery = action.query) }
                 _state.value=TaskListState(searchQuery = action.query)
             }
-            is TaskListAction.OnTabSelected -> {
+            is TaskListEvent.OnTabSelected -> {
                 _state.update {it.copy(selectedTabIndex = action.index)
                 }
             }
+            TaskListEvent.DeleteTask -> {}
+            TaskListEvent.DismissContact -> {}
+            TaskListEvent.OnAddNewTaskClick -> {}
+            TaskListEvent.OnAddPhotoClicked -> {}
+            is TaskListEvent.OnDescriptionChanged -> {}
+            is TaskListEvent.OnEditTask -> {}
+            is TaskListEvent.OnPhotoPicked -> {}
+            is TaskListEvent.OnSelectTask -> {}
+            is TaskListEvent.OnTitleChanged -> {}
+            TaskListEvent.SaveTask -> {}
         }
     }
 }
