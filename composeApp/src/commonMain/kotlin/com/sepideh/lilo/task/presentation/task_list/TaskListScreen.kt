@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -88,7 +89,9 @@ fun TaskListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(TaskListEvent.OnAddNewTaskClick) },
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(20.dp),
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
                 Icon(
                     Icons.Rounded.Add,
@@ -98,7 +101,7 @@ fun TaskListScreen(
         },
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(Color.Blue).statusBarsPadding(),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary).statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppSearchBar(
@@ -116,7 +119,6 @@ fun TaskListScreen(
                         modifier = Modifier.fillMaxWidth().widthIn(700.dp),
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(
-                                color = Yellow,
                                 modifier = Modifier.tabIndicatorOffset(
                                     tabPositions[state.selectedTabIndex]
                                 )
@@ -127,7 +129,7 @@ fun TaskListScreen(
                             selected = state.selectedTabIndex == 0,
                             onClick = { onEvent(TaskListEvent.OnTabSelected(0)) },
                             modifier = Modifier.weight(1f),
-                            selectedContentColor = Yellow,
+                            selectedContentColor =  MaterialTheme.colorScheme.primary,
                             unselectedContentColor = Black.copy(alpha = .5f)
                         ) {
                             AppText(
@@ -140,7 +142,7 @@ fun TaskListScreen(
                             selected = state.selectedTabIndex == 1,
                             onClick = { onEvent(TaskListEvent.OnTabSelected(1)) },
                             modifier = Modifier.weight(1f),
-                            selectedContentColor = Yellow,
+                            selectedContentColor = MaterialTheme.colorScheme.primary,
                             unselectedContentColor = Black.copy(alpha = .5f)
                         ) {
                             AppText(
