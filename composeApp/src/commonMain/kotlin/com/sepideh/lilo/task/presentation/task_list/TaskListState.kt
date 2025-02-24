@@ -5,7 +5,7 @@ import com.sepideh.lilo.task.domain.Task
 
 data class TaskListState(
     val searchQuery: String = "",
-    val searchResults: List<Task> = tasks,
+    val searchResults: List<Task> = emptyList(),
     val selectedTabIndex: Int = 0,
     val selectedTask: Task? = null,
     val isAddTaskSheetOpen : Boolean = false,
@@ -16,6 +16,3 @@ data class TaskListState(
 )
 
 
-val tasks = (1..20).map { i ->
-    Task(id = i.toString(), title = "title $i", description = "description $i")
-}
