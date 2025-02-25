@@ -175,11 +175,7 @@ fun TaskListScreen(
                                             TaskList(
                                                 tasks = state.searchResults,
                                                 onTaskClick = {
-                                                    onEvent(
-                                                        TaskListEvent.OnSelectTask(
-                                                            it
-                                                        )
-                                                    )
+
                                                 },
                                                 modifier = Modifier.fillMaxSize(),
                                                 scrollState = searchResultListState
