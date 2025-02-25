@@ -1,4 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
-sealed interface TaskDetailEvent {
+import com.sepideh.lilo.core.presentation.BaseEvent
+
+sealed interface TaskDetailEvent : BaseEvent {
 }
