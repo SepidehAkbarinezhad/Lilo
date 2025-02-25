@@ -27,7 +27,7 @@ fun TaskList(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(items = tasks, key = {it.id}) {task->
+        items(items = tasks, key = {it.id?:0}) {task->
             TaskListItem(
                 modifier = Modifier.fillMaxWidth().widthIn(700.dp).padding(horizontal = 12.dp),
                 task = task,
