@@ -49,11 +49,6 @@ class TaskListViewModel(private val taskDatabase: TaskDatabase) : ViewModel() {
             TaskListEvent.DeleteTask -> {}
             TaskListEvent.DismissContact -> {}
             TaskListEvent.OnAddNewTaskClick -> {
-                _state.update {
-                    it.copy(
-                        isAddTaskSheetOpen = true
-                    )
-                }
                 newTask = Task(id = null, title = "", description = "")
             }
 
@@ -71,27 +66,12 @@ class TaskListViewModel(private val taskDatabase: TaskDatabase) : ViewModel() {
             }
 
             is TaskListEvent.OnEditTask -> {
-                _state.update {
-                    it.copy(
-                        selectedTask = null,
-                        isAddTaskSheetOpen = true,
-                        isSelectedTaskSheetOpen = false
-                    )
-                }
+
                 newTask = action.task
             }
 
             is TaskListEvent.OnPhotoPicked -> {
                 newTask = newTask?.copy(photo = action.bytes)
-            }
-
-            is TaskListEvent.OnSelectTask -> {
-                _state.update {
-                    it.copy(
-                        selectedTask = action.task,
-                        isSelectedTaskSheetOpen = true
-                    )
-                }
             }
 
             TaskListEvent.SaveTask -> {}

@@ -13,7 +13,6 @@ sealed interface TaskListEvent {
     class OnPhotoPicked(val bytes: ByteArray) : TaskListEvent
     data object OnAddPhotoClicked : TaskListEvent
     data object SaveTask : TaskListEvent
-    data class OnSelectTask(val task: Task) : TaskListEvent
     data class OnEditTask(val task: Task) : TaskListEvent
     data object DeleteTask:TaskListEvent
 }

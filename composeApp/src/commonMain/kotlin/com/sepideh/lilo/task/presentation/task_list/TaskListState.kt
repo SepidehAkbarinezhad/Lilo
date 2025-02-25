@@ -8,8 +8,6 @@ data class TaskListState(
     val searchResults: List<Task> = emptyList(),
     val selectedTabIndex: Int = 0,
     val selectedTask: Task? = null,
-    val isAddTaskSheetOpen : Boolean = false,
-    val isSelectedTaskSheetOpen : Boolean = false,
     val titleError : String ? = null,
     val isLoading: Boolean = false,
     val errorMessage: UiText? = null

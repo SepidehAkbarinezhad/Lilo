@@ -8,4 +8,7 @@ interface AppRoutes {
 
     @Serializable
     data object TaskList : AppRoutes
+
+    @Serializable
+    data object TaskDetail : AppRoutes
 }
