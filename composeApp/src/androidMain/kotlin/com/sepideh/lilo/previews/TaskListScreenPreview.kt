@@ -9,7 +9,7 @@ import com.sepideh.lilo.task.presentation.task_list.TaskListState
 
 
 private val tasks = (1..100).map {
-    Task(id = it.toString(),title = "title: $it", description = "description: $it")
+    Task(id = it.toLong(),title = "title: $it", description = "description: $it")
 }
 @Preview
 @Composable

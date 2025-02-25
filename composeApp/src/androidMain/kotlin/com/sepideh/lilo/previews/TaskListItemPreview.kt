@@ -9,5 +9,5 @@ import com.sepideh.lilo.task.presentation.task_list.components.TaskListItem
 @Preview
 @Composable
 fun TaskListItemPreview(modifier: Modifier = Modifier) {
-    TaskListItem(task = Task(title = "title", description = "description")) { }
+    TaskListItem(task = Task(id=0,title = "title", description = "description")) { }
 }
