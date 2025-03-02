@@ -39,9 +39,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.presentation.components.TextType
 import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
@@ -97,7 +97,7 @@ fun TaskListScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(TaskListEvent.OnAddNewTaskClick) },
+                onClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskDetail())) },
                 shape = RoundedCornerShape(20.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary

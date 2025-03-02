@@ -35,6 +35,7 @@ class TaskListViewModel(private val taskDatabase: TaskDatabase) : BaseViewModel(
         private set
 
     override fun onEvent(event: BaseEvent) {
+        super.onEvent(event)
         when (event) {
             is TaskListEvent.OnSearchQueryChange -> {
                 _state.update { it.copy(searchQuery = event.query) }

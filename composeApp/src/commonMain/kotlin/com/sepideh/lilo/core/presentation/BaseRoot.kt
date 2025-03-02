@@ -9,7 +9,6 @@ import com.sepideh.lilo.app.navigation.AppDestinations
 
 @Composable
 fun BaseRoot(
-    modifier: Modifier = Modifier,
     viewModel: BaseViewModel,
     navigateTo: (AppDestinations) -> Unit,
     bodyContainer: @Composable () -> Unit
