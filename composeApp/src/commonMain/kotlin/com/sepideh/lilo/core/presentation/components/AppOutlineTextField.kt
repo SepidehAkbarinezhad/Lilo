@@ -78,8 +78,8 @@ fun AppOutlineTextField(
             AppText(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 text = label,
-                textType = TextType.Body,
-                color = focusedColor
+                textType = TextType.SubTitle,
+                color = focusedColor,
             )
             Box(
                 modifier = Modifier.padding(horizontal = 12.dp).border(

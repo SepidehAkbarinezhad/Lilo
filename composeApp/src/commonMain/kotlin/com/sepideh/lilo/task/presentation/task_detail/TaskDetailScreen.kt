@@ -1,9 +1,11 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,9 +44,8 @@ fun TaskDetailScreen(
     onEvent: (BaseEvent) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
             item {
-                Spacer(modifier = Modifier.height(12.dp))
                 AppOutlineTextField(
                     textFieldRequired = TextFieldRequired(
                         value = task.title,
@@ -52,24 +53,23 @@ fun TaskDetailScreen(
                         label = stringResource(Res.string.title_label)
                     )
                 )
-                Spacer(modifier = Modifier.height(12.dp))
             }
             item {
                 AppOutlineTextField(
                     textFieldRequired = TextFieldRequired(
                         value = task.description,
                         onValueChange = { onEvent(TaskDetailEvent.OnDescriptionChanged(it)) },
-                        label = stringResource(Res.string.description_label)
-                    )
+                        label = stringResource(Res.string.description_label),
+                    ),
+                    singleLine = false
                 )
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
         }
         AppButton(
             text = Res.string.add_task,
             onClick = {},
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.fillMaxWidth().padding(24.dp).align(Alignment.BottomCenter)
         )
 
     }
