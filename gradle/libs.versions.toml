@@ -21,6 +21,8 @@ navigation-compose="2.8.0-alpha10"
 kotlin-serialization-json="1.7.3"
 coil="3.0.4"
 koin="4.1.0-Beta1"
+androidx-annotation="1.9.1"
+annotationJvm = "1.9.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -37,7 +39,6 @@ androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", nam
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 
 jetbrains-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref= "navigation-compose"}
-
 kotlin-serialization-json={module="org.jetbrains.kotlinx:kotlinx-serialization-json",version.ref="kotlin-serialization-json"}
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
@@ -50,6 +51,9 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+
 
 
 [plugins]

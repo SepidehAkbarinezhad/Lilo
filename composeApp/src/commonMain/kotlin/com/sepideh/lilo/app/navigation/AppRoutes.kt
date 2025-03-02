@@ -2,10 +2,15 @@ package com.sepideh.lilo.app.navigation
 
 import kotlinx.serialization.Serializable
 
-interface AppRoutes {
+@Serializable
+sealed class AppRoutes {
     @Serializable
-    data object Splash : AppRoutes
+    data object Splash : AppRoutes()
 
     @Serializable
-    data object TaskList : AppRoutes
+    data object TaskList : AppRoutes()
+
+    @Serializable
+    data object TaskDetail : AppRoutes()
+
 }
