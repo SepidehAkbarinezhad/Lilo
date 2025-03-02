@@ -34,7 +34,7 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: String,
     textType: TextType = TextType.Body,
-    color: Color = Color.DarkGray,
+    color: Color = Color.Black,
     textAlign: TextAlign = TextAlign.Start,
     textDirection: TextDirection = TextDirection.Rtl
 ) {
