@@ -11,3 +11,8 @@ fun TaskEntity.toTask(): Task = Task(
 fun List<TaskEntity>.toTaskList() = this.map {
     it.toTask()
 }
+
+fun Task.toEntity():TaskEntity = TaskEntity(
+    title = title,
+    description = description
+)

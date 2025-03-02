@@ -68,7 +68,7 @@ fun TaskDetailScreen(
         }
         AppButton(
             text = Res.string.add_task,
-            onClick = {},
+            onClick = {onEvent(TaskDetailEvent.OnAddTask)},
             modifier = Modifier.fillMaxWidth().padding(24.dp).align(Alignment.BottomCenter)
         )
 
