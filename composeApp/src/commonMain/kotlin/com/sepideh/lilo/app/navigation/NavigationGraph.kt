@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.sepideh.lilo.app.SplashScreen
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
+import com.sepideh.lilo.task.presentation.task_detail.TestScreen
 import com.sepideh.lilo.task.presentation.task_list.TaskListScreenRoot
 import com.sepideh.lilo.task.presentation.task_list.TaskListViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -20,11 +21,7 @@ fun NavigationGraph(navHostController: NavHostController) {
             { destination ->
                 when (destination) {
                     AppDestinations.NavigateUp() -> onBackPressed()
-                    else -> navHostController.navigate(route = destination) {
-                        if (destination is AppDestinations.TaskList) {
-                            //popUpTo(navHostController.graph.startDestinationId) { inclusive = true }
-                        }
-                    }
+                    else -> destination.route?.let { route -> navHostController.navigate(route = route) }
                 }
             }
 
@@ -41,5 +38,7 @@ fun NavigationGraph(navHostController: NavHostController) {
             val viewModel = koinViewModel<TaskDetailViewModel>()
             TaskDetailScreenRoot(viewModel = viewModel, onNavigateTo = onNavigate)
         }
+
     }
 }
+
