@@ -3,8 +3,9 @@ package com.sepideh.lilo.task.presentation.task_list
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.TaskDatabase
 import com.sepideh.lilo.task.data.toTaskList
 import com.sepideh.lilo.task.domain.Task
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class TaskListViewModel(private val taskDatabase: TaskDatabase) : ViewModel() {
+class TaskListViewModel(private val taskDatabase: TaskDatabase) : BaseViewModel() {
 
     /*
     * stateIn is used to collect the combined flow as stateflow within the lifecycle of the viewmodel.
@@ -33,32 +34,28 @@ class TaskListViewModel(private val taskDatabase: TaskDatabase) : ViewModel() {
     var newTask: Task? by mutableStateOf(null)
         private set
 
-    fun onAction(action: TaskListEvent) {
-        when (action) {
+    override fun onEvent(event: BaseEvent) {
+        super.onEvent(event)
+        when (event) {
             is TaskListEvent.OnSearchQueryChange -> {
-                _state.update { it.copy(searchQuery = action.query) }
-                _state.value = TaskListState(searchQuery = action.query)
+                _state.update { it.copy(searchQuery = event.query) }
+                _state.value = TaskListState(searchQuery = event.query)
             }
 
             is TaskListEvent.OnTabSelected -> {
                 _state.update {
-                    it.copy(selectedTabIndex = action.index)
+                    it.copy(selectedTabIndex = event.index)
                 }
             }
 
             TaskListEvent.DeleteTask -> {}
             TaskListEvent.DismissContact -> {}
             TaskListEvent.OnAddNewTaskClick -> {
-                _state.update {
-                    it.copy(
-                        isAddTaskSheetOpen = true
-                    )
-                }
                 newTask = Task(id = null, title = "", description = "")
             }
 
             is TaskListEvent.OnTitleChanged -> {
-                newTask = newTask?.copy(title = action.value)
+                newTask = newTask?.copy(title = event.value)
             }
 
             TaskListEvent.OnAddPhotoClicked -> {
@@ -67,31 +64,16 @@ class TaskListViewModel(private val taskDatabase: TaskDatabase) : ViewModel() {
             }
 
             is TaskListEvent.OnDescriptionChanged -> {
-                newTask = newTask?.copy(description = action.value)
+                newTask = newTask?.copy(description = event.value)
             }
 
             is TaskListEvent.OnEditTask -> {
-                _state.update {
-                    it.copy(
-                        selectedTask = null,
-                        isAddTaskSheetOpen = true,
-                        isSelectedTaskSheetOpen = false
-                    )
-                }
-                newTask = action.task
+
+                newTask = event.task
             }
 
             is TaskListEvent.OnPhotoPicked -> {
-                newTask = newTask?.copy(photo = action.bytes)
-            }
-
-            is TaskListEvent.OnSelectTask -> {
-                _state.update {
-                    it.copy(
-                        selectedTask = action.task,
-                        isSelectedTaskSheetOpen = true
-                    )
-                }
+                newTask = newTask?.copy(photo = event.bytes)
             }
 
             TaskListEvent.SaveTask -> {}

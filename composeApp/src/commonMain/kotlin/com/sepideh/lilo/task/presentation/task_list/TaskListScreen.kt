@@ -1,10 +1,8 @@
 package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -36,14 +33,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.presentation.components.TextType
 import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
@@ -59,14 +57,25 @@ fun TaskListScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    TaskListScreen(state = state, newTask = viewModel.newTask, onEvent = viewModel::onAction)
+    BaseRoot(
+        viewModel = viewModel,
+        navigateTo = onNavigateTo,
+        bodyContainer = {
+            TaskListScreen(
+                state = state,
+                newTask = viewModel.newTask,
+                onEvent = viewModel::onEvent
+            )
+        }
+    )
+
 }
 
 @Composable
 fun TaskListScreen(
     state: TaskListState,
     newTask: Task?,
-    onEvent: (TaskListEvent) -> Unit
+    onEvent: (BaseEvent) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val pagerState = rememberPagerState { 2 }
@@ -88,7 +97,7 @@ fun TaskListScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(TaskListEvent.OnAddNewTaskClick) },
+                onClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskDetail())) },
                 shape = RoundedCornerShape(20.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
@@ -101,7 +110,8 @@ fun TaskListScreen(
         },
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary).statusBarsPadding(),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
+                .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppSearchBar(
@@ -129,7 +139,7 @@ fun TaskListScreen(
                             selected = state.selectedTabIndex == 0,
                             onClick = { onEvent(TaskListEvent.OnTabSelected(0)) },
                             modifier = Modifier.weight(1f),
-                            selectedContentColor =  MaterialTheme.colorScheme.primary,
+                            selectedContentColor = MaterialTheme.colorScheme.primary,
                             unselectedContentColor = Black.copy(alpha = .5f)
                         ) {
                             AppText(
@@ -175,11 +185,7 @@ fun TaskListScreen(
                                             TaskList(
                                                 tasks = state.searchResults,
                                                 onTaskClick = {
-                                                    onEvent(
-                                                        TaskListEvent.OnSelectTask(
-                                                            it
-                                                        )
-                                                    )
+                                                    onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskDetail()))
                                                 },
                                                 modifier = Modifier.fillMaxSize(),
                                                 scrollState = searchResultListState

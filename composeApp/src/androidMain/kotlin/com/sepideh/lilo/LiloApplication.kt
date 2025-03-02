@@ -1,7 +1,6 @@
 package com.sepideh.lilo
 
 import android.app.Application
-import com.sepideh.lilo.di.androidModule
 import com.sepideh.lilo.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
@@ -10,7 +9,6 @@ class LiloApplication : Application() {
         super.onCreate()
         initKoin {
             androidContext(this@LiloApplication)
-            modules(androidModule)
         }
     }
 }
