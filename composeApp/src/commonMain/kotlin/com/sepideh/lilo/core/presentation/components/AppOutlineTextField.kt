@@ -76,13 +76,13 @@ fun AppOutlineTextField(
     with(textFieldRequired) {
         Column {
             AppText(
-                modifier = Modifier.padding(horizontal = 12.dp),
+                modifier = modifier,
                 text = label,
                 textType = TextType.SubTitle,
                 color = focusedColor,
             )
             Box(
-                modifier = Modifier.padding(horizontal = 12.dp).border(
+                modifier = modifier.border(
                     width = 1.dp,
                     color = focusedColor,
                     shape = MaterialTheme.shapes.small

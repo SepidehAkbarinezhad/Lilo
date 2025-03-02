@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.components.AppButton
@@ -68,7 +69,8 @@ fun TaskDetailScreen(
         }
         AppButton(
             text = Res.string.add_task,
-            onClick = {onEvent(TaskDetailEvent.OnAddTask)},
+            onClick = {onEvent(TaskDetailEvent.OnAddTask)
+                      onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskList()))},
             modifier = Modifier.fillMaxWidth().padding(24.dp).align(Alignment.BottomCenter)
         )
 
