@@ -13,6 +13,7 @@ fun List<TaskEntity>.toTaskList() = this.map {
 }
 
 fun Task.toEntity():TaskEntity = TaskEntity(
+    id = id,
     title = title,
     description = description
 )
