@@ -12,12 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.task.domain.Task
 
 @Composable
 fun TaskList(
     tasks: List<Task>,
-    onTaskClick: (Task) -> Unit,
+    onEvent: (BaseEvent) -> Unit,
     modifier: Modifier = Modifier,
     scrollState: LazyListState = rememberLazyListState()
 ) {
@@ -31,7 +32,7 @@ fun TaskList(
             TaskListItem(
                 modifier = Modifier.fillMaxWidth().widthIn(700.dp).padding(horizontal = 12.dp),
                 task = task,
-                onTaskClick = {onTaskClick(task)}
+                onEvent = onEvent
             )
         }
     }
