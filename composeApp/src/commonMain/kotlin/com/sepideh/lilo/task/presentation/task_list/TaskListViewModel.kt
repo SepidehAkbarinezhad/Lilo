@@ -7,13 +7,18 @@ import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.TaskDatabase
+import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTaskList
 import com.sepideh.lilo.task.domain.Task
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TaskListViewModel(private val taskDatabase: TaskDatabase) : BaseViewModel() {
 
@@ -48,10 +53,30 @@ class TaskListViewModel(private val taskDatabase: TaskDatabase) : BaseViewModel(
                 }
             }
 
-            TaskListEvent.DeleteTask -> {}
+            is TaskListEvent.OnDeleteTask -> {
+                println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}")
+
+                viewModelScope.launch {
+                    withContext(Dispatchers.IO){
+                        try {
+                            println("Deleting task with ID: ${event.task.toEntity().id}")
+
+                            taskDatabase.taskDao().deleteById(event.task.toEntity().id)
+                            val id = taskDatabase.taskDao().getTaskById(event.task.id ?: 0)
+                            println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}  id is $id")
+                        }catch (e:Exception){
+                          println("exception: ${e.message}")
+                        }
+
+                    }
+
+                }
+
+            }
+
             TaskListEvent.DismissContact -> {}
             TaskListEvent.OnAddNewTaskClick -> {
-                newTask = Task(id = null, title = "", description = "")
+                newTask = Task()
             }
 
             is TaskListEvent.OnTitleChanged -> {

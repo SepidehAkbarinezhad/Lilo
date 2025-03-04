@@ -184,9 +184,7 @@ fun TaskListScreen(
                                         else -> {
                                             TaskList(
                                                 tasks = state.searchResults,
-                                                onTaskClick = {
-                                                    onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskDetail()))
-                                                },
+                                                onEvent = onEvent,
                                                 modifier = Modifier.fillMaxSize(),
                                                 scrollState = searchResultListState
                                             )
