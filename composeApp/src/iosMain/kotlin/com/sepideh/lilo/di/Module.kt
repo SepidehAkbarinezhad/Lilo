@@ -1,8 +1,10 @@
 package com.sepideh.lilo.di
 
+import com.sepideh.lilo.database.getCategoryDatabaseBuilder
 import com.sepideh.lilo.database.getTaskDatabaseBuilder
 import org.koin.dsl.module
 
 actual fun platformModule() = module {
-    single { getTaskDatabaseBuilder() }
+    single { getTaskDatabaseBuilder().build() }
+    single { getCategoryDatabaseBuilder().build() }
 }

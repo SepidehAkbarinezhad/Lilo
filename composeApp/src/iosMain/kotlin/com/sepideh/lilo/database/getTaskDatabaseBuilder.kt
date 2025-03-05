@@ -1,19 +1,29 @@
 package com.sepideh.lilo.database
 
 import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.room.RoomDatabase
 import com.sepideh.lilo.task.data.TaskDatabase
-import com.sepideh.lilo.task.data.instantiateImpl
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import platform.Foundation.NSHomeDirectory
+import kotlinx.cinterop.ExperimentalForeignApi
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSUserDomainMask
 
-fun getTaskDatabaseBuilder(): TaskDatabase{
-    val dbFile = NSHomeDirectory()+"/task.db"
+
+fun getTaskDatabaseBuilder(): RoomDatabase.Builder<TaskDatabase> {
+    val dbFilePath = documentDirectory() + "/my_room.db"
     return Room.databaseBuilder<TaskDatabase>(
-        name = dbFile,
-        factory = { TaskDatabase::class.instantiateImpl() }
-    ).setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(Dispatchers.IO)
-        .build()
+        name = dbFilePath,
+    )
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun documentDirectory(): String {
+    val documentDirectory = NSFileManager.defaultManager.URLForDirectory(
+        directory = NSDocumentDirectory,
+        inDomain = NSUserDomainMask,
+        appropriateForURL = null,
+        create = false,
+        error = null,
+    )
+    return requireNotNull(documentDirectory?.path)
 }
