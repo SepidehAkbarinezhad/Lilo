@@ -39,7 +39,7 @@ class TaskListViewModel(
         _state,
         taskDatabase.taskDao().getAllTasks(),
         categoryDatabase.categoryDao().getAllCategories()
-    ) { state, tasks,categories ->
+    ) { state, tasks, categories ->
         state.copy(
             searchResults = tasks.toTaskList(),
             categories = categories.toCategoryList()
@@ -53,12 +53,13 @@ class TaskListViewModel(
     init {
         viewModelScope.launch {
             println("categories: init")
-                state.value.categories.ifEmpty {
-                    println("categories: empty")
-                    Category.categories.forEach { item ->
-                        categoryDatabase.categoryDao().upsert(item.toEntity())
-                    }
+            state.value.categories.ifEmpty {
+                println("categories: empty")
+                Category.categories.forEach { item ->
+                    println("categories: item ->  $item")
+                    categoryDatabase.categoryDao().upsert(item.toEntity())
                 }
+            }
         }
 
 
@@ -124,6 +125,9 @@ class TaskListViewModel(
 
             is TaskListEvent.OnPhotoPicked -> {
                 newTask = newTask?.copy(photo = event.bytes)
+            }
+
+            is TaskListEvent.OnCategoryClicked -> {
             }
 
             TaskListEvent.SaveTask -> {}
