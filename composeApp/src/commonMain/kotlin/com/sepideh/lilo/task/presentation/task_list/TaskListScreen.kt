@@ -2,10 +2,11 @@ package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,18 +28,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,7 +50,6 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.all_tasks
 import lilo.composeapp.generated.resources.no_result
 import org.jetbrains.compose.resources.stringResource
 
@@ -84,9 +81,11 @@ fun TaskListScreen(
     newTask: Task?,
     onEvent: (BaseEvent) -> Unit
 ) {
+    println("TaskListScreen  ${state.categories}")
     val keyboardController = LocalSoftwareKeyboardController.current
     val pagerState = rememberPagerState { 2 }
     val searchResultListState = rememberLazyListState()
+    var selectedCategoryIndex by mutableStateOf(1)
 
     LaunchedEffect(key1 = state.searchResults) {
         searchResultListState.animateScrollToItem(0)
@@ -138,14 +137,20 @@ fun TaskListScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(items = state.categories) { category ->
+                                println("selectedCategoryIndex  $selectedCategoryIndex   ${category.id}")
                                 AppText(
                                     modifier = Modifier.widthIn(min = 100.dp).border(
                                         width = 1.dp,
-                                        color = MaterialTheme.colorScheme.primary,
+                                        color = if (category.id == selectedCategoryIndex) MaterialTheme.colorScheme.primary else Gray,
                                         shape = RoundedCornerShape(8.dp)
-                                    ).padding(4.dp),
+                                    ).padding(4.dp)
+                                        .clickable(indication = null, // Disable the ripple effect
+                                            interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
+                                        ) { selectedCategoryIndex = category.id },
                                     text = category.title,
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
+                                    color = if (category.id == selectedCategoryIndex) MaterialTheme.colorScheme.primary else Gray,
+                                    textType = TextType.SubTitle
                                 )
                             }
 
