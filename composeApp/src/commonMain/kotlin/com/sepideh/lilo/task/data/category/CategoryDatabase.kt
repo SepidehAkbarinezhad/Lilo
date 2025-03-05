@@ -11,7 +11,7 @@ import androidx.room.RoomDatabaseConstructor
 )
 @ConstructedBy(DbConstructor::class)
 abstract class CategoryDatabase : RoomDatabase(){
-    abstract fun taskDao(): CategoryDao
+    abstract fun categoryDao(): CategoryDao
 }
 
 // The Room compiler generates the `actual` implementations.

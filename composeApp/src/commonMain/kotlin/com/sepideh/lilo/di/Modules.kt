@@ -10,6 +10,6 @@ import org.koin.dsl.module
 expect fun platformModule(): Module
 
 val provideViewModelModule = module {
-    viewModel { TaskListViewModel(get()) }
+    viewModel { TaskListViewModel(get(),get()) }
     viewModel { TaskDetailViewModel(get()) }
 }

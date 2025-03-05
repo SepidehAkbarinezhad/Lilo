@@ -88,7 +88,18 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
-    ksp(libs.androidx.room.compiler)
+    // Android
+
+    add("kspAndroid", libs.androidx.room.compiler)
+
+
+    // iOS
+
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+
+    add("kspIosX64", libs.androidx.room.compiler)
+
+    add("kspIosArm64", libs.androidx.room.compiler)
 }
 
 room {
