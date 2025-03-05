@@ -6,10 +6,10 @@ data class Category(
 ) {
     companion object {
         val categories = listOf(
-            Category(id = 1, title = "all"),
-            Category(id = 2, title = "work"),
-            Category(id = 3, title = "hobby"),
-            Category(id = 4, title = "music"),
+            Category(title = "all"),
+            Category(title = "work"),
+            Category(title = "hobby"),
+            Category(title = "music"),
         )
     }
 }
