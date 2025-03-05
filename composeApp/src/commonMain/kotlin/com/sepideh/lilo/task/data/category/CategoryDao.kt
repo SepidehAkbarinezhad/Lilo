@@ -1,0 +1,25 @@
+package com.sepideh.lilo.task.data.category
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Query
+import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface CategoryDao {
+    @Upsert
+    suspend fun upsert(task: CategoryEntity)
+
+    @Delete
+    suspend fun delete(task: CategoryEntity)
+
+    @Query("DELETE FROM CategoryEntity WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
+    @Query("SELECT * FROM CategoryEntity WHERE id = :id")
+    suspend fun getCategoryById(id: Long): CategoryEntity?
+
+    @Query("SELECT * FROM CategoryEntity")
+    fun getAllCategories(): Flow<List<CategoryEntity>>
+}

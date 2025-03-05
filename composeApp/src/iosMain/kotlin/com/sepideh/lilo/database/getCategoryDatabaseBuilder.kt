@@ -2,16 +2,16 @@ package com.sepideh.lilo.database
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.sepideh.lilo.task.data.TaskDatabase
+import com.sepideh.lilo.task.data.category.CategoryDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 
-fun getTaskDatabaseBuilder(): RoomDatabase.Builder<TaskDatabase> {
+fun getCategoryDatabaseBuilder(): RoomDatabase.Builder<CategoryDatabase> {
     val dbFilePath = documentDirectory() + "/my_room.db"
-    return Room.databaseBuilder<TaskDatabase>(
+    return Room.databaseBuilder<CategoryDatabase>(
         name = dbFilePath,
     )
 }
