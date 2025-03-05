@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CategoryDao {
     @Upsert
-    suspend fun upsert(task: CategoryEntity)
+    suspend fun upsert(category: CategoryEntity)
 
     @Delete
-    suspend fun delete(task: CategoryEntity)
+    suspend fun delete(category: CategoryEntity)
 
     @Query("DELETE FROM CategoryEntity WHERE id = :id")
     suspend fun deleteById(id: Long)
