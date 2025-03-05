@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class CategoryEntity(
     @PrimaryKey(autoGenerate = true)
-    val id : Long =0,
+    val id : Int =0,
     val title : String,
 )

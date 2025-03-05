@@ -37,32 +37,28 @@ class TaskListViewModel(
     private val _state = MutableStateFlow(TaskListState())
     val state = combine(
         _state,
-        taskDatabase.taskDao().getAllTasks()
-    ) { state, tasks ->
+        taskDatabase.taskDao().getAllTasks(),
+        categoryDatabase.categoryDao().getAllCategories()
+    ) { state, tasks,categories ->
         state.copy(
-            searchResults = tasks.toTaskList()
+            searchResults = tasks.toTaskList(),
+            categories = categories.toCategoryList()
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), TaskListState())
 
     var newTask: Task? by mutableStateOf(null)
         private set
 
-    private val _categories: MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
-    val categories = _categories.asStateFlow()
 
     init {
         viewModelScope.launch {
             println("categories: init")
-            categoryDatabase.categoryDao().getAllCategories().collect { list ->
-                list.ifEmpty {
+                state.value.categories.ifEmpty {
                     println("categories: empty")
                     Category.categories.forEach { item ->
                         categoryDatabase.categoryDao().upsert(item.toEntity())
                     }
                 }
-                _categories.value = list.toCategoryList()
-                println("categories: ${categories.value}")
-            }
         }
 
 
