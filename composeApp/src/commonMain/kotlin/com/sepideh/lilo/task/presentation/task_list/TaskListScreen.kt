@@ -1,8 +1,11 @@
 package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -31,9 +36,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
@@ -124,45 +131,55 @@ fun TaskListScreen(
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    TabRow(
-                        selectedTabIndex = state.selectedTabIndex,
-                        modifier = Modifier.fillMaxWidth().widthIn(700.dp),
-                        indicator = { tabPositions ->
-                            TabRowDefaults.SecondaryIndicator(
-                                modifier = Modifier.tabIndicatorOffset(
-                                    tabPositions[state.selectedTabIndex]
+
+                    if (state.categories.isNotEmpty()) {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(items = state.categories) { category ->
+                                AppText(
+                                    modifier = Modifier.widthIn(min = 100.dp).border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ).padding(4.dp),
+                                    text = category.title,
+                                    textAlign = TextAlign.Center
                                 )
-                            )
+                            }
+
                         }
-                    ) {
-                        Tab(
-                            selected = state.selectedTabIndex == 0,
-                            onClick = { onEvent(TaskListEvent.OnTabSelected(0)) },
-                            modifier = Modifier.weight(1f),
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = Black.copy(alpha = .5f)
-                        ) {
-                            AppText(
-                                text = stringResource(Res.string.all_tasks),
-                                textType = TextType.SubTitle,
-                                color = Color.Unspecified
-                            )
-                        }
-                        Tab(
-                            selected = state.selectedTabIndex == 1,
-                            onClick = { onEvent(TaskListEvent.OnTabSelected(1)) },
-                            modifier = Modifier.weight(1f),
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = Black.copy(alpha = .5f)
-                        ) {
-                            AppText(
-                                text = "2",
-                                textType = TextType.SubTitle,
-                                modifier = Modifier.padding(12.dp),
-                                color = Color.Unspecified
-                            )
-                        }
+                        /* TabRow(
+                             selectedTabIndex = state.selectedTabIndex,
+                             modifier = Modifier.fillMaxWidth().widthIn(700.dp),
+                             indicator = { tabPositions ->
+                                 TabRowDefaults.SecondaryIndicator(
+                                     modifier = Modifier.tabIndicatorOffset(
+                                         tabPositions[state.selectedTabIndex]
+                                     )
+                                 )
+                             }
+                         ) {
+                             state.categories.forEach { item ->
+                                 Tab(
+                                     selected = state.selectedTabIndex == item.id,
+                                     onClick = { onEvent(TaskListEvent.OnTabSelected(item.id)) },
+                                     modifier = Modifier.weight(1f).padding(8.dp),
+                                     selectedContentColor = MaterialTheme.colorScheme.primary,
+                                     unselectedContentColor = Black.copy(alpha = .5f)
+                                 ) {
+                                     AppText(
+                                         text = item.title,
+                                         textType = TextType.SubTitle,
+                                         color = Color.Unspecified
+                                     )
+                                 }
+                             }
+
+                         }*/
                     }
+
                     Spacer(modifier = Modifier.height(12.dp))
                     HorizontalPager(
                         state = pagerState,
