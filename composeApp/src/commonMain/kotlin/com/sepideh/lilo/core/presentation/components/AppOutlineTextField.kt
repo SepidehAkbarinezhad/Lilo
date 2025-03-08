@@ -1,18 +1,12 @@
 package com.sepideh.lilo.core.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
@@ -28,14 +22,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDirection
@@ -43,23 +33,19 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.ValidationStatus
 import com.sepideh.lilo.core.presentation.resolveMessage
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun AppOutlineTextField(
     modifier: Modifier = Modifier,
     textFieldRequired: TextFieldRequired,
-    leadingIcon: DrawableResource? = null,
-    onLeadingIconClick: () -> Unit = {},
     leadingIconBackgroundColor: Color = Color.Transparent,
-    trailingIcon: Any? = null,  // Can be either Int (drawable) or ImageVector
-    onTrailingIconClick: () -> Unit = {},
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     singleLine: Boolean = true,
     requestFocus: Boolean = false,
-    isLTR: Boolean = false,
+    isLTR: Boolean = true,
     textStyle: TextStyle = LocalTextStyle.current,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -71,12 +57,12 @@ fun AppOutlineTextField(
         mutableStateOf(false)
     }
 
-    val focusedColor =if (isFocused) MaterialTheme.colorScheme.primary else Gray
+    val focusedColor = if (isFocused) MaterialTheme.colorScheme.primary else Gray
 
     with(textFieldRequired) {
-        Column {
+        Column(modifier = Modifier.fillMaxWidth()) {
             AppText(
-                modifier = modifier,
+                modifier = modifier.background(Red),
                 text = label,
                 textType = TextType.SubTitle,
                 color = focusedColor,
@@ -105,56 +91,8 @@ fun AppOutlineTextField(
                             textType = TextType.Body
                         )
                     },
-                    leadingIcon = leadingIcon?.let {
-                        @Composable {
-                            Box(
-                                modifier = Modifier
-                                    .size(size = 40.dp)
-                                    .padding(all = 10.dp)
-                                    .clickable { onLeadingIconClick() }
-                                    .background(
-                                        leadingIconBackgroundColor,
-                                        shape = RoundedCornerShape(20)
-                                    )
-                            ) {
-                                Image(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    painter = painterResource(resource = it),
-                                    contentDescription = "leading icon",
-                                    colorFilter = ColorFilter.tint(color = DarkGray)
-                                )
-                            }
-                        }
-                    },
-                    trailingIcon = {
-                        if (trailingIcon is ImageVector) {
-                            Icon(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .padding(10.dp)
-                                    .clickable {
-                                        onTrailingIconClick()
-                                    },
-                                imageVector = trailingIcon as ImageVector,
-                                contentDescription = "trailing icon",
-                                tint = DarkGray
-                            )
-                        } else if (trailingIcon is Int) {
-                            // Handle drawable resource ID
-                            Image(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .padding(10.dp)
-                                    .clickable {
-                                        onTrailingIconClick()
-                                    },
-                                painter = painterResource(resource = trailingIcon as DrawableResource),  // Cast to Int (drawable)
-                                contentDescription = "trailing icon",
-                                colorFilter = ColorFilter.tint(DarkGray)
-                            )
-                        }
-                    },
+                    leadingIcon = leadingIcon,
+                    trailingIcon = trailingIcon,
                     isError = !validationStatus.isSuccessful,
                     visualTransformation = visualTransformation,
                     keyboardOptions = keyboardOptions,
