@@ -7,4 +7,5 @@
     <string name="add_task">add</string>
     <string name="title_label">title</string>
     <string name="description_label">description</string>
+    <string name="category_label">description</string>
 </resources>
