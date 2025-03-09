@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -40,6 +39,8 @@ class TaskListViewModel(
         taskDatabase.taskDao().getAllTasks(),
         categoryDatabase.categoryDao().getAllCategories()
     ) { state, tasks, categories ->
+        categories.ifEmpty {
+            getCategories() }
         state.copy(
             searchResults = tasks.toTaskList(),
             categories = categories.toCategoryList()
@@ -50,19 +51,12 @@ class TaskListViewModel(
         private set
 
 
-    init {
+    private fun getCategories() {
         viewModelScope.launch {
-            println("categories: init")
-            state.value.categories.ifEmpty {
-                println("categories: empty")
-                Category.categories.forEach { item ->
-                    println("categories: item ->  $item")
-                    categoryDatabase.categoryDao().upsert(item.toEntity())
-                }
+            Category.categories.forEach { item ->
+                categoryDatabase.categoryDao().upsert(item.toEntity())
             }
         }
-
-
     }
 
     override fun onEvent(event: BaseEvent) {

@@ -62,7 +62,7 @@ fun AppOutlineTextField(
     with(textFieldRequired) {
         Column(modifier = Modifier.fillMaxWidth()) {
             AppText(
-                modifier = modifier.background(Red),
+                modifier = modifier,
                 text = label,
                 textType = TextType.SubTitle,
                 color = focusedColor,
