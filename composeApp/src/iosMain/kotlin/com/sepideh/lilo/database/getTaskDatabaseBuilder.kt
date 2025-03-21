@@ -2,6 +2,7 @@ package com.sepideh.lilo.database
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.sepideh.lilo.task.data.TaskDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
@@ -13,7 +14,7 @@ fun getTaskDatabaseBuilder(): RoomDatabase.Builder<TaskDatabase> {
     val dbFilePath = documentDirectory() + "/task.db"
     return Room.databaseBuilder<TaskDatabase>(
         name = dbFilePath,
-    )
+    ).setDriver(BundledSQLiteDriver())
 }
 
 @OptIn(ExperimentalForeignApi::class)
