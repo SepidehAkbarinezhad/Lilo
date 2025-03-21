@@ -2,6 +2,7 @@ package com.sepideh.lilo.task.presentation.task_list
 
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.task.domain.Task
+import com.sepideh.lilo.task.presentation.model.Category
 
 
 sealed interface TaskListEvent : BaseEvent {
@@ -16,4 +17,5 @@ sealed interface TaskListEvent : BaseEvent {
     data object SaveTask : TaskListEvent
     data class OnEditTask(val task: Task) : TaskListEvent
     data class OnDeleteTask(val task: Task) : TaskListEvent
+    data class OnCategoryClicked(val category: Category) : TaskListEvent
 }
