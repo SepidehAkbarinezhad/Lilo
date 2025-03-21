@@ -16,5 +16,5 @@ expect fun platformModule(): Module
 
 val provideViewModelModule = module {
     viewModel { TaskListViewModel(get(taskDatabaseQualifier),get(categoryDatabaseQualifier)) }
-    viewModel { TaskDetailViewModel(get(),get()) }
+    viewModel { TaskDetailViewModel(get(taskDatabaseQualifier),get(categoryDatabaseQualifier)) }
 }
