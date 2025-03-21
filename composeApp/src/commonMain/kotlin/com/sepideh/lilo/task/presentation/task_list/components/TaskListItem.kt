@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,25 +32,28 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
         modifier = modifier.clickable(onClick = {}), shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = .1f)
     ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Column(
-                Modifier.weight(.8f).padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                AppText(text = task.title, textType = TextType.SubTitle)
-                AppText(text = task.description, textType = TextType.Body)
-            }
-            IconButton(onClick = {
-                println("TaskListEvent.OnDeleteTask->")
-                onEvent(TaskListEvent.OnDeleteTask(task))}) {
-                Icon(
-                    painter = painterResource(Res.drawable.delete_icon),
-                    tint = Color.White,
-                    contentDescription = null
-                )
-            }
+        with(task){
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = done, onCheckedChange = {onEvent(TaskListEvent.OnDoneChange(task=task.copy(done = !done)))})
+                Column(
+                    Modifier.weight(.8f).padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    AppText(text = title, textType = TextType.SubTitle)
+                    AppText(text = description, textType = TextType.Body)
+                }
+                IconButton(onClick = {
+                    onEvent(TaskListEvent.OnDeleteTask(task))}) {
+                    Icon(
+                        painter = painterResource(Res.drawable.delete_icon),
+                        tint = Color.White,
+                        contentDescription = null
+                    )
+                }
 
+            }
         }
+
 
     }
 }
