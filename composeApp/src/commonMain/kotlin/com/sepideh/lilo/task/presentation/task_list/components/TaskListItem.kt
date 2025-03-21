@@ -33,7 +33,6 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent) -> Unit) {
-    val textDecoration by remember(task.done) { derivedStateOf { if(task.done) TextDecoration.LineThrough else TextDecoration.None } }
     Surface(
         modifier = modifier.clickable(onClick = {}), shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = .1f)
@@ -45,7 +44,7 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
                     Modifier.weight(.8f).padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    AppText(text = title, textType = TextType.SubTitle, textDecoration = textDecoration)
+                    AppText(text = title, textType = TextType.SubTitle, textDecoration =  if(task.done) TextDecoration.LineThrough else TextDecoration.None )
                     AppText(text = description, textType = TextType.Body)
                 }
                 IconButton(onClick = {
