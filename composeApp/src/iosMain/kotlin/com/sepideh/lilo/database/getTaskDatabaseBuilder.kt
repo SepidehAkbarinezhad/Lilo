@@ -10,7 +10,7 @@ import platform.Foundation.NSUserDomainMask
 
 
 fun getTaskDatabaseBuilder(): RoomDatabase.Builder<TaskDatabase> {
-    val dbFilePath = documentDirectory() + "/my_room.db"
+    val dbFilePath = documentDirectory() + "/task.db"
     return Room.databaseBuilder<TaskDatabase>(
         name = dbFilePath,
     )
