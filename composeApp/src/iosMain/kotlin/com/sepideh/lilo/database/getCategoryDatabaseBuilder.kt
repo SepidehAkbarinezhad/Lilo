@@ -10,7 +10,7 @@ import platform.Foundation.NSUserDomainMask
 
 
 fun getCategoryDatabaseBuilder(): RoomDatabase.Builder<CategoryDatabase> {
-    val dbFilePath = documentDirectory() + "/my_room.db"
+    val dbFilePath = documentDirectory() + "/category.db"
     return Room.databaseBuilder<CategoryDatabase>(
         name = dbFilePath,
     )
