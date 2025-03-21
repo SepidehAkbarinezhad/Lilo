@@ -13,9 +13,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.TextType
@@ -28,6 +33,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent) -> Unit) {
+    val textDecoration by remember(task.done) { derivedStateOf { if(task.done) TextDecoration.LineThrough else TextDecoration.None } }
     Surface(
         modifier = modifier.clickable(onClick = {}), shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = .1f)
@@ -39,7 +45,7 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
                     Modifier.weight(.8f).padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    AppText(text = title, textType = TextType.SubTitle)
+                    AppText(text = title, textType = TextType.SubTitle, textDecoration = textDecoration)
                     AppText(text = description, textType = TextType.Body)
                 }
                 IconButton(onClick = {
