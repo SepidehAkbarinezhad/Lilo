@@ -7,4 +7,5 @@ sealed interface TaskDetailEvent : BaseEvent {
     data class OnDescriptionChanged(val description: String) : TaskDetailEvent
     data class OnSelectedCategoryChanged(val title : String) : TaskDetailEvent
     data object OnAddTask : TaskDetailEvent
+    data class OnGetCategoryById(val id:Int) : TaskDetailEvent
 }
