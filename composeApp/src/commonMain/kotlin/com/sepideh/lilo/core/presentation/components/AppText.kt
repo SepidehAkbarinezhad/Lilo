@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.styleText
@@ -36,12 +37,13 @@ fun AppText(
     textType: TextType = TextType.Body,
     color: Color = Color.Black,
     textAlign: TextAlign = TextAlign.Start,
-    textDirection: TextDirection = TextDirection.Rtl
+    textDirection: TextDirection = TextDirection.Rtl,
+    textDecoration: TextDecoration=TextDecoration.None
 ) {
     Text(
         modifier = modifier,
         text = text,
-        style = styleText(textType).copy(textDirection = textDirection),
+        style = styleText(textType).copy(textDirection = textDirection, textDecoration = textDecoration),
         color = color,
         textAlign = textAlign
     )

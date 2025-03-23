@@ -40,7 +40,8 @@ class TaskListViewModel(
         categoryDatabase.categoryDao().getAllCategories()
     ) { state, tasks, categories ->
         categories.ifEmpty {
-            getCategories() }
+            getCategories()
+        }
         state.copy(
             searchResults = tasks.toTaskList(),
             categories = categories.toCategoryList()
@@ -62,20 +63,25 @@ class TaskListViewModel(
     override fun onEvent(event: BaseEvent) {
         super.onEvent(event)
         when (event) {
-            is TaskListEvent.OnSearchQueryChange -> {
-                _state.update { it.copy(searchQuery = event.query) }
-                _state.value = TaskListState(searchQuery = event.query)
-            }
-
             is TaskListEvent.OnTabSelected -> {
                 _state.update {
                     it.copy(selectedTabIndex = event.index)
                 }
             }
+            is TaskListEvent.OnSearchQueryChange -> {
+                _state.update { it.copy(searchQuery = event.query) }
+                _state.value = TaskListState(searchQuery = event.query)
+            }
+            TaskListEvent.OnAddNewTaskClick -> {
+                newTask = Task()
+            }
+            is TaskListEvent.OnEditTask -> {
+
+                newTask = event.task
+            }
 
             is TaskListEvent.OnDeleteTask -> {
                 println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}")
-
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
                         try {
@@ -87,44 +93,28 @@ class TaskListViewModel(
                         } catch (e: Exception) {
                             println("exception: ${e.message}")
                         }
-
                     }
-
                 }
-
-            }
-
-            TaskListEvent.DismissContact -> {}
-            TaskListEvent.OnAddNewTaskClick -> {
-                newTask = Task()
             }
 
             is TaskListEvent.OnTitleChanged -> {
-                newTask = newTask?.copy(title = event.value)
-            }
-
-            TaskListEvent.OnAddPhotoClicked -> {
-
-
+                newTask = newTask?.copy(title = event.title)
             }
 
             is TaskListEvent.OnDescriptionChanged -> {
                 newTask = newTask?.copy(description = event.value)
             }
-
-            is TaskListEvent.OnEditTask -> {
-
-                newTask = event.task
+            is TaskListEvent.OnDoneChange -> {
+                viewModelScope.launch {
+                    taskDatabase.taskDao().upsert(task = event.task.toEntity())
+                }
             }
 
             is TaskListEvent.OnPhotoPicked -> {
                 newTask = newTask?.copy(photo = event.bytes)
             }
 
-            is TaskListEvent.OnCategoryClicked -> {
-            }
 
-            TaskListEvent.SaveTask -> {}
         }
     }
 }
