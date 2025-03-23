@@ -72,18 +72,16 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnSelectedCategoryChanged -> {
                 val selectedCategory = state.value.categories.find { it.title == event.title }?: Category.categories[0]
-                println("OnSelectedCategoryChanged categories ${state.value.categories}")
-                println("OnSelectedCategoryChanged selectedCategory $selectedCategory")
                 _state.update { it.copy(selectedCategory = selectedCategory) }
             }
 
             is TaskDetailEvent.OnSelectedPriorityChanged -> {
                 val selectedPriority = Priority.getByTitle(event.title)
-                task = task.copy(priority = selectedPriority.id)
+                _state.update { it.copy(selectedPriority=selectedPriority) }
             }
 
             is TaskDetailEvent.OnAddTask -> {
-                val task = task.copy(category = state.value.selectedCategory?.id?:Category.categories[0].id)
+                val task = task.copy(category = state.value.selectedCategory?.id?:Category.categories[0].id, priority = state.value.selectedPriority.id)
                 viewModelScope.launch { taskDatabase.taskDao().upsert(task.toEntity()) }
             }
         }

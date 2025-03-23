@@ -22,6 +22,7 @@ import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.model.Category.Companion.categories
+import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task
@@ -85,19 +86,19 @@ fun TaskDetailScreen(
             }
             item {
                 AppDropDown(
-                    selectedValue = state.selectedCategory?.title?: categories[0].title,
+                    selectedValue = state.selectedCategory?.title ?: categories[0].title,
                     options = state.categories.map { it.title },
                     label = stringResource(Res.string.category_label),
                     onValueChanged = {
-                        println("onValueChanged")
-                        onEvent(TaskDetailEvent.OnSelectedCategoryChanged(it))})
+                        onEvent(TaskDetailEvent.OnSelectedCategoryChanged(it))
+                    })
             }
             item {
                 AppDropDown(
-                    selectedValue = priorities[0].title ,
-                    options = state.priorities.map { it.title },
+                    selectedValue = state.selectedPriority.title,
+                    options = priorities.map { it.title },
                     label = stringResource(Res.string.priority_label),
-                    onValueChanged = {onEvent(TaskDetailEvent.OnSelectedPriorityChanged(it))})
+                    onValueChanged = { onEvent(TaskDetailEvent.OnSelectedPriorityChanged(it)) })
             }
 
         }
