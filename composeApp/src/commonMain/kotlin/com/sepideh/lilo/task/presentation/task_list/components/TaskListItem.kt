@@ -36,15 +36,12 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
-import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.delete_icon
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent) -> Unit) {
     Surface(
         modifier = modifier.clickable(onClick = {}), shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.primary.copy(alpha = .1f)
+        color = MaterialTheme.colorScheme.primary.copy(alpha = .05f)
     ) {
         with(task){
             Row(Modifier.fillMaxWidth().height(IntrinsicSize.Max), verticalAlignment = Alignment.CenterVertically) {
@@ -62,7 +59,7 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "selete Icon",
-                        tint = Color.White
+                        tint = Color.LightGray
                     )
                 }
                 Box(modifier = Modifier.weight(.03f).fillMaxHeight().background(color = priorities[priority].color))
