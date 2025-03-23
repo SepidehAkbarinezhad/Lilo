@@ -61,6 +61,8 @@ fun AppDropDown(
             modifier = Modifier.fillMaxWidth()
                 .clickable(indication = null, // Disable the ripple effect
                     interactionSource = remember { MutableInteractionSource() }) {
+                    println("me interactionSource  expanded $expanded")
+
                     expanded = !expanded
                 }.border(
                     width = 1.dp,
@@ -77,8 +79,10 @@ fun AppDropDown(
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option) },
+                    text = { AppText(text = option) },
                     onClick = {
+                        println("me onClick $expanded  option $option")
+
                         expanded = false
                         onValueChanged(option)
                     }
