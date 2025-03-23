@@ -5,15 +5,17 @@ import com.sepideh.lilo.task.domain.Task
 fun TaskEntity.toTask(): Task = Task(
     id = id,
     title = title,
-    description = description
+    description = description,
+    done = done
 )
 
 fun List<TaskEntity>.toTaskList() = this.map {
     it.toTask()
 }
 
-fun Task.toEntity():TaskEntity = TaskEntity(
+fun Task.toEntity(): TaskEntity = TaskEntity(
     id = id,
     title = title,
-    description = description
+    description = description,
+    done = done
 )
