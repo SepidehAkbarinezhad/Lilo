@@ -7,6 +7,7 @@ fun TaskEntity.toTask(): Task = Task(
     title = title,
     description = description,
     done = done,
+    category = category,
     priority= priority
 )
 
@@ -19,5 +20,6 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     title = title,
     description = description,
     done = done,
+    category = category,
     priority= priority
 )
