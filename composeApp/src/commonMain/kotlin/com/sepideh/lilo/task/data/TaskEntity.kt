@@ -9,5 +9,6 @@ data class TaskEntity(
     val id : Long =0,
     val title : String,
     val description : String,
-    val done : Boolean=false
+    val done : Boolean=false,
+    val priority : Int = 0
 )
