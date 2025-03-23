@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,9 +60,9 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
                 IconButton(onClick = {
                     onEvent(TaskListEvent.OnDeleteTask(task))}) {
                     Icon(
-                        painter = painterResource(Res.drawable.delete_icon),
-                        tint = Color.White,
-                        contentDescription = null
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "selete Icon",
+                        tint = Color.White
                     )
                 }
                 Box(modifier = Modifier.weight(.03f).fillMaxHeight().background(color = priorities[priority].color))
