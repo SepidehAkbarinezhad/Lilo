@@ -40,7 +40,7 @@ class TaskListViewModel(
         categoryDatabase.categoryDao().getAllCategories()
     ) { state, tasks, categories ->
         categories.ifEmpty {
-            getCategories()
+            upsertCategories()
         }
         state.copy(
             searchResults = tasks.toTaskList(),
@@ -52,7 +52,7 @@ class TaskListViewModel(
         private set
 
 
-    private fun getCategories() {
+    private fun upsertCategories() {
         viewModelScope.launch {
             Category.categories.forEach { item ->
                 categoryDatabase.categoryDao().upsert(item.toEntity())
