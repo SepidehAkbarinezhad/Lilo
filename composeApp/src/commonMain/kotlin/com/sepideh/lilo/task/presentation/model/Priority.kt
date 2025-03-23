@@ -14,5 +14,6 @@ data class Priority(
             Priority(id = 1, title = "middle", color = Color.Green),
             Priority(id = 2, title = "low", color = Color.Yellow),
         )
+        fun getByTitle(title: String):Priority= priorities.find { it.title == title }?: priorities[0]
     }
 }
