@@ -5,5 +5,6 @@ data class Task(
     val title: String = "",
     val description: String = "",
     val done : Boolean = false,
+    val priority : Int = 0,
     val photo :ByteArray? = null,
 )
