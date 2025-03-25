@@ -6,7 +6,7 @@ import com.sepideh.lilo.task.presentation.model.Category
 
 
 sealed interface TaskListEvent : BaseEvent {
-    data class OnTabSelected(val index: Int) : TaskListEvent
+    data class OnCategorySelected(val id: Int?) : TaskListEvent
     data class OnSearchQueryChange(val query: String) : TaskListEvent
     data object OnAddNewTaskClick : TaskListEvent
     data class OnEditTask(val task: Task) : TaskListEvent

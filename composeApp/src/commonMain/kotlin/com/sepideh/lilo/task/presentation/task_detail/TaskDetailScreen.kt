@@ -21,13 +21,15 @@ import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.Task
-import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.task.presentation.model.Category.Companion.categories
+import com.sepideh.lilo.task.presentation.model.Priority
+import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task
 import lilo.composeapp.generated.resources.category_label
 import lilo.composeapp.generated.resources.description_label
+import lilo.composeapp.generated.resources.priority_label
 import lilo.composeapp.generated.resources.title_label
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -84,10 +86,19 @@ fun TaskDetailScreen(
             }
             item {
                 AppDropDown(
-                    selectedValue = state.selectedCategory.title,
+                    selectedValue = state.selectedCategory?.title ?: categories[0].title,
                     options = state.categories.map { it.title },
                     label = stringResource(Res.string.category_label),
-                    onValueChanged = {onEvent(TaskDetailEvent.OnSelectedCategoryChanged(it))})
+                    onValueChanged = {
+                        onEvent(TaskDetailEvent.OnSelectedCategoryChanged(it))
+                    })
+            }
+            item {
+                AppDropDown(
+                    selectedValue = state.selectedPriority.title,
+                    options = priorities.map { it.title },
+                    label = stringResource(Res.string.priority_label),
+                    onValueChanged = { onEvent(TaskDetailEvent.OnSelectedPriorityChanged(it)) })
             }
 
         }

@@ -16,9 +16,12 @@ import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.model.Category
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,6 +32,19 @@ class TaskListViewModel(
     private val categoryDatabase: CategoryDatabase
 ) : BaseViewModel() {
 
+    private val _categories = categoryDatabase.categoryDao().getAllCategories().onEach {
+            categories ->
+        if (categories.isEmpty()) {
+            // Perform upsert only if categories are empty after fetching
+            upsertCategories()
+        }
+    }
+        .map { it.toCategoryList() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+    private val _tasks = taskDatabase.taskDao().getAllTasks()
+        .map { it.toTaskList() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+
     /*
     * stateIn is used to collect the combined flow as stateflow within the lifecycle of the viewmodel.
     * WhileSubscribed ensures the flow is only shared while there are active collectors and stop emitting values for up to 5 seconds after the last collector unsubscribed.
@@ -36,15 +52,26 @@ class TaskListViewModel(
     private val _state = MutableStateFlow(TaskListState())
     val state = combine(
         _state,
-        taskDatabase.taskDao().getAllTasks(),
-        categoryDatabase.categoryDao().getAllCategories()
+        _tasks,
+        _categories
     ) { state, tasks, categories ->
-        categories.ifEmpty {
-            getCategories()
-        }
+        println("#combine $categories")
+
+        println("updatedCategories 1 $categories")
+        val updatedCategories = listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
+        println("updatedCategories 2 $updatedCategories")
+        val validSelectedCategory = categories.find { it.id == state.selectedCategory }
         state.copy(
-            searchResults = tasks.toTaskList(),
-            categories = categories.toCategoryList()
+            tasksResult = tasks.let { taskList ->
+                // If the user hasn't selected a category, treat the "All" category as null
+                if (validSelectedCategory != null) {
+                    taskList.filter { task -> task.category == validSelectedCategory.id }
+                } else {
+                    taskList
+                }
+            },
+            categories = updatedCategories,
+            selectedCategory = validSelectedCategory?.id
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), TaskListState())
 
@@ -52,9 +79,11 @@ class TaskListViewModel(
         private set
 
 
-    private fun getCategories() {
+    private fun upsertCategories() {
+        println("#upsertCategories")
+
         viewModelScope.launch {
-            Category.categories.forEach { item ->
+            Category.categories.subList(1, Category.categories.size).forEach { item ->
                 categoryDatabase.categoryDao().upsert(item.toEntity())
             }
         }
@@ -63,20 +92,22 @@ class TaskListViewModel(
     override fun onEvent(event: BaseEvent) {
         super.onEvent(event)
         when (event) {
-            is TaskListEvent.OnTabSelected -> {
+            is TaskListEvent.OnCategorySelected -> {
                 _state.update {
-                    it.copy(selectedTabIndex = event.index)
+                    it.copy(selectedCategory = event.id)
                 }
             }
+
             is TaskListEvent.OnSearchQueryChange -> {
                 _state.update { it.copy(searchQuery = event.query) }
                 _state.value = TaskListState(searchQuery = event.query)
             }
+
             TaskListEvent.OnAddNewTaskClick -> {
                 newTask = Task()
             }
-            is TaskListEvent.OnEditTask -> {
 
+            is TaskListEvent.OnEditTask -> {
                 newTask = event.task
             }
 
@@ -104,6 +135,7 @@ class TaskListViewModel(
             is TaskListEvent.OnDescriptionChanged -> {
                 newTask = newTask?.copy(description = event.value)
             }
+
             is TaskListEvent.OnDoneChange -> {
                 viewModelScope.launch {
                     taskDatabase.taskDao().upsert(task = event.task.toEntity())
