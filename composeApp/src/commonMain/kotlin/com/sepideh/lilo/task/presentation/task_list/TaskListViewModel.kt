@@ -16,10 +16,12 @@ import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.model.Category
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,7 +32,13 @@ class TaskListViewModel(
     private val categoryDatabase: CategoryDatabase
 ) : BaseViewModel() {
 
-    private val _categories = categoryDatabase.categoryDao().getAllCategories()
+    private val _categories = categoryDatabase.categoryDao().getAllCategories().onEach {
+            categories ->
+        if (categories.isEmpty()) {
+            // Perform upsert only if categories are empty after fetching
+            upsertCategories()
+        }
+    }
         .map { it.toCategoryList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
     private val _tasks = taskDatabase.taskDao().getAllTasks()
@@ -47,13 +55,12 @@ class TaskListViewModel(
         _tasks,
         _categories
     ) { state, tasks, categories ->
-        categories.ifEmpty {
-            upsertCategories()
-        }
+        println("#combine $categories")
+
+        println("updatedCategories 1 $categories")
         val updatedCategories = listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
-
+        println("updatedCategories 2 $updatedCategories")
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
-
         state.copy(
             tasksResult = tasks.let { taskList ->
                 // If the user hasn't selected a category, treat the "All" category as null
@@ -73,6 +80,8 @@ class TaskListViewModel(
 
 
     private fun upsertCategories() {
+        println("#upsertCategories")
+
         viewModelScope.launch {
             Category.categories.subList(1, Category.categories.size).forEach { item ->
                 categoryDatabase.categoryDao().upsert(item.toEntity())
