@@ -50,6 +50,8 @@ class TaskListViewModel(
         categories.ifEmpty {
             upsertCategories()
         }
+        val updatedCategories = listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
+
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
 
         state.copy(
@@ -61,7 +63,7 @@ class TaskListViewModel(
                     taskList
                 }
             },
-            categories = categories,
+            categories = updatedCategories,
             selectedCategory = validSelectedCategory?.id
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), TaskListState())
@@ -72,7 +74,7 @@ class TaskListViewModel(
 
     private fun upsertCategories() {
         viewModelScope.launch {
-            Category.categories.forEach { item ->
+            Category.categories.subList(1, Category.categories.size).forEach { item ->
                 categoryDatabase.categoryDao().upsert(item.toEntity())
             }
         }
@@ -85,9 +87,6 @@ class TaskListViewModel(
                 _state.update {
                     it.copy(selectedCategory = event.id)
                 }
-                println("before filter ${event.id}  ${state.value.tasksResult}")
-
-                println("after filter ${state.value.tasksResult.filter { task -> task.category == event.id }}")
             }
 
             is TaskListEvent.OnSearchQueryChange -> {
