@@ -6,9 +6,9 @@ import com.sepideh.lilo.task.presentation.model.Category
 
 data class TaskListState(
     val searchQuery: String = "",
-    val searchResults: List<Task> = emptyList(),
+    val tasksResult: List<Task> = emptyList(),
     val categories: List<Category> = emptyList(),
-    val selectedTabIndex: Int = 0,
+    val selectedCategory : Int?= null,
     val selectedTask: Task? = null,
     val titleError : String ? = null,
     val isLoading: Boolean = false,

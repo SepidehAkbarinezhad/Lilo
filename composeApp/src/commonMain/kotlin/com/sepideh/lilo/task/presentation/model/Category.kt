@@ -7,6 +7,7 @@ data class Category(
     companion object {
         val categories = listOf(
             Category(title = "all"),
+            Category(title = "general"),
             Category(title = "work"),
             Category(title = "hobby"),
             Category(title = "music"),
