@@ -85,19 +85,9 @@ fun TaskListScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val pagerState = rememberPagerState { 2 }
     val searchResultListState = rememberLazyListState()
-    var selectedCategoryIndex by mutableStateOf(1)
 
-    LaunchedEffect(key1 = state.searchResults) {
+    LaunchedEffect(key1 = state.tasksResult) {
         searchResultListState.animateScrollToItem(0)
-    }
-    LaunchedEffect(state.selectedTabIndex) {
-        //when click on tabs,switch the pager
-        pagerState.animateScrollToPage(state.selectedTabIndex)
-    }
-
-    LaunchedEffect(pagerState.currentPage) {
-        //when switch the pager,change selected tab
-        onEvent(TaskListEvent.OnTabSelected(pagerState.currentPage))
     }
 
     Scaffold(
@@ -137,52 +127,29 @@ fun TaskListScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(items = state.categories) { category ->
-                                println("selectedCategoryIndex  $selectedCategoryIndex   ${category.id}")
+
+                                // Determine if the category is selected or if it's the first one when selectedCategory is null
+                                val isSelected = category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
+                                val selectedColor = if (isSelected) MaterialTheme.colorScheme.primary else Gray
+
+                                println("selectedCategoryIndex    ${category.id}  ${state.selectedCategory}")
                                 AppText(
                                     modifier = Modifier.widthIn(min = 100.dp).border(
                                         width = 1.dp,
-                                        color = if (category.id == selectedCategoryIndex) MaterialTheme.colorScheme.primary else Gray,
+                                        color = selectedColor,
                                         shape = RoundedCornerShape(8.dp)
                                     ).padding(4.dp)
                                         .clickable(indication = null, // Disable the ripple effect
                                             interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
-                                        ) { selectedCategoryIndex = category.id },
+                                        ) { onEvent(TaskListEvent.OnCategorySelected(category.id))},
                                     text = category.title,
                                     textAlign = TextAlign.Center,
-                                    color = if (category.id == selectedCategoryIndex) MaterialTheme.colorScheme.primary else Gray,
+                                    color = selectedColor,
                                     textType = TextType.SubTitle
                                 )
                             }
 
                         }
-                        /* TabRow(
-                             selectedTabIndex = state.selectedTabIndex,
-                             modifier = Modifier.fillMaxWidth().widthIn(700.dp),
-                             indicator = { tabPositions ->
-                                 TabRowDefaults.SecondaryIndicator(
-                                     modifier = Modifier.tabIndicatorOffset(
-                                         tabPositions[state.selectedTabIndex]
-                                     )
-                                 )
-                             }
-                         ) {
-                             state.categories.forEach { item ->
-                                 Tab(
-                                     selected = state.selectedTabIndex == item.id,
-                                     onClick = { onEvent(TaskListEvent.OnTabSelected(item.id)) },
-                                     modifier = Modifier.weight(1f).padding(8.dp),
-                                     selectedContentColor = MaterialTheme.colorScheme.primary,
-                                     unselectedContentColor = Black.copy(alpha = .5f)
-                                 ) {
-                                     AppText(
-                                         text = item.title,
-                                         textType = TextType.SubTitle,
-                                         color = Color.Unspecified
-                                     )
-                                 }
-                             }
-
-                         }*/
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -195,7 +162,7 @@ fun TaskListScreen(
                                 0 -> {
                                     when {
                                         state.isLoading -> {}
-                                        state.searchResults.isEmpty() -> {
+                                        state.tasksResult.isEmpty() -> {
                                             AppText(
                                                 text = stringResource(Res.string.no_result),
                                                 textType = TextType.SubTitle,
@@ -205,7 +172,7 @@ fun TaskListScreen(
 
                                         else -> {
                                             TaskList(
-                                                tasks = state.searchResults,
+                                                tasks = state.tasksResult,
                                                 onEvent = onEvent,
                                                 modifier = Modifier.fillMaxSize(),
                                                 scrollState = searchResultListState
