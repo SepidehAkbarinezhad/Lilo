@@ -132,7 +132,6 @@ fun TaskListScreen(
                                 val isSelected = category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
                                 val selectedColor = if (isSelected) MaterialTheme.colorScheme.primary else Gray
 
-                                println("selectedCategoryIndex    ${category.id}  ${state.selectedCategory}")
                                 AppText(
                                     modifier = Modifier.widthIn(min = 100.dp).border(
                                         width = 1.dp,

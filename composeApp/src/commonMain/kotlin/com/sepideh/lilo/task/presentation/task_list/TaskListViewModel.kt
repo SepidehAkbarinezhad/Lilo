@@ -1,3 +1,5 @@
+@file:OptIn(FlowPreview::class)
+
 package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.runtime.getValue
@@ -15,11 +17,16 @@ import com.sepideh.lilo.task.data.toTaskList
 import com.sepideh.lilo.task.domain.Task
 import com.sepideh.lilo.task.presentation.model.Category
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -32,15 +39,15 @@ class TaskListViewModel(
     private val categoryDatabase: CategoryDatabase
 ) : BaseViewModel() {
 
-    private val _categories = categoryDatabase.categoryDao().getAllCategories().onEach {
-            categories ->
-        if (categories.isEmpty()) {
-            // Perform upsert only if categories are empty after fetching
-            upsertCategories()
+    private val _categories =
+        categoryDatabase.categoryDao().getAllCategories().onEach { categories ->
+            if (categories.isEmpty()) {
+                // Perform upsert only if categories are empty after fetching
+                upsertCategories()
+            }
         }
-    }
-        .map { it.toCategoryList() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+            .map { it.toCategoryList() }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
     private val _tasks = taskDatabase.taskDao().getAllTasks()
         .map { it.toTaskList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
@@ -50,38 +57,51 @@ class TaskListViewModel(
     * WhileSubscribed ensures the flow is only shared while there are active collectors and stop emitting values for up to 5 seconds after the last collector unsubscribed.
     * */
     private val _state = MutableStateFlow(TaskListState())
+
+    /*
+    * Using debounce to control rapid search inputs:
+    * - Delays filtering by 300ms to avoid processing incomplete queries.
+    * - If a new value arrives before the 300ms delay ends, the previous value is discarded.
+    * - Ensures only the final query (after typing pauses) triggers the filtering logic.
+    * */
+    private val _debouncedSearchQuery = _state
+        .map { it.searchQuery }
+        .debounce(300L)
+        .distinctUntilChanged()
+
     val state = combine(
         _state,
         _tasks,
-        _categories
-    ) { state, tasks, categories ->
-        println("#combine $categories")
-
-        println("updatedCategories 1 $categories")
-        val updatedCategories = listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
-        println("updatedCategories 2 $updatedCategories")
+        _categories,
+        _debouncedSearchQuery
+    ) { state, tasks, categories,searchQuery ->
+        println("#combine tasks: ${state.tasksResult}")
+        val updatedCategories =
+            listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
         state.copy(
             tasksResult = tasks.let { taskList ->
+                println("taskList before filter: $taskList")
                 // If the user hasn't selected a category, treat the "All" category as null
-                if (validSelectedCategory != null) {
-                    taskList.filter { task -> task.category == validSelectedCategory.id }
+                val filteredBasedOnCategory = if (validSelectedCategory != null) {
+                    taskList.filter { task -> task.category == validSelectedCategory.id}
                 } else {
                     taskList
                 }
+                filteredBasedOnCategory.filter {task-> task.title.contains(searchQuery, ignoreCase = true) || task.description.contains(searchQuery, ignoreCase = true) }
             },
             categories = updatedCategories,
             selectedCategory = validSelectedCategory?.id
         )
+
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), TaskListState())
+
 
     var newTask: Task? by mutableStateOf(null)
         private set
 
 
     private fun upsertCategories() {
-        println("#upsertCategories")
-
         viewModelScope.launch {
             Category.categories.subList(1, Category.categories.size).forEach { item ->
                 categoryDatabase.categoryDao().upsert(item.toEntity())
@@ -100,7 +120,7 @@ class TaskListViewModel(
 
             is TaskListEvent.OnSearchQueryChange -> {
                 _state.update { it.copy(searchQuery = event.query) }
-                _state.value = TaskListState(searchQuery = event.query)
+              //  _state.value = TaskListState(searchQuery = event.query)
             }
 
             TaskListEvent.OnAddNewTaskClick -> {
@@ -146,7 +166,7 @@ class TaskListViewModel(
                 newTask = newTask?.copy(photo = event.bytes)
             }
 
-
         }
     }
+
 }
