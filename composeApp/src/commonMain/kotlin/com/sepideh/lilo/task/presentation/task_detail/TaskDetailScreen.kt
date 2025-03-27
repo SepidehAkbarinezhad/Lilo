@@ -20,9 +20,8 @@ import com.sepideh.lilo.core.presentation.components.AppButton
 import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
-import com.sepideh.lilo.task.domain.Task
+import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category.Companion.categories
-import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task
