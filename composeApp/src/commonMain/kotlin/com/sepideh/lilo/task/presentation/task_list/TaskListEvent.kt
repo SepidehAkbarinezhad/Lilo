@@ -1,8 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_list
 
 import com.sepideh.lilo.core.presentation.BaseEvent
-import com.sepideh.lilo.task.domain.Task
-import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.task.domain.model.Task
 
 
 sealed interface TaskListEvent : BaseEvent {
