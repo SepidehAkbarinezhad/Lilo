@@ -4,14 +4,18 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_CONTENT_TAG
+import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_ID_TAG
+import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_TITLE_TAG
 import com.sepideh.lilo.task.domain.ReminderScheduler
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class ReminderManager(private val context: Context) : ReminderScheduler {
     actual override fun scheduleReminder(reminder: Reminder) {
         val intent = Intent(context, ReminderReceiver::class.java).apply {
-            putExtra("reminderId", reminder.id)
-            putExtra("reminderTitle", reminder.title)
+            putExtra(NOTIFICATION_ID_TAG, reminder.id)
+            putExtra(NOTIFICATION_TITLE_TAG, reminder.title)
+            putExtra(NOTIFICATION_CONTENT_TAG, reminder.content)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
