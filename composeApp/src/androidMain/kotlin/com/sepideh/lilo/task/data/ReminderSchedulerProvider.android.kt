@@ -27,7 +27,8 @@ actual class ReminderManager(private val context: Context) : ReminderScheduler {
         * */
         // TODO: check permision
         try {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder.timeInMillis, pendingIntent)
+            println("ReminderManager try")
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+60000, pendingIntent)
         }catch (e:SecurityException){
             // If permission is not granted, direct the user to the settings screen where they can manually get permission
             println("SecurityException : ${e.message}")
