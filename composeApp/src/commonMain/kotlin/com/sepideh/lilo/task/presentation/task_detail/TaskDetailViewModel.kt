@@ -89,7 +89,7 @@ class TaskDetailViewModel(
     }
 
     private fun startReminder(){
-        reminderScheduler.scheduleReminder(reminder = Reminder(id = "0", title = "reminderTest", timeInMillis = 0))
+        reminderScheduler.scheduleReminder(reminder = Reminder(id = "0", title = "reminderTest", content = "", timeInMillis = 0))
     }
 
 }
