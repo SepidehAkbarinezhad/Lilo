@@ -5,7 +5,8 @@ import com.sepideh.lilo.core.presentation.BaseEvent
 sealed interface TaskDetailEvent : BaseEvent {
     data class OnTitleChanged(val title: String) : TaskDetailEvent
     data class OnDescriptionChanged(val description: String) : TaskDetailEvent
-    data class OnSelectedCategoryChanged(val title : String) : TaskDetailEvent
-    data class OnSelectedPriorityChanged(val title : String) : TaskDetailEvent
+    data class OnSelectedCategoryChanged(val title: String) : TaskDetailEvent
+    data class OnSelectedPriorityChanged(val title: String) : TaskDetailEvent
+    data class OnSelectReminderTimer(val timePickerModel: TimePickerModel) : TaskDetailEvent
     data object OnAddTask : TaskDetailEvent
 }
