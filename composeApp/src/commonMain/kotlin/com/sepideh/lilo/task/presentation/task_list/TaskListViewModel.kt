@@ -166,4 +166,8 @@ class TaskListViewModel(
         }
     }
 
+    override fun onResetState() {
+
+    }
+
 }

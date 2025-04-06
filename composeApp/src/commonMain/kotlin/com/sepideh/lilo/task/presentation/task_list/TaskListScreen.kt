@@ -57,6 +57,8 @@ fun TaskListScreenRoot(
     viewModel: TaskListViewModel,
     onNavigateTo: (AppDestinations) -> Unit
 ) {
+
+    println("TaskListScreenRoot")
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     BaseRoot(
