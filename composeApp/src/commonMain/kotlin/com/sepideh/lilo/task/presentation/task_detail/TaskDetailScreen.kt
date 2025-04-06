@@ -136,6 +136,7 @@ fun TaskDetailScreen(
                 if (openDatePicker) {
                     DateRangePickerModal(onDateRangeSelected = { pair ->
                         println("start: ${pair.first}  end: ${pair.second}")
+                        onEvent(TaskDetailEvent.OnSelectReminderDate(pair))
                         openDatePicker = false
                     }, onDismiss = { openDatePicker = false })
                 }
@@ -143,7 +144,7 @@ fun TaskDetailScreen(
         }
         if (openTimePicker) {
             TimePickerContainer(modifier = Modifier.align(Alignment.Center), onConfirm = {
-                println("onConfirm ${it.hour}  ${it.minute}  ${it.isAfternoon}")
+                println("onConfirm ${it.hour}  ${it.minute}")
                 openTimePicker = !openTimePicker
             }, onDismiss = { openTimePicker = !openTimePicker })
         }

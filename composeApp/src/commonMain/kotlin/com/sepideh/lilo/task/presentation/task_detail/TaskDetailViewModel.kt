@@ -59,7 +59,7 @@ class TaskDetailViewModel(
 
     var task: Task by mutableStateOf(Task())
 
-    var reminderTime: TimePickerModel? = null
+    private var reminderModel: ReminderModel? = null
 
 
     override fun onEvent(event: BaseEvent) {
@@ -84,8 +84,16 @@ class TaskDetailViewModel(
                 _state.update { it.copy(selectedPriority = selectedPriority) }
             }
 
+            is TaskDetailEvent.OnSelectReminderDate -> {
+                with(event.pair) {
+                    reminderModel?.copy(initDay = first, finishDay = second)
+                }
+            }
+
             is TaskDetailEvent.OnSelectReminderTimer -> {
-                reminderTime = event.timePickerModel
+                with(event.reminderModel) {
+                    reminderModel?.copy(hour = hour, minute = minute)
+                }
             }
 
             is TaskDetailEvent.OnAddTask -> {
