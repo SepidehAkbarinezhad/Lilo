@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -63,6 +64,7 @@ fun TaskDetailScreenRoot(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskDetailScreen(
     state: TaskDetailState,
@@ -115,13 +117,13 @@ fun TaskDetailScreen(
             }
             item {
                 Row {
-                    IconButton(onClick = { openDatePicker = !openDatePicker}){
+                    IconButton(onClick = { openDatePicker = !openDatePicker }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "time picker",
                         )
                     }
-                    IconButton(onClick = { openTimePicker = !openTimePicker}){
+                    IconButton(onClick = { openTimePicker = !openTimePicker }) {
                         Icon(
                             imageVector = Icons.Default.Done,
                             contentDescription = "date picker",
@@ -131,17 +133,19 @@ fun TaskDetailScreen(
 
             }
             item {
-                if(openDatePicker){
-                    DateRangePickerModal(onDateRangeSelected = {pair->
+                if (openDatePicker) {
+                    DateRangePickerModal(onDateRangeSelected = { pair ->
                         println("start: ${pair.first}  end: ${pair.second}")
-                        openDatePicker=false}, onDismiss = {openDatePicker=false})
+                        openDatePicker = false
+                    }, onDismiss = { openDatePicker = false })
                 }
             }
-            item {
-                if(openTimePicker){
-                   TimePickerContainer(onConfirm = {}, onDismiss = {})
-                }
-            }
+        }
+        if (openTimePicker) {
+            TimePickerContainer(modifier = Modifier.align(Alignment.Center), onConfirm = {
+                println("onConfirm ${it.hour}  ${it.minute}  ${it.isAfternoon}")
+                openTimePicker = !openTimePicker
+            }, onDismiss = { openTimePicker = !openTimePicker })
         }
         AppButton(
             text = Res.string.add_task,

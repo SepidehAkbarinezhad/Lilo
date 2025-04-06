@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
-import com.sepideh.lilo.task.data.ReminderManager
 import com.sepideh.lilo.task.data.TaskDatabase
 import com.sepideh.lilo.task.data.category.CategoryDatabase
 import com.sepideh.lilo.task.data.category.toCategoryList
@@ -35,6 +34,7 @@ class TaskDetailViewModel(
 
 
     private val _state = MutableStateFlow(TaskDetailState())
+
     /*
   * `combine`:
   * 1. Any update to any of the combined flows triggers the block to execute again.
@@ -59,6 +59,9 @@ class TaskDetailViewModel(
 
     var task: Task by mutableStateOf(Task())
 
+    var reminderTime: TimePickerModel? = null
+
+
     override fun onEvent(event: BaseEvent) {
         super.onEvent(event)
         when (event) {
@@ -71,25 +74,40 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnSelectedCategoryChanged -> {
-                val selectedCategory = state.value.categories.find { it.title == event.title }?: Category.categories[0]
+                val selectedCategory = state.value.categories.find { it.title == event.title }
+                    ?: Category.categories[0]
                 _state.update { it.copy(selectedCategory = selectedCategory) }
             }
 
             is TaskDetailEvent.OnSelectedPriorityChanged -> {
                 val selectedPriority = Priority.getByTitle(event.title)
-                _state.update { it.copy(selectedPriority=selectedPriority) }
+                _state.update { it.copy(selectedPriority = selectedPriority) }
+            }
+
+            is TaskDetailEvent.OnSelectReminderTimer -> {
+                reminderTime = event.timePickerModel
             }
 
             is TaskDetailEvent.OnAddTask -> {
-                val task = task.copy(category = state.value.selectedCategory?.id?:Category.categories[0].id, priority = state.value.selectedPriority.id)
+                val task = task.copy(
+                    category = state.value.selectedCategory?.id ?: Category.categories[0].id,
+                    priority = state.value.selectedPriority.id
+                )
                 viewModelScope.launch { taskDatabase.taskDao().upsert(task.toEntity()) }
                 startReminder()
             }
         }
     }
 
-    private fun startReminder(){
-        reminderScheduler.scheduleReminder(reminder = Reminder(id = "0", title = "reminderTest", content = "", timeInMillis = 0))
+    private fun startReminder() {
+        reminderScheduler.scheduleReminder(
+            reminder = Reminder(
+                id = "0",
+                title = "reminderTest",
+                content = "",
+                timeInMillis = 0
+            )
+        )
     }
 
 }
