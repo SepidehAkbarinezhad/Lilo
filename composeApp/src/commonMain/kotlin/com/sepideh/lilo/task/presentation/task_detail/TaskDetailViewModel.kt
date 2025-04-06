@@ -117,6 +117,10 @@ class TaskDetailViewModel(
         }
     }
 
+    override fun onResetState() {
+
+    }
+
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
         println("startReminder  $reminderModel   ${setReminderTime(reminderModel)}")

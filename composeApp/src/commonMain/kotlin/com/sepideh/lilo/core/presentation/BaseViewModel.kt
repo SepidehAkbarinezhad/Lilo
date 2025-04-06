@@ -18,4 +18,15 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
+    fun resetState() {
+        resetBaseUiState()
+        onResetState()
+    }
+
+    private fun resetBaseUiState() {
+        baseUiState.value = BaseUiState()
+    }
+
+    protected abstract fun onResetState()
+
 }

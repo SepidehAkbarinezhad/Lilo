@@ -1,6 +1,7 @@
 package com.sepideh.lilo.core.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,6 +18,11 @@ fun BaseRoot(
     LaunchedEffect(baseUiState) {
         baseUiState.navigateTo?.let {
             navigateTo(it)
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetState()
         }
     }
     bodyContainer()
