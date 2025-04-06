@@ -11,8 +11,9 @@ import com.sepideh.lilo.task.data.TaskDatabase
 import com.sepideh.lilo.task.data.category.CategoryDatabase
 import com.sepideh.lilo.task.data.category.toCategoryList
 import com.sepideh.lilo.task.data.toEntity
-import com.sepideh.lilo.task.domain.ReminderScheduler
 import com.sepideh.lilo.task.domain.model.Task
+import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
+import com.sepideh.lilo.task.domain.reminder.setReminderTime
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,7 +60,7 @@ class TaskDetailViewModel(
 
     var task: Task by mutableStateOf(Task())
 
-    private var reminderModel: ReminderModel? = null
+    private var reminderModel: ReminderModel = ReminderModel()
 
 
     override fun onEvent(event: BaseEvent) {
@@ -85,15 +86,21 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnSelectReminderDate -> {
-                with(event.pair) {
-                    reminderModel?.copy(initDay = first, finishDay = second)
+                println("OnSelectReminderDate ${event.date}")
+                with(event.date) {
+                    println("OnSelectReminderDate......... ${event.date.first}  ${event.date.second}")
+                    reminderModel = reminderModel.copy(initDay = first, finishDay = second)
                 }
+                println("OnSelectReminderDate $reminderModel")
             }
 
-            is TaskDetailEvent.OnSelectReminderTimer -> {
-                with(event.reminderModel) {
-                    reminderModel?.copy(hour = hour, minute = minute)
+            is TaskDetailEvent.OnSelectReminderTime -> {
+                println("OnSelectReminderTime ${event.time}")
+                with(event.time) {
+                    println("OnSelectReminderTime....... ${event.time.first} ${event.time.second}")
+                    reminderModel = reminderModel.copy(hour = first, minute = second)
                 }
+                println("OnSelectReminderTime $reminderModel")
             }
 
             is TaskDetailEvent.OnAddTask -> {
@@ -101,21 +108,28 @@ class TaskDetailViewModel(
                     category = state.value.selectedCategory?.id ?: Category.categories[0].id,
                     priority = state.value.selectedPriority.id
                 )
-                viewModelScope.launch { taskDatabase.taskDao().upsert(task.toEntity()) }
-                startReminder()
+
+                viewModelScope.launch {
+                    val id = taskDatabase.taskDao().upsert(task.toEntity())
+                    startReminder(id)
+                }
             }
         }
     }
 
-    private fun startReminder() {
-        reminderScheduler.scheduleReminder(
-            reminder = Reminder(
-                id = "0",
-                title = "reminderTest",
-                content = "",
-                timeInMillis = 0
+    //todo set reminder in a way can add custom title description
+    private fun startReminder(taskId: Long) {
+        println("startReminder  $reminderModel   ${setReminderTime(reminderModel)}")
+        setReminderTime(reminderModel)?.let {
+            reminderScheduler.scheduleReminder(
+                reminder = Reminder(
+                    id = taskId.toInt(),
+                    title = task.title,
+                    content = "",
+                    timeInMillis = it
+                )
             )
-        )
+        }
     }
 
 }

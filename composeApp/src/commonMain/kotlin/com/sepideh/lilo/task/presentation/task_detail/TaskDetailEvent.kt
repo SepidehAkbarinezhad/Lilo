@@ -7,7 +7,7 @@ sealed interface TaskDetailEvent : BaseEvent {
     data class OnDescriptionChanged(val description: String) : TaskDetailEvent
     data class OnSelectedCategoryChanged(val title: String) : TaskDetailEvent
     data class OnSelectedPriorityChanged(val title: String) : TaskDetailEvent
-    data class OnSelectReminderDate(val pair: Pair<Long?,Long?>) : TaskDetailEvent
-    data class OnSelectReminderTimer(val reminderModel: ReminderModel) : TaskDetailEvent
+    data class OnSelectReminderDate(val date: Pair<Long?,Long?>) : TaskDetailEvent
+    data class OnSelectReminderTime(val  time: Pair<Int?,Int?>) : TaskDetailEvent
     data object OnAddTask : TaskDetailEvent
 }

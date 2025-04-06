@@ -30,6 +30,7 @@ class ReminderReceiver : BroadcastReceiver() {
         val channelId="reminder_channel"
         val title = intent.getStringExtra(NOTIFICATION_TITLE_TAG) ?: ""
         val content = intent.getStringExtra(NOTIFICATION_CONTENT_TAG) ?: ""
+        val id = intent.getIntExtra(NOTIFICATION_ID_TAG,0)
 
         val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         // Create channel (required for Android 8+)
@@ -61,7 +62,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
                 .build()
 
-            notificationManager.notify(0, notification)
+            notificationManager.notify(id, notification)
         }
     }
 }
