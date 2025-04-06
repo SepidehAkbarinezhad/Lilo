@@ -1,6 +1,6 @@
 package com.sepideh.lilo.task.data
 
-import com.sepideh.lilo.task.domain.ReminderScheduler
+import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 
 class IosReminderScheduler : ReminderScheduler {
     override fun scheduleReminder(reminder: Reminder) {

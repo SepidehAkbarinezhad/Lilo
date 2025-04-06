@@ -144,7 +144,7 @@ fun TaskDetailScreen(
         }
         if (openTimePicker) {
             TimePickerContainer(modifier = Modifier.align(Alignment.Center), onConfirm = {
-                println("onConfirm ${it.hour}  ${it.minute}")
+                onEvent(TaskDetailEvent.OnSelectReminderTime(it))
                 openTimePicker = !openTimePicker
             }, onDismiss = { openTimePicker = !openTimePicker })
         }

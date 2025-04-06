@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.domain
+package com.sepideh.lilo.task.domain.reminder
 
 import com.sepideh.lilo.task.data.Reminder
 
@@ -6,4 +6,6 @@ interface ReminderScheduler {
     fun scheduleReminder(reminder: Reminder)
     fun cancelReminder(id: String)
 }
+
+
 

@@ -13,14 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun TimePickerContainer(
     modifier: Modifier,
-    onConfirm: (ReminderModel) -> Unit,
+    onConfirm: (Pair<Int?,Int?>) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val currentTime = Calendar.getInstance()
@@ -37,9 +36,11 @@ actual fun TimePickerContainer(
                 state = timePickerState,
             )
             Button(onClick = onDismiss) {
+                onConfirm(Pair(null,null))
+                onDismiss()
                 Text("Dismiss picker")
             }
-            Button(onClick = {onConfirm(ReminderModel(hour = timePickerState.hour, minute = timePickerState.minute))}) {
+            Button(onClick = {onConfirm(Pair(timePickerState.hour,timePickerState.minute))}) {
                 Text("Confirm selection")
             }
         }

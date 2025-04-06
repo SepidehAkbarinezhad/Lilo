@@ -7,7 +7,7 @@ import android.content.Intent
 import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_CONTENT_TAG
 import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_ID_TAG
 import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_TITLE_TAG
-import com.sepideh.lilo.task.domain.ReminderScheduler
+import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class ReminderManager(private val context: Context) : ReminderScheduler {
@@ -29,10 +29,10 @@ actual class ReminderManager(private val context: Context) : ReminderScheduler {
         * This permission can only be granted manually by the user via the system settings.
         * Therefore, before scheduling an exact alarm, check if your app has permission
         * */
-        // TODO: check permision
+        // TODO: check permission
         try {
             println("ReminderManager try")
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+60000, pendingIntent)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder.timeInMillis, pendingIntent)
         }catch (e:SecurityException){
             // If permission is not granted, direct the user to the settings screen where they can manually get permission
             println("SecurityException : ${e.message}")
