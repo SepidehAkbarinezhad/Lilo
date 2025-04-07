@@ -4,7 +4,7 @@ import com.sepideh.lilo.task.data.Reminder
 
 interface ReminderScheduler {
     fun scheduleReminder(reminder: Reminder)
-    fun cancelReminder(id: String)
+    fun cancelReminder(reminder: Reminder)
 }
 
 

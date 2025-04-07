@@ -5,5 +5,5 @@ data class Reminder(
     val title: String,
     val content: String,
     val startDate: Long,
-    val endDate: Long
+    val endDate: Long?
 )
