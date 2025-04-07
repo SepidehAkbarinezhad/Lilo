@@ -14,21 +14,21 @@ import com.sepideh.lilo.task.data.category.toCategoryList
 import com.sepideh.lilo.task.data.category.toEntity
 import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTaskList
-import com.sepideh.lilo.task.domain.Task
+import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -48,9 +48,9 @@ class TaskListViewModel(
         }
             .map { it.toCategoryList() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
-    private val _tasks = taskDatabase.taskDao().getAllTasks()
-        .map { it.toTaskList() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+
+    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
+    val tasks: StateFlow<List<Task>> = _tasks
 
     /*
     * stateIn is used to collect the combined flow as stateflow within the lifecycle of the viewmodel.
@@ -74,7 +74,7 @@ class TaskListViewModel(
         _tasks,
         _categories,
         _debouncedSearchQuery
-    ) { state, tasks, categories,searchQuery ->
+    ) { state, tasks, categories, searchQuery ->
         println("#combine tasks: ${state.tasksResult}")
         val updatedCategories =
             listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
@@ -84,11 +84,17 @@ class TaskListViewModel(
                 println("taskList before filter: $taskList")
                 // If the user hasn't selected a category, treat the "All" category as null
                 val filteredBasedOnCategory = if (validSelectedCategory != null) {
-                    taskList.filter { task -> task.category == validSelectedCategory.id}
+                    // Filtering is done on a local list synchronously, so there's no need to show a loading state
+                    taskList.filter { task -> task.category == validSelectedCategory.id }
                 } else {
                     taskList
                 }
-                filteredBasedOnCategory.filter {task-> task.title.contains(searchQuery, ignoreCase = true) || task.description.contains(searchQuery, ignoreCase = true) }
+                filteredBasedOnCategory.filter { task ->
+                    task.title.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    ) || task.description.contains(searchQuery, ignoreCase = true)
+                }
             },
             categories = updatedCategories,
             selectedCategory = validSelectedCategory?.id
@@ -100,6 +106,24 @@ class TaskListViewModel(
     var newTask: Task? by mutableStateOf(null)
         private set
 
+    init {
+        loadTasks()
+    }
+
+    private fun loadTasks(){
+        viewModelScope.launch {
+            taskDatabase.taskDao().getAllTasks()
+                .onStart {
+                    onEvent(BaseEvent.SetLoading(true))
+                }
+                .collect { tasksList ->
+                    println("loadTasks mytag")
+                    delay(1000)
+                    onEvent(BaseEvent.SetLoading(false))
+                    _tasks.value = tasksList.toTaskList()
+                }
+        }
+    }
 
     private fun upsertCategories() {
         viewModelScope.launch {
@@ -120,7 +144,7 @@ class TaskListViewModel(
 
             is TaskListEvent.OnSearchQueryChange -> {
                 _state.update { it.copy(searchQuery = event.query) }
-              //  _state.value = TaskListState(searchQuery = event.query)
+                //  _state.value = TaskListState(searchQuery = event.query)
             }
 
             TaskListEvent.OnAddNewTaskClick -> {
@@ -167,6 +191,10 @@ class TaskListViewModel(
             }
 
         }
+    }
+
+    override fun onResetState() {
+
     }
 
 }
