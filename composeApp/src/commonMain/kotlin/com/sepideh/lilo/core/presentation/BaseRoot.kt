@@ -14,7 +14,7 @@ fun BaseRoot(
     navigateTo: (AppDestinations) -> Unit,
     bodyContainer: @Composable () -> Unit
 ) {
-    val baseUiState by viewModel.baseUiStateValue.collectAsStateWithLifecycle()
+    val baseUiState by viewModel.baseUiState.collectAsStateWithLifecycle(BaseUiState())
     LaunchedEffect(baseUiState) {
         baseUiState.navigateTo?.let {
             navigateTo(it)
@@ -22,7 +22,7 @@ fun BaseRoot(
     }
     DisposableEffect(Unit) {
         onDispose {
-            viewModel.resetState()
+            viewModel.onResetState()
         }
     }
     bodyContainer()
