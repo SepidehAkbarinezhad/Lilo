@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseEvent
-import com.sepideh.lilo.task.domain.Task
+import com.sepideh.lilo.task.domain.model.Task
 
 @Composable
 fun TaskList(

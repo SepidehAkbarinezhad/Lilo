@@ -1,6 +1,6 @@
 package com.sepideh.lilo.task.data
 
-import com.sepideh.lilo.task.domain.Task
+import com.sepideh.lilo.task.domain.model.Task
 
 fun TaskEntity.toTask(): Task = Task(
     id = id,

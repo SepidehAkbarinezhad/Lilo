@@ -3,12 +3,22 @@ package com.sepideh.lilo.task.presentation.task_detail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,10 +30,11 @@ import com.sepideh.lilo.core.presentation.components.AppButton
 import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
-import com.sepideh.lilo.task.domain.Task
+import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category.Companion.categories
-import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
+import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
+import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task
 import lilo.composeapp.generated.resources.category_label
@@ -37,6 +48,8 @@ fun TaskDetailScreenRoot(
     viewModel: TaskDetailViewModel,
     onNavigateTo: (AppDestinations) -> Unit
 ) {
+
+    println("TaskDetailScreenRoot")
     val state by viewModel.state.collectAsStateWithLifecycle()
     val task = viewModel.task
 
@@ -53,12 +66,16 @@ fun TaskDetailScreenRoot(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskDetailScreen(
     state: TaskDetailState,
     task: Task,
     onEvent: (BaseEvent) -> Unit
 ) {
+    var openDatePicker by remember { mutableStateOf(false) }
+    var openTimePicker by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,7 +117,38 @@ fun TaskDetailScreen(
                     label = stringResource(Res.string.priority_label),
                     onValueChanged = { onEvent(TaskDetailEvent.OnSelectedPriorityChanged(it)) })
             }
+            item {
+                Row {
+                    IconButton(onClick = { openDatePicker = !openDatePicker }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "time picker",
+                        )
+                    }
+                    IconButton(onClick = { openTimePicker = !openTimePicker }) {
+                        Icon(
+                            imageVector = Icons.Default.Done,
+                            contentDescription = "date picker",
+                        )
+                    }
+                }
 
+            }
+            item {
+                if (openDatePicker) {
+                    DateRangePickerModal(onDateRangeSelected = { pair ->
+                        println("start: ${pair.first}  end: ${pair.second}")
+                        onEvent(TaskDetailEvent.OnSelectReminderDate(pair))
+                        openDatePicker = false
+                    }, onDismiss = { openDatePicker = false })
+                }
+            }
+        }
+        if (openTimePicker) {
+            TimePickerContainer(modifier = Modifier.align(Alignment.Center), onConfirm = {
+                onEvent(TaskDetailEvent.OnSelectReminderTime(it))
+                openTimePicker = !openTimePicker
+            }, onDismiss = { openTimePicker = !openTimePicker })
         }
         AppButton(
             text = Res.string.add_task,

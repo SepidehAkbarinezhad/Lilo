@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.domain
+package com.sepideh.lilo.task.domain.model
 
 data class Task(
     val id: Long = 0 ,
