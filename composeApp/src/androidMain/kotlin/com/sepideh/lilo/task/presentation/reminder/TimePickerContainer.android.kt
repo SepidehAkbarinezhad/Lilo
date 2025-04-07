@@ -3,7 +3,10 @@ package com.sepideh.lilo.task.presentation.reminder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
@@ -31,19 +34,22 @@ actual fun TimePickerContainer(
     )
 
     Dialog(onDismissRequest = onDismiss) {
-        Column(modifier = modifier.background(Color.White).padding(24.dp)) {
-            TimePicker(
-                state = timePickerState,
-            )
-            Button(onClick = onDismiss) {
-                onConfirm(Pair(null,null))
-                onDismiss()
-                Text("Dismiss picker")
-            }
-            Button(onClick = {onConfirm(Pair(timePickerState.hour,timePickerState.minute))}) {
-                Text("Confirm selection")
+        Card(modifier = modifier, shape = RoundedCornerShape(8.dp), colors = CardDefaults.cardColors(containerColor = Color.White)){
+            Column(modifier = Modifier.padding(24.dp)){
+                TimePicker(
+                    state = timePickerState,
+                )
+                Button(onClick = onDismiss) {
+                    onConfirm(Pair(null,null))
+                    onDismiss()
+                    Text("Dismiss picker")
+                }
+                Button(onClick = {onConfirm(Pair(timePickerState.hour,timePickerState.minute))}) {
+                    Text("Confirm selection")
+                }
             }
         }
+
     }
 
 }
