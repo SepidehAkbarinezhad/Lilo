@@ -5,9 +5,9 @@ import java.util.Calendar
 
 actual fun setReminderTime(timeModel: ReminderModel?): Long? {
     return timeModel?.let {
-        if (it.initDay != null && it.hour != null && it.minute != null) {
+        if (it.startDay != null && it.hour != null && it.minute != null) {
             Calendar.getInstance().apply {
-                timeInMillis = it.initDay
+                timeInMillis = it.startDay
                 set(Calendar.HOUR_OF_DAY, it.hour)
                 set(Calendar.MINUTE, it.minute)
                 set(Calendar.SECOND, 0)

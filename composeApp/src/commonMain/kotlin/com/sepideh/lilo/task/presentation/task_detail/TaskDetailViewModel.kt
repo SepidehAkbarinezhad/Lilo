@@ -89,7 +89,7 @@ class TaskDetailViewModel(
                 println("OnSelectReminderDate ${event.date}")
                 with(event.date) {
                     println("OnSelectReminderDate......... ${event.date.first}  ${event.date.second}")
-                    reminderModel = reminderModel.copy(initDay = first, finishDay = second)
+                    reminderModel = reminderModel.copy(startDay = first, endDay = second)
                 }
                 println("OnSelectReminderDate $reminderModel")
             }
@@ -130,7 +130,8 @@ class TaskDetailViewModel(
                     id = taskId.toInt(),
                     title = task.title,
                     content = "",
-                    timeInMillis = it
+                    startDate = it,
+                    endDate = reminderModel.endDay
                 )
             )
         }
