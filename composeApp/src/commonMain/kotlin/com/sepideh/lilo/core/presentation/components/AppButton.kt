@@ -1,6 +1,5 @@
 package com.sepideh.lilo.core.presentation.components
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
@@ -19,12 +18,10 @@ fun AppButton(
 ) {
     Button(
         modifier = modifier,
-        shape = RoundedCornerShape(size = 12.dp),
+        shape = RoundedCornerShape(size = 8.dp),
         onClick = onClick,
-
         ) {
         AppText(
-            modifier = Modifier.padding(vertical = 12.dp),
             text = stringResource(resource = text),
             color = Color.White,
             textType = TextType.SubTitle

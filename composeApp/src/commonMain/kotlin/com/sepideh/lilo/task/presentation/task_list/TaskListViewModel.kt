@@ -106,18 +106,19 @@ class TaskListViewModel(
     var newTask: Task? by mutableStateOf(null)
         private set
 
+    private var selectedTask: Task? = null
+
     init {
         loadTasks()
     }
 
-    private fun loadTasks(){
+    private fun loadTasks() {
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
                 .onStart {
                     onEvent(BaseEvent.ShowLoading(true))
                 }
                 .collect { tasksList ->
-                    println("loadTasks mytag")
                     delay(1000)
                     onEvent(BaseEvent.ShowLoading(false))
                     _tasks.value = tasksList.toTaskList()
@@ -151,25 +152,30 @@ class TaskListViewModel(
                 newTask = Task()
             }
 
-            is TaskListEvent.OnEditTask -> {
+            is TaskListEvent.OnEditTaskIcon -> {
                 newTask = event.task
             }
 
-            is TaskListEvent.OnDeleteTask -> {
+            is TaskListEvent.OnDeleteTaskIcon -> {
                 println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}")
-                viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        try {
-                            println("Deleting task with ID: ${event.task.toEntity().id}")
+                selectedTask = event.task
+                onEvent(BaseEvent.ShowDialog(true))
+            }
 
-                            taskDatabase.taskDao().deleteById(event.task.toEntity().id)
-                            val id = taskDatabase.taskDao().getTaskById(event.task.id ?: 0)
-                            println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}  id is $id")
-                        } catch (e: Exception) {
-                            println("exception: ${e.message}")
+            is TaskListEvent.OnDeleteTaskConfirm -> {
+                selectedTask?.let {
+                    viewModelScope.launch {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                taskDatabase.taskDao().deleteById(it.toEntity().id)
+                                taskDatabase.taskDao().getTaskById(it.id ?: 0)
+                            } catch (e: Exception) {
+                                println("exception: ${e.message}")
+                            }
                         }
                     }
                 }
+
             }
 
             is TaskListEvent.OnTitleChanged -> {
@@ -192,6 +198,7 @@ class TaskListViewModel(
 
         }
     }
+
 
     override fun onResetState() {
 

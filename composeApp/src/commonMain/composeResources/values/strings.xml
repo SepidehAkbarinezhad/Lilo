@@ -9,4 +9,7 @@
     <string name="description_label">description</string>
     <string name="category_label">category</string>
     <string name="priority_label">priority</string>
+    <string name="delete_task_confirmation">are you sure you want to delete the task?</string>
+    <string name="confirm_button">ok</string>
+    <string name="cancel_button">cancel</string>
 </resources>
