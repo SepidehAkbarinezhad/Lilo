@@ -27,7 +27,7 @@ fun BaseRoot(
         BaseOneTimeEvents()
     )
     val baseUiState by viewModel.baseUiStateValue.collectAsStateWithLifecycle()
-    println("BaseRoot $dialogModel  baseUiState $baseUiState")
+    println("loadingTag baseUiState $baseUiState")
 
     LaunchedEffect(baseOneTimeEvents) {
         baseOneTimeEvents.navigateTo?.let {
@@ -43,6 +43,8 @@ fun BaseRoot(
         bodyContainer()
 
         if (baseUiState.showLoading) {
+            println("loadingTag if (baseUiState.showLoading) ${baseUiState.showLoading}")
+
             CircularProgressIndicator(
                 modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
             )

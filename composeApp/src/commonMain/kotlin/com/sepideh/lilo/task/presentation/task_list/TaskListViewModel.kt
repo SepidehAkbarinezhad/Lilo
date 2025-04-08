@@ -64,6 +64,7 @@ class TaskListViewModel(
     * - If a new value arrives before the 300ms delay ends, the previous value is discarded.
     * - Ensures only the final query (after typing pauses) triggers the filtering logic.
     * */
+    @OptIn(FlowPreview::class)
     private val _debouncedSearchQuery = _state
         .map { it.searchQuery }
         .debounce(300L)
@@ -109,19 +110,17 @@ class TaskListViewModel(
     private var selectedTask: Task? = null
 
     init {
+        onEvent(BaseEvent.ShowLoading(true))
         loadTasks()
     }
 
     private fun loadTasks() {
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
-                .onStart {
-                    onEvent(BaseEvent.ShowLoading(true))
-                }
                 .collect { tasksList ->
-                    delay(1000)
-                    onEvent(BaseEvent.ShowLoading(false))
+                    delay(500)
                     _tasks.value = tasksList.toTaskList()
+                    onEvent(BaseEvent.ShowLoading(false))
                 }
         }
     }
@@ -157,7 +156,6 @@ class TaskListViewModel(
             }
 
             is TaskListEvent.OnDeleteTaskIcon -> {
-                println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}")
                 selectedTask = event.task
                 onEvent(BaseEvent.ShowDialog(true))
             }
@@ -168,7 +166,6 @@ class TaskListViewModel(
                         withContext(Dispatchers.IO) {
                             try {
                                 taskDatabase.taskDao().deleteById(it.toEntity().id)
-                                taskDatabase.taskDao().getTaskById(it.id ?: 0)
                             } catch (e: Exception) {
                                 println("exception: ${e.message}")
                             }
