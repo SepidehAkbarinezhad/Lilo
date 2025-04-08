@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.components.AppButton
 import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
+import com.sepideh.lilo.core.presentation.components.AppSingleButton
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
@@ -157,13 +157,13 @@ fun TaskDetailScreen(
             }
         }
 
-        AppButton(
+        AppSingleButton(
             text = Res.string.add_task,
             onClick = {
                 onEvent(TaskDetailEvent.OnAddTask)
-                onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskList()))
+                onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
             },
-            modifier = Modifier.fillMaxWidth().padding(24.dp).align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
 
     }

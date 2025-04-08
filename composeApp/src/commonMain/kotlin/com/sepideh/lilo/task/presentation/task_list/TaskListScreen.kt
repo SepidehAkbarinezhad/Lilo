@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -46,13 +44,8 @@ import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
-import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
-import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.no_result
-import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
@@ -81,7 +74,7 @@ fun TaskListScreenRoot(
             }, onDismiss = {
                 viewModel.onEvent(BaseEvent.ShowDialog(false))
             })
-        }, onDismissRequest = {viewModel.onEvent(BaseEvent.ShowDialog(false))})
+        }, onDismissRequest = { viewModel.onEvent(BaseEvent.ShowDialog(false)) })
     )
 
 }
@@ -164,40 +157,15 @@ fun TaskListScreen(
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier.fillMaxWidth().weight(1f)
-                    ) { pageIndex ->
-                        Box(Modifier.fillMaxSize()) {
-                            when (pageIndex) {
-                                0 -> {
-                                    when {
-                                        state.isLoading -> {}
-                                        state.tasksResult.isEmpty() -> {
-                                            AppText(
-                                                text = stringResource(Res.string.no_result),
-                                                textType = TextType.SubTitle,
-                                                modifier = Modifier.align(Alignment.Center)
-                                            )
-                                        }
+                    if (state.tasksResult.isEmpty()) {
 
-                                        else -> {
-                                            TaskList(
-                                                tasks = state.tasksResult,
-                                                onEvent = onEvent,
-                                                modifier = Modifier.fillMaxSize(),
-                                                scrollState = searchResultListState
-                                            )
-                                        }
-                                    }
-
-                                }
-
-                                1 -> {
-                                    AppText(text = "empty", textType = TextType.Body)
-                                }
-                            }
-                        }
+                    } else {
+                        TaskList(
+                            tasks = state.tasksResult,
+                            onEvent = onEvent,
+                            modifier = Modifier.fillMaxSize(),
+                            scrollState = searchResultListState
+                        )
                     }
                 }
             }
