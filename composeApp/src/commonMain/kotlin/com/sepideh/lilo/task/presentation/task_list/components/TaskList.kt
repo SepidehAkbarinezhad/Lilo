@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_list.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -26,7 +27,8 @@ fun TaskList(
         modifier = modifier,
         state = scrollState,
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(top = 12.dp, bottom = 54.dp)
     ) {
         items(items = tasks, key = {it.id?:0}) {task->
             TaskListItem(

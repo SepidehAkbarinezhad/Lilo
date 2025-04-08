@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,11 +44,15 @@ import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppImageFromResource
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
+import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.empty_list_comment
+import lilo.composeapp.generated.resources.empty_list_title
 
 
 @Composable
@@ -55,6 +62,7 @@ fun TaskListScreenRoot(
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseUiState by viewModel.baseUiStateValue.collectAsStateWithLifecycle()
 
     BaseRoot(
         viewModel = viewModel,
@@ -62,6 +70,7 @@ fun TaskListScreenRoot(
         bodyContainer = {
             TaskListScreen(
                 state = state,
+                isLoading = baseUiState.showLoading,
                 onEvent = viewModel::onEvent
             )
         },
@@ -82,6 +91,7 @@ fun TaskListScreenRoot(
 @Composable
 fun TaskListScreen(
     state: TaskListState,
+    isLoading: Boolean = false,
     onEvent: (BaseEvent) -> Unit
 ) {
     println("TaskListScreen  ${state.categories}")
@@ -111,7 +121,6 @@ fun TaskListScreen(
         Column(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
                 .statusBarsPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppSearchBar(
                 modifier = Modifier.fillMaxWidth().width(400.dp).padding(16.dp),
@@ -122,7 +131,10 @@ fun TaskListScreen(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
                     if (state.categories.isNotEmpty()) {
                         LazyRow(
@@ -152,13 +164,28 @@ fun TaskListScreen(
                                     textType = TextType.SubTitle
                                 )
                             }
-
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    if (state.tasksResult.isEmpty()) {
 
+                    if (state.tasksResult.isEmpty() && !isLoading) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            AppImageFromResource()
+                            AppText(
+                                text = Res.string.empty_list_title,
+                                textType = TextType.SubTitle,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                            AppText(
+                                text = Res.string.empty_list_comment,
+                                textType = TextType.SubTitle,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     } else {
                         TaskList(
                             tasks = state.tasksResult,
