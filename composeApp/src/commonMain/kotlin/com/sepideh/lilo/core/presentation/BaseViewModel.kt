@@ -18,7 +18,8 @@ abstract class BaseViewModel : ViewModel() {
     open fun onEvent(event: BaseEvent) {
         when (event) {
             is BaseEvent.ShowLoading -> {
-                baseUiState.update { it.copy(showLoading = !it.showLoading) }
+                println("Setting loading to ${event.show}")
+                baseUiState.update { it.copy(showLoading = event.show) }
             }
 
             is BaseEvent.OnNavigateTo -> {

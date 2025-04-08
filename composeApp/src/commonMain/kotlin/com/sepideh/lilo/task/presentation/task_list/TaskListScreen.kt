@@ -61,7 +61,6 @@ fun TaskListScreenRoot(
     onNavigateTo: (AppDestinations) -> Unit
 ) {
 
-    println("TaskListScreenRoot")
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     BaseRoot(
@@ -70,7 +69,6 @@ fun TaskListScreenRoot(
         bodyContainer = {
             TaskListScreen(
                 state = state,
-                newTask = viewModel.newTask,
                 onEvent = viewModel::onEvent
             )
         },
@@ -91,7 +89,6 @@ fun TaskListScreenRoot(
 @Composable
 fun TaskListScreen(
     state: TaskListState,
-    newTask: Task?,
     onEvent: (BaseEvent) -> Unit
 ) {
     println("TaskListScreen  ${state.categories}")
