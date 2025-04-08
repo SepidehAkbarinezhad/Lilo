@@ -17,7 +17,6 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun TimePickerContainer(
-    modifier: Modifier,
     onConfirm: (Pair<Int?, Int?>) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -31,7 +30,7 @@ actual fun TimePickerContainer(
 
     AppDialog(
         dialogModel = DialogModel(content = {
-            Column(modifier = Modifier.padding(24.dp)) {
+            Column {
                 TimePicker(
                     state = timePickerState,
                 )

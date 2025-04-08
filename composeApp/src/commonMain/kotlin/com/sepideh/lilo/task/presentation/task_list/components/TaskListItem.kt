@@ -38,25 +38,38 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
         modifier = modifier.clickable(onClick = {}), shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = .05f)
     ) {
-        with(task){
-            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Max), verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = done, onCheckedChange = {onEvent(TaskListEvent.OnDoneChange(task=task.copy(done = !done)))})
+        with(task) {
+            Row(
+                Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = done,
+                    onCheckedChange = { onEvent(TaskListEvent.OnDoneChange(task = task.copy(done = !done))) })
                 Column(
                     Modifier.weight(.8f).padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    AppText(text = title, textType = TextType.SubTitle, textDecoration =  if(task.done) TextDecoration.LineThrough else TextDecoration.None )
+                    AppText(
+                        text = title,
+                        textType = TextType.SubTitle,
+                        textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None
+                    )
                     AppText(text = description, textType = TextType.Body)
                 }
                 IconButton(onClick = {
-                    onEvent(TaskListEvent.OnDeleteTask(task))}) {
+                    onEvent(TaskListEvent.OnDeleteTaskIcon(task = task))
+                }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "selete Icon",
+                        contentDescription = "delete Icon",
                         tint = Color.LightGray
                     )
                 }
-                Box(modifier = Modifier.weight(.03f).fillMaxHeight().background(color = priorities[priority].color))
+                Box(
+                    modifier = Modifier.weight(.03f).fillMaxHeight()
+                        .background(color = priorities[priority].color)
+                )
 
             }
         }

@@ -6,7 +6,6 @@ import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
 
 @Composable
 actual fun TimePickerContainer(
-    modifier: Modifier,
     onConfirm: (Pair<Int?,Int?>) -> Unit,
     onDismiss: () -> Unit
 ) {

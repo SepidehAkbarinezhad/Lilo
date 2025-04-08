@@ -45,7 +45,10 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.domain.model.Task
+import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
+import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.no_result
@@ -70,7 +73,17 @@ fun TaskListScreenRoot(
                 newTask = viewModel.newTask,
                 onEvent = viewModel::onEvent
             )
-        }
+        },
+        dialogModel = DialogModel(content = {
+            DeleteConfirmationDialog(onConfirm = {
+                viewModel.onEvent(
+                    TaskListEvent.OnDeleteTaskConfirm
+                )
+                viewModel.onEvent(BaseEvent.ShowDialog(false))
+            }, onDismiss = {
+                viewModel.onEvent(BaseEvent.ShowDialog(false))
+            })
+        }, onDismissRequest = {viewModel.onEvent(BaseEvent.ShowDialog(false))})
     )
 
 }
@@ -129,8 +142,10 @@ fun TaskListScreen(
                             items(items = state.categories) { category ->
 
                                 // Determine if the category is selected or if it's the first one when selectedCategory is null
-                                val isSelected = category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
-                                val selectedColor = if (isSelected) MaterialTheme.colorScheme.primary else Gray
+                                val isSelected =
+                                    category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
+                                val selectedColor =
+                                    if (isSelected) MaterialTheme.colorScheme.primary else Gray
 
                                 AppText(
                                     modifier = Modifier.widthIn(min = 100.dp).border(
@@ -140,7 +155,7 @@ fun TaskListScreen(
                                     ).padding(4.dp)
                                         .clickable(indication = null, // Disable the ripple effect
                                             interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
-                                        ) { onEvent(TaskListEvent.OnCategorySelected(category.id))},
+                                        ) { onEvent(TaskListEvent.OnCategorySelected(category.id)) },
                                     text = category.title,
                                     textAlign = TextAlign.Center,
                                     color = selectedColor,

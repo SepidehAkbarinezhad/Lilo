@@ -48,9 +48,7 @@ fun BaseRoot(
             )
         }
         if (baseUiState.showDialog) {
-            println("BaseRoot if (baseOneTimeEvents.showDialog)  ${dialogModel!=null}")
             dialogModel?.let {
-                println("BaseRoot show")
                 AppDialog(dialogModel = it)
             }
         }
