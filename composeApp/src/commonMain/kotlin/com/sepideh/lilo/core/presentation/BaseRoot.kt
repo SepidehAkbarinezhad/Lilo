@@ -27,7 +27,6 @@ fun BaseRoot(
         BaseOneTimeEvents()
     )
     val baseUiState by viewModel.baseUiStateValue.collectAsStateWithLifecycle()
-    println("loadingTag baseUiState $baseUiState")
 
     LaunchedEffect(baseOneTimeEvents) {
         baseOneTimeEvents.navigateTo?.let {
