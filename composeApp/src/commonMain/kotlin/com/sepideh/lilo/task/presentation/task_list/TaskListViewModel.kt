@@ -110,6 +110,7 @@ class TaskListViewModel(
     private var selectedTask: Task? = null
 
     init {
+        println("init loadingTag")
         onEvent(BaseEvent.ShowLoading(true))
         loadTasks()
     }
