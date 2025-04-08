@@ -12,19 +12,23 @@ abstract class BaseViewModel : ViewModel() {
 
     val baseOneTimeEvents = MutableSharedFlow<BaseOneTimeEvents>()
 
-    private val loading = MutableStateFlow(false)
-    val loadingValue = loading.asStateFlow()
+    private val baseUiState = MutableStateFlow(BaseUiState())
+    val baseUiStateValue = baseUiState.asStateFlow()
 
     open fun onEvent(event: BaseEvent) {
         when (event) {
-            is BaseEvent.SetLoading -> {
-                loading.update { !it }
+            is BaseEvent.ShowLoading -> {
+                baseUiState.update { it.copy(showLoading = !it.showLoading) }
             }
 
             is BaseEvent.OnNavigateTo -> {
                 viewModelScope.launch {
                     baseOneTimeEvents.emit(BaseOneTimeEvents(navigateTo = event.destination))
                 }
+            }
+
+            is BaseEvent.ShowDialog -> {
+                baseUiState.update { it.copy(showDialog = !it.showDialog) }
             }
         }
     }

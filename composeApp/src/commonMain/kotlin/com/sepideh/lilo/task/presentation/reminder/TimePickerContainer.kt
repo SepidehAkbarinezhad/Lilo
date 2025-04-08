@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 expect fun TimePickerContainer(
-    modifier: Modifier,
+    modifier: Modifier=Modifier,
     onConfirm: (Pair<Int?,Int?>) -> Unit,
     onDismiss: () -> Unit,
 )

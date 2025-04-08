@@ -29,6 +29,7 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.components.AppButton
 import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
+import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category.Companion.categories
@@ -62,11 +63,23 @@ fun TaskDetailScreenRoot(
                 task = task,
                 onEvent = viewModel::onEvent
             )
-        })
+        },
+        dialogModel = DialogModel(content = {
+            TimePickerContainer(onConfirm = {
+                viewModel.onEvent(
+                    TaskDetailEvent.OnSelectReminderTime(it)
+                )
+            }, onDismiss = {
+                viewModel.onEvent(BaseEvent.ShowDialog(false))
+                viewModel.onEvent(
+                    TaskDetailEvent.OnSelectReminderTime(Pair(null, null))
+                )
+            })
+        }, onDismissRequest = {})
+    )
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskDetailScreen(
     state: TaskDetailState,
@@ -74,7 +87,6 @@ fun TaskDetailScreen(
     onEvent: (BaseEvent) -> Unit
 ) {
     var openDatePicker by remember { mutableStateOf(false) }
-    var openTimePicker by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -125,7 +137,7 @@ fun TaskDetailScreen(
                             contentDescription = "time picker",
                         )
                     }
-                    IconButton(onClick = { openTimePicker = !openTimePicker }) {
+                    IconButton(onClick = { onEvent(BaseEvent.ShowDialog(true)) }) {
                         Icon(
                             imageVector = Icons.Default.Done,
                             contentDescription = "date picker",
@@ -144,12 +156,7 @@ fun TaskDetailScreen(
                 }
             }
         }
-        if (openTimePicker) {
-            TimePickerContainer(modifier = Modifier.align(Alignment.Center), onConfirm = {
-                onEvent(TaskDetailEvent.OnSelectReminderTime(it))
-                openTimePicker = !openTimePicker
-            }, onDismiss = { openTimePicker = !openTimePicker })
-        }
+
         AppButton(
             text = Res.string.add_task,
             onClick = {

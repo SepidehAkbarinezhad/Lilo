@@ -114,12 +114,12 @@ class TaskListViewModel(
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
                 .onStart {
-                    onEvent(BaseEvent.SetLoading(true))
+                    onEvent(BaseEvent.ShowLoading(true))
                 }
                 .collect { tasksList ->
                     println("loadTasks mytag")
                     delay(1000)
-                    onEvent(BaseEvent.SetLoading(false))
+                    onEvent(BaseEvent.ShowLoading(false))
                     _tasks.value = tasksList.toTaskList()
                 }
         }
