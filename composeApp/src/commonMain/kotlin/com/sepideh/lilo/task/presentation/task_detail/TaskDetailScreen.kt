@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -25,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
-import com.sepideh.lilo.core.presentation.components.AppButton
 import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppSingleButton
@@ -51,7 +48,7 @@ fun TaskDetailScreenRoot(
 ) {
 
     println("TaskDetailScreenRoot")
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
 
     BaseRoot(
@@ -99,7 +96,8 @@ fun TaskDetailScreen(
                     textFieldRequired = TextFieldRequired(
                         value = task.title,
                         onValueChange = { onEvent(TaskDetailEvent.OnTitleChanged(it)) },
-                        label = stringResource(Res.string.title_label)
+                        label = stringResource(Res.string.title_label),
+                        validationStatus = state.titleError
                     )
                 )
             }
@@ -160,8 +158,7 @@ fun TaskDetailScreen(
         AppSingleButton(
             text = Res.string.add_task,
             onClick = {
-                onEvent(TaskDetailEvent.OnAddTask)
-                onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
+                onEvent(TaskDetailEvent.OnAddTaskButton)
             },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
