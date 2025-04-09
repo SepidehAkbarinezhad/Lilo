@@ -95,12 +95,10 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnSelectReminderTime -> {
-                println("OnSelectReminderTime ${event.time}")
                 with(event.time) {
                     println("OnSelectReminderTime....... ${event.time.first} ${event.time.second}")
                     reminderModel = reminderModel.copy(hour = first, minute = second)
                 }
-                println("OnSelectReminderTime $reminderModel")
             }
 
             is TaskDetailEvent.OnAddTask -> {

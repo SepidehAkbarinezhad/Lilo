@@ -64,6 +64,7 @@ class TaskListViewModel(
     * - If a new value arrives before the 300ms delay ends, the previous value is discarded.
     * - Ensures only the final query (after typing pauses) triggers the filtering logic.
     * */
+    @OptIn(FlowPreview::class)
     private val _debouncedSearchQuery = _state
         .map { it.searchQuery }
         .debounce(300L)
@@ -106,21 +107,21 @@ class TaskListViewModel(
     var newTask: Task? by mutableStateOf(null)
         private set
 
+    private var selectedTask: Task? = null
+
     init {
+        println("init loadingTag")
+        onEvent(BaseEvent.ShowLoading(true))
         loadTasks()
     }
 
-    private fun loadTasks(){
+    private fun loadTasks() {
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
-                .onStart {
-                    onEvent(BaseEvent.SetLoading(true))
-                }
                 .collect { tasksList ->
-                    println("loadTasks mytag")
-                    delay(1000)
-                    onEvent(BaseEvent.SetLoading(false))
+                    delay(500)
                     _tasks.value = tasksList.toTaskList()
+                    onEvent(BaseEvent.ShowLoading(false))
                 }
         }
     }
@@ -151,25 +152,28 @@ class TaskListViewModel(
                 newTask = Task()
             }
 
-            is TaskListEvent.OnEditTask -> {
+            is TaskListEvent.OnEditTaskIcon -> {
                 newTask = event.task
             }
 
-            is TaskListEvent.OnDeleteTask -> {
-                println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}")
-                viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        try {
-                            println("Deleting task with ID: ${event.task.toEntity().id}")
+            is TaskListEvent.OnDeleteTaskIcon -> {
+                selectedTask = event.task
+                onEvent(BaseEvent.ShowDialog(true))
+            }
 
-                            taskDatabase.taskDao().deleteById(event.task.toEntity().id)
-                            val id = taskDatabase.taskDao().getTaskById(event.task.id ?: 0)
-                            println("TaskListEvent.OnDeleteTask->> ${event.task.id}  ${event.task.title}  id is $id")
-                        } catch (e: Exception) {
-                            println("exception: ${e.message}")
+            is TaskListEvent.OnDeleteTaskConfirm -> {
+                selectedTask?.let {
+                    viewModelScope.launch {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                taskDatabase.taskDao().deleteById(it.toEntity().id)
+                            } catch (e: Exception) {
+                                println("exception: ${e.message}")
+                            }
                         }
                     }
                 }
+
             }
 
             is TaskListEvent.OnTitleChanged -> {
@@ -192,6 +196,7 @@ class TaskListViewModel(
 
         }
     }
+
 
     override fun onResetState() {
 

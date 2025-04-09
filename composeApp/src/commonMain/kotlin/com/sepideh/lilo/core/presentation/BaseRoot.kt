@@ -12,19 +12,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.core.presentation.components.AppDialog
+import com.sepideh.lilo.core.presentation.components.DialogModel
 
 @Composable
 fun BaseRoot(
     viewModel: BaseViewModel,
     navigateTo: (AppDestinations) -> Unit,
-    bodyContainer: @Composable () -> Unit
+    bodyContainer: @Composable () -> Unit,
+    dialogModel: DialogModel? = null
 ) {
-    val baseOneTimeEvents by viewModel.baseOneTimeEvents.collectAsStateWithLifecycle(BaseOneTimeEvents())
-    val loading by viewModel.loadingValue.collectAsStateWithLifecycle()
 
-    LaunchedEffect(loading){
-        println("loading : $loading")
-    }
+    val baseOneTimeEvents by viewModel.baseOneTimeEvents.collectAsStateWithLifecycle(
+        BaseOneTimeEvents()
+    )
+    val baseUiState by viewModel.baseUiStateValue.collectAsStateWithLifecycle()
+
     LaunchedEffect(baseOneTimeEvents) {
         baseOneTimeEvents.navigateTo?.let {
             navigateTo(it)
@@ -37,12 +40,19 @@ fun BaseRoot(
     }
     Box(modifier = Modifier.fillMaxSize()) {
         bodyContainer()
-        if (loading){
+
+        if (baseUiState.showLoading) {
+            println("loadingTag if (baseUiState.showLoading) ${baseUiState.showLoading}")
+
             CircularProgressIndicator(
                 modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
             )
         }
-
+        if (baseUiState.showDialog) {
+            dialogModel?.let {
+                AppDialog(dialogModel = it)
+            }
+        }
 
     }
 }
