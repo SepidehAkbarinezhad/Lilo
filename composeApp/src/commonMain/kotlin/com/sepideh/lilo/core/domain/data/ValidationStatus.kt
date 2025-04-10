@@ -1,4 +1,4 @@
-package com.sepideh.lilo.core.presentation
+package com.sepideh.lilo.core.domain.data
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.resources.StringResource
@@ -14,12 +14,17 @@ data class ValidationStatus(
 @Composable
 fun ValidationStatus.resolveMessage(): String {
     return if (messageId != null) {
-        stringResource(
-            resource = messageId,
-            *args.map {
-                if (it is StringResource) stringResource(it) else it.toString()
-            }.toTypedArray()
-        )
+        var base = stringResource(messageId)
+            args.forEach {
+                val replacement = when (it) {
+                    is StringResource -> stringResource(it)
+                    else -> it.toString()
+                }
+                println("base1 $base")
+                base = base.replace("%", replacement)
+                println("base2 $base")
+            }
+        base
     } else {
         value
     }

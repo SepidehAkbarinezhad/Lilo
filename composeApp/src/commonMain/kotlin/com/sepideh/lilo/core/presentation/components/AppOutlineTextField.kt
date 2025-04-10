@@ -1,12 +1,12 @@
 package com.sepideh.lilo.core.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
@@ -22,6 +22,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Transparent
@@ -31,8 +32,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.ValidationStatus
-import com.sepideh.lilo.core.presentation.resolveMessage
+import com.sepideh.lilo.core.domain.data.ValidationStatus
+import com.sepideh.lilo.core.domain.data.resolveMessage
 
 @Composable
 fun AppOutlineTextField(
@@ -57,9 +58,12 @@ fun AppOutlineTextField(
         mutableStateOf(false)
     }
 
-    val focusedColor = if (isFocused) MaterialTheme.colorScheme.primary else Gray
-
     with(textFieldRequired) {
+        val focusedColor = when(validationStatus.isSuccessful){
+            true-> if (isFocused) MaterialTheme.colorScheme.primary else Gray
+            else-> MaterialTheme.colorScheme.error
+        }
+
         Column(modifier = Modifier.fillMaxWidth()) {
             AppText(
                 modifier = modifier,
@@ -93,7 +97,6 @@ fun AppOutlineTextField(
                     },
                     leadingIcon = leadingIcon,
                     trailingIcon = trailingIcon,
-                    isError = !validationStatus.isSuccessful,
                     visualTransformation = visualTransformation,
                     keyboardOptions = keyboardOptions,
                     singleLine = singleLine,
@@ -103,7 +106,7 @@ fun AppOutlineTextField(
                         unfocusedIndicatorColor = Transparent,
                         focusedIndicatorColor = Transparent
                     ),
-                    shape = RoundedCornerShape(size = 20.dp)
+
                 )
             }
 

@@ -1,6 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
-import com.sepideh.lilo.core.presentation.ValidationStatus
+import com.sepideh.lilo.core.domain.data.ValidationStatus
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import lilo.composeapp.generated.resources.Res

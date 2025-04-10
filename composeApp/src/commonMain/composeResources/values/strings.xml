@@ -5,7 +5,7 @@
     <string name="all_tasks">all</string>
     <string name="no_result">no result</string>
     <string name="add_task">add</string>
-    <string name="title_label">%s title</string>
+    <string name="title_label">title</string>
     <string name="description_label">description</string>
     <string name="category_label">category</string>
     <string name="priority_label">priority</string>
@@ -14,7 +14,7 @@
     <string name="cancel_button">cancel</string>
     <string name="empty_list_title">You have nothing to do</string>
     <string name="empty_list_comment">Lets start</string>
-    <string name="error_empty_field_label"> %s can not be empty</string>
+    <string name="error_empty_field_label">% can not be empty</string>
     <string name="least_length_limitation"> %s at least character</string>
     <string name="more_length_limitation"> shouldn't be more than %s</string>
     <string name="repeat_password_is_not_correct">repetition of password is not correct</string>

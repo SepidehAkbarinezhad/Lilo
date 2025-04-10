@@ -7,7 +7,7 @@ class IosReminderScheduler : ReminderScheduler {
         // iOS-specific reminder scheduling
     }
 
-    override fun cancelReminder(id: String) {
+    override fun cancelReminder(reminder: Reminder) {
         // iOS-specific reminder canceling
     }
 }
