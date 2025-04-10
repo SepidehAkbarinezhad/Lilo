@@ -1,7 +1,7 @@
 package com.sepideh.lilo.core.domain
 
 
-import com.sepideh.lilo.core.presentation.ValidationStatus
+import com.sepideh.lilo.core.domain.data.ValidationStatus
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.error_empty_field_label
 import lilo.composeapp.generated.resources.least_length_limitation
