@@ -160,7 +160,6 @@ fun TaskListScreen(
                         }
                     }
 
-
                     if (state.tasksResult.isEmpty() && !isLoading) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -192,7 +191,7 @@ fun TaskListScreen(
         }
 
     }
-    TaskFilterSheet(state = state)
+    TaskFilterSheet(state = state, onEvent = onEvent)
 
 }
 
@@ -212,7 +211,7 @@ fun TaskListHeader(
             searchQuery = state.searchQuery,
             onSearchQueryChange = { onEvent(TaskListEvent.OnSearchQueryChange(it)) },
             onImeSearch = { keyboardController?.hide() })
-        IconButton(onClick = {onEvent(TaskListEvent.OnFilterIcon)}) {
+        IconButton(onClick = { onEvent(TaskListEvent.OnFilterIcon) }) {
             Icon(imageVector = Icons.Default.Check, contentDescription = "filter")
         }
     }
