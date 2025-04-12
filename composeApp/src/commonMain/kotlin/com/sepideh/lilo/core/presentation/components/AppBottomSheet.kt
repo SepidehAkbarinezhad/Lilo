@@ -60,9 +60,10 @@ fun AppBottomSheet(
                             topEnd = 30.dp
                         )
                     )
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(MaterialTheme.colorScheme.secondary)
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 content()
             }
