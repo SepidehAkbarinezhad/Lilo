@@ -15,4 +15,6 @@
     <string name="empty_list_title">You have nothing to do</string>
     <string name="empty_list_comment">Lets start</string>
     <string name="filter_label">filter</string>
+    <string name="status_filter_label">: status</string>
+    <string name="priority_filter_label">: priority</string>
 </resources>
