@@ -191,8 +191,8 @@ fun TaskListScreen(
             }
         }
 
-        TaskFilterSheet(state = state)
     }
+    TaskFilterSheet(state = state)
 
 }
 
