@@ -76,7 +76,6 @@ class TaskListViewModel(
         _categories,
         _debouncedSearchQuery
     ) { state, tasks, categories, searchQuery ->
-        println("#combine tasks: ${state.tasksResult}")
         val updatedCategories =
             listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
@@ -146,6 +145,9 @@ class TaskListViewModel(
             is TaskListEvent.OnSearchQueryChange -> {
                 _state.update { it.copy(searchQuery = event.query) }
                 //  _state.value = TaskListState(searchQuery = event.query)
+            }
+            is TaskListEvent.OnFilterIcon->{
+                _state.update { it.copy(isFilterSheetOpen = !it.isFilterSheetOpen) }
             }
 
             TaskListEvent.OnAddNewTaskClick -> {

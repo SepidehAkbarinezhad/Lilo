@@ -7,6 +7,7 @@ import com.sepideh.lilo.task.domain.model.Task
 sealed interface TaskListEvent : BaseEvent {
     data class OnCategorySelected(val id: Int?) : TaskListEvent
     data class OnSearchQueryChange(val query: String) : TaskListEvent
+    data object OnFilterIcon : TaskListEvent
     data object OnAddNewTaskClick : TaskListEvent
     data class OnEditTaskIcon(val task: Task) : TaskListEvent
     data class OnDeleteTaskIcon(val task: Task) : TaskListEvent
