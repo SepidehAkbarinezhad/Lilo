@@ -34,6 +34,7 @@ fun AppSearchBar(
     modifier: Modifier = Modifier,
     searchQuery: String,
     onImeSearch: () -> Unit,
+    readonly : Boolean,
     onSearchQueryChange: (String) -> Unit
 ) {
     CompositionLocalProvider(
@@ -76,7 +77,9 @@ fun AppSearchBar(
                         )
                     }
                 }
-            }
+            },
+            readOnly = readonly
+
         )
     }
 

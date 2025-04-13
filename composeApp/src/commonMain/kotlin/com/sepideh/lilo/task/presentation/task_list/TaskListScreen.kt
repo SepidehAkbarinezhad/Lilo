@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -29,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -93,6 +92,7 @@ fun TaskListScreen(
     isLoading: Boolean = false,
     onEvent: (BaseEvent) -> Unit
 ) {
+    val clickable = !state.isFilterSheetOpen
     val searchResultListState = rememberLazyListState()
 
     LaunchedEffect(key1 = state.tasksResult) {
@@ -102,7 +102,13 @@ fun TaskListScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskDetail())) },
+                onClick = {
+                    if (clickable) onEvent(
+                        BaseEvent.OnNavigateTo(
+                            AppDestinations.TaskDetail()
+                        )
+                    )
+                },
                 shape = RoundedCornerShape(20.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
@@ -150,7 +156,7 @@ fun TaskListScreen(
                                     ).padding(4.dp)
                                         .clickable(indication = null, // Disable the ripple effect
                                             interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
-                                        ) { onEvent(TaskListEvent.OnCategorySelected(category.id)) },
+                                        ) {if(clickable) onEvent(TaskListEvent.OnCategorySelected(category.id)) },
                                     text = category.title,
                                     textAlign = TextAlign.Center,
                                     color = selectedColor,
@@ -201,6 +207,7 @@ fun TaskListHeader(
     onEvent: (BaseEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val clickable = !state.isFilterSheetOpen
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -209,9 +216,17 @@ fun TaskListHeader(
         AppSearchBar(
             modifier = Modifier.weight(.7f).padding(16.dp),
             searchQuery = state.searchQuery,
-            onSearchQueryChange = { onEvent(TaskListEvent.OnSearchQueryChange(it)) },
-            onImeSearch = { keyboardController?.hide() })
-        IconButton(onClick = { onEvent(TaskListEvent.OnFilterIcon) }) {
+            onSearchQueryChange = {
+                if (clickable) onEvent(
+                    TaskListEvent.OnSearchQueryChange(
+                        it
+                    )
+                )
+            },
+            onImeSearch = { keyboardController?.hide() },
+            readonly = !clickable
+        )
+        IconButton(onClick = { if (clickable) onEvent(TaskListEvent.OnFilterIcon) }, enabled = !state.isFilterSheetOpen) {
             Icon(imageVector = Icons.Default.Check, contentDescription = "filter")
         }
     }

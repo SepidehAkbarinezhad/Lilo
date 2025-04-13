@@ -24,6 +24,7 @@ class MainActivity : ComponentActivity() {
 fun AppAndroidPreview() {
     AppSearchBar(
         searchQuery = "",
-        onImeSearch = {}
+        onImeSearch = {},
+        readonly = true
     ) { }
 }
