@@ -21,8 +21,13 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import lilo.composeapp.generated.resources.Res
@@ -32,33 +37,54 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AppSearchBar(
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester,
     searchQuery: String,
     onImeSearch: () -> Unit,
+    readonly: Boolean,
     onSearchQueryChange: (String) -> Unit
 ) {
+
+    LaunchedEffect(Unit){
+        focusRequester.captureFocus()
+    }
     CompositionLocalProvider(
-        value = LocalTextSelectionColors provides  TextSelectionColors(
+        value = LocalTextSelectionColors provides TextSelectionColors(
             handleColor = Color.Blue,
             backgroundColor = Color.Blue
         )
-    ){
+    ) {
         OutlinedTextField(
             modifier = modifier.background(
                 shape = RoundedCornerShape(100),
                 color = Color.White
-            ).minimumInteractiveComponentSize(),
+            ).focusRequester(focusRequester),
             shape = RoundedCornerShape(100),
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            colors = OutlinedTextFieldDefaults.colors(cursorColor = Color.Blue, focusedBorderColor = Color.Blue),
-            placeholder = { Text(text = stringResource(Res.string.search_hint
-            )) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon",
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = .66f)
+            colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = MaterialTheme.colorScheme.tertiary,
+                focusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.secondary
+            ),
+            placeholder = {
+                Text(
+                    text = stringResource(
+                        Res.string.search_hint
+                    )
                 )
+            },
+            leadingIcon = {
+                IconButton(onClick = {
+                    println("leadingIcon")
+                   onImeSearch()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Icon",
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = .66f)
+                    )
+                }
+
             },
             singleLine = true,
             keyboardActions = KeyboardActions(onSearch = { onImeSearch() }),
@@ -76,7 +102,9 @@ fun AppSearchBar(
                         )
                     }
                 }
-            }
+            },
+            readOnly = readonly
+
         )
     }
 
