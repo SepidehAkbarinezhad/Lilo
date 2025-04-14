@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -84,7 +85,7 @@ fun FilterHeader(onEvent: (BaseEvent) -> Unit) {
             modifier = Modifier.align(Alignment.Center),
             text = stringResource(Res.string.filter_label),
             textType = TextType.Title,
-            color = Color.White
+            color = MaterialTheme.colorScheme.tertiary
         )
         IconButton(
             modifier = Modifier.align(Alignment.TopEnd),
@@ -92,7 +93,7 @@ fun FilterHeader(onEvent: (BaseEvent) -> Unit) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "close filter",
-                tint = Color.White
+                tint =  MaterialTheme.colorScheme.tertiary
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
