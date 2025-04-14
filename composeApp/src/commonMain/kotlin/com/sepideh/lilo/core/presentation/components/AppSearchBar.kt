@@ -47,11 +47,11 @@ fun AppSearchBar(
             modifier = modifier.background(
                 shape = RoundedCornerShape(100),
                 color = Color.White
-            ).minimumInteractiveComponentSize(),
+            ),
             shape = RoundedCornerShape(100),
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            colors = OutlinedTextFieldDefaults.colors(cursorColor = Color.Blue, focusedBorderColor = Color.Blue),
+            colors = OutlinedTextFieldDefaults.colors(cursorColor = MaterialTheme.colorScheme.tertiary, focusedBorderColor = MaterialTheme.colorScheme.tertiary, unfocusedBorderColor = MaterialTheme.colorScheme.secondary),
             placeholder = { Text(text = stringResource(Res.string.search_hint
             )) },
             leadingIcon = {

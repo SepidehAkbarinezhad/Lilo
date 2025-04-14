@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_list
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,7 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,7 +40,6 @@ import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.components.AppImageFromResource
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
@@ -49,8 +47,11 @@ import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
 import lilo.composeapp.generated.resources.empty_list_title
+import lilo.composeapp.generated.resources.filter_icon
+import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
@@ -156,7 +157,13 @@ fun TaskListScreen(
                                     ).padding(4.dp)
                                         .clickable(indication = null, // Disable the ripple effect
                                             interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
-                                        ) {if(clickable) onEvent(TaskListEvent.OnCategorySelected(category.id)) },
+                                        ) {
+                                            if (clickable) onEvent(
+                                                TaskListEvent.OnCategorySelected(
+                                                    category.id
+                                                )
+                                            )
+                                        },
                                     text = category.title,
                                     textAlign = TextAlign.Center,
                                     color = selectedColor,
@@ -172,7 +179,10 @@ fun TaskListScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            AppImageFromResource()
+                            Image(
+                                painter = painterResource(Res.drawable.empty_list),
+                                contentDescription = null
+                            )
                             AppText(
                                 text = Res.string.empty_list_title,
                                 textType = TextType.SubTitle,
@@ -210,11 +220,11 @@ fun TaskListHeader(
     val clickable = !state.isFilterSheetOpen
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AppSearchBar(
-            modifier = Modifier.weight(.7f).padding(16.dp),
+            modifier = Modifier.padding(8.dp).weight(1f),
             searchQuery = state.searchQuery,
             onSearchQueryChange = {
                 if (clickable) onEvent(
@@ -226,8 +236,11 @@ fun TaskListHeader(
             onImeSearch = { keyboardController?.hide() },
             readonly = !clickable
         )
-        IconButton(onClick = { if (clickable) onEvent(TaskListEvent.OnFilterIcon) }, enabled = !state.isFilterSheetOpen) {
-            Icon(imageVector = Icons.Default.Check, contentDescription = "filter")
+        IconButton(
+            onClick = { if (clickable) onEvent(TaskListEvent.OnFilterIcon) },
+            enabled = !state.isFilterSheetOpen
+        ) {
+            Image(painter = painterResource(Res.drawable.filter_icon), contentDescription = null)
         }
     }
 }

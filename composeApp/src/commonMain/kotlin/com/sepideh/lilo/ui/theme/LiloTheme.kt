@@ -12,6 +12,7 @@ val LightColorScheme = lightColorScheme(
     onPrimary = OnAmberPrimaryLight,
     secondary = AmberSecondaryLight,
     onSecondary = OnAmberPrimaryLight,
+    tertiary = AppBlue,
     surface = AmberSurfaceLight
 )
 
