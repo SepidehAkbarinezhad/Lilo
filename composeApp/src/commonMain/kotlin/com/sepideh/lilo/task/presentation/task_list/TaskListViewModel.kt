@@ -197,7 +197,7 @@ class TaskListViewModel(
             is TaskListEvent.OnResetFilter -> {
                 _state.update {
                     it.copy(
-                        taskFilterOption = TaskFilterOption(),
+                        tempFilterOption = TaskFilterOption(),
                         isFilterSheetOpen = false
                     )
                 }
