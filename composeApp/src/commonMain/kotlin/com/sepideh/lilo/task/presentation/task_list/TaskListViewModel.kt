@@ -175,7 +175,10 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListEvent.OnPriorityChanged -> {
+            is TaskListEvent.OnStatusFilterChanged->{
+                _state.update { it.copy(tempFilterOption = it.tempFilterOption.copy(taskStatus = event.status)) }
+            }
+            is TaskListEvent.OnPriorityFilterChanged -> {
                 event.priority.let {
                     val updatedList =
                         state.value.tempFilterOption.priorityList.toMutableList().apply {
@@ -189,10 +192,6 @@ class TaskListViewModel(
                         state.value.taskFilterOption.copy(priorityList = updatedList)
                     _state.update { it.copy(tempFilterOption = tempFilter) }
                 }
-            }
-
-            is TaskListEvent.OnUpdateTempFilter -> {
-                _state.update { it.copy(taskFilterOption = event.filterOption) }
             }
 
             is TaskListEvent.OnResetFilter -> {
