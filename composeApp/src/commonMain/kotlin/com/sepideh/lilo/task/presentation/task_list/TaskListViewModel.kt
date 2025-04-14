@@ -16,6 +16,8 @@ import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.task.presentation.model.TaskFilterOption
+import com.sepideh.lilo.task.presentation.model.TaskStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
@@ -28,7 +30,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -146,8 +147,61 @@ class TaskListViewModel(
                 _state.update { it.copy(searchQuery = event.query) }
                 //  _state.value = TaskListState(searchQuery = event.query)
             }
-            is TaskListEvent.OnFilterIcon->{
+
+            is TaskListEvent.OnFilterIcon -> {
                 _state.update { it.copy(isFilterSheetOpen = !it.isFilterSheetOpen) }
+            }
+
+            is TaskListEvent.OnApplyFilter -> {
+                _state.update {
+                    it.copy(
+                        taskFilterOption = _state.value.tempFilterOption,
+                        isFilterSheetOpen = false
+                    )
+                }
+
+                viewModelScope.launch {
+                    with(state.value.taskFilterOption) {
+                        onEvent(BaseEvent.ShowLoading(true))
+                        taskDatabase.taskDao().getTaskByFilter(
+                            done = if (taskStatus == TaskStatus.ALL) null else taskStatus == TaskStatus.DONE,
+                            priority = priorityList.map { it.id }
+                        ).collect { tasksList ->
+                            delay(500)
+                            _tasks.value = tasksList.toTaskList()
+                            onEvent(BaseEvent.ShowLoading(false))
+                        }
+                    }
+                }
+            }
+
+            is TaskListEvent.OnPriorityChanged -> {
+                event.priority.let {
+                    val updatedList =
+                        state.value.tempFilterOption.priorityList.toMutableList().apply {
+                            if (contains(event.priority)) {
+                                remove(it)
+                            } else {
+                                add(it)
+                            }
+                        }
+                    val tempFilter =
+                        state.value.taskFilterOption.copy(priorityList = updatedList)
+                    _state.update { it.copy(tempFilterOption = tempFilter) }
+                }
+            }
+
+            is TaskListEvent.OnUpdateTempFilter -> {
+                _state.update { it.copy(taskFilterOption = event.filterOption) }
+            }
+
+            is TaskListEvent.OnResetFilter -> {
+                _state.update {
+                    it.copy(
+                        taskFilterOption = TaskFilterOption(),
+                        isFilterSheetOpen = false
+                    )
+                }
             }
 
             TaskListEvent.OnAddNewTaskClick -> {
