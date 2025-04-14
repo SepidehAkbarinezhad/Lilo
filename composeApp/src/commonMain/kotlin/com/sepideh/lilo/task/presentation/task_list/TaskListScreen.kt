@@ -31,7 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -217,6 +219,9 @@ fun TaskListHeader(
     onEvent: (BaseEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     val clickable = !state.isFilterSheetOpen
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(
@@ -225,6 +230,7 @@ fun TaskListHeader(
     ) {
         AppSearchBar(
             modifier = Modifier.padding(8.dp).weight(1f),
+            focusRequester = focusRequester,
             searchQuery = state.searchQuery,
             onSearchQueryChange = {
                 if (clickable) onEvent(
@@ -237,7 +243,10 @@ fun TaskListHeader(
             readonly = !clickable
         )
         IconButton(
-            onClick = { if (clickable) onEvent(TaskListEvent.OnFilterIcon) },
+            onClick = {
+                focusManager.clearFocus()
+               if (clickable) onEvent(TaskListEvent.OnFilterIcon)
+            },
             enabled = !state.isFilterSheetOpen
         ) {
             Image(painter = painterResource(Res.drawable.filter_icon), contentDescription = null)
