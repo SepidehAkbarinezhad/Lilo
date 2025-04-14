@@ -1,29 +1,27 @@
 package com.sepideh.lilo.task.presentation.task_list
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -33,9 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Blue
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,15 +42,18 @@ import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.components.AppImageFromResource
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
+import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
 import lilo.composeapp.generated.resources.empty_list_title
+import lilo.composeapp.generated.resources.filter_icon
+import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
@@ -94,9 +95,7 @@ fun TaskListScreen(
     isLoading: Boolean = false,
     onEvent: (BaseEvent) -> Unit
 ) {
-    println("TaskListScreen  ${state.categories}")
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val pagerState = rememberPagerState { 2 }
+    val clickable = !state.isFilterSheetOpen
     val searchResultListState = rememberLazyListState()
 
     LaunchedEffect(key1 = state.tasksResult) {
@@ -106,7 +105,13 @@ fun TaskListScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.TaskDetail())) },
+                onClick = {
+                    if (clickable) onEvent(
+                        BaseEvent.OnNavigateTo(
+                            AppDestinations.TaskDetail()
+                        )
+                    )
+                },
                 shape = RoundedCornerShape(20.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
@@ -122,11 +127,8 @@ fun TaskListScreen(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
                 .statusBarsPadding(),
         ) {
-            AppSearchBar(
-                modifier = Modifier.fillMaxWidth().width(400.dp).padding(16.dp),
-                searchQuery = state.searchQuery,
-                onSearchQueryChange = { onEvent(TaskListEvent.OnSearchQueryChange(it)) },
-                onImeSearch = { keyboardController?.hide() })
+            TaskListHeader(state = state, onEvent = onEvent)
+
             Surface(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
@@ -157,7 +159,13 @@ fun TaskListScreen(
                                     ).padding(4.dp)
                                         .clickable(indication = null, // Disable the ripple effect
                                             interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
-                                        ) { onEvent(TaskListEvent.OnCategorySelected(category.id)) },
+                                        ) {
+                                            if (clickable) onEvent(
+                                                TaskListEvent.OnCategorySelected(
+                                                    category.id
+                                                )
+                                            )
+                                        },
                                     text = category.title,
                                     textAlign = TextAlign.Center,
                                     color = selectedColor,
@@ -167,14 +175,16 @@ fun TaskListScreen(
                         }
                     }
 
-
                     if (state.tasksResult.isEmpty() && !isLoading) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            AppImageFromResource()
+                            Image(
+                                painter = painterResource(Res.drawable.empty_list),
+                                contentDescription = null
+                            )
                             AppText(
                                 text = Res.string.empty_list_title,
                                 textType = TextType.SubTitle,
@@ -197,9 +207,51 @@ fun TaskListScreen(
                 }
             }
         }
+
     }
+    TaskFilterSheet(state = state, onEvent = onEvent)
 
+}
 
+@Composable
+fun TaskListHeader(
+    state: TaskListState,
+    onEvent: (BaseEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    val clickable = !state.isFilterSheetOpen
+    val keyboardController = LocalSoftwareKeyboardController.current
+    Row(
+        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AppSearchBar(
+            modifier = Modifier.padding(8.dp).weight(1f),
+            focusRequester = focusRequester,
+            searchQuery = state.searchQuery,
+            onSearchQueryChange = {
+                if (clickable) onEvent(
+                    TaskListEvent.OnSearchQueryChange(
+                        it
+                    )
+                )
+            },
+            onImeSearch = { keyboardController?.hide() },
+            readonly = !clickable
+        )
+        IconButton(
+            onClick = {
+                focusManager.clearFocus()
+               if (clickable) onEvent(TaskListEvent.OnFilterIcon)
+            },
+            enabled = !state.isFilterSheetOpen
+        ) {
+            Image(painter = painterResource(Res.drawable.filter_icon), contentDescription = null)
+        }
+    }
 }
 
 

@@ -59,8 +59,10 @@ fun AppDropDown(
         )
         Box(
             modifier = Modifier.fillMaxWidth()
-                .clickable(indication = null, // Disable the ripple effect
-                    interactionSource = remember { MutableInteractionSource() }) {
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null // Disable the ripple effect
+                ) {
                     println("me interactionSource  expanded $expanded")
 
                     expanded = !expanded
