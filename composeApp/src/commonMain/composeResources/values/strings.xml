@@ -17,4 +17,6 @@
     <string name="filter_label">filter</string>
     <string name="status_filter_label">: status</string>
     <string name="priority_filter_label">: priority</string>
+    <string name="apply_label">apply</string>
+    <string name="reset_label">reset</string>
 </resources>

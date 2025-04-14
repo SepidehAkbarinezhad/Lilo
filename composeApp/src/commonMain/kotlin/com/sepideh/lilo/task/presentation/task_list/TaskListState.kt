@@ -9,6 +9,7 @@ data class TaskListState(
     val searchQuery: String = "",
     val isFilterSheetOpen: Boolean = false,
     val taskFilterOption: TaskFilterOption = TaskFilterOption(),
+    val tempFilterOption: TaskFilterOption = TaskFilterOption(),
     val tasksResult: List<Task> = emptyList(),
     val categories: List<Category> = emptyList(),
     val selectedCategory : Int?= null,
