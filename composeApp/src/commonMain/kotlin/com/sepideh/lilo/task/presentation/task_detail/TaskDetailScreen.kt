@@ -1,14 +1,10 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -18,27 +14,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
-import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppSingleButton
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.model.Category.Companion.categories
-import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
 import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
+import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task
-import lilo.composeapp.generated.resources.category_icon
-import lilo.composeapp.generated.resources.category_label
-import lilo.composeapp.generated.resources.date_icon
 import lilo.composeapp.generated.resources.description_label
-import lilo.composeapp.generated.resources.priority_icon
-import lilo.composeapp.generated.resources.priority_label
-import lilo.composeapp.generated.resources.time_icon
 import lilo.composeapp.generated.resources.title_label
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -62,6 +49,11 @@ fun TaskDetailScreenRoot(
             )
         },
         dialogContent = {
+            if (state.isCategoryDialogOpen) {
+                CategoryDialog(state = state, onEvent = { viewModel.onEvent(it) })
+            }
+            if (state.isPriorityDialogOpen) {
+            }
             if (state.isTimeDialogOpen) {
                 TimePickerContainer(onConfirm = {
                     viewModel.onEvent(
@@ -79,8 +71,8 @@ fun TaskDetailScreenRoot(
                 DateRangePickerModal(onDateRangeSelected = { pair ->
                     println("start: ${pair.first}  end: ${pair.second}")
                     viewModel.onEvent(TaskDetailEvent.OnSelectReminderDate(pair))
-                    viewModel.onEvent(TaskDetailEvent.OnDateIcon)
-                }, onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDateIcon) })
+                    viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog)
+                }, onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })
             }
         }
     )
@@ -119,57 +111,8 @@ fun TaskDetailScreen(
                 )
             }
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    IconButton(onClick = { onEvent(TaskDetailEvent.OnCategoryIcon) }) {
-                        Image(
-                            painter = painterResource(Res.drawable.category_icon),
-                            contentDescription = null
-                        )
-                    }
-                    IconButton(onClick = { onEvent(TaskDetailEvent.OnCategoryIcon) }) {
-                        Image(
-                            painter = painterResource(Res.drawable.priority_icon),
-                            contentDescription = null
-                        )
-                    }
-                    IconButton(onClick = { onEvent(TaskDetailEvent.OnCategoryIcon) }) {
-                        Image(
-                            painter = painterResource(Res.drawable.date_icon),
-                            contentDescription = null
-                        )
-                    }
-                    IconButton(onClick = { onEvent(TaskDetailEvent.OnCategoryIcon) }) {
-                        Image(
-                            painter = painterResource(Res.drawable.time_icon),
-                            contentDescription = null
-                        )
-                    }
-                }
+                TaskDetailIcons(onEvent = onEvent)
             }
-            item {
-                AppDropDown(
-                    selectedValue = state.selectedCategory?.title ?: categories[0].title,
-                    options = state.categories.map { it.title },
-                    label = stringResource(Res.string.category_label),
-                    onValueChanged = {
-                        onEvent(TaskDetailEvent.OnSelectedCategoryChanged(it))
-                    })
-            }
-            item {
-                AppDropDown(
-                    selectedValue = state.selectedPriority.title,
-                    options = priorities.map { it.title },
-                    label = stringResource(Res.string.priority_label),
-                    onValueChanged = { onEvent(TaskDetailEvent.OnSelectedPriorityChanged(it)) })
-            }
-        }
-
-        if (state.isCategoryDialogOpen) {
-            CategoryDialog(onEvent = onEvent)
         }
 
         AppSingleButton(

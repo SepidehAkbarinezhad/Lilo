@@ -1,9 +1,17 @@
 package com.sepideh.lilo.task.presentation.task_detail.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -18,37 +26,54 @@ import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
+import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
+import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
 import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CategoryDialog(onEvent: (BaseEvent) -> Unit) {
+fun CategoryDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
     AppDialog(dialogModel = DialogModel(content = {
         CategoryDialogHeader(onEvent = onEvent)
-    }, onDismissRequest = {}))
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            state.categories.forEachIndexed { index, category ->
+                AppText(modifier = Modifier.padding(vertical = 4.dp),text = category.title, textType = TextType.SubTitle, color = MaterialTheme.colorScheme.primary)
+                if (index != state.categories.lastIndex) {
+                    Spacer(
+                        modifier = Modifier.fillMaxWidth().height(1.dp)
+                            .background(MaterialTheme.colorScheme.secondary)
+                    )
+                }
+
+            }
+        }
+    }, onDismissRequest = { onEvent(TaskDetailEvent.OnDismissCategoryDialog) }))
 }
 
 @Composable
 fun CategoryDialogHeader(onEvent: (BaseEvent) -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Spacer(modifier = Modifier.width(48.dp)) // placeholder for symmetry (if needed)
+
         AppText(
-            modifier = Modifier.align(Alignment.Center),
             text = stringResource(Res.string.category_label),
             textType = TextType.Title,
             color = MaterialTheme.colorScheme.tertiary
         )
-        IconButton(
-            modifier = Modifier.align(Alignment.TopEnd),
-            onClick = { onEvent(TaskListEvent.OnFilterIcon) }) {
+
+        IconButton(onClick = { onEvent(TaskListEvent.OnFilterIcon) }) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.tertiary
             )
         }
-        Spacer(modifier = Modifier.height(4.dp))
     }
-
 }

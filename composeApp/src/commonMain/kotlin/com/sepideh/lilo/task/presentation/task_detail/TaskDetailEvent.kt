@@ -6,8 +6,10 @@ sealed interface TaskDetailEvent : BaseEvent {
     data class OnTitleChanged(val title: String) : TaskDetailEvent
     data class OnDescriptionChanged(val description: String) : TaskDetailEvent
     data object OnCategoryIcon : TaskDetailEvent
+    data object OnDismissCategoryDialog : TaskDetailEvent
     data object OnPriorityIcon : TaskDetailEvent
     data object OnDateIcon : TaskDetailEvent
+    data object OnDismissDateDialog : TaskDetailEvent
     data object OnTimeIcon : TaskDetailEvent
     data object OnDismissTimeDialog : TaskDetailEvent
     data class OnSelectedCategoryChanged(val title: String) : TaskDetailEvent
