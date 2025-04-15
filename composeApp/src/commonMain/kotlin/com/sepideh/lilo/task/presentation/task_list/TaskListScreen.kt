@@ -80,11 +80,11 @@ fun TaskListScreenRoot(
                 viewModel.onEvent(
                     TaskListEvent.OnDeleteTaskConfirm
                 )
-                viewModel.onEvent(BaseEvent.ShowDialog(false))
+                viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog)
             }, onDismiss = {
-                viewModel.onEvent(BaseEvent.ShowDialog(false))
+                viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog)
             })
-        }, onDismissRequest = { viewModel.onEvent(BaseEvent.ShowDialog(false)) })
+        }, onDismissRequest = { viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog) })
     )
 
 }
@@ -245,7 +245,7 @@ fun TaskListHeader(
         IconButton(
             onClick = {
                 focusManager.clearFocus()
-               if (clickable) onEvent(TaskListEvent.OnFilterIcon)
+                if (clickable) onEvent(TaskListEvent.OnFilterIcon)
             },
             enabled = !state.isFilterSheetOpen
         ) {

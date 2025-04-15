@@ -12,6 +12,7 @@ data class TaskListState(
     val tempFilterOption: TaskFilterOption = TaskFilterOption(),
     val tasksResult: List<Task> = emptyList(),
     val categories: List<Category> = emptyList(),
+    val isDeleteDialogOpen :Boolean = false,
     val selectedCategory : Int?= null,
     val selectedTask: Task? = null,
     val titleError : String ? = null,

@@ -74,6 +74,29 @@ class TaskDetailViewModel(
                 task = task.copy(description = event.description)
             }
 
+            is TaskDetailEvent.OnCategoryIcon -> {
+                _state.update {
+                    it.copy(isCategoryDialogOpen = !it.isCategoryDialogOpen)
+                }
+            }
+
+            is TaskDetailEvent.OnPriorityIcon -> {
+                _state.update {
+                    it.copy(isPriorityDialogOpen = !it.isPriorityDialogOpen)
+                }
+            }
+
+            is TaskDetailEvent.OnDateIcon -> {
+                _state.update {
+                    it.copy(isDateDialogOpen = !it.isDateDialogOpen)
+                }
+            }
+            is TaskDetailEvent.OnTimeIcon -> {
+                _state.update {
+                    it.copy(isTimeDialogOpen = !it.isTimeDialogOpen)
+                }
+            }
+
             is TaskDetailEvent.OnSelectedCategoryChanged -> {
                 val selectedCategory = state.value.categories.find { it.title == event.title }
                     ?: Category.categories[0]

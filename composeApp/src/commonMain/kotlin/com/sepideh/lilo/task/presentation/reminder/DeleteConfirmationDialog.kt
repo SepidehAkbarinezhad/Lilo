@@ -1,9 +1,7 @@
 package com.sepideh.lilo.task.presentation.reminder
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,10 +20,8 @@ fun DeleteConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-
     AppDialog(
         dialogModel = DialogModel(content = {
-            Column {
                 AppText(textType = TextType.SubTitle, text = Res.string.delete_task_confirmation)
                 Box(modifier = Modifier.height(8.dp))
                 AppRowButtons(
@@ -34,7 +30,6 @@ fun DeleteConfirmationDialog(
                     secondButtonTitle = Res.string.cancel_button,
                     onSecondButtonClick = onDismiss
                 )
-            }
         }, onDismissRequest = onDismiss),
     )
 }

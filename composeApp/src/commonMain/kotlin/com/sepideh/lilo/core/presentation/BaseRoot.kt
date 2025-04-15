@@ -48,10 +48,8 @@ fun BaseRoot(
                 modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
             )
         }
-        if (baseUiState.showDialog) {
-            dialogModel?.let {
-                AppDialog(dialogModel = it)
-            }
+        dialogModel?.let {
+            AppDialog(dialogModel = it)
         }
 
     }
