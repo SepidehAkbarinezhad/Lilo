@@ -20,7 +20,7 @@ fun BaseRoot(
     viewModel: BaseViewModel,
     navigateTo: (AppDestinations) -> Unit,
     bodyContainer: @Composable () -> Unit,
-    dialogModel: DialogModel? = null
+    dialogContent: @Composable () -> Unit = {}
 ) {
 
     val baseOneTimeEvents by viewModel.baseOneTimeEvents.collectAsStateWithLifecycle(
@@ -48,9 +48,8 @@ fun BaseRoot(
                 modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
             )
         }
-        dialogModel?.let {
-            AppDialog(dialogModel = it)
-        }
+
+        dialogContent()
 
     }
 }

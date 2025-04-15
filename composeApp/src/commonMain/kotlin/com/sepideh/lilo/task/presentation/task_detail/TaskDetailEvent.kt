@@ -9,6 +9,7 @@ sealed interface TaskDetailEvent : BaseEvent {
     data object OnPriorityIcon : TaskDetailEvent
     data object OnDateIcon : TaskDetailEvent
     data object OnTimeIcon : TaskDetailEvent
+    data object OnDismissTimeDialog : TaskDetailEvent
     data class OnSelectedCategoryChanged(val title: String) : TaskDetailEvent
     data class OnSelectedPriorityChanged(val title: String) : TaskDetailEvent
     data class OnSelectReminderDate(val date: Pair<Long?,Long?>) : TaskDetailEvent
