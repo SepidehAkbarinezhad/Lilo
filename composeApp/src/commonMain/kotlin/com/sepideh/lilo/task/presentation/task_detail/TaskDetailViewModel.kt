@@ -76,7 +76,13 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnCategoryIcon -> {
                 _state.update {
-                    it.copy(isCategoryDialogOpen = !it.isCategoryDialogOpen)
+                    it.copy(isCategoryDialogOpen = true)
+                }
+            }
+
+            is TaskDetailEvent.OnDismissCategoryDialog -> {
+                _state.update {
+                    it.copy(isCategoryDialogOpen = false)
                 }
             }
 
@@ -88,7 +94,13 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnDateIcon -> {
                 _state.update {
-                    it.copy(isDateDialogOpen = !it.isDateDialogOpen)
+                    it.copy(isDateDialogOpen = true)
+                }
+            }
+
+            is TaskDetailEvent.OnDismissDateDialog -> {
+                _state.update {
+                    it.copy(isDateDialogOpen = false)
                 }
             }
 
