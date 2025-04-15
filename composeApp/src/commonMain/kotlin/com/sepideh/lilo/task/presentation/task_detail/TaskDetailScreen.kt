@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,7 +21,6 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppSingleButton
-import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category.Companion.categories
@@ -65,15 +61,15 @@ fun TaskDetailScreenRoot(
                 onEvent = viewModel::onEvent
             )
         },
-        dialogModel = DialogModel(content = {
+        dialogContent = {
             if (state.isTimeDialogOpen) {
                 TimePickerContainer(onConfirm = {
                     viewModel.onEvent(
                         TaskDetailEvent.OnSelectReminderTime(it)
                     )
-                    viewModel.onEvent(TaskDetailEvent.OnTimeIcon)
+                    viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
                 }, onDismiss = {
-                    viewModel.onEvent(TaskDetailEvent.OnTimeIcon)
+                    viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
                     viewModel.onEvent(
                         TaskDetailEvent.OnSelectReminderTime(Pair(null, null))
                     )
@@ -86,9 +82,7 @@ fun TaskDetailScreenRoot(
                     viewModel.onEvent(TaskDetailEvent.OnDateIcon)
                 }, onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDateIcon) })
             }
-
-
-        }, onDismissRequest = {})
+        }
     )
 
 }

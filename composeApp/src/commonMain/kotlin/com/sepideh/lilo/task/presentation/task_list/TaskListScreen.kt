@@ -44,7 +44,6 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
@@ -75,16 +74,17 @@ fun TaskListScreenRoot(
                 onEvent = viewModel::onEvent
             )
         },
-        dialogModel = DialogModel(content = {
-            DeleteConfirmationDialog(onConfirm = {
-                viewModel.onEvent(
-                    TaskListEvent.OnDeleteTaskConfirm
-                )
-                viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog)
-            }, onDismiss = {
-                viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog)
-            })
-        }, onDismissRequest = { viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog) })
+        dialogContent = {
+            if(state.isDeleteDialogOpen){
+                DeleteConfirmationDialog(onConfirm = {
+                    viewModel.onEvent(
+                        TaskListEvent.OnDeleteTaskConfirm
+                    )
+                    viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog)
+                }, onDismiss = { viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog) })
+            }
+        }
+
     )
 
 }

@@ -91,9 +91,16 @@ class TaskDetailViewModel(
                     it.copy(isDateDialogOpen = !it.isDateDialogOpen)
                 }
             }
+
             is TaskDetailEvent.OnTimeIcon -> {
                 _state.update {
-                    it.copy(isTimeDialogOpen = !it.isTimeDialogOpen)
+                    it.copy(isTimeDialogOpen = true)
+                }
+            }
+
+            is TaskDetailEvent.OnDismissTimeDialog -> {
+                _state.update {
+                    it.copy(isTimeDialogOpen = false)
                 }
             }
 
