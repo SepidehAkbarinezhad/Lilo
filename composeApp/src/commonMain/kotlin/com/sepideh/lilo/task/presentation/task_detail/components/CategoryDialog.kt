@@ -2,6 +2,8 @@ package com.sepideh.lilo.task.presentation.task_detail.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
@@ -78,7 +80,7 @@ fun CategoryDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
 
 @Composable
 fun BoxScope.AddCategoryContainer() {
-    var addVisibility by remember { mutableStateOf(false) }
+    var doneVisibility by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -92,10 +94,10 @@ fun BoxScope.AddCategoryContainer() {
 
          }*/
 
-        if (!addVisibility) {
+        if (!doneVisibility) {
             IconButton(
                 modifier = Modifier.align(Alignment.TopEnd),
-                onClick = { addVisibility = true }
+                onClick = { doneVisibility = true }
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -107,12 +109,12 @@ fun BoxScope.AddCategoryContainer() {
 
 
         AnimatedVisibility(
-            visible = addVisibility,
-            enter = slideInHorizontally(
-                initialOffsetX = { -it },
+            visible = doneVisibility,
+            enter = fadeIn() + slideInHorizontally(
+                initialOffsetX = { it },
                 animationSpec = tween(300)
             ),
-            exit = slideOutHorizontally(
+            exit = fadeOut() + slideOutHorizontally(
                 targetOffsetX = { -it },
                 animationSpec = tween(300)
             )
@@ -124,10 +126,10 @@ fun BoxScope.AddCategoryContainer() {
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(
-                    onClick = { addVisibility = !addVisibility }
+                    onClick = { doneVisibility = !doneVisibility }
                 ) {
                     Icon(
-                        imageVector = if (!addVisibility) Icons.Default.Add else Icons.Default.Done,
+                        imageVector = if (!doneVisibility) Icons.Default.Add else Icons.Default.Done,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.tertiary
                     )
