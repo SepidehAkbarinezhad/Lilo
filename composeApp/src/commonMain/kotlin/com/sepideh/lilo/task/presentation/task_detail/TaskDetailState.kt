@@ -11,4 +11,5 @@ data class TaskDetailState(
     val isPriorityDialogOpen :Boolean = false,
     val isDateDialogOpen :Boolean = false,
     val isTimeDialogOpen :Boolean = false,
+    val addCategoryOpen :Boolean = false,
     )

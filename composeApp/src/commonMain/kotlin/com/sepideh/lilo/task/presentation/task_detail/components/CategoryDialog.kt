@@ -1,23 +1,30 @@
 package com.sepideh.lilo.task.presentation.task_detail.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,7 +35,6 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
-import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_label
 import org.jetbrains.compose.resources.stringResource
@@ -36,44 +42,98 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CategoryDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
     AppDialog(dialogModel = DialogModel(content = {
-        CategoryDialogHeader(onEvent = onEvent)
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            state.categories.forEachIndexed { index, category ->
-                AppText(modifier = Modifier.padding(vertical = 4.dp),text = category.title, textType = TextType.SubTitle, color = MaterialTheme.colorScheme.primary)
-                if (index != state.categories.lastIndex) {
-                    Spacer(
-                        modifier = Modifier.fillMaxWidth().height(1.dp)
-                            .background(MaterialTheme.colorScheme.secondary)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(bottom = 56.dp)) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    AppText(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = stringResource(Res.string.category_label),
+                        textType = TextType.Title,
+                        color = MaterialTheme.colorScheme.tertiary
                     )
+                }
+                state.categories.forEachIndexed { index, category ->
+                    AppText(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        text = category.title,
+                        textType = TextType.SubTitle,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    if (index != state.categories.lastIndex) {
+                        Spacer(
+                            modifier = Modifier.fillMaxWidth().height(1.dp)
+                                .background(MaterialTheme.colorScheme.secondary)
+                        )
+                    }
+
                 }
 
             }
+            AddCategoryContainer()
+
         }
+
     }, onDismissRequest = { onEvent(TaskDetailEvent.OnDismissCategoryDialog) }))
 }
 
 @Composable
-fun CategoryDialogHeader(onEvent: (BaseEvent) -> Unit) {
-    Row(
+fun BoxScope.AddCategoryContainer() {
+    var addVisibility by remember { mutableStateOf(false) }
+
+    Box(
         modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .fillMaxWidth()
+            .align(Alignment.BottomCenter)
+            .height(56.dp)
+            .padding(8.dp),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Spacer(modifier = Modifier.width(48.dp)) // placeholder for symmetry (if needed)
+        /* Box(modifier = Modifier.weight(1f)){
 
-        AppText(
-            text = stringResource(Res.string.category_label),
-            textType = TextType.Title,
-            color = MaterialTheme.colorScheme.tertiary
-        )
+         }*/
 
-        IconButton(onClick = { onEvent(TaskListEvent.OnFilterIcon) }) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary
+        if (!addVisibility) {
+            IconButton(
+                modifier = Modifier.align(Alignment.TopEnd),
+                onClick = { addVisibility = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+            }
+        }
+
+
+        AnimatedVisibility(
+            visible = addVisibility,
+            enter = slideInHorizontally(
+                initialOffsetX = { -it },
+                animationSpec = tween(300)
+            ),
+            exit = slideOutHorizontally(
+                targetOffsetX = { -it },
+                animationSpec = tween(300)
             )
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = {},
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(
+                    onClick = { addVisibility = !addVisibility }
+                ) {
+                    Icon(
+                        imageVector = if (!addVisibility) Icons.Default.Add else Icons.Default.Done,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
         }
     }
 }
+
