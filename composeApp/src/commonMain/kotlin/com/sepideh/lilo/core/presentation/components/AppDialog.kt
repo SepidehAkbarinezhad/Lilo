@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,7 @@ fun AppDialog(
                 shape = RoundedCornerShape(8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
+                Box(modifier = Modifier.padding(12.dp)) {
                     content()
                 }
             }
@@ -32,6 +33,6 @@ fun AppDialog(
 }
 
 data class DialogModel(
-    val content: @Composable ColumnScope.() -> Unit,
+    val content: @Composable () -> Unit,
     val onDismissRequest: () -> Unit
 )
