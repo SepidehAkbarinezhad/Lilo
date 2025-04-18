@@ -59,7 +59,7 @@ fun PriorityDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
                     AppText(
                         modifier = Modifier.padding(vertical = 4.dp),
                         text = priority.title,
-                        textType = TextType.Body,
+                        textType = TextType.SubTitle,
                         color = if (selected == priority) MaterialTheme.colorScheme.primary else Color.Black
                     )
                 }

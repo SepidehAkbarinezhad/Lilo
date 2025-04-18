@@ -128,6 +128,8 @@ class TaskDetailViewModel(
                 val selectedCategory = stateValue.value.categories.find { it.title == event.title }
                     ?: Category.categories[0]
                 state.update { it.copy(selectedCategory = selectedCategory) }
+                onEvent(TaskDetailEvent.OnDismissCategoryDialog)
+
             }
 
             is TaskDetailEvent.OnPrioritySelected -> {
