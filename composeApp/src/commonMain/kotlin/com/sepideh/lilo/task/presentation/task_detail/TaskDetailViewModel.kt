@@ -4,6 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.core.domain.ValidateField
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
@@ -34,7 +36,7 @@ class TaskDetailViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
 
-    private val _state = MutableStateFlow(TaskDetailState())
+    private val state = MutableStateFlow(TaskDetailState())
 
     /*
   * `combine`:
@@ -46,8 +48,8 @@ class TaskDetailViewModel(
   *    calling `.first()` on an empty list could cause a crash.
   *    Therefore, use `firstOrNull()` for safety.
   */
-    val state = combine(
-        _state,
+    val stateValue = combine(
+        state,
         _categories,
     ) { state, categories ->
         // On Room update: Retain the selected category if it still exists; otherwise, select the first item in the list.
@@ -117,14 +119,14 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnSelectedCategoryChanged -> {
-                val selectedCategory = state.value.categories.find { it.title == event.title }
+                val selectedCategory = stateValue.value.categories.find { it.title == event.title }
                     ?: Category.categories[0]
-                _state.update { it.copy(selectedCategory = selectedCategory) }
+                state.update { it.copy(selectedCategory = selectedCategory) }
             }
 
             is TaskDetailEvent.OnSelectedPriorityChanged -> {
                 val selectedPriority = Priority.getByTitle(event.title)
-                _state.update { it.copy(selectedPriority = selectedPriority) }
+                state.update { it.copy(selectedPriority = selectedPriority) }
             }
 
             is TaskDetailEvent.OnSelectReminderDate -> {
@@ -143,16 +145,20 @@ class TaskDetailViewModel(
                 }
             }
 
-            is TaskDetailEvent.OnAddTask -> {
-                val task = task.copy(
-                    category = state.value.selectedCategory?.id ?: Category.categories[0].id,
-                    priority = state.value.selectedPriority.id
-                )
+            is TaskDetailEvent.OnAddTaskButton -> {
 
-                viewModelScope.launch {
-                    val id = taskDatabase.taskDao().upsert(task.toEntity())
-                    startReminder(id)
+                val task = task.copy(
+                    category = stateValue.value.selectedCategory?.id ?: Category.categories[0].id,
+                    priority = stateValue.value.selectedPriority.id
+                )
+                if (isFormValid()){
+                    viewModelScope.launch {
+                        val id = taskDatabase.taskDao().upsert(task.toEntity())
+                        startReminder(id)
+                    }
+                    onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                 }
+
             }
         }
     }
@@ -175,6 +181,19 @@ class TaskDetailViewModel(
                 )
             )
         }
+    }
+
+    private fun isFormValid(): Boolean {
+        state.update {
+            it.copy(
+                titleError = ValidateField.validate(
+                    validationStatus = stateValue.value.titleError.copy(
+                        value = task.title
+                    )
+                )
+            )
+        }
+        return stateValue.value.titleError.isSuccessful
     }
 
 }

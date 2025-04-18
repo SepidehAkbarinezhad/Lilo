@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppSingleButton
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
@@ -34,8 +35,7 @@ fun TaskDetailScreenRoot(
     onNavigateTo: (AppDestinations) -> Unit
 ) {
 
-    println("TaskDetailScreenRoot")
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
 
     BaseRoot(
@@ -96,7 +96,8 @@ fun TaskDetailScreen(
                     textFieldRequired = TextFieldRequired(
                         value = task.title,
                         onValueChange = { onEvent(TaskDetailEvent.OnTitleChanged(it)) },
-                        label = stringResource(Res.string.title_label)
+                        label = stringResource(Res.string.title_label),
+                        validationStatus = state.titleError
                     )
                 )
             }
@@ -127,4 +128,3 @@ fun TaskDetailScreen(
     }
 
 }
-
