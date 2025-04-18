@@ -30,7 +30,7 @@ fun TaskDetailIcons(onEvent: (BaseEvent) -> Unit) {
                 contentDescription = null
             )
         }
-        IconButton(onClick = { onEvent(TaskDetailEvent.OnCategoryIcon) }) {
+        IconButton(onClick = { onEvent(TaskDetailEvent.OnPriorityIcon) }) {
             Image(
                 painter = painterResource(Res.drawable.priority_icon),
                 contentDescription = null

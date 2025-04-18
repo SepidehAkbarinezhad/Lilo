@@ -22,6 +22,7 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
 import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
+import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task
@@ -53,6 +54,7 @@ fun TaskDetailScreenRoot(
                 CategoryDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
             if (state.isPriorityDialogOpen) {
+                PriorityDialog(state=state, onEvent = {viewModel.onEvent(it)})
             }
             if (state.isTimeDialogOpen) {
                 TimePickerContainer(onConfirm = {

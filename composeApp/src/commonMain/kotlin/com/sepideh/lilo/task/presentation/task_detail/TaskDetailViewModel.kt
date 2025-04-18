@@ -90,7 +90,13 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnPriorityIcon -> {
                 state.update {
-                    it.copy(isPriorityDialogOpen = !it.isPriorityDialogOpen)
+                    it.copy(isPriorityDialogOpen = true)
+                }
+            }
+
+            is TaskDetailEvent.OnDismissPriorityDialog->{
+                state.update {
+                    it.copy(isPriorityDialogOpen = false)
                 }
             }
 
@@ -118,15 +124,16 @@ class TaskDetailViewModel(
                 }
             }
 
-            is TaskDetailEvent.OnSelectedCategoryChanged -> {
+            is TaskDetailEvent.OnCategorySelected -> {
                 val selectedCategory = stateValue.value.categories.find { it.title == event.title }
                     ?: Category.categories[0]
                 state.update { it.copy(selectedCategory = selectedCategory) }
             }
 
-            is TaskDetailEvent.OnSelectedPriorityChanged -> {
+            is TaskDetailEvent.OnPrioritySelected -> {
                 val selectedPriority = Priority.getByTitle(event.title)
                 state.update { it.copy(selectedPriority = selectedPriority) }
+                onEvent(TaskDetailEvent.OnDismissPriorityDialog)
             }
 
             is TaskDetailEvent.OnSelectReminderDate -> {
