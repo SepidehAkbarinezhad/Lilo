@@ -20,9 +20,7 @@ fun ValidationStatus.resolveMessage(): String {
                     is StringResource -> stringResource(it)
                     else -> it.toString()
                 }
-                println("base1 $base")
                 base = base.replace("%", replacement)
-                println("base2 $base")
             }
         base
     } else {

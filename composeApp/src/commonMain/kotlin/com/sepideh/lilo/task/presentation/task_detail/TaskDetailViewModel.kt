@@ -77,43 +77,43 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnCategoryIcon -> {
-                _state.update {
+                state.update {
                     it.copy(isCategoryDialogOpen = true)
                 }
             }
 
             is TaskDetailEvent.OnDismissCategoryDialog -> {
-                _state.update {
+                state.update {
                     it.copy(isCategoryDialogOpen = false)
                 }
             }
 
             is TaskDetailEvent.OnPriorityIcon -> {
-                _state.update {
+                state.update {
                     it.copy(isPriorityDialogOpen = !it.isPriorityDialogOpen)
                 }
             }
 
             is TaskDetailEvent.OnDateIcon -> {
-                _state.update {
+                state.update {
                     it.copy(isDateDialogOpen = true)
                 }
             }
 
             is TaskDetailEvent.OnDismissDateDialog -> {
-                _state.update {
+                state.update {
                     it.copy(isDateDialogOpen = false)
                 }
             }
 
             is TaskDetailEvent.OnTimeIcon -> {
-                _state.update {
+                state.update {
                     it.copy(isTimeDialogOpen = true)
                 }
             }
 
             is TaskDetailEvent.OnDismissTimeDialog -> {
-                _state.update {
+                state.update {
                     it.copy(isTimeDialogOpen = false)
                 }
             }
