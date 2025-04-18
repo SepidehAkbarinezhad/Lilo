@@ -90,9 +90,7 @@ fun BoxScope.AddCategoryContainer() {
             .padding(8.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
-        /* Box(modifier = Modifier.weight(1f)){
 
-         }*/
 
         if (!doneVisibility) {
             IconButton(
