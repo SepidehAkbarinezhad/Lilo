@@ -1,9 +1,18 @@
 package com.sepideh.lilo.task.presentation.reminder
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
@@ -14,6 +23,8 @@ import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.confirm_button
 import lilo.composeapp.generated.resources.delete_task_confirmation
+import lilo.composeapp.generated.resources.delete_task_logo
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun DeleteConfirmationDialog(
@@ -22,14 +33,24 @@ fun DeleteConfirmationDialog(
 ) {
     AppDialog(
         dialogModel = DialogModel(content = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    modifier = Modifier.heightIn(max = 100.dp),
+                    painter = painterResource(Res.drawable.delete_task_logo),
+                    contentDescription = ""
+                )
                 AppText(textType = TextType.SubTitle, text = Res.string.delete_task_confirmation)
                 Box(modifier = Modifier.height(8.dp))
                 AppRowButtons(
                     firstButtonTitle = Res.string.confirm_button,
                     onFirstButtonClick = onConfirm,
                     secondButtonTitle = Res.string.cancel_button,
-                    onSecondButtonClick = onDismiss
+                    onSecondButtonClick = onDismiss,
                 )
+            }
         }, onDismissRequest = onDismiss),
     )
 }

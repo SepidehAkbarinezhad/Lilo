@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.presentation.reminder
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -26,24 +27,24 @@ actual fun TimePickerContainer(
 
     AppDialog(
         dialogModel = DialogModel(content = {
-
-            TimePicker(
-                state = timePickerState,
-            )
-            Button(onClick = onDismiss) {
-                Text("Dismiss picker")
-            }
-            Button(onClick = {
-                onConfirm(
-                    Pair(
-                        timePickerState.hour,
-                        timePickerState.minute
-                    )
+            Column {
+                TimePicker(
+                    state = timePickerState,
                 )
-            }) {
-                Text("Confirm selection")
+                Button(onClick = onDismiss) {
+                    Text("Dismiss picker")
+                }
+                Button(onClick = {
+                    onConfirm(
+                        Pair(
+                            timePickerState.hour,
+                            timePickerState.minute
+                        )
+                    )
+                }) {
+                    Text("Confirm selection")
+                }
             }
-
         }, onDismissRequest = onDismiss),
     )
 
