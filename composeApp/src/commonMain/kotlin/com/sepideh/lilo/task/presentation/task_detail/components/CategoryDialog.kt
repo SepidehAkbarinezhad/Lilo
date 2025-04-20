@@ -164,7 +164,7 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (Category) -> Uni
             ) {
                 OutlinedTextField(
                     value = "",
-                    onValueChange = {},
+                    onValueChange = { newCategory = it },
                     modifier = Modifier.weight(1f).focusRequester(focusRequester),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.tertiary,

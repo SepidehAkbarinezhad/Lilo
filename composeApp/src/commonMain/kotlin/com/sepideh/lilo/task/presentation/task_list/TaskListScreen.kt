@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -75,7 +76,7 @@ fun TaskListScreenRoot(
             )
         },
         dialogContent = {
-            if(state.isDeleteDialogOpen){
+            if (state.isDeleteDialogOpen) {
                 DeleteConfirmationDialog(onConfirm = {
                     viewModel.onEvent(
                         TaskListEvent.OnDeleteTaskConfirm
@@ -181,10 +182,14 @@ fun TaskListScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Image(
-                                painter = painterResource(Res.drawable.empty_list),
-                                contentDescription = null
-                            )
+                            Box {
+                                Image(
+                                    modifier = Modifier.fillMaxWidth(.5f),
+                                    painter = painterResource(Res.drawable.empty_list),
+                                    contentDescription = null
+                                )
+                            }
+
                             AppText(
                                 text = Res.string.empty_list_title,
                                 textType = TextType.SubTitle,
