@@ -122,7 +122,6 @@ fun TaskDetailScreen(
             text = Res.string.add_task,
             onClick = {
                 onEvent(TaskDetailEvent.OnAddTaskButton)
-                onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
             },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
