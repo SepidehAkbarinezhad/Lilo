@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
 import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.task.presentation.model.Category
 
 sealed interface TaskDetailEvent : BaseEvent {
     data class OnTitleChanged(val title: String) : TaskDetailEvent
@@ -18,4 +19,6 @@ sealed interface TaskDetailEvent : BaseEvent {
     data class OnSelectReminderDate(val date: Pair<Long?,Long?>) : TaskDetailEvent
     data class OnSelectReminderTime(val  time: Pair<Int?,Int?>) : TaskDetailEvent
     data object OnAddTaskButton : TaskDetailEvent
+    data class OnAddNewCategory(val category: Category) : TaskDetailEvent
+
 }

@@ -12,12 +12,14 @@ import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.TaskDatabase
 import com.sepideh.lilo.task.data.category.CategoryDatabase
 import com.sepideh.lilo.task.data.category.toCategoryList
+import com.sepideh.lilo.task.data.category.toEntity
 import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.reminder.setReminderTime
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
+import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -155,7 +157,6 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnAddTaskButton -> {
-
                 val task = task.copy(
                     category = stateValue.value.selectedCategory?.id ?: Category.categories[0].id,
                     priority = stateValue.value.selectedPriority.id
@@ -167,6 +168,15 @@ class TaskDetailViewModel(
                     }
                     onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                 }
+
+            }
+            is TaskDetailEvent.OnAddNewCategory->{
+                println("OnAddNewCategory1  ${event.category}")
+                viewModelScope.launch {
+                    categoryDatabase.categoryDao().upsert(category = event.category.toEntity())
+                }
+                state.update { it.copy(selectedCategory = null) }
+                println("OnAddNewCategory2  ${stateValue.value.categories}")
 
             }
         }

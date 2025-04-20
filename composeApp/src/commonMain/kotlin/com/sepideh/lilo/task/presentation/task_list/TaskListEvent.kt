@@ -2,6 +2,7 @@ package com.sepideh.lilo.task.presentation.task_list
 
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.task.domain.model.Task
+import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
