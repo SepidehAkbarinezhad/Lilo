@@ -27,10 +27,6 @@ abstract class BaseViewModel : ViewModel() {
                     baseOneTimeEvents.emit(BaseOneTimeEvents(navigateTo = event.destination))
                 }
             }
-
-            is BaseEvent.ShowDialog -> {
-                baseUiState.update { it.copy(showDialog = !it.showDialog) }
-            }
         }
     }
 

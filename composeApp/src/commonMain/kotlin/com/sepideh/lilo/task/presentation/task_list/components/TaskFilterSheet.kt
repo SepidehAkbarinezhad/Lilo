@@ -18,7 +18,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.data.ScreenSize
 import com.sepideh.lilo.core.presentation.BaseEvent
@@ -65,6 +64,8 @@ fun TaskFilterSheet(
                     onPriorityClicked = { selectedPriority ->
                         onEvent(TaskListEvent.OnPriorityFilterChanged(selectedPriority))
                     })
+
+
             }
             AppRowButtons(
                 modifier = Modifier.align(Alignment.BottomCenter),
@@ -93,7 +94,7 @@ fun FilterHeader(onEvent: (BaseEvent) -> Unit) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "close filter",
-                tint =  MaterialTheme.colorScheme.tertiary
+                tint = MaterialTheme.colorScheme.tertiary
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
@@ -109,13 +110,17 @@ fun StatusFilterContainer(
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         TaskStatus.entries.forEach { status ->
-            AppText(text = status.label)
-            RadioButton(
-                selected = status.label == filterOption.taskStatus.label,
-                onClick = { onStatusClicked(status) })
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(text = status.label)
+                RadioButton(
+                    selected = status.label == filterOption.taskStatus.label,
+                    onClick = { onStatusClicked(status) })
+            }
         }
     }
 }
@@ -126,16 +131,23 @@ fun PriorityFilterContainer(
     onPriorityClicked: (Priority) -> Unit
 ) {
     AppText(text = stringResource(Res.string.priority_filter_label), textType = TextType.SubTitle)
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Priority.priorities.forEach { priority ->
-            AppText(text = priority.title)
-            Checkbox(
-                checked = priority in filterOption.priorityList,
-                onCheckedChange = { onPriorityClicked(priority) })
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(text = priority.title)
+                Checkbox(
+                    checked = priority in filterOption.priorityList,
+                    onCheckedChange = { onPriorityClicked(priority) }
+                )
+            }
         }
     }
+
 }

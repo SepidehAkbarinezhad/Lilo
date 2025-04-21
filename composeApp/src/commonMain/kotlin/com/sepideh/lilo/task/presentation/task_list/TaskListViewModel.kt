@@ -175,9 +175,10 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListEvent.OnStatusFilterChanged->{
+            is TaskListEvent.OnStatusFilterChanged -> {
                 _state.update { it.copy(tempFilterOption = it.tempFilterOption.copy(taskStatus = event.status)) }
             }
+
             is TaskListEvent.OnPriorityFilterChanged -> {
                 event.priority.let {
                     val updatedList =
@@ -213,7 +214,15 @@ class TaskListViewModel(
 
             is TaskListEvent.OnDeleteTaskIcon -> {
                 selectedTask = event.task
-                onEvent(BaseEvent.ShowDialog(true))
+                _state.update {
+                    it.copy(isDeleteDialogOpen = true)
+                }
+            }
+
+            is TaskListEvent.OnDismissDeleteDialog -> {
+                _state.update {
+                    it.copy(isDeleteDialogOpen = false)
+                }
             }
 
             is TaskListEvent.OnDeleteTaskConfirm -> {

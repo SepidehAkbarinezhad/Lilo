@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,7 +45,6 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
@@ -75,16 +75,17 @@ fun TaskListScreenRoot(
                 onEvent = viewModel::onEvent
             )
         },
-        dialogModel = DialogModel(content = {
-            DeleteConfirmationDialog(onConfirm = {
-                viewModel.onEvent(
-                    TaskListEvent.OnDeleteTaskConfirm
-                )
-                viewModel.onEvent(BaseEvent.ShowDialog(false))
-            }, onDismiss = {
-                viewModel.onEvent(BaseEvent.ShowDialog(false))
-            })
-        }, onDismissRequest = { viewModel.onEvent(BaseEvent.ShowDialog(false)) })
+        dialogContent = {
+            if (state.isDeleteDialogOpen) {
+                DeleteConfirmationDialog(onConfirm = {
+                    viewModel.onEvent(
+                        TaskListEvent.OnDeleteTaskConfirm
+                    )
+                    viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog)
+                }, onDismiss = { viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog) })
+            }
+        }
+
     )
 
 }
@@ -181,10 +182,14 @@ fun TaskListScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Image(
-                                painter = painterResource(Res.drawable.empty_list),
-                                contentDescription = null
-                            )
+                            Box {
+                                Image(
+                                    modifier = Modifier.fillMaxWidth(.5f),
+                                    painter = painterResource(Res.drawable.empty_list),
+                                    contentDescription = null
+                                )
+                            }
+
                             AppText(
                                 text = Res.string.empty_list_title,
                                 textType = TextType.SubTitle,
@@ -245,7 +250,7 @@ fun TaskListHeader(
         IconButton(
             onClick = {
                 focusManager.clearFocus()
-               if (clickable) onEvent(TaskListEvent.OnFilterIcon)
+                if (clickable) onEvent(TaskListEvent.OnFilterIcon)
             },
             enabled = !state.isFilterSheetOpen
         ) {
