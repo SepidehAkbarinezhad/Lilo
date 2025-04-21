@@ -19,7 +19,6 @@ import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.reminder.setReminderTime
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
-import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -171,13 +170,10 @@ class TaskDetailViewModel(
 
             }
             is TaskDetailEvent.OnAddNewCategory->{
-                println("OnAddNewCategory1  ${event.category}")
                 viewModelScope.launch {
                     categoryDatabase.categoryDao().upsert(category = event.category.toEntity())
                 }
                 state.update { it.copy(selectedCategory = null) }
-                println("OnAddNewCategory2  ${stateValue.value.categories}")
-
             }
         }
     }
@@ -188,7 +184,7 @@ class TaskDetailViewModel(
 
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
-        println("startReminder  $reminderModel   ${setReminderTime(reminderModel)}")
+        println("startReminder  $reminderModel  ${setReminderTime(reminderModel)}")
         setReminderTime(reminderModel)?.let {
             reminderScheduler.scheduleReminder(
                 reminder = Reminder(
