@@ -4,12 +4,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.core.domain.ValidateField
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.TaskDatabase
 import com.sepideh.lilo.task.data.category.CategoryDatabase
 import com.sepideh.lilo.task.data.category.toCategoryList
+import com.sepideh.lilo.task.data.category.toEntity
 import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
@@ -34,7 +37,7 @@ class TaskDetailViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
 
-    private val _state = MutableStateFlow(TaskDetailState())
+    private val state = MutableStateFlow(TaskDetailState())
 
     /*
   * `combine`:
@@ -46,8 +49,8 @@ class TaskDetailViewModel(
   *    calling `.first()` on an empty list could cause a crash.
   *    Therefore, use `firstOrNull()` for safety.
   */
-    val state = combine(
-        _state,
+    val stateValue = combine(
+        state,
         _categories,
     ) { state, categories ->
         // On Room update: Retain the selected category if it still exists; otherwise, select the first item in the list.
@@ -74,15 +77,66 @@ class TaskDetailViewModel(
                 task = task.copy(description = event.description)
             }
 
-            is TaskDetailEvent.OnSelectedCategoryChanged -> {
-                val selectedCategory = state.value.categories.find { it.title == event.title }
-                    ?: Category.categories[0]
-                _state.update { it.copy(selectedCategory = selectedCategory) }
+            is TaskDetailEvent.OnCategoryIcon -> {
+                state.update {
+                    it.copy(isCategoryDialogOpen = true)
+                }
             }
 
-            is TaskDetailEvent.OnSelectedPriorityChanged -> {
+            is TaskDetailEvent.OnDismissCategoryDialog -> {
+                state.update {
+                    it.copy(isCategoryDialogOpen = false)
+                }
+            }
+
+            is TaskDetailEvent.OnPriorityIcon -> {
+                state.update {
+                    it.copy(isPriorityDialogOpen = true)
+                }
+            }
+
+            is TaskDetailEvent.OnDismissPriorityDialog->{
+                state.update {
+                    it.copy(isPriorityDialogOpen = false)
+                }
+            }
+
+            is TaskDetailEvent.OnDateIcon -> {
+                state.update {
+                    it.copy(isDateDialogOpen = true)
+                }
+            }
+
+            is TaskDetailEvent.OnDismissDateDialog -> {
+                state.update {
+                    it.copy(isDateDialogOpen = false)
+                }
+            }
+
+            is TaskDetailEvent.OnTimeIcon -> {
+                state.update {
+                    it.copy(isTimeDialogOpen = true)
+                }
+            }
+
+            is TaskDetailEvent.OnDismissTimeDialog -> {
+                state.update {
+                    it.copy(isTimeDialogOpen = false)
+                }
+            }
+
+            is TaskDetailEvent.OnCategorySelected -> {
+                val selectedCategory = stateValue.value.categories.find { it.title == event.title }
+                    ?: Category.categories[0]
+                state.update { it.copy(selectedCategory = selectedCategory) }
+                onEvent(TaskDetailEvent.OnDismissCategoryDialog)
+
+            }
+
+            is TaskDetailEvent.OnPrioritySelected -> {
                 val selectedPriority = Priority.getByTitle(event.title)
-                _state.update { it.copy(selectedPriority = selectedPriority) }
+                state.update { it.copy(selectedPriority = selectedPriority) }
+                onEvent(TaskDetailEvent.OnDismissPriorityDialog)
             }
 
             is TaskDetailEvent.OnSelectReminderDate -> {
@@ -101,16 +155,25 @@ class TaskDetailViewModel(
                 }
             }
 
-            is TaskDetailEvent.OnAddTask -> {
+            is TaskDetailEvent.OnAddTaskButton -> {
                 val task = task.copy(
-                    category = state.value.selectedCategory?.id ?: Category.categories[0].id,
-                    priority = state.value.selectedPriority.id
+                    category = stateValue.value.selectedCategory?.id ?: Category.categories[0].id,
+                    priority = stateValue.value.selectedPriority.id
                 )
-
-                viewModelScope.launch {
-                    val id = taskDatabase.taskDao().upsert(task.toEntity())
-                    startReminder(id)
+                if (isFormValid()){
+                    viewModelScope.launch {
+                        val id = taskDatabase.taskDao().upsert(task.toEntity())
+                        startReminder(id)
+                    }
+                    onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                 }
+
+            }
+            is TaskDetailEvent.OnAddNewCategory->{
+                viewModelScope.launch {
+                    categoryDatabase.categoryDao().upsert(category = event.category.toEntity())
+                }
+                state.update { it.copy(selectedCategory = null) }
             }
         }
     }
@@ -121,7 +184,7 @@ class TaskDetailViewModel(
 
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
-        println("startReminder  $reminderModel   ${setReminderTime(reminderModel)}")
+        println("startReminder  $reminderModel  ${setReminderTime(reminderModel)}")
         setReminderTime(reminderModel)?.let {
             reminderScheduler.scheduleReminder(
                 reminder = Reminder(
@@ -133,6 +196,19 @@ class TaskDetailViewModel(
                 )
             )
         }
+    }
+
+    private fun isFormValid(): Boolean {
+        state.update {
+            it.copy(
+                titleError = ValidateField.validate(
+                    validationStatus = stateValue.value.titleError.copy(
+                        value = task.title
+                    )
+                )
+            )
+        }
+        return stateValue.value.titleError.isSuccessful
     }
 
 }

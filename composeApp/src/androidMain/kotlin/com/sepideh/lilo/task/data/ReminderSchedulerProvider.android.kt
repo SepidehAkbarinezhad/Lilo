@@ -40,8 +40,12 @@ class ReminderManager(private val context: Context) : ReminderScheduler {
                     putExtra(NOTIFICATION_TITLE_TAG, reminder.title)
                     putExtra(NOTIFICATION_CONTENT_TAG, reminder.content)
                 }
+
+                // Use a unique requestCode for each alarm by combining reminder ID and triggerTime hash
+                // This prevents PendingIntent collisions, ensuring each day's alarm is scheduled properly
+                val requestCode = (reminder.id.hashCode() + triggerTime.hashCode()).toInt()
                 val pendingIntent = PendingIntent.getBroadcast(
-                    context, reminder.id.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT
+                    context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT
                 )
 
                 // TODO: check permission

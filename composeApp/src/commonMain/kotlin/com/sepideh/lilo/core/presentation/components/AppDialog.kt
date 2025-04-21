@@ -1,7 +1,6 @@
 package com.sepideh.lilo.core.presentation.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -22,7 +21,7 @@ fun AppDialog(
                 shape = RoundedCornerShape(8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-                Box(modifier = Modifier.padding(24.dp)) {
+                Box(modifier = Modifier.padding(12.dp)) {
                     content()
                 }
             }

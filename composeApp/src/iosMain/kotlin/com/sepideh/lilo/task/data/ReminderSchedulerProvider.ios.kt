@@ -4,10 +4,10 @@ import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual class ReminderManager : ReminderScheduler {
-    actual override fun scheduleReminder(reminder: Reminder) {
+ class ReminderManager : ReminderScheduler {
+     override fun scheduleReminder(reminder: Reminder) {
     }
 
-    actual override fun cancelReminder(id: String) {
+     override fun cancelReminder(reminder: Reminder) {
     }
 }
