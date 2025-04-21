@@ -95,7 +95,7 @@ class TaskDetailViewModel(
                 }
             }
 
-            is TaskDetailEvent.OnDismissPriorityDialog->{
+            is TaskDetailEvent.OnDismissPriorityDialog -> {
                 state.update {
                     it.copy(isPriorityDialogOpen = false)
                 }
@@ -160,7 +160,7 @@ class TaskDetailViewModel(
                     category = stateValue.value.selectedCategory?.id ?: Category.categories[0].id,
                     priority = stateValue.value.selectedPriority.id
                 )
-                if (isFormValid()){
+                if (isFormValid()) {
                     viewModelScope.launch {
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
                         startReminder(id)
@@ -169,7 +169,8 @@ class TaskDetailViewModel(
                 }
 
             }
-            is TaskDetailEvent.OnAddNewCategory->{
+
+            is TaskDetailEvent.OnAddNewCategory -> {
                 viewModelScope.launch {
                     categoryDatabase.categoryDao().upsert(category = event.category.toEntity())
                 }
@@ -184,18 +185,21 @@ class TaskDetailViewModel(
 
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
-        println("startReminder  $reminderModel  ${setReminderTime(reminderModel)}")
-        setReminderTime(reminderModel)?.let {
-            reminderScheduler.scheduleReminder(
-                reminder = Reminder(
-                    id = taskId.toInt(),
-                    title = task.title,
-                    content = "",
-                    startDate = it,
-                    endDate = reminderModel.endDay
+        println("startReminder  $reminderModel ")
+        with(reminderModel) {
+            setReminderTime(dayMillis = startDay, hour = hour, minute = minute)?.let {
+                reminderScheduler.scheduleReminder(
+                    reminder = Reminder(
+                        id = taskId.toInt(),
+                        title = task.title,
+                        content = "",
+                        startDate = it,
+                        endDate = setReminderTime(dayMillis = endDay, hour = hour, minute = minute)
+                    )
                 )
-            )
+            }
         }
+
     }
 
     private fun isFormValid(): Boolean {
