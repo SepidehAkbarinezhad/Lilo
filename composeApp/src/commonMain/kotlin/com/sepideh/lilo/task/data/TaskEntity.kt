@@ -11,5 +11,9 @@ data class TaskEntity(
     val description: String,
     val done: Boolean = false,
     val category: Long = 0,
-    val priority: Int = 0
+    val priority: Int = 0,
+    val hour: Int? = null,
+    val minute: Int? = null,
+    val startDate: Long?,
+    val endDate: Long?
 )
