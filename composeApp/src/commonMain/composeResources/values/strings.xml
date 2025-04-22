@@ -4,7 +4,8 @@
     <string name="close_hint">clear search</string>
     <string name="all_tasks">all</string>
     <string name="no_result">no result</string>
-    <string name="add_task">add</string>
+    <string name="add_task_label">add</string>
+    <string name="edit_task_label">edit</string>
     <string name="title_label">title</string>
     <string name="description_label">description</string>
     <string name="category_label">category</string>

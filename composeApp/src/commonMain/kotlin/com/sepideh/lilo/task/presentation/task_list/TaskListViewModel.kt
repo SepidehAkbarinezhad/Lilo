@@ -225,11 +225,7 @@ class TaskListViewModel(
                 selectedTask?.let {
                     viewModelScope.launch {
                         withContext(Dispatchers.IO) {
-                            try {
-                                taskDatabase.taskDao().deleteById(it.toEntity().id)
-                            } catch (e: Exception) {
-                                println("exception: ${e.message}")
-                            }
+                            it.id?.let { taskDatabase.taskDao().deleteById(it) }
                         }
                     }
                 }
