@@ -2,9 +2,7 @@ package com.sepideh.lilo.task.presentation.task_list
 
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
-import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
 
 
@@ -16,8 +14,7 @@ sealed interface TaskListEvent : BaseEvent {
     data class OnStatusFilterChanged(val status: TaskStatus) : TaskListEvent
     data class OnPriorityFilterChanged(val priority: Priority) : TaskListEvent
     data object OnResetFilter : TaskListEvent
-    data object OnAddNewTaskClick : TaskListEvent
-    data class OnEditTaskIcon(val task: Task) : TaskListEvent
+    data class OnEditTask(val task: Task) : TaskListEvent
     data class OnDeleteTaskIcon(val task: Task?) : TaskListEvent
     data object OnDismissDeleteDialog : TaskListEvent
     data object OnDeleteTaskConfirm : TaskListEvent

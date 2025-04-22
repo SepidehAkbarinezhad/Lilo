@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.sepideh.lilo.app.SplashScreen
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
-import com.sepideh.lilo.task.presentation.task_detail.TestScreen
 import com.sepideh.lilo.task.presentation.task_list.TaskListScreenRoot
 import com.sepideh.lilo.task.presentation.task_list.TaskListViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -35,8 +35,9 @@ fun NavigationGraph(navHostController: NavHostController) {
         }
 
         composable<AppRoutes.TaskDetail> {
+            val args = it.toRoute<AppRoutes.TaskDetail>()
             val viewModel = koinViewModel<TaskDetailViewModel>()
-            TaskDetailScreenRoot(viewModel = viewModel, onNavigateTo = onNavigate)
+            TaskDetailScreenRoot(taskId = args.taskId,viewModel = viewModel, onNavigateTo = onNavigate)
         }
 
     }
