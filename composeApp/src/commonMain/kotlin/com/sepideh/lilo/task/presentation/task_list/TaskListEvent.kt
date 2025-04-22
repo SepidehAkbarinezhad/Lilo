@@ -7,7 +7,7 @@ import com.sepideh.lilo.task.presentation.model.TaskStatus
 
 
 sealed interface TaskListEvent : BaseEvent {
-    data class OnCategorySelected(val id: Int?) : TaskListEvent
+    data class OnCategorySelected(val id: Long?) : TaskListEvent
     data class OnSearchQueryChange(val query: String) : TaskListEvent
     data object OnFilterIcon : TaskListEvent
     data object OnApplyFilter : TaskListEvent
