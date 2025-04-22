@@ -204,11 +204,7 @@ class TaskListViewModel(
                 }
             }
 
-            TaskListEvent.OnAddNewTaskClick -> {
-                newTask = Task()
-            }
-
-            is TaskListEvent.OnEditTaskIcon -> {
+            is TaskListEvent.OnEditTask -> {
                 newTask = event.task
             }
 
@@ -229,11 +225,7 @@ class TaskListViewModel(
                 selectedTask?.let {
                     viewModelScope.launch {
                         withContext(Dispatchers.IO) {
-                            try {
-                                taskDatabase.taskDao().deleteById(it.toEntity().id)
-                            } catch (e: Exception) {
-                                println("exception: ${e.message}")
-                            }
+                            it.id?.let { taskDatabase.taskDao().deleteById(it) }
                         }
                     }
                 }

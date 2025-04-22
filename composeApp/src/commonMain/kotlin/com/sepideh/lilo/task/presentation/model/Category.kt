@@ -1,7 +1,7 @@
 package com.sepideh.lilo.task.presentation.model
 
 data class Category(
-    val id: Int = 0,
+    val id: Long = 0,
     val title: String = ""
 ) {
     companion object {

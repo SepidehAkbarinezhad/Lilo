@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,7 +18,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
-import com.sepideh.lilo.core.presentation.components.AppDropDown
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppSingleButton
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
@@ -25,19 +28,26 @@ import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.add_task
+import lilo.composeapp.generated.resources.add_task_label
 import lilo.composeapp.generated.resources.description_label
+import lilo.composeapp.generated.resources.edit_task_label
 import lilo.composeapp.generated.resources.title_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TaskDetailScreenRoot(
+    taskId: Long?,
     viewModel: TaskDetailViewModel,
     onNavigateTo: (AppDestinations) -> Unit
 ) {
-
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
+
+    LaunchedEffect(taskId) {
+        taskId?.let {
+            viewModel.onEvent(TaskDetailEvent.OnGetSelectedTaskInfo(it))
+        }
+    }
 
     BaseRoot(
         viewModel = viewModel,
@@ -54,7 +64,7 @@ fun TaskDetailScreenRoot(
                 CategoryDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
             if (state.isPriorityDialogOpen) {
-                PriorityDialog(state=state, onEvent = {viewModel.onEvent(it)})
+                PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
             if (state.isTimeDialogOpen) {
                 TimePickerContainer(onConfirm = {
@@ -87,6 +97,7 @@ fun TaskDetailScreen(
     task: Task,
     onEvent: (BaseEvent) -> Unit
 ) {
+    val isEdit = task.id != null
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,7 +130,11 @@ fun TaskDetailScreen(
         }
 
         AppSingleButton(
-            text = Res.string.add_task,
+            text = if (isEdit) {
+                Res.string.edit_task_label
+            } else {
+                Res.string.add_task_label
+            },
             onClick = {
                 onEvent(TaskDetailEvent.OnAddTaskButton)
             },
