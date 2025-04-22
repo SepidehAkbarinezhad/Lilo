@@ -63,16 +63,15 @@ fun AppOutlineTextField(
             else -> MaterialTheme.colorScheme.error
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = modifier.fillMaxWidth()) {
             AppText(
-                modifier = modifier,
                 text = label,
                 textType = TextType.SubTitle,
                 color = focusedColor,
             )
 
             OutlinedTextField(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
                     .onFocusChanged { isFocused = it.isFocused },
