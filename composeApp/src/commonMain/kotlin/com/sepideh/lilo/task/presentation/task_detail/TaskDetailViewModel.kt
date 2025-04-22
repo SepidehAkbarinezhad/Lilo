@@ -11,9 +11,11 @@ import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.TaskDatabase
 import com.sepideh.lilo.task.data.category.CategoryDatabase
+import com.sepideh.lilo.task.data.category.toCategory
 import com.sepideh.lilo.task.data.category.toCategoryList
 import com.sepideh.lilo.task.data.category.toEntity
 import com.sepideh.lilo.task.data.toEntity
+import com.sepideh.lilo.task.data.toTask
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.reminder.setReminderTime
@@ -167,7 +169,6 @@ class TaskDetailViewModel(
                     }
                     onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                 }
-
             }
 
             is TaskDetailEvent.OnAddNewCategory -> {
@@ -176,6 +177,36 @@ class TaskDetailViewModel(
                 }
                 state.update { it.copy(selectedCategory = null) }
             }
+
+            is TaskDetailEvent.OnGetSelectedTaskInfo -> {
+                viewModelScope.launch {
+                    taskDatabase.taskDao().getTaskById(event.taskId)?.toTask()
+                        ?.let { selectedTask ->
+                            println("OnGetSelectedTaskInfo ->  $selectedTask")
+
+                            task = selectedTask
+                            updateSelectedCategory(selectedTask.category)
+                            updateSelectedPriority(selectedTask.priority)
+                        }
+                }
+            }
+        }
+    }
+
+    private suspend fun updateSelectedCategory(categoryId: Long) {
+        println("updateSelectedCategory  $categoryId")
+        categoryDatabase.categoryDao().getCategoryById(categoryId = categoryId)
+            ?.let { selectedCategory ->
+                println("selectedCategory ->  $selectedCategory")
+                state.update {
+                    it.copy(selectedCategory = selectedCategory.toCategory())
+                }
+            }
+    }
+
+    private fun updateSelectedPriority(priorityId: Int) {
+        state.update {
+            it.copy(selectedPriority = Priority.priorities[priorityId])
         }
     }
 

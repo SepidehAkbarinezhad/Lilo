@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,12 @@ fun TaskDetailScreenRoot(
 ) {
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
+
+    LaunchedEffect(taskId){
+        taskId?.let {
+            viewModel.onEvent(TaskDetailEvent.OnGetSelectedTaskInfo(it))
+        }
+    }
 
     BaseRoot(
         viewModel = viewModel,

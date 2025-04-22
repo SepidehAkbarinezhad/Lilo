@@ -13,7 +13,7 @@ data class TaskListState(
     val tasksResult: List<Task> = emptyList(),
     val categories: List<Category> = emptyList(),
     val isDeleteDialogOpen :Boolean = false,
-    val selectedCategory : Int?= null,
+    val selectedCategory : Long?= null,
     val selectedTask: Task? = null,
     val titleError : String ? = null,
     val isLoading: Boolean = false,
