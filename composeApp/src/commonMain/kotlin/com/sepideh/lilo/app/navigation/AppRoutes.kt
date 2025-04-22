@@ -11,6 +11,6 @@ sealed class AppRoutes {
     data object TaskList : AppRoutes()
 
     @Serializable
-    data object TaskDetail : AppRoutes()
+    data class TaskDetail(val taskId : Long?) : AppRoutes()
 
 }

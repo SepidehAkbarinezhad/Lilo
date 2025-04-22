@@ -11,5 +11,5 @@ sealed interface AppDestinations {
     @Serializable
     data class TaskList(override val route: AppRoutes = AppRoutes.TaskList) : AppDestinations
     @Serializable
-    data class TaskDetail(override val route: AppRoutes = AppRoutes.TaskDetail) : AppDestinations
+    data class TaskDetail(override val route: AppRoutes ) : AppDestinations
 }
