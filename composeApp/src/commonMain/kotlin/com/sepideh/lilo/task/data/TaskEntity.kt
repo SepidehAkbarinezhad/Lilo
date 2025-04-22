@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 @Entity
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
-    val id : Long =0,
-    val title : String,
-    val description : String,
-    val done : Boolean=false,
-    val category : Long = 0,
-    val priority : Int = 0
+    val id: Long? = null,
+    val title: String,
+    val description: String,
+    val done: Boolean = false,
+    val category: Long = 0,
+    val priority: Int = 0
 )
