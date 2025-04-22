@@ -1,25 +1,31 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppSingleButton
+import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
@@ -29,8 +35,10 @@ import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task_label
+import lilo.composeapp.generated.resources.add_task_title
 import lilo.composeapp.generated.resources.description_label
 import lilo.composeapp.generated.resources.edit_task_label
+import lilo.composeapp.generated.resources.edit_task_title
 import lilo.composeapp.generated.resources.title_label
 import org.jetbrains.compose.resources.stringResource
 
@@ -99,48 +107,70 @@ fun TaskDetailScreen(
 ) {
     val isEdit = task.id != null
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+        Column(
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
+                .statusBarsPadding(),
         ) {
-            item {
-                AppOutlineTextField(
-                    textFieldRequired = TextFieldRequired(
-                        value = task.title,
-                        onValueChange = { onEvent(TaskDetailEvent.OnTitleChanged(it)) },
-                        label = stringResource(Res.string.title_label),
-                        validationStatus = state.titleError
+            Box(
+                modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                AppText(
+                    modifier = Modifier.padding(vertical = 18.dp),
+                    text = when (isEdit) {
+                        true -> Res.string.edit_task_title
+                        else -> Res.string.add_task_title
+                    }, textType = TextType.Title, color = Color.White
+                )
+            }
+            Surface(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    AppOutlineTextField(
+                        modifier = Modifier.padding(18.dp),
+                        textFieldRequired = TextFieldRequired(
+                            value = task.title,
+                            onValueChange = { onEvent(TaskDetailEvent.OnTitleChanged(it)) },
+                            label = stringResource(Res.string.title_label),
+                            validationStatus = state.titleError
+                        )
                     )
-                )
+
+
+                    AppOutlineTextField(
+                        modifier = Modifier.padding(18.dp),
+                        textFieldRequired = TextFieldRequired(
+                            value = task.description,
+                            onValueChange = { onEvent(TaskDetailEvent.OnDescriptionChanged(it)) },
+                            label = stringResource(Res.string.description_label),
+                        ),
+                        singleLine = false
+                    )
+
+                    TaskDetailIcons(onEvent = onEvent)
+                }
+
             }
-            item {
-                AppOutlineTextField(
-                    textFieldRequired = TextFieldRequired(
-                        value = task.description,
-                        onValueChange = { onEvent(TaskDetailEvent.OnDescriptionChanged(it)) },
-                        label = stringResource(Res.string.description_label),
-                    ),
-                    singleLine = false
-                )
-            }
-            item {
-                TaskDetailIcons(onEvent = onEvent)
-            }
+
         }
+        Box(modifier = Modifier.fillMaxSize()) {
+            AppSingleButton(
+                text = when (isEdit) {
+                    true -> Res.string.edit_task_label
+                    else -> Res.string.add_task_label
+                },
+                onClick = {
+                    onEvent(TaskDetailEvent.OnAddTaskButton)
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
 
-        AppSingleButton(
-            text = if (isEdit) {
-                Res.string.edit_task_label
-            } else {
-                Res.string.add_task_label
-            },
-            onClick = {
-                onEvent(TaskDetailEvent.OnAddTaskButton)
-            },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
-
+        }
     }
 
 }
