@@ -22,11 +22,14 @@ class ReminderManager(private val context: Context) : ReminderScheduler {
         * - use setExactAndAllowWhileIdle to deliver this alarm exactly at this time, even if devise in Doze
         * */
         with(reminder) {
-            if (endDate != null) {
-                setAlarmForRangeDay(reminder)
-            } else {
-                setAlarmForSingleDay(reminder)
+            reminder.startDate?.let {
+                if (endDate != null) {
+                    setAlarmForRangeDay(reminder)
+                } else {
+                    setAlarmForSingleDay(reminder)
+                }
             }
+
         }
 
     }
@@ -34,36 +37,39 @@ class ReminderManager(private val context: Context) : ReminderScheduler {
     private fun setAlarmForRangeDay(reminder: Reminder) {
         with(reminder) {
             var triggerTime = startDate
-            while (triggerTime <= endDate!!) {
-                val intent = Intent(context, ReminderReceiver::class.java).apply {
-                    putExtra(NOTIFICATION_ID_TAG, reminder.id)
-                    putExtra(NOTIFICATION_TITLE_TAG, reminder.title)
-                    putExtra(NOTIFICATION_CONTENT_TAG, reminder.content)
-                }
+            triggerTime?.let {
+                while (triggerTime <= endDate!!) {
+                    val intent = Intent(context, ReminderReceiver::class.java).apply {
+                        putExtra(NOTIFICATION_ID_TAG, reminder.id)
+                        putExtra(NOTIFICATION_TITLE_TAG, reminder.title)
+                        putExtra(NOTIFICATION_CONTENT_TAG, reminder.content)
+                    }
 
-                // Use a unique requestCode for each alarm by combining reminder ID and triggerTime hash
-                // This prevents PendingIntent collisions, ensuring each day's alarm is scheduled properly
-                val requestCode = (reminder.id.hashCode() + triggerTime.hashCode()).toInt()
-                val pendingIntent = PendingIntent.getBroadcast(
-                    context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                )
-
-                // TODO: check permission
-                try {
-                    println("ReminderManager try")
-                    //
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        triggerTime,
-                        pendingIntent
+                    // Use a unique requestCode for each alarm by combining reminder ID and triggerTime hash
+                    // This prevents PendingIntent collisions, ensuring each day's alarm is scheduled properly
+                    val requestCode = (reminder.id.hashCode() + triggerTime.hashCode()).toInt()
+                    val pendingIntent = PendingIntent.getBroadcast(
+                        context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT
                     )
-                } catch (e: SecurityException) {
-                    // If permission is not granted, direct the user to the settings screen where they can manually get permission
-                    println("SecurityException : ${e.message}")
+
+                    // TODO: check permission
+                    try {
+                        println("ReminderManager try")
+                        //
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            triggerTime,
+                            pendingIntent
+                        )
+                    } catch (e: SecurityException) {
+                        // If permission is not granted, direct the user to the settings screen where they can manually get permission
+                        println("SecurityException : ${e.message}")
+                    }
+                    // Increment by 1 day (in millis)
+                    triggerTime += 24 * 60 * 60 * 1000L
                 }
-                // Increment by 1 day (in millis)
-                triggerTime += 24 * 60 * 60 * 1000L
             }
+
         }
 
     }
@@ -86,17 +92,20 @@ class ReminderManager(private val context: Context) : ReminderScheduler {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            try {
-                println("ReminderManager try")
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    startDate,
-                    pendingIntent
-                )
-            } catch (e: SecurityException) {
-                // If permission is not granted, direct the user to the settings screen where they can manually get permission
-                println("SecurityException : ${e.message}")
+            startDate?.let {
+                try {
+                    println("ReminderManager try")
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        startDate,
+                        pendingIntent
+                    )
+                } catch (e: SecurityException) {
+                    // If permission is not granted, direct the user to the settings screen where they can manually get permission
+                    println("SecurityException : ${e.message}")
+                }
             }
+
         }
 
     }

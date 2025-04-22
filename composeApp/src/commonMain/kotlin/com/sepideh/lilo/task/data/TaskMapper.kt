@@ -8,7 +8,11 @@ fun TaskEntity.toTask(): Task = Task(
     description = description,
     done = done,
     category = category,
-    priority= priority
+    priority = priority,
+    hour = hour,
+    minute = minute,
+    startDate = startDate,
+    endDate = endDate
 )
 
 fun List<TaskEntity>.toTaskList() = this.map {
@@ -21,5 +25,9 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     description = description,
     done = done,
     category = category,
-    priority= priority
+    priority = priority,
+    hour = hour,
+    minute = minute,
+    startDate = startDate,
+    endDate = endDate
 )

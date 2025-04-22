@@ -90,7 +90,7 @@ fun AppRowButtons(
                 containerColor = Color.White,
             ),
             textColor = MaterialTheme.colorScheme.primary,
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
+            border = BorderStroke(width = 1.dp, color =  MaterialTheme.colorScheme.primary),
             onClick = onSecondButtonClick,
         )
     }
