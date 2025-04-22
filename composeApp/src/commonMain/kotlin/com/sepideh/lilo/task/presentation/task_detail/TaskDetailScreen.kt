@@ -24,6 +24,7 @@ import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
+import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.AppSingleButton
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
@@ -36,6 +37,7 @@ import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task_label
 import lilo.composeapp.generated.resources.add_task_title
+import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.description_label
 import lilo.composeapp.generated.resources.edit_task_label
 import lilo.composeapp.generated.resources.edit_task_title
@@ -75,24 +77,28 @@ fun TaskDetailScreenRoot(
                 PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
             if (state.isTimeDialogOpen) {
-                TimePickerContainer(onConfirm = {
-                    viewModel.onEvent(
-                        TaskDetailEvent.OnSelectReminderTime(it)
-                    )
-                    viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
-                }, onDismiss = {
-                    viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
-                    viewModel.onEvent(
-                        TaskDetailEvent.OnSelectReminderTime(Pair(null, null))
-                    )
-                })
+                TimePickerContainer(
+                    reminderModel = viewModel.reminderModel, onConfirm = {
+                        viewModel.onEvent(
+                            TaskDetailEvent.OnSelectReminderTime(it)
+                        )
+                        viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
+                    }, onDismiss = {
+                        viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
+                        viewModel.onEvent(
+                            TaskDetailEvent.OnSelectReminderTime(Pair(null, null))
+                        )
+                    })
             }
             if (state.isDateDialogOpen) {
-                DateRangePickerModal(onDateRangeSelected = { pair ->
-                    println("start: ${pair.first}  end: ${pair.second}")
-                    viewModel.onEvent(TaskDetailEvent.OnSelectReminderDate(pair))
-                    viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog)
-                }, onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })
+                DateRangePickerModal(
+                    reminderModel = viewModel.reminderModel,
+                    onDateRangeSelected = { pair ->
+                        println("start: ${pair.first}  end: ${pair.second}")
+                        viewModel.onEvent(TaskDetailEvent.OnSelectReminderDate(pair))
+                        viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog)
+                    },
+                    onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })
             }
         }
     )
@@ -158,19 +164,20 @@ fun TaskDetailScreen(
             }
 
         }
-        Box(modifier = Modifier.fillMaxSize()) {
-            AppSingleButton(
-                text = when (isEdit) {
-                    true -> Res.string.edit_task_label
-                    else -> Res.string.add_task_label
-                },
-                onClick = {
-                    onEvent(TaskDetailEvent.OnAddTaskButton)
-                },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+        AppRowButtons(
+            modifier = Modifier.align(Alignment.BottomCenter).padding(18.dp),
+            firstButtonTitle = when (isEdit) {
+                true -> Res.string.edit_task_label
+                else -> Res.string.add_task_label
+            },
+            onFirstButtonClick = {
+                onEvent(TaskDetailEvent.OnAddTaskButton)
+            },
+            secondButtonTitle = Res.string.cancel_button,
+            onSecondButtonClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp())) }
+        )
 
-        }
+
     }
 
 }
