@@ -152,14 +152,12 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnSelectReminderTime -> {
                 with(event.time) {
-                    println("1 ${event.time.first} ${event.time.second}")
+                    println("OnSelectReminderTime-> ${event.time.first} ${event.time.second}")
                     reminderModel = reminderModel.copy(hour = first, minute = second)
-                    println("2 $reminderModel")
                 }
             }
 
             is TaskDetailEvent.OnAddTaskButton -> {
-                println("3 $reminderModel")
                 val task = task.copy(
                     category = stateValue.value.selectedCategory?.id ?: Category.categories[0].id,
                     priority = stateValue.value.selectedPriority.id,
@@ -168,8 +166,7 @@ class TaskDetailViewModel(
                     startDate = reminderModel.startDay,
                     endDate = reminderModel.endDay,
                 )
-                println("4 $reminderModel")
-                println("5 $task")
+
                 if (isFormValid()) {
                     viewModelScope.launch {
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
@@ -257,7 +254,13 @@ class TaskDetailViewModel(
                     validationStatus = stateValue.value.titleError.copy(
                         value = task.title
                     )
+                ),
+                descriptionError = ValidateField.validate(
+                    validationStatus = stateValue.value.descriptionError.copy(
+                        value = task.description
+                    )
                 )
+
             )
         }
         return stateValue.value.titleError.isSuccessful
