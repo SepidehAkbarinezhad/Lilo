@@ -64,7 +64,7 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
                         textType = TextType.SubTitle,
                         textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None
                     )
-                    AppText(text = description, textType = TextType.Body)
+                    AppText(text = description, textType = TextType.Body, maxLines = 1)
                 }
                 IconButton(onClick = {
                     onEvent(TaskListEvent.OnDeleteTaskIcon(task = task))

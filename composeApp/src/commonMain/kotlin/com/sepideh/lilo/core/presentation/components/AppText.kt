@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.text.style.TextOverflow
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.styleText
 import org.jetbrains.compose.resources.StringResource
@@ -38,14 +39,19 @@ fun AppText(
     color: Color = Color.Black,
     textAlign: TextAlign = TextAlign.Start,
     textDirection: TextDirection = TextDirection.Rtl,
-    textDecoration: TextDecoration=TextDecoration.None
+    textDecoration: TextDecoration=TextDecoration.None,
+    maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
 ) {
     Text(
         modifier = modifier,
         text = text,
         style = styleText(textType).copy(textDirection = textDirection, textDecoration = textDecoration),
         color = color,
-        textAlign = textAlign
+        textAlign = textAlign,
+        maxLines = maxLines,
+        minLines = minLines,
+        overflow = TextOverflow.Ellipsis
     )
 }
 
