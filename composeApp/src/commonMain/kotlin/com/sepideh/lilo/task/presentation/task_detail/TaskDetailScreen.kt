@@ -156,9 +156,10 @@ fun TaskDetailScreen(
                             value = task.description,
                             onValueChange = { onEvent(TaskDetailEvent.OnDescriptionChanged(it)) },
                             label = stringResource(Res.string.description_label),
+                            validationStatus = state.descriptionError
                         ),
                         singleLine = false,
-                        maxLines = 3
+                        maxLines = 3,
                     )
 
                     TaskDetailIcons(onEvent = onEvent)
