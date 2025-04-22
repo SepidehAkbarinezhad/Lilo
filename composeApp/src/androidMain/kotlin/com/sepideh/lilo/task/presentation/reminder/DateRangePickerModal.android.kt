@@ -12,14 +12,20 @@ import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun DateRangePickerModal(
+    reminderModel: ReminderModel,
     onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val dateRangePickerState = rememberDateRangePickerState()
+    val dateRangePickerState = rememberDateRangePickerState(
+        initialSelectedStartDateMillis = reminderModel.startDay,
+        initialSelectedEndDateMillis = reminderModel.endDay
+    )
+
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
