@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
@@ -107,11 +108,12 @@ fun TaskListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (clickable) onEvent(
+                    if (clickable)
+                        onEvent(
                         BaseEvent.OnNavigateTo(
-                            AppDestinations.TaskDetail()
+                            AppDestinations.TaskDetail((AppRoutes.TaskDetail(taskId = 42))
                         )
-                    )
+                    ))
                 },
                 shape = RoundedCornerShape(20.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,

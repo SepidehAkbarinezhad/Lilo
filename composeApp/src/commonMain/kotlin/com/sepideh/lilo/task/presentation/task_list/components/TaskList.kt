@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_list.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.task.domain.model.Task
 
@@ -32,7 +35,7 @@ fun TaskList(
     ) {
         items(items = tasks, key = {it.id?:0}) {task->
             TaskListItem(
-                modifier = Modifier.fillMaxWidth().widthIn(700.dp).padding(horizontal = 12.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                 task = task,
                 onEvent = onEvent
             )

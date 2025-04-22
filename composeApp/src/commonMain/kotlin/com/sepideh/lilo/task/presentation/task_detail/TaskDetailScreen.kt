@@ -32,10 +32,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TaskDetailScreenRoot(
+    taskId : Long?,
     viewModel: TaskDetailViewModel,
     onNavigateTo: (AppDestinations) -> Unit
 ) {
-
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
 

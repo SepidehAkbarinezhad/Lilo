@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
@@ -40,7 +42,14 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
     ) {
         with(task) {
             Row(
-                Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+                Modifier.fillMaxWidth().height(IntrinsicSize.Max).clickable {
+                    onEvent(
+                        BaseEvent.OnNavigateTo(
+                            AppDestinations.TaskDetail(
+                                (AppRoutes.TaskDetail(taskId = task.id))
+                            )
+                        ))
+                },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(

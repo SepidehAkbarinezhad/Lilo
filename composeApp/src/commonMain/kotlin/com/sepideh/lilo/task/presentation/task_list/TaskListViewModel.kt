@@ -204,11 +204,7 @@ class TaskListViewModel(
                 }
             }
 
-            TaskListEvent.OnAddNewTaskClick -> {
-                newTask = Task()
-            }
-
-            is TaskListEvent.OnEditTaskIcon -> {
+            is TaskListEvent.OnEditTask -> {
                 newTask = event.task
             }
 
