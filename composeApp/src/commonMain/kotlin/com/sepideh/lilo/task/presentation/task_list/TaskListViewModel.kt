@@ -166,7 +166,7 @@ class TaskListViewModel(
                     with(state.value.taskFilterOption) {
                         onEvent(BaseEvent.ShowLoading(true))
                         taskDatabase.taskDao().getTaskByFilter(
-                            done = if (taskStatus == TaskStatus.ALL) null else taskStatus == TaskStatus.DONE,
+                            done = taskStatus == TaskStatus.DONE,
                             priority = priorityList.map { it.id }
                                 .ifEmpty { Priority.priorities.map { it.id } }
                         ).collect { tasksList ->

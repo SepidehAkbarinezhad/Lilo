@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_list.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.data.ScreenSize
 import com.sepideh.lilo.core.presentation.BaseEvent
@@ -107,22 +109,28 @@ fun StatusFilterContainer(
     onStatusClicked: (TaskStatus) -> Unit
 ) {
     AppText(text = stringResource(Res.string.status_filter_label), textType = TextType.SubTitle)
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement =  Arrangement.spacedBy(16.dp)
     ) {
         TaskStatus.entries.forEach { status ->
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AppText(text = status.label)
-                RadioButton(
-                    selected = status.label == filterOption.taskStatus.label,
-                    onClick = { onStatusClicked(status) })
+                if(status!=TaskStatus.ALL){
+                    AppText(text = status.label)
+                    Checkbox(
+                        checked = status.label == filterOption.taskStatus?.label,
+                        onCheckedChange = { onStatusClicked(status) }
+                    )
+                }
             }
         }
+
     }
+
 }
 
 @Composable
@@ -135,7 +143,7 @@ fun PriorityFilterContainer(
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Priority.priorities.forEach { priority ->
             Row(
@@ -147,6 +155,7 @@ fun PriorityFilterContainer(
                     onCheckedChange = { onPriorityClicked(priority) }
                 )
             }
+
         }
     }
 
