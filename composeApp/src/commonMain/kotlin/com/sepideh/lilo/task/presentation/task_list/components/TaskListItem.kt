@@ -35,26 +35,32 @@ import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
 
 @Composable
-fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent) -> Unit) {
+fun TaskListItem(
+    modifier: Modifier = Modifier,
+    clickable: Boolean,
+    task: Task,
+    onEvent: (BaseEvent) -> Unit
+) {
     Surface(
         modifier = modifier.clickable(onClick = {}), shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = .05f)
     ) {
         with(task) {
             Row(
-                Modifier.fillMaxWidth().height(IntrinsicSize.Max).clickable {
-                    onEvent(
-                        BaseEvent.OnNavigateTo(
-                            AppDestinations.TaskDetail(
-                                (AppRoutes.TaskDetail(taskId = task.id))
-                            )
-                        ))
-                },
+                Modifier.fillMaxWidth().height(IntrinsicSize.Max),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
                     checked = done,
-                    onCheckedChange = { onEvent(TaskListEvent.OnDoneChange(task = task.copy(done = !done))) })
+                    onCheckedChange = {
+                        if (clickable) onEvent(
+                            TaskListEvent.OnDoneChange(
+                                task = task.copy(
+                                    done = !done
+                                )
+                            )
+                        )
+                    })
                 Column(
                     Modifier.weight(.8f).padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -67,7 +73,8 @@ fun TaskListItem(modifier: Modifier = Modifier, task: Task, onEvent: (BaseEvent)
                     AppText(text = description, textType = TextType.Body, maxLines = 1)
                 }
                 IconButton(onClick = {
-                    onEvent(TaskListEvent.OnDeleteTaskIcon(task = task))
+                    if (clickable)
+                        onEvent(TaskListEvent.OnDeleteTaskIcon(task = task))
                 }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
