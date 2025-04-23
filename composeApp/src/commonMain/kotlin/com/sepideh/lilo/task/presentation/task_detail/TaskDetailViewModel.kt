@@ -263,7 +263,7 @@ class TaskDetailViewModel(
 
             )
         }
-        return stateValue.value.titleError.isSuccessful
+        return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful }
     }
 
 }
