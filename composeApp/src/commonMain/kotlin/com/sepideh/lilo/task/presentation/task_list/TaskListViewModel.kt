@@ -16,6 +16,7 @@ import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
 import kotlinx.coroutines.Dispatchers
@@ -167,6 +168,7 @@ class TaskListViewModel(
                         taskDatabase.taskDao().getTaskByFilter(
                             done = if (taskStatus == TaskStatus.ALL) null else taskStatus == TaskStatus.DONE,
                             priority = priorityList.map { it.id }
+                                .ifEmpty { Priority.priorities.map { it.id } }
                         ).collect { tasksList ->
                             delay(500)
                             _tasks.value = tasksList.toTaskList()
