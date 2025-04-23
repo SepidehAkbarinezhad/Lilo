@@ -14,7 +14,6 @@ sealed interface TaskListEvent : BaseEvent {
     data class OnStatusFilterChanged(val status: TaskStatus) : TaskListEvent
     data class OnPriorityFilterChanged(val priority: Priority) : TaskListEvent
     data object OnResetFilter : TaskListEvent
-    data class OnEditTask(val task: Task) : TaskListEvent
     data class OnDeleteTaskIcon(val task: Task?) : TaskListEvent
     data object OnDismissDeleteDialog : TaskListEvent
     data object OnDeleteTaskConfirm : TaskListEvent

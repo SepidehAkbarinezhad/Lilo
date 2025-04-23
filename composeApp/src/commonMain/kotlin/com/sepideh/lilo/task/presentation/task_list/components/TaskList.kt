@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -22,6 +21,7 @@ import com.sepideh.lilo.task.domain.model.Task
 @Composable
 fun TaskList(
     tasks: List<Task>,
+    clickable: Boolean,
     onEvent: (BaseEvent) -> Unit,
     modifier: Modifier = Modifier,
     scrollState: LazyListState = rememberLazyListState()
@@ -33,9 +33,21 @@ fun TaskList(
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(top = 12.dp, bottom = 54.dp)
     ) {
-        items(items = tasks, key = {it.id?:0}) {task->
+        items(items = tasks, key = { it.id ?: 0 }) { task ->
             TaskListItem(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                modifier = Modifier.fillMaxWidth().clickable {
+                    if (clickable) {
+                        onEvent(
+                            BaseEvent.OnNavigateTo(
+                                AppDestinations.TaskDetail(
+                                    (AppRoutes.TaskDetail(taskId = task.id))
+                                )
+                            )
+                        )
+                    }
+
+                }.padding(horizontal = 12.dp),
+                clickable = clickable,
                 task = task,
                 onEvent = onEvent
             )

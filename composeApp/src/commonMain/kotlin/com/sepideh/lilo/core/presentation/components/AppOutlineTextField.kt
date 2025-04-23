@@ -30,7 +30,8 @@ import com.sepideh.lilo.core.presentation.TextType
 
 @Composable
 fun AppOutlineTextField(
-    modifier: Modifier = Modifier,
+    containerModifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier,
     textFieldRequired: TextFieldRequired,
     leadingIconBackgroundColor: Color = Color.Transparent,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -47,6 +48,7 @@ fun AppOutlineTextField(
         unfocusedBorderColor = Gray,
     ),
     textStyle: TextStyle = LocalTextStyle.current,
+    maxLines : Int = 1
 ) {
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -63,7 +65,7 @@ fun AppOutlineTextField(
             else -> MaterialTheme.colorScheme.error
         }
 
-        Column(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = containerModifier.fillMaxWidth()) {
             AppText(
                 text = label,
                 textType = TextType.SubTitle,
@@ -71,7 +73,7 @@ fun AppOutlineTextField(
             )
 
             OutlinedTextField(
-                modifier = Modifier
+                modifier = textFieldModifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
                     .onFocusChanged { isFocused = it.isFocused },
@@ -93,7 +95,8 @@ fun AppOutlineTextField(
                 keyboardOptions = keyboardOptions,
                 singleLine = singleLine,
                 isError = !validationStatus.isSuccessful,
-                colors = color
+                colors = color,
+                maxLines = maxLines
             )
 
 
