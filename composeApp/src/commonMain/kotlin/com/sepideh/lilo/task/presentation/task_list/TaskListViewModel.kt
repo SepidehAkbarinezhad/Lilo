@@ -110,12 +110,13 @@ class TaskListViewModel(
     private var selectedTask: Task? = null
 
     init {
-        println("init loadingTag")
+        println("init loadingTag loadingg")
         onEvent(BaseEvent.ShowLoading(true))
         loadTasks()
     }
 
     private fun loadTasks() {
+        println("loadTasks loadingg")
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
                 .collect { tasksList ->
@@ -222,11 +223,14 @@ class TaskListViewModel(
             }
 
             is TaskListEvent.OnDeleteTaskConfirm -> {
+                onEvent(BaseEvent.ShowLoading(true))
                 selectedTask?.let {
                     viewModelScope.launch {
+                        delay(500)
                         withContext(Dispatchers.IO) {
                             it.id?.let { taskDatabase.taskDao().deleteById(it) }
                         }
+                        onEvent(BaseEvent.ShowLoading(false))
                     }
                 }
 
