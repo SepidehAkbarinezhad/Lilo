@@ -16,6 +16,7 @@ import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
 import kotlinx.coroutines.Dispatchers
@@ -110,12 +111,13 @@ class TaskListViewModel(
     private var selectedTask: Task? = null
 
     init {
-        println("init loadingTag")
+        println("init loadingTag loadingg")
         onEvent(BaseEvent.ShowLoading(true))
         loadTasks()
     }
 
     private fun loadTasks() {
+        println("loadTasks loadingg")
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
                 .collect { tasksList ->
@@ -164,8 +166,9 @@ class TaskListViewModel(
                     with(state.value.taskFilterOption) {
                         onEvent(BaseEvent.ShowLoading(true))
                         taskDatabase.taskDao().getTaskByFilter(
-                            done = if (taskStatus == TaskStatus.ALL) null else taskStatus == TaskStatus.DONE,
+                            done = if (taskStatus.isEmpty()) null else TaskStatus.DONE in taskStatus,
                             priority = priorityList.map { it.id }
+                                .ifEmpty { Priority.priorities.map { it.id } }
                         ).collect { tasksList ->
                             delay(500)
                             _tasks.value = tasksList.toTaskList()
@@ -176,7 +179,19 @@ class TaskListViewModel(
             }
 
             is TaskListEvent.OnStatusFilterChanged -> {
-                _state.update { it.copy(tempFilterOption = it.tempFilterOption.copy(taskStatus = event.status)) }
+                event.status.let {
+                    val updatedList =
+                        state.value.tempFilterOption.taskStatus.toMutableList().apply {
+                            if (contains(event.status)) {
+                                remove(it)
+                            } else {
+                                add(it)
+                            }
+                        }
+                    val tempFilter =
+                        state.value.taskFilterOption.copy(taskStatus = updatedList)
+                    _state.update { it.copy(tempFilterOption = tempFilter) }
+                }
             }
 
             is TaskListEvent.OnPriorityFilterChanged -> {
@@ -204,10 +219,6 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListEvent.OnEditTask -> {
-                newTask = event.task
-            }
-
             is TaskListEvent.OnDeleteTaskIcon -> {
                 selectedTask = event.task
                 _state.update {
@@ -222,11 +233,14 @@ class TaskListViewModel(
             }
 
             is TaskListEvent.OnDeleteTaskConfirm -> {
+                onEvent(BaseEvent.ShowLoading(true))
                 selectedTask?.let {
                     viewModelScope.launch {
+                        delay(500)
                         withContext(Dispatchers.IO) {
                             it.id?.let { taskDatabase.taskDao().deleteById(it) }
                         }
+                        onEvent(BaseEvent.ShowLoading(false))
                     }
                 }
 

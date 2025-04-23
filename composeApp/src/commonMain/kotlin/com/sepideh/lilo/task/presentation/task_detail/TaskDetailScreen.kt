@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +27,6 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
-import com.sepideh.lilo.core.presentation.components.AppSingleButton
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
@@ -138,7 +139,7 @@ fun TaskDetailScreen(
                     verticalArrangement = Arrangement.Top
                 ) {
                     AppOutlineTextField(
-                        modifier = Modifier.padding(18.dp),
+                        containerModifier = Modifier.padding(18.dp),
                         textFieldRequired = TextFieldRequired(
                             value = task.title,
                             onValueChange = { onEvent(TaskDetailEvent.OnTitleChanged(it)) },
@@ -149,13 +150,16 @@ fun TaskDetailScreen(
 
 
                     AppOutlineTextField(
-                        modifier = Modifier.padding(18.dp),
+                        containerModifier = Modifier.padding(18.dp),
+                        textFieldModifier = Modifier.heightIn(116.dp),
                         textFieldRequired = TextFieldRequired(
                             value = task.description,
                             onValueChange = { onEvent(TaskDetailEvent.OnDescriptionChanged(it)) },
                             label = stringResource(Res.string.description_label),
+                            validationStatus = state.descriptionError
                         ),
-                        singleLine = false
+                        singleLine = false,
+                        maxLines = 3,
                     )
 
                     TaskDetailIcons(onEvent = onEvent)
