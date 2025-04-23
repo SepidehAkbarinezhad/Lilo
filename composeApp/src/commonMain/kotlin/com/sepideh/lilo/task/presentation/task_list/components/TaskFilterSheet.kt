@@ -113,16 +113,16 @@ fun StatusFilterContainer(
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement =  Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         TaskStatus.entries.forEach { status ->
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if(status!=TaskStatus.ALL){
+                if (status != TaskStatus.ALL) {
                     AppText(text = status.label)
                     Checkbox(
-                        checked = status.label == filterOption.taskStatus?.label,
+                        checked = status in filterOption.taskStatus,
                         onCheckedChange = { onStatusClicked(status) }
                     )
                 }

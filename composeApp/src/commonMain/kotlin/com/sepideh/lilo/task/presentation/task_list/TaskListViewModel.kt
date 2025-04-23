@@ -166,7 +166,7 @@ class TaskListViewModel(
                     with(state.value.taskFilterOption) {
                         onEvent(BaseEvent.ShowLoading(true))
                         taskDatabase.taskDao().getTaskByFilter(
-                            done = taskStatus == TaskStatus.DONE,
+                            done = if (taskStatus.isEmpty()) null else TaskStatus.DONE in taskStatus,
                             priority = priorityList.map { it.id }
                                 .ifEmpty { Priority.priorities.map { it.id } }
                         ).collect { tasksList ->
@@ -179,7 +179,19 @@ class TaskListViewModel(
             }
 
             is TaskListEvent.OnStatusFilterChanged -> {
-                _state.update { it.copy(tempFilterOption = it.tempFilterOption.copy(taskStatus = event.status)) }
+                event.status.let {
+                    val updatedList =
+                        state.value.tempFilterOption.taskStatus.toMutableList().apply {
+                            if (contains(event.status)) {
+                                remove(it)
+                            } else {
+                                add(it)
+                            }
+                        }
+                    val tempFilter =
+                        state.value.taskFilterOption.copy(taskStatus = updatedList)
+                    _state.update { it.copy(tempFilterOption = tempFilter) }
+                }
             }
 
             is TaskListEvent.OnPriorityFilterChanged -> {
