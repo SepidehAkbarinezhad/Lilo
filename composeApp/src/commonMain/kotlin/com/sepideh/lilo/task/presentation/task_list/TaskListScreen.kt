@@ -206,6 +206,7 @@ fun TaskListScreen(
                     } else {
                         TaskList(
                             tasks = state.tasksResult,
+                            clickable =clickable,
                             onEvent = onEvent,
                             modifier = Modifier.fillMaxSize(),
                             scrollState = searchResultListState

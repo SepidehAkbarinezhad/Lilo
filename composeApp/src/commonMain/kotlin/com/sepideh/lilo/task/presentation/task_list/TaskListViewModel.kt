@@ -219,10 +219,6 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListEvent.OnEditTask -> {
-                newTask = event.task
-            }
-
             is TaskListEvent.OnDeleteTaskIcon -> {
                 selectedTask = event.task
                 _state.update {
