@@ -42,7 +42,7 @@ fun TaskListItem(
     onEvent: (BaseEvent) -> Unit
 ) {
     Surface(
-        modifier = modifier.clickable(onClick = {}), shape = RoundedCornerShape(12.dp),
+        modifier = modifier, shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = .05f)
     ) {
         with(task) {
