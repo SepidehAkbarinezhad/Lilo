@@ -58,16 +58,14 @@ fun TaskFilterSheet(
         Box(modifier = Modifier.fillMaxSize()) {
             Column {
                 FilterHeader(onEvent)
-                StatusFilterContainer(filterOption = state.tempFilterOption, onStatusClicked = {
-                    onEvent(TaskListEvent.OnStatusFilterChanged(it))
-                })
                 PriorityFilterContainer(
                     filterOption = state.tempFilterOption,
                     onPriorityClicked = { selectedPriority ->
                         onEvent(TaskListEvent.OnPriorityFilterChanged(selectedPriority))
                     })
-
-
+                StatusFilterContainer(filterOption = state.tempFilterOption, onStatusClicked = {
+                    onEvent(TaskListEvent.OnStatusFilterChanged(it))
+                })
             }
             AppRowButtons(
                 modifier = Modifier.align(Alignment.BottomCenter),
