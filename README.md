@@ -1,14 +1,10 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+A clean, modern Kotlin Multiplatform To-Do app built with Jetpack Compose Multiplatform UI and Room Multiplatform for the database, supporting both Android and iOS platforms.
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
-
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
-
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Features
+- ✍️ **Add, Edit, Delete Tasks**: Create new tasks, make changes, or remove them as needed.
+- 🔍 **Search Functionality**: Instantly find tasks using keywords.
+- 🎯 **Priority-Based Filtering**: Filter tasks by priority levels (e.g., Low, Medium, High).
+- ✅ **Done/Undone Filtering**: Easily toggle and view completed or pending tasks.
+- 🗂️ **Task Grouping**: Categorize tasks under custom groups for better organization.
+- ⏰ **Reminder/Alarm Support**: Set alarms to get notified about tasks.
+- 💡 **Shared UI with Jetpack Compose Multiplatform**: A single Compose codebase renders native UIs on Android and iOS.
