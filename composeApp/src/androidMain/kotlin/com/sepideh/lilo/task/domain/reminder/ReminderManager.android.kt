@@ -6,7 +6,7 @@ actual fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
     return dayMillis?.let {
         if (hour != null && minute != null) {
             Calendar.getInstance().apply {
-                timeInMillis = it
+                timeInMillis = dayMillis
                 set(Calendar.HOUR_OF_DAY, hour)
                 set(Calendar.MINUTE, minute)
                 set(Calendar.SECOND, 0)
