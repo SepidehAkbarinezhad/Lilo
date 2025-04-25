@@ -4,7 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.core.domain.PermissionManager
 import com.sepideh.lilo.core.domain.ValidateField
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseViewModel
@@ -32,7 +34,8 @@ import kotlinx.coroutines.launch
 class TaskDetailViewModel(
     private val taskDatabase: TaskDatabase,
     private val categoryDatabase: CategoryDatabase,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val permissionManager: PermissionManager
 ) : BaseViewModel() {
     private val _categories = categoryDatabase.categoryDao().getAllCategories()
         .map { it.toCategoryList() }
@@ -116,8 +119,21 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnTimeIcon -> {
-                state.update {
-                    it.copy(isTimeDialogOpen = true)
+                // When the user taps the time (reminder) icon, check both alarm and notification permissions.
+                // If both permissions are granted, open the time picker dialog.
+                // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
+
+                viewModelScope.launch {
+                    val hasAlarm = permissionManager.hasAlarmPermission()
+                    val hasNotif = permissionManager.hasNotificationPermission()
+                    state.update {
+                        it.copy(
+                            hasAlarmPermission = hasAlarm,
+                            hasNotificationPermission = hasNotif,
+                            isTimeDialogOpen = hasAlarm && hasNotif,
+                            shouldShowPermissionDialog = !hasAlarm || !hasNotif
+                        )
+                    }
                 }
             }
 

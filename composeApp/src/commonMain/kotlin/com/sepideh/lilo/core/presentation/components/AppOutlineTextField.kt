@@ -24,8 +24,8 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDirection
-import com.sepideh.lilo.core.domain.data.ValidationStatus
-import com.sepideh.lilo.core.domain.data.resolveMessage
+import com.sepideh.lilo.core.domain.model.ValidationStatus
+import com.sepideh.lilo.core.domain.model.resolveMessage
 import com.sepideh.lilo.core.presentation.TextType
 
 @Composable
