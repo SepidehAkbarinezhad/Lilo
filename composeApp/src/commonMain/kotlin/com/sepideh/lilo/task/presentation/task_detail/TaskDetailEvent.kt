@@ -21,5 +21,6 @@ sealed interface TaskDetailEvent : BaseEvent {
     data object OnAddTaskButton : TaskDetailEvent
     data class OnAddNewCategory(val category: Category) : TaskDetailEvent
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailEvent
+    data class OnShowPermissionDialog(val hasAlarm : Boolean,val hasNotification: Boolean) : TaskDetailEvent
 
 }

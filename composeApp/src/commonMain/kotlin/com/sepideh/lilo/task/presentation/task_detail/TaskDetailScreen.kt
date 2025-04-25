@@ -101,6 +101,10 @@ fun TaskDetailScreenRoot(
                     },
                     onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })
             }
+            if (state.shouldShowPermissionDialog) {
+                println("!state.hasAlarmPermission")
+            }
+
         }
     )
 

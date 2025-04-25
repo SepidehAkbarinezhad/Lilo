@@ -1,4 +1,4 @@
-package com.sepideh.lilo.core.domain.data
+package com.sepideh.lilo.core.domain.model
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.resources.StringResource
