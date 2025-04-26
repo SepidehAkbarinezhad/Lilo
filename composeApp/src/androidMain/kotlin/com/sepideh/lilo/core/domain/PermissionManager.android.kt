@@ -1,12 +1,15 @@
 package com.sepideh.lilo.core.domain
 
+import android.Manifest
 import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 
 actual class PermissionManager(private val context: Context) {
     actual suspend fun hasAlarmPermission(): Boolean {
@@ -36,7 +39,16 @@ actual class PermissionManager(private val context: Context) {
     }
 
     actual suspend fun hasNotificationPermission(): Boolean {
-        TODO("Not yet implemented")
+        return true
+//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            ContextCompat.checkSelfPermission(
+//                context,
+//                Manifest.permission.POST_NOTIFICATIONS
+//            ) == PackageManager.PERMISSION_GRANTED
+//        } else {
+//            true // Notification permission is automatically granted on lower Android versions
+//        }
+
     }
 
     actual suspend fun requestNotificationPermission() {

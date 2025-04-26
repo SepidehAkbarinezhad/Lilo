@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -33,6 +32,7 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
 import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
+import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
@@ -102,7 +102,7 @@ fun TaskDetailScreenRoot(
                     onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })
             }
             if (state.shouldShowPermissionDialog) {
-                println("!state.hasAlarmPermission")
+                PermissionAlertDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
 
         }
