@@ -211,8 +211,24 @@ class TaskDetailViewModel(
                         }
                 }
             }
+
+            is TaskDetailEvent.OnGoSettingButton -> {
+                viewModelScope.launch { permissionManager.requestAlarmPermission() }
+                closePermissionDialog()
+            }
+
+            TaskDetailEvent.OnCancelPermissionDialogButton -> {
+                closePermissionDialog()
+            }
         }
     }
+
+    private fun closePermissionDialog() {
+        viewModelScope.launch {
+            state.update { it.copy(shouldShowPermissionDialog = false) }
+        }
+    }
+
 
     private suspend fun updateSelectedCategory(categoryId: Long) {
         categoryDatabase.categoryDao().getCategoryById(categoryId = categoryId)
