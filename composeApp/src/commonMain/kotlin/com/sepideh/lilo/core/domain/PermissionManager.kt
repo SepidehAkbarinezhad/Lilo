@@ -16,7 +16,6 @@ package com.sepideh.lilo.core.domain
  */
 expect class PermissionManager {
     suspend fun hasAlarmPermission(): Boolean
-    suspend fun requestAlarmPermission()
     suspend fun hasNotificationPermission(): Boolean
-    suspend fun requestNotificationPermission()
+    suspend fun requestNeededPermission()
 }
