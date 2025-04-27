@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.domain.PermissionManager
 import com.sepideh.lilo.core.domain.ValidateField
@@ -183,7 +182,7 @@ class TaskDetailViewModel(
                     endDate = reminderModel.endDay,
                 )
 
-                if (isFormValid()) {
+                if (isFormValid(checkPermission = event.checkPermission)) {
                     viewModelScope.launch {
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
                         startReminder(id)
@@ -203,7 +202,6 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     taskDatabase.taskDao().getTaskById(event.taskId)?.toTask()
                         ?.let { selectedTask ->
-                            println("OnGetSelectedTaskInfo ->  $selectedTask")
                             task = selectedTask
                             updateSelectedCategory(selectedTask.category)
                             updateSelectedPriority(selectedTask.priority)
@@ -212,20 +210,39 @@ class TaskDetailViewModel(
                 }
             }
 
-            is TaskDetailEvent.OnGoSettingButton -> {
-                viewModelScope.launch { permissionManager.requestAlarmPermission() }
+            is TaskDetailEvent.OnGrantPermissionButton -> {
                 closePermissionDialog()
+                viewModelScope.launch { permissionManager.requestAlarmPermission() }
             }
 
             TaskDetailEvent.OnCancelPermissionDialogButton -> {
                 closePermissionDialog()
+                state.update {
+                    it.copy(
+                        isTimeDialogOpen = true,
+                    )
+                }
             }
         }
     }
 
     private fun closePermissionDialog() {
         viewModelScope.launch {
-            state.update { it.copy(shouldShowPermissionDialog = false) }
+            state.update {
+                it.copy(
+                    shouldShowPermissionDialog = false,
+                    shouldShowPermissionDeniedDialog = false
+                )
+            }
+        }
+    }
+
+    private fun needPermissionDeniedDialogState(checkPermission: Boolean): Boolean {
+        return when (checkPermission) {
+            true -> {
+                reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
+            }
+            else -> false
         }
     }
 
@@ -279,7 +296,8 @@ class TaskDetailViewModel(
 
     }
 
-    private fun isFormValid(): Boolean {
+    private fun isFormValid(checkPermission: Boolean): Boolean {
+
         state.update {
             it.copy(
                 titleError = ValidateField.validate(
@@ -291,11 +309,14 @@ class TaskDetailViewModel(
                     validationStatus = stateValue.value.descriptionError.copy(
                         value = task.description
                     )
-                )
+                ),
+                shouldShowPermissionDeniedDialog = needPermissionDeniedDialogState(checkPermission = checkPermission)
 
             )
         }
-        return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful }
+        println("isFormValid  ${stateValue.value.shouldShowPermissionDeniedDialog}")
+
+        return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
     }
 
 }

@@ -3,6 +3,7 @@ package com.sepideh.lilo.task.presentation.reminder
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -42,8 +43,8 @@ fun DeleteConfirmationDialog(
                     painter = painterResource(Res.drawable.delete_task_logo),
                     contentDescription = ""
                 )
-                AppText(textType = TextType.SubTitle, text = Res.string.delete_task_confirmation)
-                Box(modifier = Modifier.height(8.dp))
+                AppText(text = Res.string.delete_task_confirmation,textType = TextType.SubTitle)
+                Spacer(modifier = Modifier.height(8.dp))
                 AppRowButtons(
                     firstButtonTitle = Res.string.confirm_button,
                     onFirstButtonClick = onConfirm,

@@ -18,10 +18,10 @@ sealed interface TaskDetailEvent : BaseEvent {
     data class OnPrioritySelected(val title: String) : TaskDetailEvent
     data class OnSelectReminderDate(val date: Pair<Long?, Long?>) : TaskDetailEvent
     data class OnSelectReminderTime(val time: Pair<Int?, Int?>) : TaskDetailEvent
-    data object OnAddTaskButton : TaskDetailEvent
+    data class OnAddTaskButton(val checkPermission : Boolean = false) : TaskDetailEvent
     data class OnAddNewCategory(val category: Category) : TaskDetailEvent
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailEvent
-    data object OnGoSettingButton : TaskDetailEvent
+    data object OnGrantPermissionButton : TaskDetailEvent
     data object OnCancelPermissionDialogButton : TaskDetailEvent
 
 }
