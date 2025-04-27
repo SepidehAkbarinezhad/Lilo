@@ -33,6 +33,7 @@ import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
 import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlertDialog
+import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
@@ -103,6 +104,9 @@ fun TaskDetailScreenRoot(
             }
             if (state.shouldShowPermissionDialog) {
                 PermissionAlertDialog(state = state, onEvent = { viewModel.onEvent(it) })
+            }
+            if (state.shouldShowPermissionDeniedDialog) {
+                PermissionDeniedDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
 
         }
@@ -179,7 +183,7 @@ fun TaskDetailScreen(
                 else -> Res.string.add_task_label
             },
             onFirstButtonClick = {
-                onEvent(TaskDetailEvent.OnAddTaskButton)
+                onEvent(TaskDetailEvent.OnAddTaskButton(checkPermission = true))
             },
             secondButtonTitle = Res.string.cancel_button,
             onSecondButtonClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp())) }

@@ -1,4 +1,4 @@
-package com.sepideh.lilo.previews
+package com.sepideh.lilo.core.presentation.previews
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

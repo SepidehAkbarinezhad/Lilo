@@ -20,14 +20,14 @@ import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
 import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.add_task_label
 import lilo.composeapp.generated.resources.alert_icon
-import lilo.composeapp.generated.resources.cancel_button
-import lilo.composeapp.generated.resources.confirm_button
-import lilo.composeapp.generated.resources.permission_alert_dialog
+import lilo.composeapp.generated.resources.grant_permission_button
+import lilo.composeapp.generated.resources.permission_alert_dialog_denied
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun PermissionAlertDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
+fun PermissionDeniedDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
     AppDialog(dialogModel = DialogModel(content = {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -38,12 +38,13 @@ fun PermissionAlertDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) 
                 painter = painterResource(Res.drawable.alert_icon),
                 contentDescription = ""
             )
-            AppText(text = Res.string.permission_alert_dialog,textType = TextType.SubTitle)
+            AppText(text = Res.string.permission_alert_dialog_denied,textType = TextType.SubTitle,)
             Spacer(modifier = Modifier.height(8.dp))
-            AppRowButtons(firstButtonTitle = Res.string.confirm_button, onFirstButtonClick = {onEvent(TaskDetailEvent.OnGrantPermissionButton)},
-                secondButtonTitle = Res.string.cancel_button, onSecondButtonClick = {onEvent(TaskDetailEvent.OnCancelPermissionDialogButton)})
+            AppRowButtons(firstButtonTitle = Res.string.grant_permission_button,
+                onFirstButtonClick = { onEvent(TaskDetailEvent.OnGrantPermissionButton) },
+                secondButtonTitle = Res.string.add_task_label,
+                onSecondButtonClick = { onEvent(TaskDetailEvent.OnAddTaskButton(checkPermission = false)) })
         }
-
     }, onDismissRequest = { onEvent(TaskDetailEvent.OnDismissPriorityDialog) }))
 }
 

@@ -20,5 +20,6 @@ data class TaskDetailState(
     val descriptionError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.description_label)),
     val hasAlarmPermission: Boolean = true,
     val hasNotificationPermission: Boolean = true,
-    val shouldShowPermissionDialog: Boolean = false
+    val shouldShowPermissionDialog: Boolean = false,
+    val shouldShowPermissionDeniedDialog: Boolean = false
     )
