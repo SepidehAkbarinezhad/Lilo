@@ -212,7 +212,7 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnGrantPermissionButton -> {
                 closePermissionDialog()
-                viewModelScope.launch { permissionManager.requestAlarmPermission() }
+                viewModelScope.launch { permissionManager.requestNeededPermission() }
             }
 
             TaskDetailEvent.OnCancelPermissionDialogButton -> {
@@ -297,7 +297,6 @@ class TaskDetailViewModel(
     }
 
     private fun isFormValid(checkPermission: Boolean): Boolean {
-
         state.update {
             it.copy(
                 titleError = ValidateField.validate(
@@ -314,7 +313,7 @@ class TaskDetailViewModel(
 
             )
         }
-        println("isFormValid  ${stateValue.value.shouldShowPermissionDeniedDialog}")
+        println("isFormValid  ${stateValue.value}")
 
         return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
     }

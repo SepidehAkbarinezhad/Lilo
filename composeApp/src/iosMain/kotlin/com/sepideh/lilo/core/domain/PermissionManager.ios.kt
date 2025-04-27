@@ -5,14 +5,11 @@ actual class PermissionManager {
         TODO("Not yet implemented")
     }
 
-    actual suspend fun requestAlarmPermission() {
+    actual suspend fun requestNeededPermission() {
     }
 
     actual suspend fun hasNotificationPermission(): Boolean {
         TODO("Not yet implemented")
-    }
-
-    actual suspend fun requestNotificationPermission() {
     }
 
 }

@@ -21,36 +21,46 @@ actual class PermissionManager(private val context: Context) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
-    actual suspend fun requestAlarmPermission() {
-        // the flag is required when starting an activity from a non-Activity context (like Application or Service).
-        // You're launching the system settings screen for exact alarm permissions (Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-        // from your PermissionManager, which likely uses an application context — so NEW_TASK is necessary.
-        // This flag ensures the activity is launched in a new task stack and prevents exceptions when using startActivity().
-        // Without it, the system will throw an exception if you try to start the activity from a non-Activity context.
+    actual suspend fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true // Notification permission is automatically granted on lower Android versions
+        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                data = Uri.parse("package:${context.packageName}")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    actual suspend fun requestNeededPermission() {
+        // the flag is required when starting an activity from a non-Activity context (like Application or Service).
+        // We're launching the system settings screen from PermissionManager, which uses an application context — so NEW_TASK is necessary.
+        // Without it, we will get an IllegalStateException because Android doesn't know how to properly launch the activity in a new task from a non-UI context
+
+        when {
+            // If Android version is Android 12 (S), show the Exact Alarm permissions screen
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.S -> {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                    data = Uri.parse("package:${context.packageName}")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
             }
-            context.startActivity(intent)
+            // If Android version is Android 13+ (Tiramisu and above), open App Settings for permissions because it needs both alarm and notification setting
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.parse("package:${context.packageName}")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
+            }
+
+            else -> {
+                // No need to open anything
+            }
         }
     }
 
-    actual suspend fun hasNotificationPermission(): Boolean {
-        return true
-//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            ContextCompat.checkSelfPermission(
-//                context,
-//                Manifest.permission.POST_NOTIFICATIONS
-//            ) == PackageManager.PERMISSION_GRANTED
-//        } else {
-//            true // Notification permission is automatically granted on lower Android versions
-//        }
-
-    }
-
-    actual suspend fun requestNotificationPermission() {
-    }
 }
