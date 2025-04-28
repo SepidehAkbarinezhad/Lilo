@@ -1,4 +1,4 @@
-package com.sepideh.lilo.previews
+package com.sepideh.lilo.core.presentation.previews
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

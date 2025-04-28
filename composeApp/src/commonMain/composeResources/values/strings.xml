@@ -26,4 +26,8 @@
     <string name="least_length_limitation"> %s at least character</string>
     <string name="more_length_limitation"> shouldn't be more than %s</string>
     <string name="repeat_password_is_not_correct">repetition of password is not correct</string>
+    <string name="permission_alert_dialog">To set reminders, this app needs Alarm and Notification permissions.Please grant them in Settings to ensure your reminders work properly</string>
+    <string name="permission_alert_dialog_denied">Reminders require Alarm and Notification permissions to work properly. Without them, the reminder won't trigger.Would you like to grant the permissions or add the task anyway? </string>
+    <string name="grant_permission_button">grant</string>
+
 </resources>

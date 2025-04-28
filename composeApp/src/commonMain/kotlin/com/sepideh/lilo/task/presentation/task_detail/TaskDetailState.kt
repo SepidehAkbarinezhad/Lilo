@@ -1,6 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
-import com.sepideh.lilo.core.domain.data.ValidationStatus
+import com.sepideh.lilo.core.domain.model.ValidationStatus
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import lilo.composeapp.generated.resources.Res
@@ -17,5 +17,9 @@ data class TaskDetailState(
     val isTimeDialogOpen :Boolean = false,
     val addCategoryOpen :Boolean = false,
     val titleError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.title_label)),
-    val descriptionError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.description_label))
+    val descriptionError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.description_label)),
+    val hasAlarmPermission: Boolean = true,
+    val hasNotificationPermission: Boolean = true,
+    val shouldShowPermissionDialog: Boolean = false,
+    val shouldShowPermissionDeniedDialog: Boolean = false
     )
