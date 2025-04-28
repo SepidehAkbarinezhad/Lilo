@@ -19,15 +19,21 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: StringResource,
     textType: TextType = TextType.Body,
-    color: Color = Color.DarkGray,
-    textAlign: TextAlign = TextAlign.Start
+    color: Color = Color.Black,
+    textAlign: TextAlign = TextAlign.Justify,
+    textDirection: TextDirection = TextDirection.Unspecified,
+    textDecoration: TextDecoration=TextDecoration.None,
+    maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
 ) {
     Text(
         modifier = modifier,
         text = stringResource(text),
-        style = styleText(textType),
+        style = styleText(textType).copy(textDirection = textDirection, textDecoration = textDecoration),
         color = color,
-        textAlign = textAlign
+        textAlign = textAlign,
+        maxLines = maxLines,
+        minLines = minLines,
     )
 }
 
@@ -37,8 +43,8 @@ fun AppText(
     text: String,
     textType: TextType = TextType.Body,
     color: Color = Color.Black,
-    textAlign: TextAlign = TextAlign.Start,
-    textDirection: TextDirection = TextDirection.Rtl,
+    textAlign: TextAlign = TextAlign.Justify,
+    textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration=TextDecoration.None,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -33,6 +32,8 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
 import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
+import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlertDialog
+import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
@@ -101,6 +102,13 @@ fun TaskDetailScreenRoot(
                     },
                     onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })
             }
+            if (state.shouldShowPermissionDialog) {
+                PermissionAlertDialog(state = state, onEvent = { viewModel.onEvent(it) })
+            }
+            if (state.shouldShowPermissionDeniedDialog) {
+                PermissionDeniedDialog(state = state, onEvent = { viewModel.onEvent(it) })
+            }
+
         }
     )
 
@@ -175,7 +183,7 @@ fun TaskDetailScreen(
                 else -> Res.string.add_task_label
             },
             onFirstButtonClick = {
-                onEvent(TaskDetailEvent.OnAddTaskButton)
+                onEvent(TaskDetailEvent.OnAddTaskButton(checkPermission = true))
             },
             secondButtonTitle = Res.string.cancel_button,
             onSecondButtonClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp())) }

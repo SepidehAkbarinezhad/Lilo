@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.core.domain.PermissionManager
 import com.sepideh.lilo.core.domain.ValidateField
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseViewModel
@@ -32,7 +33,8 @@ import kotlinx.coroutines.launch
 class TaskDetailViewModel(
     private val taskDatabase: TaskDatabase,
     private val categoryDatabase: CategoryDatabase,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val permissionManager: PermissionManager
 ) : BaseViewModel() {
     private val _categories = categoryDatabase.categoryDao().getAllCategories()
         .map { it.toCategoryList() }
@@ -116,8 +118,21 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnTimeIcon -> {
-                state.update {
-                    it.copy(isTimeDialogOpen = true)
+                // When the user taps the time (reminder) icon, check both alarm and notification permissions.
+                // If both permissions are granted, open the time picker dialog.
+                // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
+
+                viewModelScope.launch {
+                    val hasAlarm = permissionManager.hasAlarmPermission()
+                    val hasNotif = permissionManager.hasNotificationPermission()
+                    state.update {
+                        it.copy(
+                            hasAlarmPermission = hasAlarm,
+                            hasNotificationPermission = hasNotif,
+                            isTimeDialogOpen = hasAlarm && hasNotif,
+                            shouldShowPermissionDialog = !hasAlarm || !hasNotif
+                        )
+                    }
                 }
             }
 
@@ -167,7 +182,7 @@ class TaskDetailViewModel(
                     endDate = reminderModel.endDay,
                 )
 
-                if (isFormValid()) {
+                if (isFormValid(checkPermission = event.checkPermission)) {
                     viewModelScope.launch {
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
                         startReminder(id)
@@ -187,7 +202,6 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     taskDatabase.taskDao().getTaskById(event.taskId)?.toTask()
                         ?.let { selectedTask ->
-                            println("OnGetSelectedTaskInfo ->  $selectedTask")
                             task = selectedTask
                             updateSelectedCategory(selectedTask.category)
                             updateSelectedPriority(selectedTask.priority)
@@ -195,8 +209,43 @@ class TaskDetailViewModel(
                         }
                 }
             }
+
+            is TaskDetailEvent.OnGrantPermissionButton -> {
+                closePermissionDialog()
+                viewModelScope.launch { permissionManager.requestNeededPermission() }
+            }
+
+            TaskDetailEvent.OnCancelPermissionDialogButton -> {
+                closePermissionDialog()
+                state.update {
+                    it.copy(
+                        isTimeDialogOpen = true,
+                    )
+                }
+            }
         }
     }
+
+    private fun closePermissionDialog() {
+        viewModelScope.launch {
+            state.update {
+                it.copy(
+                    shouldShowPermissionDialog = false,
+                    shouldShowPermissionDeniedDialog = false
+                )
+            }
+        }
+    }
+
+    private fun needPermissionDeniedDialogState(checkPermission: Boolean): Boolean {
+        return when (checkPermission) {
+            true -> {
+                reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
+            }
+            else -> false
+        }
+    }
+
 
     private suspend fun updateSelectedCategory(categoryId: Long) {
         categoryDatabase.categoryDao().getCategoryById(categoryId = categoryId)
@@ -247,7 +296,7 @@ class TaskDetailViewModel(
 
     }
 
-    private fun isFormValid(): Boolean {
+    private fun isFormValid(checkPermission: Boolean): Boolean {
         state.update {
             it.copy(
                 titleError = ValidateField.validate(
@@ -259,11 +308,14 @@ class TaskDetailViewModel(
                     validationStatus = stateValue.value.descriptionError.copy(
                         value = task.description
                     )
-                )
+                ),
+                shouldShowPermissionDeniedDialog = needPermissionDeniedDialogState(checkPermission = checkPermission)
 
             )
         }
-        return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful }
+        println("isFormValid  ${stateValue.value}")
+
+        return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
     }
 
 }

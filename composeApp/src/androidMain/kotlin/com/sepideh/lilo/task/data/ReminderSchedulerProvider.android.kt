@@ -10,7 +10,8 @@ import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_ID_TAG
 import com.sepideh.lilo.task.data.ReminderReceiver.Companion.NOTIFICATION_TITLE_TAG
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 
-class ReminderManager(private val context: Context) : ReminderScheduler {
+class ReminderSchedulerProvider(private val context: Context) :
+    ReminderScheduler {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun scheduleReminder(reminder: Reminder) {

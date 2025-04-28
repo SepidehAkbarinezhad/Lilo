@@ -21,8 +21,9 @@ actual fun DateRangePickerModal(
     onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
     onDismiss: () -> Unit
 ) {
+
     val dateRangePickerState = rememberDateRangePickerState(
-        initialSelectedStartDateMillis = reminderModel.startDay,
+        initialSelectedStartDateMillis = reminderModel.startDay?:System.currentTimeMillis(),
         initialSelectedEndDateMillis = reminderModel.endDay
     )
 
