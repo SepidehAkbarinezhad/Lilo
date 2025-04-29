@@ -40,10 +40,10 @@ fun PermissionAlertDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) 
             )
             AppText(text = Res.string.permission_alert_dialog,textType = TextType.SubTitle)
             Spacer(modifier = Modifier.height(8.dp))
-            AppRowButtons(firstButtonTitle = Res.string.confirm_button, onFirstButtonClick = {onEvent(TaskDetailEvent.OnGrantPermissionButton)},
-                secondButtonTitle = Res.string.cancel_button, onSecondButtonClick = {onEvent(TaskDetailEvent.OnCancelPermissionDialogButton)})
+            AppRowButtons(firstButtonTitle = Res.string.confirm_button, onFirstButtonClick = {onEvent(TaskDetailEvent.OnGrantPermissionButton(firstTime = true ))},
+                secondButtonTitle = Res.string.cancel_button, onSecondButtonClick = {onEvent(TaskDetailEvent.OnCancelPermissionDialog)})
         }
 
-    }, onDismissRequest = { onEvent(TaskDetailEvent.OnDismissPriorityDialog) }))
+    }, onDismissRequest = { onEvent(TaskDetailEvent.OnCancelPermissionDialog) }))
 }
 

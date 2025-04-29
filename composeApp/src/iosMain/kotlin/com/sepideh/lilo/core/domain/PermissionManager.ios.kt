@@ -2,6 +2,9 @@ package com.sepideh.lilo.core.domain
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import platform.Foundation.NSURL
+import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationOpenSettingsURLString
 import platform.UserNotifications.UNAuthorizationStatusAuthorized
 import platform.UserNotifications.UNUserNotificationCenter
 import platform.UserNotifications.*
@@ -20,7 +23,6 @@ actual class PermissionManager {
 
     actual suspend fun requestNeededPermission() {
         println("requestNeededPermission()")
-
         UNUserNotificationCenter.currentNotificationCenter()
             .requestAuthorizationWithOptions(
                 options = UNAuthorizationOptionAlert or
@@ -34,6 +36,21 @@ actual class PermissionManager {
     }
     actual suspend fun hasAlarmPermission(): Boolean {
         return true
+    }
+
+    actual suspend fun requestDeniedPermission() {
+
+        val url = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
+        if (url != null && UIApplication.sharedApplication.canOpenURL(url)) {
+            println("requestDeniedPermission()")
+            UIApplication.sharedApplication.openURL(
+                url,
+                options = emptyMap<Any?, Any>(),
+                completionHandler = { success ->
+                    println("Opened settings: $success")
+                }
+            )
+        }
     }
 
 }
