@@ -22,6 +22,8 @@ kotlin-serialization-json="1.7.3"
 coil="3.0.4"
 koin="4.1.0-Beta1"
 androidx-annotation="1.9.1"
+material3="1.7.0"
+kotlinx-datetime="0.4.0"
 annotationJvm = "1.9.1"
 
 [libraries]
@@ -53,6 +55,9 @@ androidx-room-paging = { group = "androidx.room", name = "room-paging", version.
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+material3-compose = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
 
 
 

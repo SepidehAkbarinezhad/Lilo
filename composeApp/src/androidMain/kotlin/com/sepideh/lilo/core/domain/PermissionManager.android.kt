@@ -17,7 +17,7 @@ actual class PermissionManager(private val context: Context) {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             alarmManager.canScheduleExactAlarms()
         } else {
-            false
+            true
         }
     }
 
