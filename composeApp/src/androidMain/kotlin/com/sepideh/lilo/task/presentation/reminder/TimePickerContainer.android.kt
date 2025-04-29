@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import com.sepideh.lilo.core.presentation.components.AppDialog
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
-import java.util.Calendar
+import com.sepideh.lilo.utils.getCurrentTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,11 +19,10 @@ actual fun TimePickerContainer(
     onConfirm: (Pair<Int?, Int?>) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val currentTime = Calendar.getInstance()
 
     val timePickerState = rememberTimePickerState(
-        initialHour = reminderModel.hour ?: currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = reminderModel.minute ?: currentTime.get(Calendar.MINUTE),
+        initialHour = reminderModel.hour ?: getCurrentTime().first,
+        initialMinute = reminderModel.minute ?: getCurrentTime().second,
         is24Hour = true,
     )
 
