@@ -212,11 +212,19 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnGrantPermissionButton -> {
+                println("OnGrantPermissionButton")
                 closePermissionDialog()
-                viewModelScope.launch { permissionManager.requestNeededPermission() }
+                viewModelScope.launch {
+                    with(permissionManager){
+                        when (event.firstTime) {
+                            true -> requestNeededPermission()
+                            false -> requestDeniedPermission()
+                        }
+                    }
+                }
             }
 
-            TaskDetailEvent.OnCancelPermissionDialogButton -> {
+            TaskDetailEvent.OnCancelPermissionDialog -> {
                 closePermissionDialog()
                 state.update {
                     it.copy(
@@ -243,6 +251,7 @@ class TaskDetailViewModel(
             true -> {
                 reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
             }
+
             else -> false
         }
     }
