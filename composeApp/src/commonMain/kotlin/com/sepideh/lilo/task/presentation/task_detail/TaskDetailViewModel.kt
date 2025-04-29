@@ -125,6 +125,7 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     val hasAlarm = permissionManager.hasAlarmPermission()
                     val hasNotif = permissionManager.hasNotificationPermission()
+                    println("hasNotif  $hasNotif")
                     state.update {
                         it.copy(
                             hasAlarmPermission = hasAlarm,
@@ -313,7 +314,7 @@ class TaskDetailViewModel(
 
             )
         }
-        println("isFormValid  ${stateValue.value}")
+        println("isFormValid  ${stateValue.value.hasAlarmPermission}  and ${stateValue.value.hasNotificationPermission}  and ${stateValue.value.shouldShowPermissionDeniedDialog}")
 
         return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
     }
