@@ -30,7 +30,6 @@ actual class PermissionManager {
                         UNAuthorizationOptionBadge,
                 completionHandler = { granted, error ->
                     println("completionHandler  granted:  $granted  error: $error")
-                    // Optionally handle this result
                 }
             )
     }
@@ -42,7 +41,6 @@ actual class PermissionManager {
 
         val url = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
         if (url != null && UIApplication.sharedApplication.canOpenURL(url)) {
-            println("requestDeniedPermission()")
             UIApplication.sharedApplication.openURL(
                 url,
                 options = emptyMap<Any?, Any>(),
