@@ -63,4 +63,9 @@ actual class PermissionManager(private val context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    actual suspend fun requestDeniedPermission() {
+        requestNeededPermission()
+    }
+
 }

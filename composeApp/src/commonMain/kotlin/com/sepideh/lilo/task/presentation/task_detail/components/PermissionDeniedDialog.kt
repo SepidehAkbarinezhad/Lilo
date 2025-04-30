@@ -41,10 +41,10 @@ fun PermissionDeniedDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit)
             AppText(text = Res.string.permission_alert_dialog_denied,textType = TextType.SubTitle,)
             Spacer(modifier = Modifier.height(8.dp))
             AppRowButtons(firstButtonTitle = Res.string.grant_permission_button,
-                onFirstButtonClick = { onEvent(TaskDetailEvent.OnGrantPermissionButton) },
+                onFirstButtonClick = { onEvent(TaskDetailEvent.OnGrantPermissionButton(firstTime = false)) },
                 secondButtonTitle = Res.string.add_task_label,
                 onSecondButtonClick = { onEvent(TaskDetailEvent.OnAddTaskButton(checkPermission = false)) })
         }
-    }, onDismissRequest = { onEvent(TaskDetailEvent.OnDismissPriorityDialog) }))
+    }, onDismissRequest = { onEvent(TaskDetailEvent.OnCancelPermissionDialog) }))
 }
 

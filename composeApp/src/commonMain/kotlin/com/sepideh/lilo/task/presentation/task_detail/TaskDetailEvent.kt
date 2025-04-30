@@ -21,7 +21,7 @@ sealed interface TaskDetailEvent : BaseEvent {
     data class OnAddTaskButton(val checkPermission : Boolean = false) : TaskDetailEvent
     data class OnAddNewCategory(val category: Category) : TaskDetailEvent
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailEvent
-    data object OnGrantPermissionButton : TaskDetailEvent
-    data object OnCancelPermissionDialogButton : TaskDetailEvent
+    data class OnGrantPermissionButton(val firstTime : Boolean) : TaskDetailEvent
+    data object OnCancelPermissionDialog : TaskDetailEvent
 
 }
