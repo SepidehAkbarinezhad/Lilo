@@ -5,6 +5,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
+import com.sepideh.lilo.utils.getCurrentDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -14,12 +15,15 @@ actual fun
     onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val datePickerState = rememberDatePickerState()
+            println("DateRangePickerModal")
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = reminderModel.startDay ?: getCurrentDate(),
+    )
 
     DatePicker(state = datePickerState)
 
     val selectedDateMillis = datePickerState.selectedDateMillis
     if (selectedDateMillis != null) {
-        onDateRangeSelected(Pair(selectedDateMillis, second = null))
+       // onDateRangeSelected(Pair(selectedDateMillis, second = null))
     }
 }

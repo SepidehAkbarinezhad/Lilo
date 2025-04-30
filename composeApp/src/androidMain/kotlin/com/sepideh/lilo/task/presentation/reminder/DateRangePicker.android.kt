@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
+import com.sepideh.lilo.utils.getCurrentDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +24,7 @@ actual fun DateRangePickerModal(
 ) {
 
     val dateRangePickerState = rememberDateRangePickerState(
-        initialSelectedStartDateMillis = reminderModel.startDay?:System.currentTimeMillis(),
+        initialSelectedStartDateMillis = reminderModel.startDay ?: getCurrentDate(),
         initialSelectedEndDateMillis = reminderModel.endDay
     )
 

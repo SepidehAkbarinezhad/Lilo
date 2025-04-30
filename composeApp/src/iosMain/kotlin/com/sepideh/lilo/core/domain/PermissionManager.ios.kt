@@ -9,7 +9,13 @@ import platform.UserNotifications.UNAuthorizationStatusAuthorized
 import platform.UserNotifications.UNUserNotificationCenter
 import platform.UserNotifications.*
 
-
+/**
+ * iOS implementation of PermissionManager.
+ *  Note: iOS handles permissions differently from Android.
+ *  - The system permission dialog is only shown **once per permission type**.
+ *  - If the user denies the permission the first time, subsequent calls to request it will NOT show the dialog again.
+ *  - The user must manually enable the permission from the device settings if they previously denied it.
+ */
 actual class PermissionManager {
     @OptIn(ExperimentalCoroutinesApi::class)
     actual suspend fun hasNotificationPermission(): Boolean {
@@ -22,7 +28,6 @@ actual class PermissionManager {
     }
 
     actual suspend fun requestNeededPermission() {
-        println("requestNeededPermission()")
         UNUserNotificationCenter.currentNotificationCenter()
             .requestAuthorizationWithOptions(
                 options = UNAuthorizationOptionAlert or
@@ -33,12 +38,16 @@ actual class PermissionManager {
                 }
             )
     }
+
+    /**
+     * iOS does not have a separate "alarm" permission like Android.
+     * This always returns true because alarm functionality is handled through local notifications.
+     */
     actual suspend fun hasAlarmPermission(): Boolean {
         return true
     }
 
     actual suspend fun requestDeniedPermission() {
-
         val url = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
         if (url != null && UIApplication.sharedApplication.canOpenURL(url)) {
             UIApplication.sharedApplication.openURL(
