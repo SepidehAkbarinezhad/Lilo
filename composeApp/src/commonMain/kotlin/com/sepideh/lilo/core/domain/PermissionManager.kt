@@ -18,4 +18,5 @@ expect class PermissionManager {
     suspend fun hasAlarmPermission(): Boolean
     suspend fun hasNotificationPermission(): Boolean
     suspend fun requestNeededPermission()
+    suspend fun requestDeniedPermission()
 }

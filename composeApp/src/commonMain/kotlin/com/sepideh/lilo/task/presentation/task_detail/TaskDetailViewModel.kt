@@ -19,9 +19,9 @@ import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTask
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
-import com.sepideh.lilo.task.domain.reminder.setReminderTime
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
+import com.sepideh.lilo.utils.setReminderTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -125,6 +125,7 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     val hasAlarm = permissionManager.hasAlarmPermission()
                     val hasNotif = permissionManager.hasNotificationPermission()
+                    println("hasNotif  $hasNotif")
                     state.update {
                         it.copy(
                             hasAlarmPermission = hasAlarm,
@@ -211,11 +212,19 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnGrantPermissionButton -> {
+                println("OnGrantPermissionButton")
                 closePermissionDialog()
-                viewModelScope.launch { permissionManager.requestNeededPermission() }
+                viewModelScope.launch {
+                    with(permissionManager){
+                        when (event.firstTime) {
+                            true -> requestNeededPermission()
+                            false -> requestDeniedPermission()
+                        }
+                    }
+                }
             }
 
-            TaskDetailEvent.OnCancelPermissionDialogButton -> {
+            TaskDetailEvent.OnCancelPermissionDialog -> {
                 closePermissionDialog()
                 state.update {
                     it.copy(
@@ -242,6 +251,7 @@ class TaskDetailViewModel(
             true -> {
                 reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
             }
+
             else -> false
         }
     }
@@ -313,7 +323,7 @@ class TaskDetailViewModel(
 
             )
         }
-        println("isFormValid  ${stateValue.value}")
+        println("isFormValid  ${stateValue.value.hasAlarmPermission}  and ${stateValue.value.hasNotificationPermission}  and ${stateValue.value.shouldShowPermissionDeniedDialog}")
 
         return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
     }
