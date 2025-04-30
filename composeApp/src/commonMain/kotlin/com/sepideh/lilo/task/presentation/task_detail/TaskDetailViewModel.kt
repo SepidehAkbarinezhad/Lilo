@@ -106,6 +106,7 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnDateIcon -> {
+                println("TaskDetailEvent.OnDateIcon ->")
                 state.update {
                     it.copy(isDateDialogOpen = true)
                 }
@@ -123,15 +124,11 @@ class TaskDetailViewModel(
                 // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
 
                 viewModelScope.launch {
-                    val hasAlarm = permissionManager.hasAlarmPermission()
-                    val hasNotif = permissionManager.hasNotificationPermission()
-                    println("hasNotif  $hasNotif")
+                    updatePermissionState()
                     state.update {
                         it.copy(
-                            hasAlarmPermission = hasAlarm,
-                            hasNotificationPermission = hasNotif,
-                            isTimeDialogOpen = hasAlarm && hasNotif,
-                            shouldShowPermissionDialog = !hasAlarm || !hasNotif
+                            isTimeDialogOpen = it.hasAlarmPermission && it.hasNotificationPermission,
+                            shouldShowPermissionDialog = !it.hasAlarmPermission || !it.hasNotificationPermission
                         )
                     }
                 }
@@ -174,17 +171,19 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnAddTaskButton -> {
-                val task = task.copy(
-                    category = stateValue.value.selectedCategory?.id ?: Category.categories[0].id,
-                    priority = stateValue.value.selectedPriority.id,
-                    hour = reminderModel.hour,
-                    minute = reminderModel.minute,
-                    startDate = reminderModel.startDay,
-                    endDate = reminderModel.endDay,
-                )
+                viewModelScope.launch {
+                    val task = task.copy(
+                        category = stateValue.value.selectedCategory?.id
+                            ?: Category.categories[0].id,
+                        priority = stateValue.value.selectedPriority.id,
+                        hour = reminderModel.hour,
+                        minute = reminderModel.minute,
+                        startDate = reminderModel.startDay,
+                        endDate = reminderModel.endDay,
+                    )
 
-                if (isFormValid(checkPermission = event.checkPermission)) {
-                    viewModelScope.launch {
+                    println("is TaskDetailEvent.OnAddTaskButton -> $task")
+                    if (isFormValid(checkPermission = event.checkPermission)) {
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
                         startReminder(id)
                     }
@@ -212,10 +211,9 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnGrantPermissionButton -> {
-                println("OnGrantPermissionButton")
                 closePermissionDialog()
                 viewModelScope.launch {
-                    with(permissionManager){
+                    with(permissionManager) {
                         when (event.firstTime) {
                             true -> requestNeededPermission()
                             false -> requestDeniedPermission()
@@ -247,6 +245,7 @@ class TaskDetailViewModel(
     }
 
     private fun needPermissionDeniedDialogState(checkPermission: Boolean): Boolean {
+        viewModelScope.launch { updatePermissionState() }
         return when (checkPermission) {
             true -> {
                 reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
@@ -285,6 +284,17 @@ class TaskDetailViewModel(
 
     override fun onResetState() {
 
+    }
+
+    private suspend fun updatePermissionState() {
+        val hasAlarm = permissionManager.hasAlarmPermission()
+        val hasNotification = permissionManager.hasNotificationPermission()
+        state.update {
+            it.copy(
+                hasAlarmPermission = hasAlarm,
+                hasNotificationPermission = hasNotification,
+            )
+        }
     }
 
     //todo set reminder in a way can add custom title description

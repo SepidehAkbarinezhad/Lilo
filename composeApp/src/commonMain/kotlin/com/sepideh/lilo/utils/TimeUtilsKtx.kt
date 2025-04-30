@@ -2,6 +2,7 @@ package com.sepideh.lilo.utils
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -12,6 +13,11 @@ fun getCurrentTime(): Pair<Int, Int> {
     val hour = currentDateTime.hour
     val minute = currentDateTime.minute
     return Pair(hour, minute)
+}
+
+fun getCurrentDate(): Long{
+    val currentDateTime = Clock.System.now().toEpochMilliseconds()
+    return currentDateTime
 }
 
 fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {

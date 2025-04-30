@@ -93,6 +93,7 @@ fun TaskDetailScreenRoot(
                     })
             }
             if (state.isDateDialogOpen) {
+                println("if (state.isDateDialogOpen)")
                 DateRangePickerModal(
                     reminderModel = viewModel.reminderModel,
                     onDateRangeSelected = { pair ->
