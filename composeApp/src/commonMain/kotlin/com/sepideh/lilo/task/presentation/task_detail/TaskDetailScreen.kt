@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
@@ -65,11 +66,14 @@ fun TaskDetailScreenRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
         bodyContainer = {
-            TaskDetailScreen(
-                state = state,
-                task = task,
-                onEvent = viewModel::onEvent
-            )
+            if(!state.isReminderDialogOpen){
+                TaskDetailScreen(
+                    state = state,
+                    task = task,
+                    onEvent = viewModel::onEvent
+                )
+            }
+
         },
         dialogContent = {
             if (state.isCategoryDialogOpen) {
@@ -166,7 +170,6 @@ fun TaskDetailScreen(
 
                     TaskDetailIcons(onEvent = onEvent)
                 }
-
             }
 
         }
