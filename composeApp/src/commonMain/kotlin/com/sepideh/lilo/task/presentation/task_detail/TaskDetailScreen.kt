@@ -29,7 +29,6 @@ import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
 import com.sepideh.lilo.task.presentation.reminder.ReminderPicker
 import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
@@ -93,17 +92,9 @@ fun TaskDetailScreenRoot(
                         )
                     })
             }
-            if (state.isDateDialogOpen) {
+            if (state.isReminderDialogOpen) {
                 println("if (state.isDateDialogOpen)")
-                ReminderPicker( reminderModel = viewModel.reminderModel, onHourChange = {}, onMinuteChange = {})
-               /* DateRangePickerModal(
-                    reminderModel = viewModel.reminderModel,
-                    onDateRangeSelected = { pair ->
-                        println("start: ${pair.first}  end: ${pair.second}")
-                        viewModel.onEvent(TaskDetailEvent.OnSelectReminderDate(pair))
-                        viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog)
-                    },
-                    onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })*/
+                ReminderPicker( reminderModel = viewModel.reminderModel, onEvent = {viewModel.onEvent(it)})
             }
             if (state.shouldShowPermissionDialog) {
                 PermissionAlertDialog(state = state, onEvent = { viewModel.onEvent(it) })
