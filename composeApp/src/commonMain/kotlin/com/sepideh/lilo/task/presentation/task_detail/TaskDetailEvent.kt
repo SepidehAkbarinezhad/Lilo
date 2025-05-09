@@ -11,13 +11,14 @@ sealed interface TaskDetailEvent : BaseEvent {
     data object OnPriorityIcon : TaskDetailEvent
     data object OnDismissPriorityDialog : TaskDetailEvent
     data object OnDateIcon : TaskDetailEvent
-    data object OnDismissDateDialog : TaskDetailEvent
+    data object OnDismissReminderDialogButton : TaskDetailEvent
     data object OnTimeIcon : TaskDetailEvent
     data object OnDismissTimeDialog : TaskDetailEvent
     data class OnCategorySelected(val title: String) : TaskDetailEvent
     data class OnPrioritySelected(val title: String) : TaskDetailEvent
     data class OnSelectReminderDate(val date: Pair<Long?, Long?>) : TaskDetailEvent
     data class OnSelectReminderTime(val time: Pair<Int?, Int?>) : TaskDetailEvent
+    data class OnSelectReminderConfirm(val reminderModel: ReminderModel) : TaskDetailEvent
     data class OnAddTaskButton(val checkPermission : Boolean = false) : TaskDetailEvent
     data class OnAddNewCategory(val category: Category) : TaskDetailEvent
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailEvent

@@ -13,7 +13,7 @@ data class TaskDetailState(
     val selectedPriority : Priority = Priority.priorities.first(),
     val isCategoryDialogOpen :Boolean = false,
     val isPriorityDialogOpen :Boolean = false,
-    val isDateDialogOpen :Boolean = false,
+    val isReminderDialogOpen :Boolean = false,
     val isTimeDialogOpen :Boolean = false,
     val addCategoryOpen :Boolean = false,
     val titleError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.title_label)),

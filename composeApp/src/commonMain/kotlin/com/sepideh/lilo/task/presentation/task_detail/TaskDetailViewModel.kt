@@ -107,15 +107,11 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnDateIcon -> {
                 println("TaskDetailEvent.OnDateIcon ->")
-                state.update {
-                    it.copy(isDateDialogOpen = true)
-                }
+                setIsReminderDialogOpen(open = true)
             }
 
-            is TaskDetailEvent.OnDismissDateDialog -> {
-                state.update {
-                    it.copy(isDateDialogOpen = false)
-                }
+            is TaskDetailEvent.OnDismissReminderDialogButton -> {
+                setIsReminderDialogOpen(open = false)
             }
 
             is TaskDetailEvent.OnTimeIcon -> {
@@ -138,6 +134,10 @@ class TaskDetailViewModel(
                 state.update {
                     it.copy(isTimeDialogOpen = false)
                 }
+            }
+            is TaskDetailEvent.OnSelectReminderConfirm->{
+                reminderModel=event.reminderModel
+                setIsReminderDialogOpen(open = false)
             }
 
             is TaskDetailEvent.OnCategorySelected -> {
@@ -336,6 +336,12 @@ class TaskDetailViewModel(
         println("isFormValid  ${stateValue.value.hasAlarmPermission}  and ${stateValue.value.hasNotificationPermission}  and ${stateValue.value.shouldShowPermissionDeniedDialog}")
 
         return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
+    }
+
+    private fun setIsReminderDialogOpen(open : Boolean){
+        state.update {
+            it.copy(isReminderDialogOpen = open)
+        }
     }
 
 }
