@@ -186,8 +186,9 @@ class TaskDetailViewModel(
                     if (isFormValid(checkPermission = event.checkPermission)) {
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
                         startReminder(id)
+                        onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                     }
-                    onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
+
                 }
             }
 
