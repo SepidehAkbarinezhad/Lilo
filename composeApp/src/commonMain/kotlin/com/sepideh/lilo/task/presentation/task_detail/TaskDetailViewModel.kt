@@ -115,8 +115,8 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnTimeIcon -> {
-                // When the user taps the time (reminder) icon, check both alarm and notification permissions.
-                // If both permissions are granted, open the time picker dialog.
+                // When the user taps the reminder icon, check both alarm and notification permissions.
+                // If both permissions are granted, open the reminder dialog.
                 // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
 
                 viewModelScope.launch {
@@ -136,7 +136,9 @@ class TaskDetailViewModel(
                 }
             }
             is TaskDetailEvent.OnSelectReminderConfirm->{
+                println("TaskDetailEvent.OnSelectReminderConfirm-> $reminderModel ${event.reminderModel}")
                 reminderModel=event.reminderModel
+                println("TaskDetailEvent.OnSelectReminderConfirm2-> $reminderModel")
                 setIsReminderDialogOpen(open = false)
             }
 

@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +45,20 @@ fun ColumnScope.ReminderTimePicker(
     LaunchedEffect(Unit) {
         hourListState.scrollToItem(initialHour)
         minuteListState.scrollToItem(initialMinute)
+    }
+
+    LaunchedEffect(hourListState) {
+        snapshotFlow { hourListState.firstVisibleItemIndex }
+            .collect { index ->
+                onSelectedHour(index)
+            }
+    }
+
+    LaunchedEffect(minuteListState) {
+        snapshotFlow { minuteListState.firstVisibleItemIndex }
+            .collect { index ->
+                onSelectedMinute(index)
+            }
     }
 
     AppText(
@@ -81,11 +96,11 @@ fun ColumnScope.ReminderTimePicker(
                 ) {
                     items(24) { hour ->
                         Box(
-                            modifier = Modifier.size(50.dp).clickable { onSelectedHour(hour) },
+                            modifier = Modifier.size(50.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(
-                                text = hour.toString(),
+                                text = hour.toString().padStart(2, '0')
                             )
                         }
 
@@ -118,11 +133,11 @@ fun ColumnScope.ReminderTimePicker(
                 ) {
                     items(60) { minute ->
                         Box(
-                            modifier = Modifier.size(50.dp).clickable { onSelectedMinute(minute)},
+                            modifier = Modifier.size(50.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(
-                                text = minute.toString(),
+                                text =minute.toString().padStart(2, '0')
                             )
                         }
                     }
