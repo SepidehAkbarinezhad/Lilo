@@ -19,9 +19,9 @@ import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTask
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
-import com.sepideh.lilo.task.domain.reminder.setReminderTime
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
+import com.sepideh.lilo.utils.setReminderTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -106,31 +106,25 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnDateIcon -> {
-                state.update {
-                    it.copy(isDateDialogOpen = true)
-                }
+                println("TaskDetailEvent.OnDateIcon ->")
+                setIsReminderDialogOpen(open = true)
             }
 
-            is TaskDetailEvent.OnDismissDateDialog -> {
-                state.update {
-                    it.copy(isDateDialogOpen = false)
-                }
+            is TaskDetailEvent.OnDismissReminderDialogButton -> {
+                setIsReminderDialogOpen(open = false)
             }
 
             is TaskDetailEvent.OnTimeIcon -> {
-                // When the user taps the time (reminder) icon, check both alarm and notification permissions.
-                // If both permissions are granted, open the time picker dialog.
+                // When the user taps the reminder icon, check both alarm and notification permissions.
+                // If both permissions are granted, open the reminder dialog.
                 // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
 
                 viewModelScope.launch {
-                    val hasAlarm = permissionManager.hasAlarmPermission()
-                    val hasNotif = permissionManager.hasNotificationPermission()
+                    updatePermissionState()
                     state.update {
                         it.copy(
-                            hasAlarmPermission = hasAlarm,
-                            hasNotificationPermission = hasNotif,
-                            isTimeDialogOpen = hasAlarm && hasNotif,
-                            shouldShowPermissionDialog = !hasAlarm || !hasNotif
+                            isTimeDialogOpen = it.hasAlarmPermission && it.hasNotificationPermission,
+                            shouldShowPermissionDialog = !it.hasAlarmPermission || !it.hasNotificationPermission
                         )
                     }
                 }
@@ -140,6 +134,12 @@ class TaskDetailViewModel(
                 state.update {
                     it.copy(isTimeDialogOpen = false)
                 }
+            }
+            is TaskDetailEvent.OnSelectReminderConfirm->{
+                println("TaskDetailEvent.OnSelectReminderConfirm-> $reminderModel ${event.reminderModel}")
+                reminderModel=event.reminderModel
+                println("TaskDetailEvent.OnSelectReminderConfirm2-> $reminderModel")
+                setIsReminderDialogOpen(open = false)
             }
 
             is TaskDetailEvent.OnCategorySelected -> {
@@ -173,21 +173,24 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnAddTaskButton -> {
-                val task = task.copy(
-                    category = stateValue.value.selectedCategory?.id ?: Category.categories[0].id,
-                    priority = stateValue.value.selectedPriority.id,
-                    hour = reminderModel.hour,
-                    minute = reminderModel.minute,
-                    startDate = reminderModel.startDay,
-                    endDate = reminderModel.endDay,
-                )
+                viewModelScope.launch {
+                    val task = task.copy(
+                        category = stateValue.value.selectedCategory?.id
+                            ?: Category.categories[0].id,
+                        priority = stateValue.value.selectedPriority.id,
+                        hour = reminderModel.hour,
+                        minute = reminderModel.minute,
+                        startDate = reminderModel.startDay,
+                        endDate = reminderModel.endDay,
+                    )
 
-                if (isFormValid(checkPermission = event.checkPermission)) {
-                    viewModelScope.launch {
+                    println("is TaskDetailEvent.OnAddTaskButton -> $task")
+                    if (isFormValid(checkPermission = event.checkPermission)) {
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
                         startReminder(id)
+                        onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                     }
-                    onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
+
                 }
             }
 
@@ -212,10 +215,17 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnGrantPermissionButton -> {
                 closePermissionDialog()
-                viewModelScope.launch { permissionManager.requestNeededPermission() }
+                viewModelScope.launch {
+                    with(permissionManager) {
+                        when (event.firstTime) {
+                            true -> requestNeededPermission()
+                            false -> requestDeniedPermission()
+                        }
+                    }
+                }
             }
 
-            TaskDetailEvent.OnCancelPermissionDialogButton -> {
+            TaskDetailEvent.OnCancelPermissionDialog -> {
                 closePermissionDialog()
                 state.update {
                     it.copy(
@@ -238,10 +248,12 @@ class TaskDetailViewModel(
     }
 
     private fun needPermissionDeniedDialogState(checkPermission: Boolean): Boolean {
+        viewModelScope.launch { updatePermissionState() }
         return when (checkPermission) {
             true -> {
                 reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
             }
+
             else -> false
         }
     }
@@ -275,6 +287,17 @@ class TaskDetailViewModel(
 
     override fun onResetState() {
 
+    }
+
+    private suspend fun updatePermissionState() {
+        val hasAlarm = permissionManager.hasAlarmPermission()
+        val hasNotification = permissionManager.hasNotificationPermission()
+        state.update {
+            it.copy(
+                hasAlarmPermission = hasAlarm,
+                hasNotificationPermission = hasNotification,
+            )
+        }
     }
 
     //todo set reminder in a way can add custom title description
@@ -313,9 +336,15 @@ class TaskDetailViewModel(
 
             )
         }
-        println("isFormValid  ${stateValue.value}")
+        println("isFormValid  ${stateValue.value.hasAlarmPermission}  and ${stateValue.value.hasNotificationPermission}  and ${stateValue.value.shouldShowPermissionDeniedDialog}")
 
         return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
+    }
+
+    private fun setIsReminderDialogOpen(open : Boolean){
+        state.update {
+            it.copy(isReminderDialogOpen = open)
+        }
     }
 
 }

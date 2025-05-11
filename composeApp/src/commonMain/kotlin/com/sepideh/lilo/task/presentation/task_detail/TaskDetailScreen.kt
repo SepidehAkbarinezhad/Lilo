@@ -29,8 +29,7 @@ import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.reminder.DateRangePickerModal
-import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
+import com.sepideh.lilo.task.presentation.reminder.ReminderPicker
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
@@ -65,11 +64,14 @@ fun TaskDetailScreenRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
         bodyContainer = {
-            TaskDetailScreen(
-                state = state,
-                task = task,
-                onEvent = viewModel::onEvent
-            )
+            if(!state.isReminderDialogOpen){
+                TaskDetailScreen(
+                    state = state,
+                    task = task,
+                    onEvent = viewModel::onEvent
+                )
+            }
+
         },
         dialogContent = {
             if (state.isCategoryDialogOpen) {
@@ -78,29 +80,9 @@ fun TaskDetailScreenRoot(
             if (state.isPriorityDialogOpen) {
                 PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
-            if (state.isTimeDialogOpen) {
-                TimePickerContainer(
-                    reminderModel = viewModel.reminderModel, onConfirm = {
-                        viewModel.onEvent(
-                            TaskDetailEvent.OnSelectReminderTime(it)
-                        )
-                        viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
-                    }, onDismiss = {
-                        viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
-                        viewModel.onEvent(
-                            TaskDetailEvent.OnSelectReminderTime(Pair(null, null))
-                        )
-                    })
-            }
-            if (state.isDateDialogOpen) {
-                DateRangePickerModal(
-                    reminderModel = viewModel.reminderModel,
-                    onDateRangeSelected = { pair ->
-                        println("start: ${pair.first}  end: ${pair.second}")
-                        viewModel.onEvent(TaskDetailEvent.OnSelectReminderDate(pair))
-                        viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog)
-                    },
-                    onDismiss = { viewModel.onEvent(TaskDetailEvent.OnDismissDateDialog) })
+            if (state.isReminderDialogOpen) {
+                println("if (state.isDateDialogOpen)")
+                ReminderPicker( reminderModel = viewModel.reminderModel, onEvent = {viewModel.onEvent(it)})
             }
             if (state.shouldShowPermissionDialog) {
                 PermissionAlertDialog(state = state, onEvent = { viewModel.onEvent(it) })
@@ -172,7 +154,6 @@ fun TaskDetailScreen(
 
                     TaskDetailIcons(onEvent = onEvent)
                 }
-
             }
 
         }

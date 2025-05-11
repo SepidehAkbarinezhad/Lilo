@@ -17,6 +17,7 @@ import com.sepideh.lilo.core.presentation.components.DialogModel
 
 @Composable
 fun BaseRoot(
+    modifier: Modifier=Modifier,
     viewModel: BaseViewModel,
     navigateTo: (AppDestinations) -> Unit,
     bodyContainer: @Composable () -> Unit,
