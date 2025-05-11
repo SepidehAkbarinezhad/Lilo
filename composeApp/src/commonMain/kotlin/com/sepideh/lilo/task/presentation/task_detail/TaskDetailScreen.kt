@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
@@ -31,7 +30,6 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.ReminderPicker
-import com.sepideh.lilo.task.presentation.reminder.TimePickerContainer
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
@@ -81,20 +79,6 @@ fun TaskDetailScreenRoot(
             }
             if (state.isPriorityDialogOpen) {
                 PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
-            }
-            if (state.isTimeDialogOpen) {
-                TimePickerContainer(
-                    reminderModel = viewModel.reminderModel, onConfirm = {
-                        viewModel.onEvent(
-                            TaskDetailEvent.OnSelectReminderTime(it)
-                        )
-                        viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
-                    }, onDismiss = {
-                        viewModel.onEvent(TaskDetailEvent.OnDismissTimeDialog)
-                        viewModel.onEvent(
-                            TaskDetailEvent.OnSelectReminderTime(Pair(null, null))
-                        )
-                    })
             }
             if (state.isReminderDialogOpen) {
                 println("if (state.isDateDialogOpen)")
