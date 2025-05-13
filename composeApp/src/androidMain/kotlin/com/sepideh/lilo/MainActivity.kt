@@ -11,7 +11,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-
         setContent {
             App(darkTheme = isSystemInDarkTheme(), dynamicColor = false)
         }
