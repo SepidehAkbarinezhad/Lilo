@@ -37,7 +37,11 @@ fun NavigationGraph(navHostController: NavHostController) {
         composable<AppRoutes.TaskDetail> {
             val args = it.toRoute<AppRoutes.TaskDetail>()
             val viewModel = koinViewModel<TaskDetailViewModel>()
-            TaskDetailScreenRoot(taskId = args.taskId,viewModel = viewModel, onNavigateTo = onNavigate)
+            TaskDetailScreenRoot(
+                taskId = args.taskId,
+                viewModel = viewModel,
+                onNavigateTo = onNavigate
+            )
         }
 
     }
