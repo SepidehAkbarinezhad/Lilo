@@ -18,7 +18,7 @@
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:name=".MainActivity"
-            android:theme="@style/Theme.App.Starting">
+            android:theme="@style/Theme.Lilo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
