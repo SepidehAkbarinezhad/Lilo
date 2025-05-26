@@ -135,9 +135,10 @@ class TaskDetailViewModel(
                     it.copy(isTimeDialogOpen = false)
                 }
             }
-            is TaskDetailEvent.OnSelectReminderConfirm->{
+
+            is TaskDetailEvent.OnSelectReminderConfirm -> {
                 println("TaskDetailEvent.OnSelectReminderConfirm-> $reminderModel ${event.reminderModel}")
-                reminderModel=event.reminderModel
+                reminderModel = event.reminderModel
                 println("TaskDetailEvent.OnSelectReminderConfirm2-> $reminderModel")
                 setIsReminderDialogOpen(open = false)
             }
@@ -320,28 +321,35 @@ class TaskDetailViewModel(
     }
 
     private fun isFormValid(checkPermission: Boolean): Boolean {
+        /*
+        * Validate the title and description fields based on current input
+        * We store these locally to ensure we can use them immediately for logic,
+        *  because the state won't reflect updates right away.
+        * */
+        val newTitleError = ValidateField.validate(
+            validationStatus = stateValue.value.titleError.copy(
+                value = task.title
+            )
+        )
+        val newDescriptionError = ValidateField.validate(
+            validationStatus = stateValue.value.descriptionError.copy(
+                value = task.description
+            )
+        )
+        val permissionDialogNeeded = needPermissionDeniedDialogState(checkPermission = checkPermission)
+
         state.update {
             it.copy(
-                titleError = ValidateField.validate(
-                    validationStatus = stateValue.value.titleError.copy(
-                        value = task.title
-                    )
-                ),
-                descriptionError = ValidateField.validate(
-                    validationStatus = stateValue.value.descriptionError.copy(
-                        value = task.description
-                    )
-                ),
-                shouldShowPermissionDeniedDialog = needPermissionDeniedDialogState(checkPermission = checkPermission)
-
+                titleError = newTitleError,
+                descriptionError = newDescriptionError,
+                shouldShowPermissionDeniedDialog = permissionDialogNeeded
             )
         }
-        println("isFormValid  ${stateValue.value.hasAlarmPermission}  and ${stateValue.value.hasNotificationPermission}  and ${stateValue.value.shouldShowPermissionDeniedDialog}")
 
-        return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
+        return newTitleError.isSuccessful && newDescriptionError.isSuccessful && !permissionDialogNeeded
     }
 
-    private fun setIsReminderDialogOpen(open : Boolean){
+    private fun setIsReminderDialogOpen(open: Boolean) {
         state.update {
             it.copy(isReminderDialogOpen = open)
         }
