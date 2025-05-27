@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.BaseViewModel
+import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.TaskDatabase
 import com.sepideh.lilo.task.data.category.CategoryDatabase
 import com.sepideh.lilo.task.data.category.toCategoryList
@@ -15,10 +16,12 @@ import com.sepideh.lilo.task.data.category.toEntity
 import com.sepideh.lilo.task.data.toEntity
 import com.sepideh.lilo.task.data.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
+import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
+import com.sepideh.lilo.utils.setReminderTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
@@ -38,8 +41,9 @@ import kotlinx.coroutines.withContext
 
 class TaskListViewModel(
     private val taskDatabase: TaskDatabase,
-    private val categoryDatabase: CategoryDatabase
-) : BaseViewModel() {
+    private val categoryDatabase: CategoryDatabase,
+    private val reminderScheduler: ReminderScheduler,
+    ) : BaseViewModel() {
 
     private val _categories =
         categoryDatabase.categoryDao().getAllCategories().onEach { categories ->
@@ -111,13 +115,11 @@ class TaskListViewModel(
     private var selectedTask: Task? = null
 
     init {
-        println("init loadingTag loadingg")
         onEvent(BaseEvent.ShowLoading(true))
         loadTasks()
     }
 
     private fun loadTasks() {
-        println("loadTasks loadingg")
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
                 .collect { tasksList ->
@@ -255,6 +257,23 @@ class TaskListViewModel(
             }
 
             is TaskListEvent.OnDoneChange -> {
+                print("cancleeee TaskListEvent.OnDoneChange -> id ${event.task.id} ")
+                if(event.task.done){
+                    event.task.id?.let{
+                        with(event.task){
+                            reminderScheduler.cancelReminder( reminder = Reminder(
+                                id = id?.toInt()!!,
+                                title = title,
+                                content = "",
+                                startDate = startDate,
+                                endDate = setReminderTime(dayMillis = endDate, hour = hour, minute = minute)
+                            )
+                            )
+                        }
+
+                    }
+
+                }
                 viewModelScope.launch {
                     taskDatabase.taskDao().upsert(task = event.task.toEntity())
                 }
