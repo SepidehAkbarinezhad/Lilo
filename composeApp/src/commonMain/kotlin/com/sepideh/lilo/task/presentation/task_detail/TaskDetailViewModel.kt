@@ -107,6 +107,7 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnDateIcon -> {
                 println("TaskDetailEvent.OnDateIcon ->")
+                viewModelScope.launch { updatePermissionState() }
                 setIsReminderDialogOpen(open = true)
             }
 
@@ -119,8 +120,10 @@ class TaskDetailViewModel(
                 // If both permissions are granted, open the reminder dialog.
                 // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
 
+                println("reminder TaskDetailEvent.OnTimeIcon")
                 viewModelScope.launch {
                     updatePermissionState()
+                    println("reminder TaskDetailEvent.OnTimeIcon  ${state.value.hasAlarmPermission}   ${state.value.hasNotificationPermission}")
                     state.update {
                         it.copy(
                             isTimeDialogOpen = it.hasAlarmPermission && it.hasNotificationPermission,
@@ -187,6 +190,7 @@ class TaskDetailViewModel(
 
                     println("is TaskDetailEvent.OnAddTaskButton -> $task")
                     if (isFormValid(checkPermission = event.checkPermission)) {
+                        println("reminder form is valid")
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
                         startReminder(id)
                         onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
@@ -249,7 +253,8 @@ class TaskDetailViewModel(
     }
 
     private fun needPermissionDeniedDialogState(checkPermission: Boolean): Boolean {
-        viewModelScope.launch { updatePermissionState() }
+        println("1 reminder needPermissionDeniedDialogState $checkPermission")
+        println("4 reminder needPermissionDeniedDialogState ${state.value}")
         return when (checkPermission) {
             true -> {
                 reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
@@ -293,12 +298,14 @@ class TaskDetailViewModel(
     private suspend fun updatePermissionState() {
         val hasAlarm = permissionManager.hasAlarmPermission()
         val hasNotification = permissionManager.hasNotificationPermission()
+        println("2 reminder updatePermissionState  hasAlarm: $hasAlarm  hasNotif: $hasNotification")
         state.update {
             it.copy(
                 hasAlarmPermission = hasAlarm,
                 hasNotificationPermission = hasNotification,
             )
         }
+        println("3 reminder")
     }
 
     //todo set reminder in a way can add custom title description
@@ -321,6 +328,7 @@ class TaskDetailViewModel(
     }
 
     private fun isFormValid(checkPermission: Boolean): Boolean {
+        println(" fun isFormValid")
         /*
         * Validate the title and description fields based on current input
         * We store these locally to ensure we can use them immediately for logic,
