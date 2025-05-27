@@ -41,6 +41,7 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.material)
             implementation(compose.material3)
+            implementation(libs.accompanist.systemuicontroller)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
