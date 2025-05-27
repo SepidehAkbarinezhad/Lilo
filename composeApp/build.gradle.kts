@@ -67,6 +67,12 @@ kotlin {
 }
 
 android {
+    applicationVariants.all {
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            outputImpl.outputFileName = "Lilo-${name}.apk"
+        }
+    }
     namespace = "com.sepideh.lilo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 

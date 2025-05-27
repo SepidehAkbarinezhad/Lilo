@@ -4,10 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -106,14 +111,13 @@ fun TaskDetailScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
-                .statusBarsPadding(),
         ) {
             Box(
-                modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary),
+                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 AppText(
-                    modifier = Modifier.padding(vertical = 18.dp),
+                    modifier = Modifier.statusBarsPadding().padding(18.dp),
                     text = when (isEdit) {
                         true -> Res.string.edit_task_title
                         else -> Res.string.add_task_title
@@ -158,7 +162,7 @@ fun TaskDetailScreen(
 
         }
         AppRowButtons(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(18.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
             firstButtonTitle = when (isEdit) {
                 true -> Res.string.edit_task_label
                 else -> Res.string.add_task_label
