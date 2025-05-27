@@ -178,6 +178,7 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnAddTaskButton -> {
                 viewModelScope.launch {
+                    updatePermissionState()
                     val task = task.copy(
                         category = stateValue.value.selectedCategory?.id
                             ?: Category.categories[0].id,
@@ -188,10 +189,9 @@ class TaskDetailViewModel(
                         endDate = reminderModel.endDay,
                     )
 
-                    println("is TaskDetailEvent.OnAddTaskButton -> $task")
                     if (isFormValid(checkPermission = event.checkPermission)) {
-                        println("reminder form is valid")
                         val id = taskDatabase.taskDao().upsert(task.toEntity())
+                        print("cancleeee TaskDetailEvent.OnAddTaskButton -> id $id ")
                         startReminder(id)
                         onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                     }
@@ -253,8 +253,6 @@ class TaskDetailViewModel(
     }
 
     private fun needPermissionDeniedDialogState(checkPermission: Boolean): Boolean {
-        println("1 reminder needPermissionDeniedDialogState $checkPermission")
-        println("4 reminder needPermissionDeniedDialogState ${state.value}")
         return when (checkPermission) {
             true -> {
                 reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
@@ -298,14 +296,12 @@ class TaskDetailViewModel(
     private suspend fun updatePermissionState() {
         val hasAlarm = permissionManager.hasAlarmPermission()
         val hasNotification = permissionManager.hasNotificationPermission()
-        println("2 reminder updatePermissionState  hasAlarm: $hasAlarm  hasNotif: $hasNotification")
         state.update {
             it.copy(
                 hasAlarmPermission = hasAlarm,
                 hasNotificationPermission = hasNotification,
             )
         }
-        println("3 reminder")
     }
 
     //todo set reminder in a way can add custom title description
@@ -328,7 +324,6 @@ class TaskDetailViewModel(
     }
 
     private fun isFormValid(checkPermission: Boolean): Boolean {
-        println(" fun isFormValid")
         /*
         * Validate the title and description fields based on current input
         * We store these locally to ensure we can use them immediately for logic,

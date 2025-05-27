@@ -114,7 +114,7 @@ fun TaskListScreen(
                     if (clickable)
                         onEvent(
                         BaseEvent.OnNavigateTo(
-                            AppDestinations.TaskDetail((AppRoutes.TaskDetail(taskId = 42))
+                            AppDestinations.TaskDetail((AppRoutes.TaskDetail(taskId = -1))
                         )
                     ))
                 },
