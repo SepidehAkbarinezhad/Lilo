@@ -115,11 +115,11 @@ class TaskListViewModel(
     private var selectedTask: Task? = null
 
     init {
-        onEvent(BaseEvent.ShowLoading(true))
         loadTasks()
     }
 
     private fun loadTasks() {
+        onEvent(BaseEvent.ShowLoading(true))
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
                 .collect { tasksList ->
@@ -216,9 +216,11 @@ class TaskListViewModel(
                 _state.update {
                     it.copy(
                         tempFilterOption = TaskFilterOption(),
+                        taskFilterOption = TaskFilterOption(),
                         isFilterSheetOpen = false
                     )
                 }
+                loadTasks()
             }
 
             is TaskListEvent.OnDeleteTaskIcon -> {
