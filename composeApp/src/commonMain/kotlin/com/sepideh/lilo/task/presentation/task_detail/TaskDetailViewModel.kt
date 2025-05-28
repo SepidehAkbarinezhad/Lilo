@@ -179,7 +179,7 @@ class TaskDetailViewModel(
             is TaskDetailEvent.OnAddTaskButton -> {
                 viewModelScope.launch {
                     updatePermissionState()
-                    val task = task.copy(
+                    val tempTask = task.copy(
                         category = stateValue.value.selectedCategory?.id
                             ?: Category.categories[0].id,
                         priority = stateValue.value.selectedPriority.id,
@@ -187,12 +187,18 @@ class TaskDetailViewModel(
                         minute = reminderModel.minute,
                         startDate = reminderModel.startDay,
                         endDate = reminderModel.endDay,
+                        id = task.id
                     )
-
+                    println("cancleeee OnAddTaskButton -> tempTask.id ${tempTask.id} ")
+                    println("cancleeee OnAddTaskButton -> task.id ${task.id} ")
                     if (isFormValid(checkPermission = event.checkPermission)) {
-                        val id = taskDatabase.taskDao().upsert(task.toEntity())
-                        print("cancleeee TaskDetailEvent.OnAddTaskButton -> id $id ")
-                        startReminder(id)
+                        //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
+                        val resultId = taskDatabase.taskDao().upsert(tempTask.toEntity())
+                        //Use the correct ID for scheduling a reminder:
+                        //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
+                        val actualId = if (resultId == -1L) tempTask.id!! else resultId
+                        println("cancleeee $resultId  $actualId")
+                        startReminder(actualId)
                         onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                     }
 
@@ -339,7 +345,8 @@ class TaskDetailViewModel(
                 value = task.description
             )
         )
-        val permissionDialogNeeded = needPermissionDeniedDialogState(checkPermission = checkPermission)
+        val permissionDialogNeeded =
+            needPermissionDeniedDialogState(checkPermission = checkPermission)
 
         state.update {
             it.copy(
