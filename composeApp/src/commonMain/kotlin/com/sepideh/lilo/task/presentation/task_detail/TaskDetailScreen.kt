@@ -56,6 +56,7 @@ fun TaskDetailScreenRoot(
     viewModel: TaskDetailViewModel,
     onNavigateTo: (AppDestinations) -> Unit
 ) {
+    println("TaskDetailScreenRoot taskId $taskId")
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
 

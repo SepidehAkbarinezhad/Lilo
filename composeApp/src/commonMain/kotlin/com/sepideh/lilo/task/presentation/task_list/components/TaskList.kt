@@ -38,6 +38,7 @@ fun TaskList(
             TaskListItem(
                 modifier = Modifier.fillMaxWidth().clickable {
                     if (clickable) {
+                        println("")
                         onEvent(
                             BaseEvent.OnNavigateTo(
                                 AppDestinations.TaskDetail(
