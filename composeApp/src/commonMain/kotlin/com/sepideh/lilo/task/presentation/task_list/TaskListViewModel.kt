@@ -156,6 +156,15 @@ class TaskListViewModel(
                 _state.update { it.copy(isFilterSheetOpen = !it.isFilterSheetOpen) }
             }
 
+            is TaskListEvent.OnCloseFilterIcon -> {
+                _state.update {
+                    it.copy(
+                        tempFilterOption = it.taskFilterOption,
+                        isFilterSheetOpen = false
+                    )
+                }
+            }
+
             is TaskListEvent.OnApplyFilter -> {
                 _state.update {
                     it.copy(
