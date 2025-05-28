@@ -151,7 +151,6 @@ class TaskDetailViewModel(
                     ?: Category.categories[0]
                 state.update { it.copy(selectedCategory = selectedCategory) }
                 onEvent(TaskDetailEvent.OnDismissCategoryDialog)
-
             }
 
             is TaskDetailEvent.OnPrioritySelected -> {
@@ -166,7 +165,7 @@ class TaskDetailViewModel(
                     println("OnSelectReminderDate......... ${event.date.first}  ${event.date.second}")
                     reminderModel = reminderModel.copy(startDay = first, endDay = second)
                 }
-                println("OnSelectReminderDate $reminderModel")
+                println("reminderrr OnSelectReminderDate $reminderModel")
             }
 
             is TaskDetailEvent.OnSelectReminderTime -> {
@@ -189,15 +188,13 @@ class TaskDetailViewModel(
                         endDate = reminderModel.endDay,
                         id = task.id
                     )
-                    println("cancleeee OnAddTaskButton -> tempTask.id ${tempTask.id} ")
-                    println("cancleeee OnAddTaskButton -> task.id ${task.id} ")
+
                     if (isFormValid(checkPermission = event.checkPermission)) {
                         //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
                         val resultId = taskDatabase.taskDao().upsert(tempTask.toEntity())
                         //Use the correct ID for scheduling a reminder:
                         //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
                         val actualId = if (resultId == -1L) tempTask.id!! else resultId
-                        println("cancleeee $resultId  $actualId")
                         startReminder(actualId)
                         onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                     }
@@ -312,7 +309,7 @@ class TaskDetailViewModel(
 
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
-        println("startReminder  $reminderModel ")
+        println("reminderrr  $reminderModel ")
         with(reminderModel) {
             setReminderTime(dayMillis = startDay, hour = hour, minute = minute)?.let {
                 reminderScheduler.scheduleReminder(
