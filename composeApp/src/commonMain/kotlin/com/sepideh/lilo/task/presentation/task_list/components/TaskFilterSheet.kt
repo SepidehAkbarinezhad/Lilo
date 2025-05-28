@@ -89,7 +89,7 @@ fun FilterHeader(onEvent: (BaseEvent) -> Unit) {
         )
         IconButton(
             modifier = Modifier.align(Alignment.TopEnd),
-            onClick = { onEvent(TaskListEvent.OnFilterIcon) }) {
+            onClick = { onEvent(TaskListEvent.OnCloseFilterIcon) }) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "close filter",
