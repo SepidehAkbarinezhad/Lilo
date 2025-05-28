@@ -191,7 +191,7 @@ class TaskListViewModel(
                             }
                         }
                     val tempFilter =
-                        state.value.taskFilterOption.copy(taskStatus = updatedList)
+                        state.value.tempFilterOption.copy(taskStatus = updatedList)
                     _state.update { it.copy(tempFilterOption = tempFilter) }
                 }
             }
@@ -207,7 +207,7 @@ class TaskListViewModel(
                             }
                         }
                     val tempFilter =
-                        state.value.taskFilterOption.copy(priorityList = updatedList)
+                        state.value.tempFilterOption.copy(priorityList = updatedList)
                     _state.update { it.copy(tempFilterOption = tempFilter) }
                 }
             }
