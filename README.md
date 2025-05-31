@@ -11,12 +11,11 @@ A clean, modern Kotlin Multiplatform To-Do app built with Jetpack Compose Multip
 
   <p align="center">
     <img alt="Passengers" src="/screenShots/home_screen.jpg"  width="180" height="380">
-    &nbsp;&nbsp;&nbsp;
     <img alt="Passengers" src="/screenShots/add_task_screen.jpg"  width="180" height="380">
-    &nbsp;&nbsp;&nbsp;
     <img alt="Passengers" src="/screenShots/category_dialog.jpg"  width="180" height="380">
     <img alt="Passengers" src="/screenShots/priority_dialog.jpg"  width="180" height="380">
     <img alt="Passengers" src="/screenShots/reminder_permission.jpg"  width="180" height="380">
-     <img alt="Passengers" src="/screenShots/reminder_screen.jpg"  width="180" height="380">
-
+    <img alt="Passengers" src="/screenShots/reminder_screen.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/reminder_screen.jpg"  width="180" height="380">
+     <img alt="Passengers" src="/screenShots/task_list_screen.jpg"  width="180" height="380">
 </p>
