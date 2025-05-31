@@ -2,6 +2,7 @@ package com.sepideh.lilo.task.data
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.sepideh.lilo.MainActivity
 
 class ReminderReceiver : BroadcastReceiver() {
     companion object {
@@ -33,6 +35,18 @@ class ReminderReceiver : BroadcastReceiver() {
         val id = intent.getIntExtra(NOTIFICATION_ID_TAG,0)
 
         val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        //to launch the app when user tap on the notification
+        val launchIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val contentPendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            launchIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         // Create channel (required for Android 8+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -59,6 +73,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 .setContentText(content)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
+                .setContentIntent(contentPendingIntent)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
                 .build()
 
