@@ -41,6 +41,7 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.material)
             implementation(compose.material3)
+            implementation(libs.accompanist.systemuicontroller)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -66,6 +67,12 @@ kotlin {
 }
 
 android {
+    applicationVariants.all {
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            outputImpl.outputFileName = "Lilo-${name}.apk"
+        }
+    }
     namespace = "com.sepideh.lilo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 

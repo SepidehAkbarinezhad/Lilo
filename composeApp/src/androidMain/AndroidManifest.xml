@@ -12,12 +12,13 @@
         android:icon="@mipmap/lilo_logo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/lilo_logo_round"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/Theme.App.Starting">
         <activity
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Lilo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +27,6 @@
             </intent-filter>
         </activity>
         <receiver android:name=".task.data.ReminderReceiver" android:exported="false"/>
-
     </application>
 
 </manifest>

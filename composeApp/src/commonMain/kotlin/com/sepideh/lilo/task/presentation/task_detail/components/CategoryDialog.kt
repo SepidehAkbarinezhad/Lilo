@@ -163,7 +163,7 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (Category) -> Uni
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = "",
+                    value = newCategory,
                     onValueChange = { newCategory = it },
                     modifier = Modifier.weight(1f).focusRequester(focusRequester),
                     colors = OutlinedTextFieldDefaults.colors(

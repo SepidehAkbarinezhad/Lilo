@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
@@ -111,7 +114,7 @@ fun TaskListScreen(
                     if (clickable)
                         onEvent(
                         BaseEvent.OnNavigateTo(
-                            AppDestinations.TaskDetail((AppRoutes.TaskDetail(taskId = 42))
+                            AppDestinations.TaskDetail((AppRoutes.TaskDetail(taskId = -1))
                         )
                     ))
                 },
@@ -127,10 +130,9 @@ fun TaskListScreen(
         },
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
-                .statusBarsPadding(),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary),
         ) {
-            TaskListHeader(state = state, onEvent = onEvent)
+            TaskListHeader(modifier = Modifier.statusBarsPadding(),state = state, onEvent = onEvent)
 
             Surface(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
