@@ -8,3 +8,15 @@ A clean, modern Kotlin Multiplatform To-Do app built with Jetpack Compose Multip
 - 🗂️ **Task Grouping**: Categorize tasks under custom groups for better organization.
 - ⏰ **Reminder/Alarm Support**: Set alarms to get notified about tasks.
 - 💡 **Shared UI with Jetpack Compose Multiplatform**: A single Compose codebase renders native UIs on Android and iOS.
+
+  <p align="center">
+    <img alt="Passengers" src="/screenShots/home_screen.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/add_task_screen.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/category_dialog.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/priority_dialog.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/reminder_permission.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/reminder_screen.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/task_list_screen.jpg"  width="180" height="380">
+    <img alt="Passengers" src="/screenShots/category_list.jpg"  width="180" height="380">
+
+</p>
