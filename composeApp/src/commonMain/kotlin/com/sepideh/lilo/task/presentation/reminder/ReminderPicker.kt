@@ -1,11 +1,14 @@
 package com.sepideh.lilo.task.presentation.reminder
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePicker
@@ -48,7 +51,7 @@ fun ReminderPicker(
    var selectedMin = initialMinute
 
 
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize().background(Color.White)){
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,7 +62,7 @@ fun ReminderPicker(
             DatePicker(
                 state = datePickerState,
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth().statusBarsPadding(),
                 colors = DatePickerDefaults.colors(containerColor = Color.White),
                 title = {
                     AppText(
@@ -80,7 +83,7 @@ fun ReminderPicker(
         }
 
         AppRowButtons(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(18.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(18.dp),
             firstButtonTitle = Res.string.apply_label,
             onFirstButtonClick = {
                 onEvent(

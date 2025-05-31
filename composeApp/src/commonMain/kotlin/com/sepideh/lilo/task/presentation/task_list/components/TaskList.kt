@@ -34,9 +34,11 @@ fun TaskList(
         contentPadding = PaddingValues(top = 12.dp, bottom = 54.dp)
     ) {
         items(items = tasks, key = { it.id ?: 0 }) { task ->
+            println("cancleeee items ${task.id}")
             TaskListItem(
                 modifier = Modifier.fillMaxWidth().clickable {
                     if (clickable) {
+                        println("")
                         onEvent(
                             BaseEvent.OnNavigateTo(
                                 AppDestinations.TaskDetail(

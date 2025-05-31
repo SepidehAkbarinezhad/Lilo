@@ -107,6 +107,7 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnDateIcon -> {
                 println("TaskDetailEvent.OnDateIcon ->")
+                viewModelScope.launch { updatePermissionState() }
                 setIsReminderDialogOpen(open = true)
             }
 
@@ -119,8 +120,10 @@ class TaskDetailViewModel(
                 // If both permissions are granted, open the reminder dialog.
                 // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
 
+                println("reminder TaskDetailEvent.OnTimeIcon")
                 viewModelScope.launch {
                     updatePermissionState()
+                    println("reminder TaskDetailEvent.OnTimeIcon  ${state.value.hasAlarmPermission}   ${state.value.hasNotificationPermission}")
                     state.update {
                         it.copy(
                             isTimeDialogOpen = it.hasAlarmPermission && it.hasNotificationPermission,
@@ -135,9 +138,10 @@ class TaskDetailViewModel(
                     it.copy(isTimeDialogOpen = false)
                 }
             }
-            is TaskDetailEvent.OnSelectReminderConfirm->{
+
+            is TaskDetailEvent.OnSelectReminderConfirm -> {
                 println("TaskDetailEvent.OnSelectReminderConfirm-> $reminderModel ${event.reminderModel}")
-                reminderModel=event.reminderModel
+                reminderModel = event.reminderModel
                 println("TaskDetailEvent.OnSelectReminderConfirm2-> $reminderModel")
                 setIsReminderDialogOpen(open = false)
             }
@@ -147,7 +151,6 @@ class TaskDetailViewModel(
                     ?: Category.categories[0]
                 state.update { it.copy(selectedCategory = selectedCategory) }
                 onEvent(TaskDetailEvent.OnDismissCategoryDialog)
-
             }
 
             is TaskDetailEvent.OnPrioritySelected -> {
@@ -162,7 +165,7 @@ class TaskDetailViewModel(
                     println("OnSelectReminderDate......... ${event.date.first}  ${event.date.second}")
                     reminderModel = reminderModel.copy(startDay = first, endDay = second)
                 }
-                println("OnSelectReminderDate $reminderModel")
+                println("reminderrr OnSelectReminderDate $reminderModel")
             }
 
             is TaskDetailEvent.OnSelectReminderTime -> {
@@ -174,7 +177,8 @@ class TaskDetailViewModel(
 
             is TaskDetailEvent.OnAddTaskButton -> {
                 viewModelScope.launch {
-                    val task = task.copy(
+                    updatePermissionState()
+                    val tempTask = task.copy(
                         category = stateValue.value.selectedCategory?.id
                             ?: Category.categories[0].id,
                         priority = stateValue.value.selectedPriority.id,
@@ -182,12 +186,16 @@ class TaskDetailViewModel(
                         minute = reminderModel.minute,
                         startDate = reminderModel.startDay,
                         endDate = reminderModel.endDay,
+                        id = task.id
                     )
 
-                    println("is TaskDetailEvent.OnAddTaskButton -> $task")
                     if (isFormValid(checkPermission = event.checkPermission)) {
-                        val id = taskDatabase.taskDao().upsert(task.toEntity())
-                        startReminder(id)
+                        //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
+                        val resultId = taskDatabase.taskDao().upsert(tempTask.toEntity())
+                        //Use the correct ID for scheduling a reminder:
+                        //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
+                        val actualId = if (resultId == -1L) tempTask.id!! else resultId
+                        startReminder(actualId)
                         onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
                     }
 
@@ -248,7 +256,6 @@ class TaskDetailViewModel(
     }
 
     private fun needPermissionDeniedDialogState(checkPermission: Boolean): Boolean {
-        viewModelScope.launch { updatePermissionState() }
         return when (checkPermission) {
             true -> {
                 reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
@@ -302,7 +309,7 @@ class TaskDetailViewModel(
 
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
-        println("startReminder  $reminderModel ")
+        println("reminderrr  $reminderModel ")
         with(reminderModel) {
             setReminderTime(dayMillis = startDay, hour = hour, minute = minute)?.let {
                 reminderScheduler.scheduleReminder(
@@ -320,28 +327,36 @@ class TaskDetailViewModel(
     }
 
     private fun isFormValid(checkPermission: Boolean): Boolean {
+        /*
+        * Validate the title and description fields based on current input
+        * We store these locally to ensure we can use them immediately for logic,
+        *  because the state won't reflect updates right away.
+        * */
+        val newTitleError = ValidateField.validate(
+            validationStatus = stateValue.value.titleError.copy(
+                value = task.title
+            )
+        )
+        val newDescriptionError = ValidateField.validate(
+            validationStatus = stateValue.value.descriptionError.copy(
+                value = task.description
+            )
+        )
+        val permissionDialogNeeded =
+            needPermissionDeniedDialogState(checkPermission = checkPermission)
+
         state.update {
             it.copy(
-                titleError = ValidateField.validate(
-                    validationStatus = stateValue.value.titleError.copy(
-                        value = task.title
-                    )
-                ),
-                descriptionError = ValidateField.validate(
-                    validationStatus = stateValue.value.descriptionError.copy(
-                        value = task.description
-                    )
-                ),
-                shouldShowPermissionDeniedDialog = needPermissionDeniedDialogState(checkPermission = checkPermission)
-
+                titleError = newTitleError,
+                descriptionError = newDescriptionError,
+                shouldShowPermissionDeniedDialog = permissionDialogNeeded
             )
         }
-        println("isFormValid  ${stateValue.value.hasAlarmPermission}  and ${stateValue.value.hasNotificationPermission}  and ${stateValue.value.shouldShowPermissionDeniedDialog}")
 
-        return with(stateValue.value) { titleError.isSuccessful && descriptionError.isSuccessful && !shouldShowPermissionDeniedDialog }
+        return newTitleError.isSuccessful && newDescriptionError.isSuccessful && !permissionDialogNeeded
     }
 
-    private fun setIsReminderDialogOpen(open : Boolean){
+    private fun setIsReminderDialogOpen(open: Boolean) {
         state.update {
             it.copy(isReminderDialogOpen = open)
         }

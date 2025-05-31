@@ -112,6 +112,7 @@ class ReminderSchedulerProvider(private val context: Context) :
     }
 
     override fun cancelReminder(reminder: Reminder) {
+        println("cancelReminder")
         // Create a new PendingIntent with the same requestCode (id) to cancel the alarm.
 
         val intent = Intent(context, ReminderReceiver::class.java).apply {

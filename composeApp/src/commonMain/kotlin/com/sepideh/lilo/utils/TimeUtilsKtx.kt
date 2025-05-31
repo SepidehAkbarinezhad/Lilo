@@ -15,13 +15,14 @@ fun getCurrentTime(): Pair<Int, Int> {
     return Pair(hour, minute)
 }
 
-fun getCurrentDate(): Long{
+fun getCurrentDate(): Long {
     val currentDateTime = Clock.System.now().toEpochMilliseconds()
     return currentDateTime
 }
 
 fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
     if (dayMillis == null || hour == null || minute == null) return null
+
 
     val timeZone = TimeZone.currentSystemDefault()
 
@@ -37,8 +38,12 @@ fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
         second = 0,
         nanosecond = 0
     )
-
-    return updatedDateTime.toInstant(timeZone).toEpochMilliseconds()
+    val updatedMillis = updatedDateTime.toInstant(timeZone).toEpochMilliseconds()
+    return if (updatedMillis > Clock.System.now().toEpochMilliseconds()) {
+        updatedMillis
+    } else {
+        null
+    }
 }
 
 

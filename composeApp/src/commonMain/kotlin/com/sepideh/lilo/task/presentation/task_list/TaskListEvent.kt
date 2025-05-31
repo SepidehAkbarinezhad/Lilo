@@ -10,6 +10,7 @@ sealed interface TaskListEvent : BaseEvent {
     data class OnCategorySelected(val id: Long?) : TaskListEvent
     data class OnSearchQueryChange(val query: String) : TaskListEvent
     data object OnFilterIcon : TaskListEvent
+    data object OnCloseFilterIcon : TaskListEvent
     data object OnApplyFilter : TaskListEvent
     data class OnStatusFilterChanged(val status: TaskStatus) : TaskListEvent
     data class OnPriorityFilterChanged(val priority: Priority) : TaskListEvent

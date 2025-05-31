@@ -25,6 +25,7 @@ androidx-annotation="1.9.1"
 material3="1.7.0"
 kotlinx-datetime="0.4.0"
 core-splashscreen="1.0.1"
+accompanist-systemuicontroller="0.34.0"
 annotationJvm = "1.9.1"
 
 [libraries]
@@ -59,6 +60,7 @@ androidx-annotation = { module = "androidx.annotation:annotation", version.ref =
 material3-compose = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
+accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist-systemuicontroller" }
 
 
 
