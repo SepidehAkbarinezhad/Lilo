@@ -87,7 +87,6 @@ class TaskListViewModel(
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
         state.copy(
             tasksResult = tasks.let { taskList ->
-                println("taskList before filter: $taskList")
                 // If the user hasn't selected a category, treat the "All" category as null
                 val filteredBasedOnCategory = if (validSelectedCategory != null) {
                     // Filtering is done on a local list synchronously, so there's no need to show a loading state
@@ -268,7 +267,6 @@ class TaskListViewModel(
             }
 
             is TaskListEvent.OnDoneChange -> {
-                print("cancleeee TaskListEvent.OnDoneChange -> id ${event.task.id} ")
                 if(event.task.done){
                     event.task.id?.let{
                         with(event.task){

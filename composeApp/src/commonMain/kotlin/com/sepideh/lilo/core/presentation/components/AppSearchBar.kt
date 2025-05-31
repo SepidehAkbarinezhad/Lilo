@@ -75,7 +75,6 @@ fun AppSearchBar(
             },
             leadingIcon = {
                 IconButton(onClick = {
-                    println("leadingIcon")
                    onImeSearch()
                 }) {
                     Icon(

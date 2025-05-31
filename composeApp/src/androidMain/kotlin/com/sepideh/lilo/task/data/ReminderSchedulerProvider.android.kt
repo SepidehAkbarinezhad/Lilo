@@ -53,10 +53,7 @@ class ReminderSchedulerProvider(private val context: Context) :
                         context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT
                     )
 
-                    // TODO: check permission
                     try {
-                        println("ReminderManager try")
-                        //
                         alarmManager.setExactAndAllowWhileIdle(
                             AlarmManager.RTC_WAKEUP,
                             triggerTime,
@@ -95,7 +92,6 @@ class ReminderSchedulerProvider(private val context: Context) :
 
             startDate?.let {
                 try {
-                    println("ReminderManager try")
                     alarmManager.setExactAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
                         startDate,
@@ -112,7 +108,6 @@ class ReminderSchedulerProvider(private val context: Context) :
     }
 
     override fun cancelReminder(reminder: Reminder) {
-        println("cancelReminder")
         // Create a new PendingIntent with the same requestCode (id) to cancel the alarm.
 
         val intent = Intent(context, ReminderReceiver::class.java).apply {
