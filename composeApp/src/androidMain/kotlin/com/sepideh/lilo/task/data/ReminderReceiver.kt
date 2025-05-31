@@ -20,7 +20,6 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context?, intent: Intent) {
-        println("onReceive()")
         showNotification(context, intent)
     }
 
@@ -28,7 +27,6 @@ class ReminderReceiver : BroadcastReceiver() {
         context: Context?,
         intent: Intent,
     ) {
-        println("showNotification()")
         val channelId="reminder_channel"
         val title = intent.getStringExtra(NOTIFICATION_TITLE_TAG) ?: ""
         val content = intent.getStringExtra(NOTIFICATION_CONTENT_TAG) ?: ""

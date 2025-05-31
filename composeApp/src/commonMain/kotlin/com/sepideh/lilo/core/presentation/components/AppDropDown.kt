@@ -40,9 +40,7 @@ fun AppDropDown(
     }
 
     LaunchedEffect(isFocused) {
-        println("me LaunchedEffect  isFocused $isFocused")
         expanded = isFocused
-        println("me LaunchedEffect expanded  $expanded")
     }
     val focusedColor = if (isFocused) MaterialTheme.colorScheme.primary else Gray
 
@@ -63,8 +61,6 @@ fun AppDropDown(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null // Disable the ripple effect
                 ) {
-                    println("me interactionSource  expanded $expanded")
-
                     expanded = !expanded
                 }.border(
                     width = 1.dp,
@@ -83,8 +79,6 @@ fun AppDropDown(
                 DropdownMenuItem(
                     text = { AppText(text = option) },
                     onClick = {
-                        println("me onClick $expanded  option $option")
-
                         expanded = false
                         onValueChanged(option)
                     }

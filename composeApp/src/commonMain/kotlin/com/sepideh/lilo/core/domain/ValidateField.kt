@@ -22,7 +22,6 @@ object ValidateField
         isRepeatPassword: Boolean = false,
     ): ValidationStatus
     {
-        println("validate: $validationStatus")
         with(validationStatus) {
             if (minLength > 0 && value.isBlank())
             {

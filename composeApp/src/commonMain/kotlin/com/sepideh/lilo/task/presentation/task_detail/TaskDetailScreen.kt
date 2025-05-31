@@ -56,7 +56,6 @@ fun TaskDetailScreenRoot(
     viewModel: TaskDetailViewModel,
     onNavigateTo: (AppDestinations) -> Unit
 ) {
-    println("TaskDetailScreenRoot taskId $taskId")
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
 
@@ -87,7 +86,6 @@ fun TaskDetailScreenRoot(
                 PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
             if (state.isReminderDialogOpen) {
-                println("if (state.isDateDialogOpen)")
                 ReminderPicker( reminderModel = viewModel.reminderModel, onEvent = {viewModel.onEvent(it)})
             }
             if (state.shouldShowPermissionDialog) {

@@ -43,8 +43,6 @@ fun BaseRoot(
         bodyContainer()
 
         if (baseUiState.showLoading) {
-            println("loadingTag if (baseUiState.showLoading) ${baseUiState.showLoading}")
-
             CircularProgressIndicator(
                 modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
             )

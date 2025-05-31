@@ -106,7 +106,6 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnDateIcon -> {
-                println("TaskDetailEvent.OnDateIcon ->")
                 viewModelScope.launch { updatePermissionState() }
                 setIsReminderDialogOpen(open = true)
             }
@@ -120,10 +119,8 @@ class TaskDetailViewModel(
                 // If both permissions are granted, open the reminder dialog.
                 // If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
 
-                println("reminder TaskDetailEvent.OnTimeIcon")
                 viewModelScope.launch {
                     updatePermissionState()
-                    println("reminder TaskDetailEvent.OnTimeIcon  ${state.value.hasAlarmPermission}   ${state.value.hasNotificationPermission}")
                     state.update {
                         it.copy(
                             isTimeDialogOpen = it.hasAlarmPermission && it.hasNotificationPermission,
@@ -140,9 +137,7 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnSelectReminderConfirm -> {
-                println("TaskDetailEvent.OnSelectReminderConfirm-> $reminderModel ${event.reminderModel}")
                 reminderModel = event.reminderModel
-                println("TaskDetailEvent.OnSelectReminderConfirm2-> $reminderModel")
                 setIsReminderDialogOpen(open = false)
             }
 
@@ -160,17 +155,13 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailEvent.OnSelectReminderDate -> {
-                println("OnSelectReminderDate ${event.date}")
                 with(event.date) {
-                    println("OnSelectReminderDate......... ${event.date.first}  ${event.date.second}")
                     reminderModel = reminderModel.copy(startDay = first, endDay = second)
                 }
-                println("reminderrr OnSelectReminderDate $reminderModel")
             }
 
             is TaskDetailEvent.OnSelectReminderTime -> {
                 with(event.time) {
-                    println("OnSelectReminderTime-> ${event.time.first} ${event.time.second}")
                     reminderModel = reminderModel.copy(hour = first, minute = second)
                 }
             }
@@ -309,7 +300,6 @@ class TaskDetailViewModel(
 
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
-        println("reminderrr  $reminderModel ")
         with(reminderModel) {
             setReminderTime(dayMillis = startDay, hour = hour, minute = minute)?.let {
                 reminderScheduler.scheduleReminder(
