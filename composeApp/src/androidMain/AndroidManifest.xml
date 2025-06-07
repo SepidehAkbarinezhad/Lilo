@@ -12,7 +12,7 @@
         android:icon="@mipmap/lilo_logo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/lilo_logo_round"
-        android:supportsRtl="false"
+        android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting">
         <activity
             android:exported="true"
