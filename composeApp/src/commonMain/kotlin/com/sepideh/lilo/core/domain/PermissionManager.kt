@@ -15,6 +15,7 @@ package com.sepideh.lilo.core.domain
  * Actual implementations should handle platform-specific logic accordingly.
  */
 expect class PermissionManager {
+    fun isXiaomi(): Boolean
     suspend fun hasAlarmPermission(): Boolean
     suspend fun hasNotificationPermission(): Boolean
     suspend fun requestNeededPermission()
