@@ -15,7 +15,6 @@ actual class PermissionManager(private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun hasAlarmPermission(): Boolean {
-
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val canSchedule = alarmManager.canScheduleExactAlarms()
         println("isXiaomi ${isXiaomi()} canSchedule $canSchedule")
