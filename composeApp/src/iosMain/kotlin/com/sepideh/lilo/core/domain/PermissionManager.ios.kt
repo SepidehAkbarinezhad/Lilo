@@ -60,4 +60,8 @@ actual class PermissionManager {
         }
     }
 
+    actual fun isXiaomi(): Boolean {
+        return false
+    }
+
 }

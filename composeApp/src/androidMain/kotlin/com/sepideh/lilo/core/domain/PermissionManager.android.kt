@@ -12,13 +12,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 
 actual class PermissionManager(private val context: Context) {
+
+    @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun hasAlarmPermission(): Boolean {
+
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            alarmManager.canScheduleExactAlarms()
-        } else {
-            true
-        }
+        val canSchedule = alarmManager.canScheduleExactAlarms()
+        println("isXiaomi ${isXiaomi()} canSchedule $canSchedule")
+        return !isXiaomi() &&  canSchedule
     }
 
     actual suspend fun hasNotificationPermission(): Boolean {
@@ -66,6 +67,10 @@ actual class PermissionManager(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun requestDeniedPermission() {
         requestNeededPermission()
+    }
+
+    actual fun isXiaomi(): Boolean {
+       return  Build.MANUFACTURER.equals("xiaomi", ignoreCase = true)
     }
 
 }
