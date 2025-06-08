@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.core.domain.PermissionManager
 import com.sepideh.lilo.core.presentation.BaseEvent
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
@@ -23,11 +24,17 @@ import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.alert_icon
 import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.confirm_button
+import lilo.composeapp.generated.resources.permission_Xiaomi_alert_dialog
 import lilo.composeapp.generated.resources.permission_alert_dialog
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun PermissionAlertDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
+fun PermissionAlertDialog(isXiaomi: Boolean, onEvent: (BaseEvent) -> Unit) {
+    val reminderMessage = if (isXiaomi) {
+        Res.string.permission_Xiaomi_alert_dialog
+    } else {
+        Res.string.permission_alert_dialog
+    }
     AppDialog(dialogModel = DialogModel(content = {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -38,10 +45,12 @@ fun PermissionAlertDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) 
                 painter = painterResource(Res.drawable.alert_icon),
                 contentDescription = ""
             )
-            AppText(text = Res.string.permission_alert_dialog,textType = TextType.SubTitle)
+            AppText(text = reminderMessage, textType = TextType.SubTitle)
             Spacer(modifier = Modifier.height(8.dp))
-            AppRowButtons(firstButtonTitle = Res.string.confirm_button, onFirstButtonClick = {onEvent(TaskDetailEvent.OnGrantPermissionButton(firstTime = true ))},
-                secondButtonTitle = Res.string.cancel_button, onSecondButtonClick = {onEvent(TaskDetailEvent.OnCancelPermissionDialog)})
+            AppRowButtons(firstButtonTitle = Res.string.confirm_button,
+                onFirstButtonClick = { onEvent(TaskDetailEvent.OnGrantPermissionButton(firstTime = true)) },
+                secondButtonTitle = Res.string.cancel_button,
+                onSecondButtonClick = { onEvent(TaskDetailEvent.OnCancelPermissionDialog) })
         }
 
     }, onDismissRequest = { onEvent(TaskDetailEvent.OnCancelPermissionDialog) }))

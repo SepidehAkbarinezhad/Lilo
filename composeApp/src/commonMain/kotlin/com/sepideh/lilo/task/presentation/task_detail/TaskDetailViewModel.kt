@@ -22,6 +22,8 @@ import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.utils.setReminderTime
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -36,6 +38,8 @@ class TaskDetailViewModel(
     private val reminderScheduler: ReminderScheduler,
     private val permissionManager: PermissionManager
 ) : BaseViewModel() {
+
+    val isXiaomi = permissionManager.isXiaomi()
     private val _categories = categoryDatabase.categoryDao().getAllCategories()
         .map { it.toCategoryList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
@@ -63,7 +67,7 @@ class TaskDetailViewModel(
         state.copy(
             categories = categories, selectedCategory = validSelectedCategory
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), TaskDetailState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
 
     var task: Task by mutableStateOf(Task())
 
@@ -111,7 +115,12 @@ class TaskDetailViewModel(
                 * If both permissions are granted, open the reminder dialog.
                 * If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
                 * */
-                viewModelScope.launch { if (!needPermissionDialog(checkDeniedPermission = false)) setIsReminderDialogOpen(open = true) }
+                viewModelScope.launch {
+                    updatePermissionState(checkDeniedPermission = false).await()
+                    if (!state.value.shouldShowPermissionDialog) {
+                        setIsReminderDialogOpen(open = true)
+                    }
+                }
             }
 
             is TaskDetailEvent.OnDismissReminderDialogButton -> {
@@ -168,16 +177,17 @@ class TaskDetailViewModel(
                         id = task.id
                     )
 
-                    if (isFormValid(checkPermission = event.checkPermission)) {
-                        //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
-                        val resultId = taskDatabase.taskDao().upsert(tempTask.toEntity())
-                        //Use the correct ID for scheduling a reminder:
-                        //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
-                        val actualId = if (resultId == -1L) tempTask.id!! else resultId
-                        startReminder(actualId)
-                        onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
+                    viewModelScope.launch {
+                        if (isFormValid(checkDeniedPermission = event.checkDeniedPermission)) {
+                            //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
+                            val resultId = taskDatabase.taskDao().upsert(tempTask.toEntity())
+                            //Use the correct ID for scheduling a reminder:
+                            //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
+                            val actualId = if (resultId == -1L) tempTask.id!! else resultId
+                            startReminder(actualId)
+                            onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
+                        }
                     }
-
                 }
             }
 
@@ -234,35 +244,6 @@ class TaskDetailViewModel(
         }
     }
 
-    private suspend fun needPermissionDialog(checkDeniedPermission: Boolean): Boolean {
-        println("needPermissionDialog1")
-        updatePermissionState(checkDeniedPermission = checkDeniedPermission)
-        // delay(1000)
-        println("needPermissionDialog2")
-        return if (permissionManager.isXiaomi()) {
-            true
-        } else {
-            println("needPermissionDialog else  ${state.value.hasAlarmPermission}  ${state.value.hasNotificationPermission} ")
-            !state.value.hasAlarmPermission || !state.value.hasNotificationPermission
-        }
-
-    }
-
-    private fun needPermissionDeniedDialog(checkPermission: Boolean): Boolean {
-        return when (checkPermission) {
-            true -> {
-                if (permissionManager.isXiaomi()) {
-                    reminderModel.hour != null
-                } else {
-                    reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
-                }
-
-            }
-
-            else -> false
-        }
-    }
-
 
     private suspend fun updateSelectedCategory(categoryId: Long) {
         categoryDatabase.categoryDao().getCategoryById(categoryId = categoryId)
@@ -294,38 +275,42 @@ class TaskDetailViewModel(
 
     }
 
-    private suspend fun updatePermissionState(checkDeniedPermission: Boolean) {
-        val hasAlarm = permissionManager.hasAlarmPermission()
-        val hasNotification = permissionManager.hasNotificationPermission()
-        val shouldShowPermissionDialog = if (permissionManager.isXiaomi()) {
-            true
-        } else {
-            println("needPermissionDialog else  ${state.value.hasAlarmPermission}  ${state.value.hasNotificationPermission} ")
-            !hasAlarm || !hasNotification
-        }
-
-        //in case of user deny to get permission even when
-        val shouldShowPermissionDeniedDialog = when (checkDeniedPermission) {
-            true -> {
-                if (permissionManager.isXiaomi()) {
-                    reminderModel.hour != null
+    private fun updatePermissionState(checkDeniedPermission: Boolean): Deferred<Unit> {
+        val deferred = viewModelScope.async {
+            val hasAlarm = permissionManager.hasAlarmPermission()
+            val hasNotification = permissionManager.hasNotificationPermission()
+            val shouldShowPermissionDialog = when (checkDeniedPermission) {
+                true -> false
+                false -> if (isXiaomi) {
+                    !hasNotification
                 } else {
-                    reminderModel.hour != null && (!state.value.hasAlarmPermission || !state.value.hasNotificationPermission)
+                    !hasAlarm || !hasNotification
                 }
-
             }
 
-            else -> false
-        }
+            //in case of user deny to get permission even when
+            val shouldShowPermissionDeniedDialog = when (checkDeniedPermission) {
+                true -> {
+                    if (isXiaomi) {
+                        reminderModel.hour != null && !hasNotification
+                    } else {
+                        reminderModel.hour != null && (!hasNotification || !hasAlarm)
+                    }
+                }
 
-        state.update {
-            println("updatePermissionState")
-            it.copy(
-                hasAlarmPermission = hasAlarm,
-                shouldShowPermissionDialog = shouldShowPermissionDialog,
-                shouldShowPermissionDeniedDialog = shouldShowPermissionDeniedDialog
-            )
+                else -> {
+                    false
+                }
+            }
+
+            state.update {
+                it.copy(
+                    shouldShowPermissionDialog = shouldShowPermissionDialog,
+                    shouldShowPermissionDeniedDialog = shouldShowPermissionDeniedDialog
+                )
+            }
         }
+        return deferred
     }
 
     //todo set reminder in a way can add custom title description
@@ -345,10 +330,9 @@ class TaskDetailViewModel(
         }
     }
 
-    private fun isFormValid(checkPermission: Boolean): Boolean {
-        viewModelScope.launch {
-            updatePermissionState(checkPermission)
-        }
+    private suspend fun isFormValid(checkDeniedPermission: Boolean): Boolean {
+        updatePermissionState(checkDeniedPermission = checkDeniedPermission).await()
+
         /*
         * Validate the title and description fields based on current input
         * We store these locally to ensure we can use them immediately for logic,

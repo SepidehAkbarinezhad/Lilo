@@ -4,15 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -89,7 +85,7 @@ fun TaskDetailScreenRoot(
                 ReminderPicker( reminderModel = viewModel.reminderModel, onEvent = {viewModel.onEvent(it)})
             }
             if (state.shouldShowPermissionDialog) {
-                PermissionAlertDialog(state = state, onEvent = { viewModel.onEvent(it) })
+                PermissionAlertDialog(isXiaomi = viewModel.isXiaomi, onEvent = { viewModel.onEvent(it) })
             }
             if (state.shouldShowPermissionDeniedDialog) {
                 PermissionDeniedDialog(state = state, onEvent = { viewModel.onEvent(it) })
@@ -167,7 +163,7 @@ fun TaskDetailScreen(
                 else -> Res.string.add_task_label
             },
             onFirstButtonClick = {
-                onEvent(TaskDetailEvent.OnAddTaskButton(checkPermission = true))
+                onEvent(TaskDetailEvent.OnAddTaskButton(checkDeniedPermission = true))
             },
             secondButtonTitle = Res.string.cancel_button,
             onSecondButtonClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp())) }
