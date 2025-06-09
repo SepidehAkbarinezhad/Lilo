@@ -2,6 +2,7 @@ package com.sepideh.lilo.task.presentation.task_detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,7 +69,7 @@ fun TaskDetailScreenRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
         bodyContainer = {
-            if(!state.isReminderDialogOpen){
+            if (!state.isReminderDialogOpen) {
                 TaskDetailScreen(
                     state = state,
                     task = task,
@@ -84,10 +86,14 @@ fun TaskDetailScreenRoot(
                 PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
             if (state.isReminderDialogOpen) {
-                ReminderPicker( reminderModel = viewModel.reminderModel, onEvent = {viewModel.onEvent(it)})
+                ReminderPicker(
+                    reminderModel = viewModel.reminderModel,
+                    onEvent = { viewModel.onEvent(it) })
             }
             if (state.shouldShowPermissionDialog) {
-                PermissionAlertDialog(isXiaomi = viewModel.isXiaomi, onEvent = { viewModel.onEvent(it) })
+                PermissionAlertDialog(
+                    isXiaomi = viewModel.isXiaomi,
+                    onEvent = { viewModel.onEvent(it) })
             }
             if (state.shouldShowPermissionDeniedDialog) {
                 PermissionDeniedDialog(state = state, onEvent = { viewModel.onEvent(it) })
@@ -106,7 +112,10 @@ fun TaskDetailScreen(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val isEdit = task.id != null
-    Box(modifier = Modifier.fillMaxSize().clickable {
+    Box(modifier = Modifier.fillMaxSize().clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null
+    ) {
         keyboardController?.hide()
     }) {
         Column(
