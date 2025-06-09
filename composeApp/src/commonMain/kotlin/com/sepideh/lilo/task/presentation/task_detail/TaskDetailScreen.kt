@@ -1,18 +1,16 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -20,9 +18,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
@@ -69,7 +69,7 @@ fun TaskDetailScreenRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
         bodyContainer = {
-            if(!state.isReminderDialogOpen){
+            if (!state.isReminderDialogOpen) {
                 TaskDetailScreen(
                     state = state,
                     task = task,
@@ -86,10 +86,14 @@ fun TaskDetailScreenRoot(
                 PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
             }
             if (state.isReminderDialogOpen) {
-                ReminderPicker( reminderModel = viewModel.reminderModel, onEvent = {viewModel.onEvent(it)})
+                ReminderPicker(
+                    reminderModel = viewModel.reminderModel,
+                    onEvent = { viewModel.onEvent(it) })
             }
             if (state.shouldShowPermissionDialog) {
-                PermissionAlertDialog(state = state, onEvent = { viewModel.onEvent(it) })
+                PermissionAlertDialog(
+                    isXiaomi = viewModel.isXiaomi,
+                    onEvent = { viewModel.onEvent(it) })
             }
             if (state.shouldShowPermissionDeniedDialog) {
                 PermissionDeniedDialog(state = state, onEvent = { viewModel.onEvent(it) })
@@ -106,8 +110,14 @@ fun TaskDetailScreen(
     task: Task,
     onEvent: (BaseEvent) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     val isEdit = task.id != null
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null
+    ) {
+        keyboardController?.hide()
+    }) {
         Column(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
         ) {
@@ -167,7 +177,7 @@ fun TaskDetailScreen(
                 else -> Res.string.add_task_label
             },
             onFirstButtonClick = {
-                onEvent(TaskDetailEvent.OnAddTaskButton(checkPermission = true))
+                onEvent(TaskDetailEvent.OnAddTaskButton(checkDeniedPermission = true))
             },
             secondButtonTitle = Res.string.cancel_button,
             onSecondButtonClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp())) }

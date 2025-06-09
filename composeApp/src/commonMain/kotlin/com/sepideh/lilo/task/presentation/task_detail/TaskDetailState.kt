@@ -18,8 +18,6 @@ data class TaskDetailState(
     val addCategoryOpen :Boolean = false,
     val titleError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.title_label)),
     val descriptionError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.description_label)),
-    val hasAlarmPermission: Boolean = true,
-    val hasNotificationPermission: Boolean = true,
     val shouldShowPermissionDialog: Boolean = false,
     val shouldShowPermissionDeniedDialog: Boolean = false
     )
