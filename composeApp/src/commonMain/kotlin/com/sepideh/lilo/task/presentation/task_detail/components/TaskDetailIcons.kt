@@ -16,8 +16,6 @@ import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_icon
 import lilo.composeapp.generated.resources.date_icon
 import lilo.composeapp.generated.resources.priority_icon
-import lilo.composeapp.generated.resources.reminder_icon
-import lilo.composeapp.generated.resources.time_icon
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -39,7 +37,7 @@ fun TaskDetailIcons(onEvent: (BaseEvent) -> Unit) {
                 contentDescription = null
             )
         }
-        IconButton(onClick = { onEvent(TaskDetailEvent.OnDateIcon) }) {
+        IconButton(onClick = { onEvent(TaskDetailEvent.OnDateReminderIcon) }) {
             Image(
                 painter = painterResource(Res.drawable.date_icon),
                 contentDescription = null

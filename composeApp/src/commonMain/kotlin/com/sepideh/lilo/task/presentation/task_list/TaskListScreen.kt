@@ -102,6 +102,8 @@ fun TaskListScreen(
 ) {
     val clickable = !state.isFilterSheetOpen
     val searchResultListState = rememberLazyListState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     LaunchedEffect(key1 = state.tasksResult) {
         searchResultListState.animateScrollToItem(0)
@@ -113,10 +115,12 @@ fun TaskListScreen(
                 onClick = {
                     if (clickable)
                         onEvent(
-                        BaseEvent.OnNavigateTo(
-                            AppDestinations.TaskDetail((AppRoutes.TaskDetail(taskId = -1))
+                            BaseEvent.OnNavigateTo(
+                                AppDestinations.TaskDetail(
+                                    (AppRoutes.TaskDetail(taskId = -1))
+                                )
+                            )
                         )
-                    ))
                 },
                 shape = RoundedCornerShape(20.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
@@ -130,9 +134,19 @@ fun TaskListScreen(
         },
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    keyboardController?.hide()
+                },
         ) {
-            TaskListHeader(modifier = Modifier.statusBarsPadding(),state = state, onEvent = onEvent)
+            TaskListHeader(
+                modifier = Modifier.statusBarsPadding(),
+                state = state,
+                onEvent = onEvent
+            )
 
             Surface(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -208,7 +222,7 @@ fun TaskListScreen(
                     } else {
                         TaskList(
                             tasks = state.tasksResult,
-                            clickable =clickable,
+                            clickable = clickable,
                             onEvent = onEvent,
                             modifier = Modifier.fillMaxSize(),
                             scrollState = searchResultListState
