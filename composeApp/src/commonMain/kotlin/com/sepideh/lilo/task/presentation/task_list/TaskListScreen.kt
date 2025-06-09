@@ -102,6 +102,8 @@ fun TaskListScreen(
 ) {
     val clickable = !state.isFilterSheetOpen
     val searchResultListState = rememberLazyListState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     LaunchedEffect(key1 = state.tasksResult) {
         searchResultListState.animateScrollToItem(0)
@@ -130,7 +132,10 @@ fun TaskListScreen(
         },
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
+                .clickable {
+                keyboardController?.hide()
+            },
         ) {
             TaskListHeader(modifier = Modifier.statusBarsPadding(),state = state, onEvent = onEvent)
 

@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppDestinations
@@ -102,8 +104,11 @@ fun TaskDetailScreen(
     task: Task,
     onEvent: (BaseEvent) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     val isEdit = task.id != null
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().clickable {
+        keyboardController?.hide()
+    }) {
         Column(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
         ) {
