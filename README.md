@@ -9,6 +9,12 @@ A clean, modern Kotlin Multiplatform To-Do app built with Jetpack Compose Multip
 - ⏰ **Reminder/Alarm Support**: Set alarms to get notified about tasks.
 - 💡 **Shared UI with Jetpack Compose Multiplatform**: A single Compose codebase renders native UIs on Android and iOS.
 
+## Used Technologies
+- **Kotlin Multiplatform (KMP) – Share business logic across Android, iOS, Desktop
+- **Compose Multiplatform – Build declarative UIs for multiple platforms
+- **Room Multiplatform – Local database with shared persistence layer
+- **Koin – Lightweight dependency injection framework for shared and platform code
+
   <p align="center">
     <img alt="Passengers" src="/screenShots/home_screen.jpg"  width="180" height="380">
     <img alt="Passengers" src="/screenShots/add_task_screen.jpg"  width="180" height="380">
