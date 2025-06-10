@@ -1,6 +1,6 @@
 A clean, modern Kotlin Multiplatform To-Do app built with Jetpack Compose Multiplatform UI and Room Multiplatform for the database, supporting both Android and iOS platforms.
 
-## Features
+Features
 - ✍️ **Add, Edit, Delete Tasks**: Create new tasks, make changes, or remove them as needed.
 - 🔍 **Search Functionality**: Instantly find tasks using keywords.
 - 🎯 **Priority-Based Filtering**: Filter tasks by priority levels (e.g., Low, Medium, High).
@@ -9,7 +9,7 @@ A clean, modern Kotlin Multiplatform To-Do app built with Jetpack Compose Multip
 - ⏰ **Reminder/Alarm Support**: Set alarms to get notified about tasks.
 - 💡 **Shared UI with Jetpack Compose Multiplatform**: A single Compose codebase renders native UIs on Android and iOS.
 
- Used Technologies
+Used Technologies
 - Kotlin Multiplatform (KMP) – Share business logic across Android, iOS, Desktop
 - Compose Multiplatform – Build declarative UIs for multiple platforms
 - Room Multiplatform – Local database with shared persistence layer
