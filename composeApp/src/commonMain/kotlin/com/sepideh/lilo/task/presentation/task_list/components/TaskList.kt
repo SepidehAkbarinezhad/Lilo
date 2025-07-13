@@ -13,16 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.app.navigation.AppRoutes
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.task.domain.model.Task
 
 @Composable
 fun TaskList(
     tasks: List<Task>,
     clickable: Boolean,
-    onEvent: (BaseEvent) -> Unit,
+    onAction: (BaseAction) -> Unit,
     modifier: Modifier = Modifier,
     scrollState: LazyListState = rememberLazyListState()
 ) {
@@ -37,11 +36,9 @@ fun TaskList(
             TaskListItem(
                 modifier = Modifier.fillMaxWidth().clickable {
                     if (clickable) {
-                        onEvent(
-                            BaseEvent.OnNavigateTo(
-                                AppDestinations.TaskDetail(
+                        onAction(
+                            BaseAction.OnNavigateTo(
                                     (AppRoutes.TaskDetail(taskId = task.id))
-                                )
                             )
                         )
                     }
@@ -49,7 +46,7 @@ fun TaskList(
                 }.padding(horizontal = 12.dp),
                 clickable = clickable,
                 task = task,
-                onEvent = onEvent
+                onAction = onAction
             )
         }
     }

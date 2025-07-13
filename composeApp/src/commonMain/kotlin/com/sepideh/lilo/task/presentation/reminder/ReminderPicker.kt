@@ -21,13 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
 import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
+import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.utils.getCurrentDate
 import com.sepideh.lilo.utils.getCurrentTime
 import lilo.composeapp.generated.resources.Res
@@ -38,7 +38,7 @@ import lilo.composeapp.generated.resources.cancel_button
 @Composable
 fun ReminderPicker(
     reminderModel: ReminderModel,
-    onEvent: (BaseEvent) -> Unit,
+    onAction: (BaseAction) -> Unit,
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = reminderModel.startDay ?: getCurrentDate(),
@@ -86,8 +86,8 @@ fun ReminderPicker(
             modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(18.dp),
             firstButtonTitle = Res.string.apply_label,
             onFirstButtonClick = {
-                onEvent(
-                    TaskDetailEvent.OnSelectReminderConfirm(
+                onAction(
+                    TaskDetailAction.OnSelectReminderConfirm(
                         reminderModel = ReminderModel(
                             hour = selectedHour,
                             minute = selectedMin,
@@ -97,7 +97,7 @@ fun ReminderPicker(
                 )
             },
             secondButtonTitle = Res.string.cancel_button,
-            onSecondButtonClick = { onEvent(TaskDetailEvent.OnDismissReminderDialogButton)})
+            onSecondButtonClick = { onAction(TaskDetailAction.OnDismissReminderDialogButton)})
 
     }
 

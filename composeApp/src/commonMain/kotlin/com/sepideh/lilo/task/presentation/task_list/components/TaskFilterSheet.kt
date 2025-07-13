@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.data.ScreenSize
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppBottomSheet
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
@@ -29,7 +29,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
-import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
+import com.sepideh.lilo.task.presentation.task_list.TaskListAction
 import com.sepideh.lilo.task.presentation.task_list.TaskListState
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.apply_label
@@ -42,7 +42,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TaskFilterSheet(
     state: TaskListState,
-    onEvent: (BaseEvent) -> Unit,
+    onAction: (BaseAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -56,30 +56,30 @@ fun TaskFilterSheet(
 
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.padding(bottom = 56.dp)) {
-                FilterHeader(onEvent)
+                FilterHeader(onAction)
                 PriorityFilterContainer(
                     filterOption = state.tempFilterOption,
                     onPriorityClicked = { selectedPriority ->
-                        onEvent(TaskListEvent.OnPriorityFilterChanged(selectedPriority))
+                        onAction(TaskListAction.OnPriorityFilterChanged(selectedPriority))
                     })
                 StatusFilterContainer(filterOption = state.tempFilterOption, onStatusClicked = {
-                    onEvent(TaskListEvent.OnStatusFilterChanged(it))
+                    onAction(TaskListAction.OnStatusFilterChanged(it))
                 })
             }
             AppRowButtons(
                 modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
                 firstButtonTitle = Res.string.apply_label,
                 onFirstButtonClick = {
-                    onEvent(TaskListEvent.OnApplyFilter)
+                    onAction(TaskListAction.OnApplyFilter)
                 },
                 secondButtonTitle = Res.string.reset_label,
-                onSecondButtonClick = { onEvent(TaskListEvent.OnResetFilter) })
+                onSecondButtonClick = { onAction(TaskListAction.OnResetFilter) })
         }
     }
 }
 
 @Composable
-fun FilterHeader(onEvent: (BaseEvent) -> Unit) {
+fun FilterHeader(onEvent: (BaseAction) -> Unit) {
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         AppText(
             modifier = Modifier.align(Alignment.Center),
@@ -89,7 +89,7 @@ fun FilterHeader(onEvent: (BaseEvent) -> Unit) {
         )
         IconButton(
             modifier = Modifier.align(Alignment.TopEnd),
-            onClick = { onEvent(TaskListEvent.OnCloseFilterIcon) }) {
+            onClick = { onEvent(TaskListAction.OnCloseFilterIcon) }) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "close filter",

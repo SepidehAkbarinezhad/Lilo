@@ -9,12 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
@@ -42,9 +39,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.app.navigation.AppRoutes
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
@@ -63,7 +59,8 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun TaskListScreenRoot(
     viewModel: TaskListViewModel,
-    onNavigateTo: (AppDestinations) -> Unit
+    onNavigateTo: (AppRoutes) -> Unit,
+    onBack: () -> Boolean
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -72,21 +69,22 @@ fun TaskListScreenRoot(
     BaseRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
+        onBack = onBack,
         bodyContainer = {
             TaskListScreen(
                 state = state,
                 isLoading = baseUiState.showLoading,
-                onEvent = viewModel::onEvent
+                onAction = viewModel::onAction
             )
         },
         dialogContent = {
             if (state.isDeleteDialogOpen) {
                 DeleteConfirmationDialog(onConfirm = {
-                    viewModel.onEvent(
-                        TaskListEvent.OnDeleteTaskConfirm
+                    viewModel.onAction(
+                        TaskListAction.OnDeleteTaskConfirm
                     )
-                    viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog)
-                }, onDismiss = { viewModel.onEvent(TaskListEvent.OnDismissDeleteDialog) })
+                    viewModel.onAction(TaskListAction.OnDismissDeleteDialog)
+                }, onDismiss = { viewModel.onAction(TaskListAction.OnDismissDeleteDialog) })
             }
         }
 
@@ -98,7 +96,7 @@ fun TaskListScreenRoot(
 fun TaskListScreen(
     state: TaskListState,
     isLoading: Boolean = false,
-    onEvent: (BaseEvent) -> Unit
+    onAction: (BaseAction) -> Unit
 ) {
     val clickable = !state.isFilterSheetOpen
     val searchResultListState = rememberLazyListState()
@@ -113,14 +111,14 @@ fun TaskListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (clickable)
-                        onEvent(
-                            BaseEvent.OnNavigateTo(
-                                AppDestinations.TaskDetail(
-                                    (AppRoutes.TaskDetail(taskId = -1))
-                                )
+                    if (clickable){
+                        onAction(
+                            BaseAction.OnNavigateTo(
+                                (AppRoutes.TaskDetail(taskId = null))
                             )
                         )
+                    }
+
                 },
                 shape = RoundedCornerShape(20.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
@@ -145,7 +143,7 @@ fun TaskListScreen(
             TaskListHeader(
                 modifier = Modifier.statusBarsPadding(),
                 state = state,
-                onEvent = onEvent
+                onAction = onAction
             )
 
             Surface(
@@ -179,8 +177,8 @@ fun TaskListScreen(
                                         .clickable(indication = null, // Disable the ripple effect
                                             interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
                                         ) {
-                                            if (clickable) onEvent(
-                                                TaskListEvent.OnCategorySelected(
+                                            if (clickable) onAction(
+                                                TaskListAction.OnCategorySelected(
                                                     category.id
                                                 )
                                             )
@@ -223,7 +221,7 @@ fun TaskListScreen(
                         TaskList(
                             tasks = state.tasksResult,
                             clickable = clickable,
-                            onEvent = onEvent,
+                            onAction = onAction,
                             modifier = Modifier.fillMaxSize(),
                             scrollState = searchResultListState
                         )
@@ -233,14 +231,14 @@ fun TaskListScreen(
         }
 
     }
-    TaskFilterSheet(state = state, onEvent = onEvent)
+    TaskFilterSheet(state = state, onAction = onAction)
 
 }
 
 @Composable
 fun TaskListHeader(
     state: TaskListState,
-    onEvent: (BaseEvent) -> Unit,
+    onAction: (BaseAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -257,11 +255,14 @@ fun TaskListHeader(
             focusRequester = focusRequester,
             searchQuery = state.searchQuery,
             onSearchQueryChange = {
-                if (clickable) onEvent(
-                    TaskListEvent.OnSearchQueryChange(
-                        it
+                if (clickable){
+                    onAction(
+                        TaskListAction.OnSearchQueryChange(
+                            it
+                        )
                     )
-                )
+                }
+
             },
             onImeSearch = { keyboardController?.hide() },
             readonly = !clickable
@@ -269,7 +270,7 @@ fun TaskListHeader(
         IconButton(
             onClick = {
                 focusManager.clearFocus()
-                if (clickable) onEvent(TaskListEvent.OnFilterIcon)
+                if (clickable) onAction(TaskListAction.OnFilterIcon)
             },
             enabled = !state.isFilterSheetOpen
         ) {

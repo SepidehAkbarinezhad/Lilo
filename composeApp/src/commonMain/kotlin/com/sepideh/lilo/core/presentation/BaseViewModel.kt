@@ -15,15 +15,17 @@ abstract class BaseViewModel : ViewModel() {
     private val baseUiState = MutableStateFlow(BaseUiState())
     val baseUiStateValue = baseUiState.asStateFlow()
 
-    open fun onEvent(event: BaseEvent) {
-        when (event) {
-            is BaseEvent.ShowLoading -> {
-                baseUiState.update { it.copy(showLoading = event.show) }
+    open fun onAction(action: BaseAction) {
+        when (action) {
+            is BaseAction.ShowLoading -> {
+                baseUiState.update { it.copy(showLoading = action.show) }
             }
 
-            is BaseEvent.OnNavigateTo -> {
+            is BaseAction.OnNavigateTo -> {
                 viewModelScope.launch {
-                    baseOneTimeEvents.emit(BaseOneTimeEvents(navigateTo = event.destination))
+                    action.route?.let { baseOneTimeEvents.emit(BaseOneTimeEvents(route = action.route)) }
+                        ?: baseOneTimeEvents.emit(BaseOneTimeEvents(navigateBack = true))
+
                 }
             }
         }
