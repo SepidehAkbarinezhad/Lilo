@@ -1,7 +1,9 @@
 package com.sepideh.lilo.core.presentation
 
-import com.sepideh.lilo.app.navigation.AppDestinations
+import com.sepideh.lilo.app.navigation.AppRoutes
+
 
 data class BaseOneTimeEvents(
-    val navigateTo: AppDestinations? = null,
+    val navigateBack: Boolean = false,
+    val route: AppRoutes? = null,
 )
