@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sepideh.lilo.app.navigation.AppDestinations
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.app.navigation.AppRoutes
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
@@ -50,53 +50,56 @@ import lilo.composeapp.generated.resources.edit_task_title
 import lilo.composeapp.generated.resources.title_label
 import org.jetbrains.compose.resources.stringResource
 
+
 @Composable
 fun TaskDetailScreenRoot(
     taskId: Long?,
     viewModel: TaskDetailViewModel,
-    onNavigateTo: (AppDestinations) -> Unit
+    onNavigateTo: (AppRoutes) -> Unit,
+    onBack: () -> Boolean
 ) {
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
 
     LaunchedEffect(taskId) {
         taskId?.let {
-            viewModel.onEvent(TaskDetailEvent.OnGetSelectedTaskInfo(it))
+            viewModel.onAction(TaskDetailAction.OnGetSelectedTaskInfo(it))
         }
     }
 
     BaseRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
+        onBack = onBack,
         bodyContainer = {
             if (!state.isReminderDialogOpen) {
                 TaskDetailScreen(
                     state = state,
                     task = task,
-                    onEvent = viewModel::onEvent
+                    onAction = viewModel::onAction
                 )
             }
 
         },
         dialogContent = {
             if (state.isCategoryDialogOpen) {
-                CategoryDialog(state = state, onEvent = { viewModel.onEvent(it) })
+                CategoryDialog(state = state, onAction = { viewModel.onAction(it) })
             }
             if (state.isPriorityDialogOpen) {
-                PriorityDialog(state = state, onEvent = { viewModel.onEvent(it) })
+                PriorityDialog(state = state, onAction = { viewModel.onAction(it) })
             }
             if (state.isReminderDialogOpen) {
                 ReminderPicker(
                     reminderModel = viewModel.reminderModel,
-                    onEvent = { viewModel.onEvent(it) })
+                    onAction = { viewModel.onAction(it) })
             }
             if (state.shouldShowPermissionDialog) {
                 PermissionAlertDialog(
                     isXiaomi = viewModel.isXiaomi,
-                    onEvent = { viewModel.onEvent(it) })
+                    onAction = { viewModel.onAction(it) })
             }
             if (state.shouldShowPermissionDeniedDialog) {
-                PermissionDeniedDialog(state = state, onEvent = { viewModel.onEvent(it) })
+                PermissionDeniedDialog(state = state, onAction = { viewModel.onAction(it) })
             }
 
         }
@@ -108,7 +111,7 @@ fun TaskDetailScreenRoot(
 fun TaskDetailScreen(
     state: TaskDetailState,
     task: Task,
-    onEvent: (BaseEvent) -> Unit
+    onAction: (BaseAction) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val isEdit = task.id != null
@@ -145,7 +148,7 @@ fun TaskDetailScreen(
                         containerModifier = Modifier.padding(18.dp),
                         textFieldRequired = TextFieldRequired(
                             value = task.title,
-                            onValueChange = { onEvent(TaskDetailEvent.OnTitleChanged(it)) },
+                            onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) },
                             label = stringResource(Res.string.title_label),
                             validationStatus = state.titleError
                         )
@@ -157,7 +160,7 @@ fun TaskDetailScreen(
                         textFieldModifier = Modifier.heightIn(116.dp),
                         textFieldRequired = TextFieldRequired(
                             value = task.description,
-                            onValueChange = { onEvent(TaskDetailEvent.OnDescriptionChanged(it)) },
+                            onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) },
                             label = stringResource(Res.string.description_label),
                             validationStatus = state.descriptionError
                         ),
@@ -165,7 +168,7 @@ fun TaskDetailScreen(
                         maxLines = 3,
                     )
 
-                    TaskDetailIcons(onEvent = onEvent)
+                    TaskDetailIcons(onAction = onAction)
                 }
             }
 
@@ -177,10 +180,10 @@ fun TaskDetailScreen(
                 else -> Res.string.add_task_label
             },
             onFirstButtonClick = {
-                onEvent(TaskDetailEvent.OnAddTaskButton(checkDeniedPermission = true))
+                onAction(TaskDetailAction.OnAddTaskButton(checkDeniedPermission = true))
             },
             secondButtonTitle = Res.string.cancel_button,
-            onSecondButtonClick = { onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp())) }
+            onSecondButtonClick = { onAction(BaseAction.OnNavigateTo(route = null)) }
         )
 
 

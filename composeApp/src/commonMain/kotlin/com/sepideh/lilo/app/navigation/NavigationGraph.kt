@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.sepideh.lilo.app.SplashScreen
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListScreenRoot
@@ -17,21 +16,15 @@ fun NavigationGraph(navHostController: NavHostController) {
     NavHost(navController = navHostController, startDestination = AppRoutes.TaskList) {
 
         val onBackPressed = { navHostController.navigateUp() }
-        val onNavigate: (AppDestinations) -> Unit =
-            { destination ->
-                when (destination) {
-                    AppDestinations.NavigateUp() -> onBackPressed()
-                    else -> destination.route?.let { route -> navHostController.navigate(route = route) }
-                }
+        val onNavigate: (AppRoutes) -> Unit =
+            { route ->
+                navHostController.navigate(route = route)
             }
 
-        composable<AppRoutes.Splash> {
-            SplashScreen(onNavigateTo = onNavigate)
-        }
 
         composable<AppRoutes.TaskList> {
             val viewModel = koinViewModel<TaskListViewModel>()
-            TaskListScreenRoot(viewModel = viewModel, onNavigateTo = onNavigate)
+            TaskListScreenRoot(viewModel = viewModel, onNavigateTo = onNavigate, onBack = onBackPressed)
         }
 
         composable<AppRoutes.TaskDetail> {
@@ -40,7 +33,8 @@ fun NavigationGraph(navHostController: NavHostController) {
             TaskDetailScreenRoot(
                 taskId = args.taskId,
                 viewModel = viewModel,
-                onNavigateTo = onNavigate
+                onNavigateTo = onNavigate,
+                onBack = onBackPressed
             )
         }
 

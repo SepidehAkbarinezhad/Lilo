@@ -11,13 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
+import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task_label
@@ -27,7 +27,7 @@ import lilo.composeapp.generated.resources.permission_alert_dialog_denied
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun PermissionDeniedDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
+fun PermissionDeniedDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
     AppDialog(dialogModel = DialogModel(content = {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -41,10 +41,10 @@ fun PermissionDeniedDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit)
             AppText(text = Res.string.permission_alert_dialog_denied,textType = TextType.SubTitle,)
             Spacer(modifier = Modifier.height(8.dp))
             AppRowButtons(firstButtonTitle = Res.string.grant_permission_button,
-                onFirstButtonClick = { onEvent(TaskDetailEvent.OnGrantPermissionButton(firstTime = false)) },
+                onFirstButtonClick = { onAction(TaskDetailAction.OnGrantPermissionButton(firstTime = false)) },
                 secondButtonTitle = Res.string.add_task_label,
-                onSecondButtonClick = { onEvent(TaskDetailEvent.OnAddTaskButton(checkDeniedPermission = false)) })
+                onSecondButtonClick = { onAction(TaskDetailAction.OnAddTaskButton(checkDeniedPermission = false)) })
         }
-    }, onDismissRequest = { onEvent(TaskDetailEvent.OnCancelPermissionDialog) }))
+    }, onDismissRequest = { onAction(TaskDetailAction.OnCancelPermissionDialog) }))
 }
 

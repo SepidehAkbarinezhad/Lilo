@@ -4,10 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.app.navigation.AppDestinations
 import com.sepideh.lilo.core.domain.PermissionManager
 import com.sepideh.lilo.core.domain.ValidateField
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.TaskDatabase
@@ -44,7 +43,6 @@ class TaskDetailViewModel(
         .map { it.toCategoryList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
-
     private val state = MutableStateFlow(TaskDetailState())
 
     /*
@@ -67,49 +65,49 @@ class TaskDetailViewModel(
         state.copy(
             categories = categories, selectedCategory = validSelectedCategory
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L),state.value)
 
     var task: Task by mutableStateOf(Task())
 
     var reminderModel: ReminderModel = ReminderModel()
 
 
-    override fun onEvent(event: BaseEvent) {
-        super.onEvent(event)
-        when (event) {
-            is TaskDetailEvent.OnTitleChanged -> {
-                task = task.copy(title = event.title)
+    override fun onAction(action: BaseAction) {
+        super.onAction(action)
+        when (action) {
+            is TaskDetailAction.OnTitleChanged -> {
+                task = task.copy(title = action.title)
             }
 
-            is TaskDetailEvent.OnDescriptionChanged -> {
-                task = task.copy(description = event.description)
+            is TaskDetailAction.OnDescriptionChanged -> {
+                task = task.copy(description = action.description)
             }
 
-            is TaskDetailEvent.OnCategoryIcon -> {
+            is TaskDetailAction.OnCategoryIcon -> {
                 state.update {
                     it.copy(isCategoryDialogOpen = true)
                 }
             }
 
-            is TaskDetailEvent.OnDismissCategoryDialog -> {
+            is TaskDetailAction.OnDismissCategoryDialog -> {
                 state.update {
                     it.copy(isCategoryDialogOpen = false)
                 }
             }
 
-            is TaskDetailEvent.OnPriorityIcon -> {
+            is TaskDetailAction.OnPriorityIcon -> {
                 state.update {
                     it.copy(isPriorityDialogOpen = true)
                 }
             }
 
-            is TaskDetailEvent.OnDismissPriorityDialog -> {
+            is TaskDetailAction.OnDismissPriorityDialog -> {
                 state.update {
                     it.copy(isPriorityDialogOpen = false)
                 }
             }
 
-            is TaskDetailEvent.OnDateReminderIcon -> {
+            is TaskDetailAction.OnDateReminderIcon -> {
                 /*
                 * When the user taps the reminder icon, check both alarm and notification permissions.
                 * If both permissions are granted, open the reminder dialog.
@@ -123,48 +121,48 @@ class TaskDetailViewModel(
                 }
             }
 
-            is TaskDetailEvent.OnDismissReminderDialogButton -> {
+            is TaskDetailAction.OnDismissReminderDialogButton -> {
                 setIsReminderDialogOpen(open = false)
             }
 
 
-            is TaskDetailEvent.OnDismissTimeDialog -> {
+            is TaskDetailAction.OnDismissTimeDialog -> {
                 state.update {
                     it.copy(isTimeDialogOpen = false)
                 }
             }
 
-            is TaskDetailEvent.OnSelectReminderConfirm -> {
-                reminderModel = event.reminderModel
+            is TaskDetailAction.OnSelectReminderConfirm -> {
+                reminderModel = action.reminderModel
                 setIsReminderDialogOpen(open = false)
             }
 
-            is TaskDetailEvent.OnCategorySelected -> {
-                val selectedCategory = stateValue.value.categories.find { it.title == event.title }
+            is TaskDetailAction.OnCategorySelected -> {
+                val selectedCategory = stateValue.value.categories.find { it.title == action.title }
                     ?: Category.categories[0]
                 state.update { it.copy(selectedCategory = selectedCategory) }
-                onEvent(TaskDetailEvent.OnDismissCategoryDialog)
+                onAction(TaskDetailAction.OnDismissCategoryDialog)
             }
 
-            is TaskDetailEvent.OnPrioritySelected -> {
-                val selectedPriority = Priority.getByTitle(event.title)
+            is TaskDetailAction.OnPrioritySelected -> {
+                val selectedPriority = Priority.getByTitle(action.title)
                 state.update { it.copy(selectedPriority = selectedPriority) }
-                onEvent(TaskDetailEvent.OnDismissPriorityDialog)
+                onAction(TaskDetailAction.OnDismissPriorityDialog)
             }
 
-            is TaskDetailEvent.OnSelectReminderDate -> {
-                with(event.date) {
+            is TaskDetailAction.OnSelectReminderDate -> {
+                with(action.date) {
                     reminderModel = reminderModel.copy(startDay = first, endDay = second)
                 }
             }
 
-            is TaskDetailEvent.OnSelectReminderTime -> {
-                with(event.time) {
+            is TaskDetailAction.OnSelectReminderTime -> {
+                with(action.time) {
                     reminderModel = reminderModel.copy(hour = first, minute = second)
                 }
             }
 
-            is TaskDetailEvent.OnAddTaskButton -> {
+            is TaskDetailAction.OnAddTaskButton -> {
                 viewModelScope.launch {
                     val tempTask = task.copy(
                         category = stateValue.value.selectedCategory?.id
@@ -178,29 +176,29 @@ class TaskDetailViewModel(
                     )
 
                     viewModelScope.launch {
-                        if (isFormValid(checkDeniedPermission = event.checkDeniedPermission)) {
+                        if (isFormValid(checkDeniedPermission = action.checkDeniedPermission)) {
                             //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
                             val resultId = taskDatabase.taskDao().upsert(tempTask.toEntity())
                             //Use the correct ID for scheduling a reminder:
                             //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
                             val actualId = if (resultId == -1L) tempTask.id!! else resultId
                             startReminder(actualId)
-                            onEvent(BaseEvent.OnNavigateTo(AppDestinations.NavigateUp()))
+                            onAction(BaseAction.OnNavigateTo(route = null))
                         }
                     }
                 }
             }
 
-            is TaskDetailEvent.OnAddNewCategory -> {
+            is TaskDetailAction.OnAddNewCategory -> {
                 viewModelScope.launch {
-                    categoryDatabase.categoryDao().upsert(category = event.category.toEntity())
+                    categoryDatabase.categoryDao().upsert(category = action.category.toEntity())
                 }
                 state.update { it.copy(selectedCategory = null) }
             }
 
-            is TaskDetailEvent.OnGetSelectedTaskInfo -> {
+            is TaskDetailAction.OnGetSelectedTaskInfo -> {
                 viewModelScope.launch {
-                    taskDatabase.taskDao().getTaskById(event.taskId)?.toTask()
+                    taskDatabase.taskDao().getTaskById(action.taskId)?.toTask()
                         ?.let { selectedTask ->
                             task = selectedTask
                             updateSelectedCategory(selectedTask.category)
@@ -210,11 +208,11 @@ class TaskDetailViewModel(
                 }
             }
 
-            is TaskDetailEvent.OnGrantPermissionButton -> {
+            is TaskDetailAction.OnGrantPermissionButton -> {
                 closePermissionDialog()
                 viewModelScope.launch {
                     with(permissionManager) {
-                        when (event.firstTime) {
+                        when (action.firstTime) {
                             true -> requestNeededPermission()
                             false -> requestDeniedPermission()
                         }
@@ -222,7 +220,7 @@ class TaskDetailViewModel(
                 }
             }
 
-            TaskDetailEvent.OnCancelPermissionDialog -> {
+            TaskDetailAction.OnCancelPermissionDialog -> {
                 closePermissionDialog()
                 state.update {
                     it.copy(
