@@ -11,26 +11,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sepideh.lilo.app.navigation.AppDestinations
-import com.sepideh.lilo.core.presentation.components.AppDialog
-import com.sepideh.lilo.core.presentation.components.DialogModel
+import com.sepideh.lilo.app.navigation.AppRoutes
 
 @Composable
 fun BaseRoot(
-    modifier: Modifier=Modifier,
+    modifier: Modifier = Modifier,
     viewModel: BaseViewModel,
-    navigateTo: (AppDestinations) -> Unit,
+    navigateTo: (AppRoutes) -> Unit,
+    onBack: () -> Boolean,
     bodyContainer: @Composable () -> Unit,
     dialogContent: @Composable () -> Unit = {}
 ) {
 
-    val baseOneTimeEvents by viewModel.baseOneTimeEvents.collectAsStateWithLifecycle(
+    val oneTimeEvents by viewModel.baseOneTimeEvents.collectAsStateWithLifecycle(
         BaseOneTimeEvents()
     )
     val baseUiState by viewModel.baseUiStateValue.collectAsStateWithLifecycle()
 
-    LaunchedEffect(baseOneTimeEvents) {
-        baseOneTimeEvents.navigateTo?.let {
+    LaunchedEffect(oneTimeEvents) {
+        if(oneTimeEvents.navigateBack)
+            onBack()
+        oneTimeEvents.route?.let {
             navigateTo(it)
         }
     }

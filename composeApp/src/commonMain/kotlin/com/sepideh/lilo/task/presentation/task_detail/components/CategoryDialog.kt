@@ -39,20 +39,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.model.Category
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
+import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CategoryDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
+fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
 
     var selected by remember { mutableStateOf(state.selectedCategory) }
     AppDialog(dialogModel = DialogModel(content = {
@@ -92,16 +92,16 @@ fun CategoryDialog(state: TaskDetailState, onEvent: (BaseEvent) -> Unit) {
                 }
             }
             AddCategoryContainer(onDone = {
-                onEvent(
-                    TaskDetailEvent.OnCategorySelected(
+                onAction(
+                    TaskDetailAction.OnCategorySelected(
                         selected?.title ?: ""
                     )
                 )
-            }, onAddNewCategory = { onEvent(TaskDetailEvent.OnAddNewCategory(it)) })
+            }, onAddNewCategory = { onAction(TaskDetailAction.OnAddNewCategory(it)) })
 
         }
 
-    }, onDismissRequest = { onEvent(TaskDetailEvent.OnDismissCategoryDialog) }))
+    }, onDismissRequest = { onAction(TaskDetailAction.OnDismissCategoryDialog) }))
 }
 
 @Composable

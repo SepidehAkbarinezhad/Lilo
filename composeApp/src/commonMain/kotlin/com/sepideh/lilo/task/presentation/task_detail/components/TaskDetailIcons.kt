@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.BaseEvent
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailEvent
+import com.sepideh.lilo.core.presentation.BaseAction
+import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_icon
 import lilo.composeapp.generated.resources.date_icon
@@ -19,25 +19,25 @@ import lilo.composeapp.generated.resources.priority_icon
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun TaskDetailIcons(onEvent: (BaseEvent) -> Unit) {
+fun TaskDetailIcons(onAction: (BaseAction) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        IconButton(onClick = { onEvent(TaskDetailEvent.OnCategoryIcon) }) {
+        IconButton(onClick = { onAction(TaskDetailAction.OnCategoryIcon) }) {
             Image(
                 painter = painterResource(Res.drawable.category_icon),
                 contentDescription = null
             )
         }
-        IconButton(onClick = { onEvent(TaskDetailEvent.OnPriorityIcon) }) {
+        IconButton(onClick = { onAction(TaskDetailAction.OnPriorityIcon) }) {
             Image(
                 painter = painterResource(Res.drawable.priority_icon),
                 contentDescription = null
             )
         }
-        IconButton(onClick = { onEvent(TaskDetailEvent.OnDateReminderIcon) }) {
+        IconButton(onClick = { onAction(TaskDetailAction.OnDateReminderIcon) }) {
             Image(
                 painter = painterResource(Res.drawable.date_icon),
                 contentDescription = null

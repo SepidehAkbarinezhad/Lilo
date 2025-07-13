@@ -1,7 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_list.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,19 +24,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
-import com.sepideh.lilo.task.presentation.task_list.TaskListEvent
+import com.sepideh.lilo.task.presentation.task_list.TaskListAction
 
 @Composable
 fun TaskListItem(
     modifier: Modifier = Modifier,
     clickable: Boolean,
     task: Task,
-    onEvent: (BaseEvent) -> Unit
+    onAction: (BaseAction) -> Unit
 ) {
     Surface(
         modifier = modifier, shape = RoundedCornerShape(12.dp),
@@ -51,8 +50,8 @@ fun TaskListItem(
                 Checkbox(
                     checked = done,
                     onCheckedChange = {
-                        if (clickable) onEvent(
-                            TaskListEvent.OnDoneChange(
+                        if (clickable) onAction(
+                            TaskListAction.OnDoneChange(
                                 task = task.copy(
                                     done = !done
                                 )
@@ -72,7 +71,7 @@ fun TaskListItem(
                 }
                 IconButton(onClick = {
                     if (clickable)
-                        onEvent(TaskListEvent.OnDeleteTaskIcon(task = task))
+                        onAction(TaskListAction.OnDeleteTaskIcon(task = task))
                 }) {
                     Icon(
                         imageVector = Icons.Default.Delete,

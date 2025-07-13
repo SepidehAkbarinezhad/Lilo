@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.core.presentation.BaseEvent
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.TaskDatabase
@@ -118,13 +118,13 @@ class TaskListViewModel(
     }
 
     private fun loadTasks() {
-        onEvent(BaseEvent.ShowLoading(true))
+        onAction(BaseAction.ShowLoading(true))
         viewModelScope.launch {
             taskDatabase.taskDao().getAllTasks()
                 .collect { tasksList ->
                     delay(500)
                     _tasks.value = tasksList.toTaskList()
-                    onEvent(BaseEvent.ShowLoading(false))
+                    onAction(BaseAction.ShowLoading(false))
                 }
         }
     }
@@ -137,25 +137,25 @@ class TaskListViewModel(
         }
     }
 
-    override fun onEvent(event: BaseEvent) {
-        super.onEvent(event)
-        when (event) {
-            is TaskListEvent.OnCategorySelected -> {
+    override fun onAction(action: BaseAction) {
+        super.onAction(action)
+        when (action) {
+            is TaskListAction.OnCategorySelected -> {
                 _state.update {
-                    it.copy(selectedCategory = event.id)
+                    it.copy(selectedCategory = action.id)
                 }
             }
 
-            is TaskListEvent.OnSearchQueryChange -> {
-                _state.update { it.copy(searchQuery = event.query) }
+            is TaskListAction.OnSearchQueryChange -> {
+                _state.update { it.copy(searchQuery = action.query) }
                 //  _state.value = TaskListState(searchQuery = event.query)
             }
 
-            is TaskListEvent.OnFilterIcon -> {
+            is TaskListAction.OnFilterIcon -> {
                 _state.update { it.copy(isFilterSheetOpen = !it.isFilterSheetOpen) }
             }
 
-            is TaskListEvent.OnCloseFilterIcon -> {
+            is TaskListAction.OnCloseFilterIcon -> {
                 _state.update {
                     it.copy(
                         tempFilterOption = it.taskFilterOption,
@@ -164,7 +164,7 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListEvent.OnApplyFilter -> {
+            is TaskListAction.OnApplyFilter -> {
                 _state.update {
                     it.copy(
                         taskFilterOption = _state.value.tempFilterOption,
@@ -174,7 +174,7 @@ class TaskListViewModel(
 
                 viewModelScope.launch {
                     with(state.value.taskFilterOption) {
-                        onEvent(BaseEvent.ShowLoading(true))
+                        onAction(BaseAction.ShowLoading(true))
                         taskDatabase.taskDao().getTaskByFilter(
                             done = if (taskStatus.isEmpty()) null else TaskStatus.DONE in taskStatus,
                             priority = priorityList.map { it.id }
@@ -182,17 +182,17 @@ class TaskListViewModel(
                         ).collect { tasksList ->
                             delay(500)
                             _tasks.value = tasksList.toTaskList()
-                            onEvent(BaseEvent.ShowLoading(false))
+                            onAction(BaseAction.ShowLoading(false))
                         }
                     }
                 }
             }
 
-            is TaskListEvent.OnStatusFilterChanged -> {
-                event.status.let {
+            is TaskListAction.OnStatusFilterChanged -> {
+                action.status.let {
                     val updatedList =
                         state.value.tempFilterOption.taskStatus.toMutableList().apply {
-                            if (contains(event.status)) {
+                            if (contains(action.status)) {
                                 remove(it)
                             } else {
                                 add(it)
@@ -204,11 +204,11 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListEvent.OnPriorityFilterChanged -> {
-                event.priority.let {
+            is TaskListAction.OnPriorityFilterChanged -> {
+                action.priority.let {
                     val updatedList =
                         state.value.tempFilterOption.priorityList.toMutableList().apply {
-                            if (contains(event.priority)) {
+                            if (contains(action.priority)) {
                                 remove(it)
                             } else {
                                 add(it)
@@ -220,7 +220,7 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListEvent.OnResetFilter -> {
+            is TaskListAction.OnResetFilter -> {
                 _state.update {
                     it.copy(
                         tempFilterOption = TaskFilterOption(),
@@ -231,45 +231,45 @@ class TaskListViewModel(
                 loadTasks()
             }
 
-            is TaskListEvent.OnDeleteTaskIcon -> {
-                selectedTask = event.task
+            is TaskListAction.OnDeleteTaskIcon -> {
+                selectedTask = action.task
                 _state.update {
                     it.copy(isDeleteDialogOpen = true)
                 }
             }
 
-            is TaskListEvent.OnDismissDeleteDialog -> {
+            is TaskListAction.OnDismissDeleteDialog -> {
                 _state.update {
                     it.copy(isDeleteDialogOpen = false)
                 }
             }
 
-            is TaskListEvent.OnDeleteTaskConfirm -> {
-                onEvent(BaseEvent.ShowLoading(true))
+            is TaskListAction.OnDeleteTaskConfirm -> {
+                onAction(BaseAction.ShowLoading(true))
                 selectedTask?.let {
                     viewModelScope.launch {
                         delay(500)
                         withContext(Dispatchers.IO) {
                             it.id?.let { taskDatabase.taskDao().deleteById(it) }
                         }
-                        onEvent(BaseEvent.ShowLoading(false))
+                        onAction(BaseAction.ShowLoading(false))
                     }
                 }
 
             }
 
-            is TaskListEvent.OnTitleChanged -> {
-                newTask = newTask?.copy(title = event.title)
+            is TaskListAction.OnTitleChanged -> {
+                newTask = newTask?.copy(title = action.title)
             }
 
-            is TaskListEvent.OnDescriptionChanged -> {
-                newTask = newTask?.copy(description = event.value)
+            is TaskListAction.OnDescriptionChanged -> {
+                newTask = newTask?.copy(description = action.value)
             }
 
-            is TaskListEvent.OnDoneChange -> {
-                if(event.task.done){
-                    event.task.id?.let{
-                        with(event.task){
+            is TaskListAction.OnDoneChange -> {
+                if(action.task.done){
+                    action.task.id?.let{
+                        with(action.task){
                             reminderScheduler.cancelReminder( reminder = Reminder(
                                 id = id?.toInt()!!,
                                 title = title,
@@ -284,12 +284,12 @@ class TaskListViewModel(
 
                 }
                 viewModelScope.launch {
-                    taskDatabase.taskDao().upsert(task = event.task.toEntity())
+                    taskDatabase.taskDao().upsert(task = action.task.toEntity())
                 }
             }
 
-            is TaskListEvent.OnPhotoPicked -> {
-                newTask = newTask?.copy(photo = event.bytes)
+            is TaskListAction.OnPhotoPicked -> {
+                newTask = newTask?.copy(photo = action.bytes)
             }
 
         }
