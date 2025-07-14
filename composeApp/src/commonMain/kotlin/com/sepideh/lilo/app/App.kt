@@ -10,11 +10,8 @@ import com.sepideh.lilo.ui.theme.LiloTheme
 
 
 @Composable
-fun App(
-    darkTheme: Boolean,
-    dynamicColor: Boolean
-) {
-    LiloTheme(darkTheme = darkTheme, dynamicColor = dynamicColor) {
+fun App() {
+    LiloTheme{
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             val navHostController = rememberNavController()
             NavigationGraph(navHostController = navHostController)

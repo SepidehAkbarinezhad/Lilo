@@ -33,7 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +49,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
@@ -101,6 +103,7 @@ fun TaskListScreen(
     val clickable = !state.isFilterSheetOpen
     val searchResultListState = rememberLazyListState()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val palette = LocalLiloColorsPalette.current
 
 
     LaunchedEffect(key1 = state.tasksResult) {
@@ -165,14 +168,15 @@ fun TaskListScreen(
                                 // Determine if the category is selected or if it's the first one when selectedCategory is null
                                 val isSelected =
                                     category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
-                                val selectedColor =
-                                    if (isSelected) MaterialTheme.colorScheme.primary else Gray
-
+                                val selectedTextColor =
+                                    if (isSelected) palette.selectedCategory else palette.unSelectedCategory
+                               /* val selectedBackGroundColor =
+                                    if (isSelected) MaterialTheme.colorScheme.onSurface.copy(alpha = .9f) else Transparent*/
                                 AppText(
-                                    modifier = Modifier.widthIn(min = 100.dp).border(
+                                    modifier = Modifier.widthIn(min = 100.dp) .border(
                                         width = 1.dp,
-                                        color = selectedColor,
-                                        shape = RoundedCornerShape(8.dp)
+                                        color = selectedTextColor,
+                                        shape = RoundedCornerShape(8.dp),
                                     ).padding(4.dp)
                                         .clickable(indication = null, // Disable the ripple effect
                                             interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
@@ -185,7 +189,7 @@ fun TaskListScreen(
                                         },
                                     text = category.title,
                                     textAlign = TextAlign.Center,
-                                    color = selectedColor,
+                                    color = selectedTextColor,
                                     textType = TextType.SubTitle
                                 )
                             }
