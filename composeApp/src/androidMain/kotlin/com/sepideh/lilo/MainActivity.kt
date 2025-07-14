@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         setContent {
-            App(darkTheme = false, dynamicColor = false)
+            App()
         }
     }
 }

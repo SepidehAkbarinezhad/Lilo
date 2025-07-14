@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +32,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import com.sepideh.lilo.task.presentation.task_list.TaskListAction
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 
 @Composable
 fun TaskListItem(
@@ -38,9 +41,10 @@ fun TaskListItem(
     task: Task,
     onAction: (BaseAction) -> Unit
 ) {
-    Surface(
+    val palette = LocalLiloColorsPalette.current
+    Card(
         modifier = modifier, shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.primary.copy(alpha = .05f)
+        colors = CardDefaults.cardColors(containerColor = palette.taskItem)
     ) {
         with(task) {
             Row(
