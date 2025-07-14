@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Main app theme -->
+    <style name="Theme.Lilo" parent="Theme.Material3.Light.NoActionBar" />
+
+    <!-- Splash screen theme for Android 12+ -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#000000</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/lilo_icon</item>
+        <!-- Set the theme of the Activity that directly follows your splash screen. -->
+        <item name="postSplashScreenTheme">@style/Theme.Lilo</item>
+    </style>
+
+</resources>
