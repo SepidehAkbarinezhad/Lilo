@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,9 +40,9 @@ fun TaskListItem(
     task: Task,
     onAction: (BaseAction) -> Unit
 ) {
-    Surface(
+    Card(
         modifier = modifier, shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.primary.copy(alpha = .05f)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSurface)
     ) {
         with(task) {
             Row(
