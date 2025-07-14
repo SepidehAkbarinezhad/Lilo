@@ -11,7 +11,6 @@ fun MainViewController() = ComposeUIViewController(
         initKoin()
     }
 ) {
-    val darkTheme =
-        UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyle.UIUserInterfaceStyleDark
-    App(darkTheme = false, dynamicColor = false)
+
+    App()
 }

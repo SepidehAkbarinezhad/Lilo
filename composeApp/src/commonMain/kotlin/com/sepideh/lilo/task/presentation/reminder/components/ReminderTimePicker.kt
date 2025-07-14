@@ -1,7 +1,6 @@
 package com.sepideh.lilo.task.presentation.reminder.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
@@ -27,6 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
+import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.hour_label
+import lilo.composeapp.generated.resources.minute_label
+import lilo.composeapp.generated.resources.reminder_time_title
 
 @Composable
 fun ColumnScope.ReminderTimePicker(
@@ -35,6 +38,7 @@ fun ColumnScope.ReminderTimePicker(
     onSelectedHour: (Int) -> Unit,
     onSelectedMinute: (Int) -> Unit,
 ) {
+    val palette = LocalLiloColorsPalette.current
     val hourListState = rememberLazyListState()
     val hourSnapFlingBehavior = rememberSnapFlingBehavior(lazyListState = hourListState)
 
@@ -63,9 +67,9 @@ fun ColumnScope.ReminderTimePicker(
 
     AppText(
         modifier = Modifier.padding(4.dp),
-        text = "set reminder time ",
+        text = Res.string.reminder_time_title,
         textType = TextType.SubTitle,
-        color = MaterialTheme.colorScheme.primary
+        color = palette.reminderColor
     )
     // Custom Time Picker
     Row(
@@ -78,7 +82,7 @@ fun ColumnScope.ReminderTimePicker(
             modifier = Modifier.padding(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Hour", style = MaterialTheme.typography.bodyMedium)
+            AppText(text = Res.string.hour_label, textType = TextType.Body)
             Card(
                 modifier = Modifier.size(50.dp),
                 border = BorderStroke(
@@ -100,7 +104,8 @@ fun ColumnScope.ReminderTimePicker(
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(
-                                text = hour.toString().padStart(2, '0')
+                                text = hour.toString().padStart(2, '0'),
+                                color = Color.Black
                             )
                         }
 
@@ -115,7 +120,7 @@ fun ColumnScope.ReminderTimePicker(
             modifier = Modifier.padding(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Minute", style = MaterialTheme.typography.bodyMedium)
+            AppText(text = Res.string.minute_label, textType = TextType.Body)
             Card(
                 modifier = Modifier.size(50.dp),
                 border = BorderStroke(
@@ -137,7 +142,8 @@ fun ColumnScope.ReminderTimePicker(
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(
-                                text =minute.toString().padStart(2, '0')
+                                text = minute.toString().padStart(2, '0'),
+                                color = Color.Black
                             )
                         }
                     }
