@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
@@ -129,7 +130,8 @@ fun TaskListScreen(
             ) {
                 Icon(
                     Icons.Rounded.Add,
-                    contentDescription = "Add task"
+                    contentDescription = "Add task",
+                    tint = White
                 )
             }
         },
@@ -170,8 +172,7 @@ fun TaskListScreen(
                                     category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
                                 val selectedTextColor =
                                     if (isSelected) palette.selectedCategory else palette.unSelectedCategory
-                               /* val selectedBackGroundColor =
-                                    if (isSelected) MaterialTheme.colorScheme.onSurface.copy(alpha = .9f) else Transparent*/
+
                                 AppText(
                                     modifier = Modifier.widthIn(min = 100.dp) .border(
                                         width = 1.dp,
