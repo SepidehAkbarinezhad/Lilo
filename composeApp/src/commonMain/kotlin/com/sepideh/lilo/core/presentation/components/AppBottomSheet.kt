@@ -49,6 +49,7 @@ fun AppBottomSheet(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
+            //to make the below screen fade
             Spacer(
                 modifier = Modifier.fillMaxSize().background(Color.Black.copy(.5f)),
             )
@@ -63,7 +64,7 @@ fun AppBottomSheet(
                             topEnd = 30.dp
                         )
                     )
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(16.dp)
             ) {
                 content()

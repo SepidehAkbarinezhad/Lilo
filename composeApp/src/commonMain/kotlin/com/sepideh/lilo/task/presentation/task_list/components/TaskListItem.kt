@@ -44,7 +44,7 @@ fun TaskListItem(
     val palette = LocalLiloColorsPalette.current
     Card(
         modifier = modifier, shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = palette.taskItem)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         with(task) {
             Row(
