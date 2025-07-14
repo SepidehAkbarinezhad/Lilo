@@ -12,7 +12,6 @@ val DarkColorScheme = darkColorScheme(
     secondary = SecondaryDark,
     tertiary = TertiaryDark,
     surface = SurfaceDark,
-    onSurface = OnSurfaceDark
 )
 val LightColorScheme = lightColorScheme(
     primary = PrimaryLight,
@@ -21,7 +20,6 @@ val LightColorScheme = lightColorScheme(
     onSecondary = OnPrimaryLight,
     tertiary = TertiaryLight,
     surface = SurfaceLight,
-    onSurface = OnSurfaceLight
 )
 
 @Composable

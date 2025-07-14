@@ -20,7 +20,7 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: StringResource,
     textType: TextType = TextType.Body,
-    color: Color = Color.Black,
+    color: Color = LocalLiloColorsPalette.current.appText,
     textAlign: TextAlign = TextAlign.Justify,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,

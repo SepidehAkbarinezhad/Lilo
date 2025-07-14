@@ -12,10 +12,14 @@
     <string name="description_label">description</string>
     <string name="category_label">category</string>
     <string name="priority_label">priority</string>
+    <string name="hour_label">Hour</string>
+    <string name="minute_label">Minute</string>
     <string name="delete_task_confirmation">are you sure you want to delete?</string>
     <string name="confirm_button">ok</string>
     <string name="cancel_button">cancel</string>
     <string name="empty_list_title">List is empty</string>
+    <string name="reminder_date_title">set reminder date</string>
+    <string name="reminder_time_title">set reminder time</string>
     <string name="empty_list_comment">Let's start</string>
     <string name="filter_label">filter</string>
     <string name="status_filter_label">status:</string>

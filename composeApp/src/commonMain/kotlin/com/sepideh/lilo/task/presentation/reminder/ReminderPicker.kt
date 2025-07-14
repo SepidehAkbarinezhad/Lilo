@@ -28,11 +28,13 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
 import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import com.sepideh.lilo.utils.getCurrentDate
 import com.sepideh.lilo.utils.getCurrentTime
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.apply_label
 import lilo.composeapp.generated.resources.cancel_button
+import lilo.composeapp.generated.resources.reminder_date_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +42,7 @@ fun ReminderPicker(
     reminderModel: ReminderModel,
     onAction: (BaseAction) -> Unit,
 ) {
+    val palette = LocalLiloColorsPalette.current
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = reminderModel.startDay ?: getCurrentDate(),
     )
@@ -47,11 +50,11 @@ fun ReminderPicker(
 
     val initialHour = reminderModel.hour ?: getCurrentTime().first
     val initialMinute = reminderModel.minute ?: getCurrentTime().second
-   var selectedHour = initialHour
-   var selectedMin = initialMinute
+    var selectedHour = initialHour
+    var selectedMin = initialMinute
 
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.White)){
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,27 +66,35 @@ fun ReminderPicker(
                 state = datePickerState,
                 modifier = Modifier
                     .fillMaxWidth().statusBarsPadding(),
-                colors = DatePickerDefaults.colors(containerColor = Color.White),
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    dayContentColor = palette.appText,
+                    selectedDayContentColor = Color.White,
+                    selectedDayContainerColor = palette.reminderColor,
+                    headlineContentColor = MaterialTheme.colorScheme.onSurface,
+                ),
                 title = {
                     AppText(
                         modifier = Modifier.padding(4.dp),
-                        text = "set reminder date ",
+                        text = Res.string.reminder_date_title,
                         textType = TextType.SubTitle,
-                        color = MaterialTheme.colorScheme.primary
+                        color = palette.reminderColor
                     )
-                }
+                },
+                showModeToggle = false // Hides the pen/calendar icon
             )
             ReminderTimePicker(
                 initialHour = initialHour,
                 initialMinute = initialMinute,
-                onSelectedHour = {selectedHour=it},
-                onSelectedMinute ={selectedMin=it},
+                onSelectedHour = { selectedHour = it },
+                onSelectedMinute = { selectedMin = it },
             )
 
         }
 
         AppRowButtons(
-            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(18.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding()
+                .padding(18.dp),
             firstButtonTitle = Res.string.apply_label,
             onFirstButtonClick = {
                 onAction(
@@ -97,7 +108,7 @@ fun ReminderPicker(
                 )
             },
             secondButtonTitle = Res.string.cancel_button,
-            onSecondButtonClick = { onAction(TaskDetailAction.OnDismissReminderDialogButton)})
+            onSecondButtonClick = { onAction(TaskDetailAction.OnDismissReminderDialogButton) })
 
     }
 
