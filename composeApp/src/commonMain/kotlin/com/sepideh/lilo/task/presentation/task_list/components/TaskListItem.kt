@@ -32,6 +32,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import com.sepideh.lilo.task.presentation.task_list.TaskListAction
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 
 @Composable
 fun TaskListItem(
@@ -40,9 +41,10 @@ fun TaskListItem(
     task: Task,
     onAction: (BaseAction) -> Unit
 ) {
+    val palette = LocalLiloColorsPalette.current
     Card(
         modifier = modifier, shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSurface)
+        colors = CardDefaults.cardColors(containerColor = palette.taskItem)
     ) {
         with(task) {
             Row(
