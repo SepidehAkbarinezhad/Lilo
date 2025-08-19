@@ -68,7 +68,6 @@ fun ReminderPicker(
                     .fillMaxWidth().statusBarsPadding(),
                 colors = DatePickerDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surface,
-                    dayContentColor = palette.appText,
                     selectedDayContentColor = Color.White,
                     selectedDayContainerColor = palette.reminderColor,
                     headlineContentColor = MaterialTheme.colorScheme.onSurface,

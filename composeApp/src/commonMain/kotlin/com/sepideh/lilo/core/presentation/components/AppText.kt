@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +21,7 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: StringResource,
     textType: TextType = TextType.Body,
-    color: Color = LocalLiloColorsPalette.current.appText,
+    color: Color = MaterialTheme.colorScheme.onSurface,
     textAlign: TextAlign = TextAlign.Justify,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,
@@ -46,7 +47,7 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: String,
     textType: TextType = TextType.Body,
-    color: Color = LocalLiloColorsPalette.current.appText,
+    color: Color = MaterialTheme.colorScheme.onSurface,
     textAlign: TextAlign = TextAlign.Justify,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,

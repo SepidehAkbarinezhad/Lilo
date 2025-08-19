@@ -64,7 +64,7 @@ fun AppSearchBar(
             colors = OutlinedTextFieldDefaults.colors(
                 cursorColor = MaterialTheme.colorScheme.tertiary,
                 focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.secondary
+                unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer
             ),
             placeholder = {
                 Text(
