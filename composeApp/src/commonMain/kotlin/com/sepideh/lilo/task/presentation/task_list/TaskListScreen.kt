@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
@@ -125,8 +126,6 @@ fun TaskListScreen(
 
                 },
                 shape = RoundedCornerShape(20.dp),
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
                 Icon(
                     Icons.Rounded.Add,
@@ -153,7 +152,7 @@ fun TaskListScreen(
 
             Surface(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,

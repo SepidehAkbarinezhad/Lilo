@@ -10,17 +10,18 @@ fun initKoin(config : KoinAppDeclaration?= null){
 
     startKoin {
         config?.invoke(this)
+        //sets Koin's internal logger
         logger(PlatformLogger())
-        modules(provideViewModelModule, platformModule())
+        modules(viewModelModule, platformModule())
     }
 }
 
 class PlatformLogger : Logger(Level.DEBUG) {
     override fun display(level: Level, msg: MESSAGE) {
         when (level) {
-            Level.DEBUG -> println("DEBUG: $msg")  // Logs to the console
-            Level.INFO -> println("INFO: $msg")  // Logs to the console
-            Level.ERROR -> println("ERROR: $msg")  // Logs to the console
+            Level.DEBUG -> println("DEBUG: $msg")
+            Level.INFO -> println("INFO: $msg")
+            Level.ERROR -> println("ERROR: $msg")
             else -> println("LOG: $msg")
         }
     }

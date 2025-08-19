@@ -40,6 +40,7 @@ import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlert
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task_label
 import lilo.composeapp.generated.resources.add_task_title
@@ -133,7 +134,7 @@ fun TaskDetailScreen(
                     text = when (isEdit) {
                         true -> Res.string.edit_task_title
                         else -> Res.string.add_task_title
-                    }, textType = TextType.Title, color = Color.White
+                    }, textType = TextType.Title, color = MaterialTheme.colorScheme.onPrimary
                 )
             }
             Surface(
