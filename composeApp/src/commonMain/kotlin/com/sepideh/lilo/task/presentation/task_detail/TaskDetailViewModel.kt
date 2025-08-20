@@ -20,7 +20,7 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
-import com.sepideh.lilo.utils.setReminderTime
+import com.sepideh.lilo.core.utils.setReminderTime
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,25 +85,25 @@ class TaskDetailViewModel(
 
             is TaskDetailAction.OnCategoryIcon -> {
                 state.update {
-                    it.copy(isCategoryDialogOpen = true)
+                    it.copy(categoryDialogOpen = true)
                 }
             }
 
             is TaskDetailAction.OnDismissCategoryDialog -> {
                 state.update {
-                    it.copy(isCategoryDialogOpen = false)
+                    it.copy(categoryDialogOpen = false)
                 }
             }
 
             is TaskDetailAction.OnPriorityIcon -> {
                 state.update {
-                    it.copy(isPriorityDialogOpen = true)
+                    it.copy(priorityDialogOpen = true)
                 }
             }
 
             is TaskDetailAction.OnDismissPriorityDialog -> {
                 state.update {
-                    it.copy(isPriorityDialogOpen = false)
+                    it.copy(priorityDialogOpen = false)
                 }
             }
 
@@ -128,7 +128,7 @@ class TaskDetailViewModel(
 
             is TaskDetailAction.OnDismissTimeDialog -> {
                 state.update {
-                    it.copy(isTimeDialogOpen = false)
+                    it.copy(timeDialogOpen = false)
                 }
             }
 
@@ -224,7 +224,7 @@ class TaskDetailViewModel(
                 closePermissionDialog()
                 state.update {
                     it.copy(
-                        isTimeDialogOpen = true,
+                        timeDialogOpen = true,
                     )
                 }
             }
@@ -359,7 +359,7 @@ class TaskDetailViewModel(
 
     private fun setIsReminderDialogOpen(open: Boolean) {
         state.update {
-            it.copy(isReminderDialogOpen = open)
+            it.copy(reminderDialogOpen = open)
         }
     }
 

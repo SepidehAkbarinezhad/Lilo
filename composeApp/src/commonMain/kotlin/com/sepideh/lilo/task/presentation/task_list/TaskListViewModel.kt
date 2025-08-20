@@ -21,7 +21,7 @@ import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
-import com.sepideh.lilo.utils.setReminderTime
+import com.sepideh.lilo.core.utils.setReminderTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO

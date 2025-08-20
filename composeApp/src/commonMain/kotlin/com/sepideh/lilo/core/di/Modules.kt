@@ -1,4 +1,4 @@
-package com.sepideh.lilo.di
+package com.sepideh.lilo.core.di
 
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListViewModel
