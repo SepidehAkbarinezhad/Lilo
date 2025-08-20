@@ -1,6 +1,7 @@
 package com.sepideh.lilo.core.domain
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
@@ -23,14 +24,14 @@ actual class PermissionManager(private val context: Context) {
 
     actual suspend fun hasNotificationPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // For Android 13+ (API 33+), notification is a runtime permission
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         } else {
-            true // Notification permission is automatically granted on lower Android versions
+            true  // For Android 12 and lower, permission is always granted automatically
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -40,7 +41,7 @@ actual class PermissionManager(private val context: Context) {
         // Without it, we will get an IllegalStateException because Android doesn't know how to properly launch the activity in a new task from a non-UI context
 
         when {
-            // If Android version is Android 12 (S), show the Exact Alarm permissions screen
+            // If Android version is Android 12 (S), show the Exact Alarm permissions screen and it doesn't need notification permission
             Build.VERSION.SDK_INT == Build.VERSION_CODES.S -> {
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                     data = Uri.parse("package:${context.packageName}")
@@ -58,7 +59,7 @@ actual class PermissionManager(private val context: Context) {
             }
 
             else -> {
-                // No need to open anything
+               // Android <12 doesn't require exact alarm or notification permission
             }
         }
     }
@@ -68,6 +69,7 @@ actual class PermissionManager(private val context: Context) {
         requestNeededPermission()
     }
 
+    @SuppressLint("NewApi")
     actual fun isXiaomi(): Boolean {
        return  Build.MANUFACTURER.equals("xiaomi", ignoreCase = true)
     }

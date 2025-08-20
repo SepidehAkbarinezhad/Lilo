@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,7 +39,6 @@ import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlert
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
-import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task_label
 import lilo.composeapp.generated.resources.add_task_title
@@ -73,7 +71,7 @@ fun TaskDetailScreenRoot(
         navigateTo = onNavigateTo,
         onBack = onBack,
         bodyContainer = {
-            if (!state.isReminderDialogOpen) {
+            if (!state.reminderDialogOpen) {
                 TaskDetailScreen(
                     state = state,
                     task = task,
@@ -83,13 +81,13 @@ fun TaskDetailScreenRoot(
 
         },
         dialogContent = {
-            if (state.isCategoryDialogOpen) {
+            if (state.categoryDialogOpen) {
                 CategoryDialog(state = state, onAction = { viewModel.onAction(it) })
             }
-            if (state.isPriorityDialogOpen) {
+            if (state.priorityDialogOpen) {
                 PriorityDialog(state = state, onAction = { viewModel.onAction(it) })
             }
-            if (state.isReminderDialogOpen) {
+            if (state.reminderDialogOpen) {
                 ReminderPicker(
                     reminderModel = viewModel.reminderModel,
                     onAction = { viewModel.onAction(it) })

@@ -1,4 +1,4 @@
-package com.sepideh.lilo.utils
+package com.sepideh.lilo.core.utils
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

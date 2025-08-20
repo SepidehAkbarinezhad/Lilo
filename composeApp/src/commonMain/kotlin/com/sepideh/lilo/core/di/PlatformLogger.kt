@@ -1,21 +1,13 @@
-package com.sepideh.lilo.di
+package com.sepideh.lilo.core.di
 
-import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.koin.core.logger.Logger
 import org.koin.core.logger.MESSAGE
-import org.koin.dsl.KoinAppDeclaration
 
-fun initKoin(config : KoinAppDeclaration?= null){
-
-    startKoin {
-        config?.invoke(this)
-        //sets Koin's internal logger
-        logger(PlatformLogger())
-        modules(viewModelModule, platformModule())
-    }
-}
-
+/**
+ * Custom Koin [Logger] that prints logs to the console using `println`.
+ * Used by Koin internally to print logs about the dependency injection process.
+ */
 class PlatformLogger : Logger(Level.DEBUG) {
     override fun display(level: Level, msg: MESSAGE) {
         when (level) {

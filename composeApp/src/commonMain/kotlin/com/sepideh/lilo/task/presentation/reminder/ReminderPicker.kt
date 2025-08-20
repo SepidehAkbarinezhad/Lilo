@@ -29,8 +29,8 @@ import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
 import com.sepideh.lilo.task.presentation.task_detail.ReminderModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
-import com.sepideh.lilo.utils.getCurrentDate
-import com.sepideh.lilo.utils.getCurrentTime
+import com.sepideh.lilo.core.utils.getCurrentDate
+import com.sepideh.lilo.core.utils.getCurrentTime
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.apply_label
 import lilo.composeapp.generated.resources.cancel_button
