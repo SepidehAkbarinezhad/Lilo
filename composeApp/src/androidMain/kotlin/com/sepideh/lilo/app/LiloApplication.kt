@@ -1,4 +1,4 @@
-package com.sepideh.lilo
+package com.sepideh.lilo.app
 
 import android.app.Application
 import com.sepideh.lilo.core.di.initKoin
