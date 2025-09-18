@@ -1,13 +1,15 @@
-package com.sepideh.lilo.core.domain
+package com.sepideh.lilo.core.service
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
+import platform.UserNotifications.UNAuthorizationOptionAlert
+import platform.UserNotifications.UNAuthorizationOptionBadge
+import platform.UserNotifications.UNAuthorizationOptionSound
 import platform.UserNotifications.UNAuthorizationStatusAuthorized
 import platform.UserNotifications.UNUserNotificationCenter
-import platform.UserNotifications.*
 
 /**
  * iOS implementation of PermissionManager.
@@ -22,7 +24,10 @@ actual class PermissionManager {
         return suspendCancellableCoroutine { continuation ->
             UNUserNotificationCenter.currentNotificationCenter()
                 .getNotificationSettingsWithCompletionHandler { settings ->
-                    continuation.resume(settings?.authorizationStatus == UNAuthorizationStatusAuthorized, onCancellation = null)
+                    continuation.resume(
+                        settings?.authorizationStatus == UNAuthorizationStatusAuthorized,
+                        onCancellation = null
+                    )
                 }
         }
     }

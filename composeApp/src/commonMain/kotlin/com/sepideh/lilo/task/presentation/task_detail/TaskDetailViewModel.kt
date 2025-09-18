@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.core.domain.PermissionManager
+import com.sepideh.lilo.core.service.PermissionManager
 import com.sepideh.lilo.core.domain.ValidateField
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
