@@ -1,4 +1,4 @@
-package com.sepideh.lilo.core.domain
+package com.sepideh.lilo.core.service
 
 import android.Manifest
 import android.annotation.SuppressLint

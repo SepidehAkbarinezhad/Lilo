@@ -1,4 +1,4 @@
-package com.sepideh.lilo.core.domain
+package com.sepideh.lilo.core.service
 
 /**
  * A platform-agnostic permission manager to handle runtime permission requests.
