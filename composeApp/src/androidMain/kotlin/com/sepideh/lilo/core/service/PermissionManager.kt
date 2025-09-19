@@ -1,7 +1,6 @@
 package com.sepideh.lilo.core.service
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
@@ -16,6 +15,10 @@ actual class PermissionManager(private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun hasAlarmPermission(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            // Below Android 12, no exact alarm permission is needed
+            return true
+        }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val canSchedule = alarmManager.canScheduleExactAlarms()
         println("isXiaomi ${isXiaomi()} canSchedule $canSchedule")
@@ -69,7 +72,6 @@ actual class PermissionManager(private val context: Context) {
         requestNeededPermission()
     }
 
-    @SuppressLint("NewApi")
     actual fun isXiaomi(): Boolean {
        return  Build.MANUFACTURER.equals("xiaomi", ignoreCase = true)
     }
