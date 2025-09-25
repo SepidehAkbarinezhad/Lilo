@@ -19,6 +19,15 @@ import platform.UserNotifications.UNUserNotificationCenter
  *  - The user must manually enable the permission from the device settings if they previously denied it.
  */
 actual class PermissionManager {
+
+    /**
+     * iOS does not have a separate "alarm" permission like Android.
+     * This always returns true because alarm functionality is handled through local notifications.
+     */
+    actual suspend fun hasAlarmPermission(): Boolean {
+        return true
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     actual suspend fun hasNotificationPermission(): Boolean {
         return suspendCancellableCoroutine { continuation ->
@@ -44,13 +53,6 @@ actual class PermissionManager {
             )
     }
 
-    /**
-     * iOS does not have a separate "alarm" permission like Android.
-     * This always returns true because alarm functionality is handled through local notifications.
-     */
-    actual suspend fun hasAlarmPermission(): Boolean {
-        return true
-    }
 
     actual suspend fun requestDeniedPermission() {
         val url = NSURL.URLWithString(UIApplicationOpenSettingsURLString)

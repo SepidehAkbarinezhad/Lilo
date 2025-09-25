@@ -23,18 +23,6 @@ import platform.UserNotifications.UNUserNotificationCenter
 
 
 class ReminderSchedulerProvider : ReminderScheduler {
-    private val notificationDelegate = NotificationDelegate()
-    init {
-        UNUserNotificationCenter.currentNotificationCenter()
-            .requestAuthorizationWithOptions(
-                options = UNAuthorizationOptionAlert or UNAuthorizationOptionSound
-            ) { granted, error ->
-                println("Notification permission granted: $granted, error: $error")
-            }
-
-        // Set delegate to show notifications in foreground
-        UNUserNotificationCenter.currentNotificationCenter().delegate = notificationDelegate
-    }
 
     override fun scheduleReminder(reminder: Reminder) {
         reminder.startDate?.let { start ->
