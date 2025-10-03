@@ -22,7 +22,6 @@ val LightColorScheme = lightColorScheme(
     surface = SurfaceLight,
     onSurface = OnSurfaceLight,
     surfaceContainer = SurfaceContainerLight,
-    primary = PrimaryLight,
     onPrimary = OnPrimaryLight,
     primaryContainer = PrimaryContainerLight,
     tertiary = TertiaryLight,
