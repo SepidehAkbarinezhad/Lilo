@@ -51,6 +51,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
+import com.sepideh.lilo.ui.theme.LiloColors
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.empty_list
@@ -213,12 +214,12 @@ fun TaskListScreen(
                             AppText(
                                 text = Res.string.empty_list_title,
                                 textType = TextType.SubTitle,
-                                color = MaterialTheme.colorScheme.secondary
+                                color = palette.primaryContainerTitle
                             )
                             AppText(
                                 text = Res.string.empty_list_comment,
                                 textType = TextType.SubTitle,
-                                color = MaterialTheme.colorScheme.primary
+                                color = palette.primaryTitle
                             )
                         }
                     } else {

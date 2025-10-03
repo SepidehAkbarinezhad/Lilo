@@ -69,7 +69,7 @@ fun ColumnScope.ReminderTimePicker(
         modifier = Modifier.padding(4.dp),
         text = Res.string.reminder_time_title,
         textType = TextType.SubTitle,
-        color = palette.reminderColor
+        color = palette.primaryTitle
     )
     // Custom Time Picker
     Row(

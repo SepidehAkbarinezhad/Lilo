@@ -19,7 +19,6 @@ fun AppDialog(
         Dialog(onDismissRequest = onDismissRequest) {
             Card(
                 shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Box(modifier = Modifier.padding(12.dp)) {
                     content()

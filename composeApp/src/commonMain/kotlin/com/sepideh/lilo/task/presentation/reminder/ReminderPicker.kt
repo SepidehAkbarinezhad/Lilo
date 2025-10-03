@@ -69,7 +69,7 @@ fun ReminderPicker(
                 colors = DatePickerDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     selectedDayContentColor = Color.White,
-                    selectedDayContainerColor = palette.reminderColor,
+                    selectedDayContainerColor = palette.primaryTitle,
                     headlineContentColor = MaterialTheme.colorScheme.onSurface,
                 ),
                 title = {
@@ -77,7 +77,7 @@ fun ReminderPicker(
                         modifier = Modifier.padding(4.dp),
                         text = Res.string.reminder_date_title,
                         textType = TextType.SubTitle,
-                        color = palette.reminderColor
+                        color = palette.primaryTitle
                     )
                 },
                 showModeToggle = false // Hides the pen/calendar icon
