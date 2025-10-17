@@ -5,8 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -15,19 +13,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
-
-
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import lilo.composeapp.generated.resources.Res
@@ -47,12 +39,7 @@ fun AppSearchBar(
     LaunchedEffect(Unit){
         focusRequester.captureFocus()
     }
-    CompositionLocalProvider(
-        value = LocalTextSelectionColors provides TextSelectionColors(
-            handleColor = Color.Blue,
-            backgroundColor = Color.Blue
-        )
-    ) {
+
         OutlinedTextField(
             modifier = modifier.background(
                 shape = RoundedCornerShape(100),
@@ -61,13 +48,14 @@ fun AppSearchBar(
             shape = RoundedCornerShape(100),
             value = searchQuery,
             onValueChange = onSearchQueryChange,
+            textStyle = TextStyle(color = Color.Black),
             colors = OutlinedTextFieldDefaults.colors(
-                cursorColor = MaterialTheme.colorScheme.tertiary,
-                focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer
+                cursorColor = MaterialTheme.colorScheme.secondary,
+                focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
             ),
             placeholder = {
-                Text(
+                AppText(
                     text = stringResource(
                         Res.string.search_hint
                     )
@@ -108,4 +96,3 @@ fun AppSearchBar(
     }
 
 
-}
