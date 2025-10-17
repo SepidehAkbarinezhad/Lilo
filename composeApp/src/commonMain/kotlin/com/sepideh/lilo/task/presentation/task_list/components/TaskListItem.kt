@@ -19,11 +19,9 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
@@ -44,7 +42,7 @@ fun TaskListItem(
     val palette = LocalLiloColorsPalette.current
     Card(
         modifier = modifier, shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         with(task) {
             Row(
@@ -69,9 +67,10 @@ fun TaskListItem(
                     AppText(
                         text = title,
                         textType = TextType.SubTitle,
-                        textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None
+                        textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    AppText(text = description, textType = TextType.Body, maxLines = 1)
+                    AppText(text = description, textType = TextType.Body, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 IconButton(onClick = {
                     if (clickable)
@@ -80,7 +79,7 @@ fun TaskListItem(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "delete Icon",
-                        tint = Color.LightGray
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Box(
