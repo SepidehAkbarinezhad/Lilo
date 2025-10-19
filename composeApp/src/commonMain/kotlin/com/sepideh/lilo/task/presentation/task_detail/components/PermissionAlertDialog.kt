@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +44,7 @@ fun PermissionAlertDialog(isXiaomi: Boolean, onAction: (BaseAction) -> Unit) {
                 painter = painterResource(Res.drawable.alert_icon),
                 contentDescription = ""
             )
-            AppText(text = reminderMessage, textType = TextType.SubTitle)
+            AppText(text = reminderMessage, textType = TextType.SubTitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(8.dp))
             AppRowButtons(firstButtonTitle = Res.string.confirm_button,
                 onFirstButtonClick = { onAction(TaskDetailAction.OnGrantPermissionButton(firstTime = true)) },

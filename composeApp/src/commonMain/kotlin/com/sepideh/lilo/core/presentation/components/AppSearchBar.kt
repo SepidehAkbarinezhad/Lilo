@@ -68,7 +68,7 @@ fun AppSearchBar(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search Icon",
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = .66f)
+                        tint = if(searchQuery.isNotBlank()) MaterialTheme.colorScheme.secondary.copy(alpha = .7f) else MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -85,7 +85,7 @@ fun AppSearchBar(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = stringResource(Res.string.search_hint),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
                         )
                     }
                 }
