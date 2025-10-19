@@ -59,6 +59,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
 
+    val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
+
     var selected by remember { mutableStateOf(state.selectedCategory) }
     AppDialog(dialogModel = DialogModel(content = {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -82,21 +84,21 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                                 selected = category
                             },
                             colors = CheckboxDefaults.colors(
-                                uncheckedColor = MaterialTheme.colorScheme.onSurface
+                                uncheckedColor = contentColor
                             )
                         )
                         AppText(
                             modifier = Modifier.padding(vertical = 4.dp),
                             text = category.title,
                             textType = TextType.SubTitle,
-                            color = if (selected == category) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            color = if (selected == category) MaterialTheme.colorScheme.primary else contentColor
                         )
                     }
 
                     if (index != state.categories.lastIndex) {
                         Spacer(
                             modifier = Modifier.fillMaxWidth().height(1.dp)
-                                .background(MaterialTheme.colorScheme.onSurface)
+                                .background(contentColor)
                         )
                     }
                 }
@@ -116,6 +118,8 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
 
 @Composable
 fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (Category) -> Unit) {
+    val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
+
     var addVisibility by remember { mutableStateOf(false) }
     var newCategory by remember { mutableStateOf("") }
 
@@ -177,11 +181,10 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (Category) -> Uni
                     onValueChange = { newCategory = it },
                     modifier = Modifier.weight(1f).focusRequester(focusRequester),
                     colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = MaterialTheme.colorScheme.onSurface,
-                        focusedBorderColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedBorderColor = Color.Gray
+                        cursorColor = contentColor,
+                        focusedBorderColor = contentColor,
                     ),
-                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface)
                 )
                 IconButton(
                     onClick = {
@@ -196,7 +199,7 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (Category) -> Uni
                     Icon(
                         imageVector = if (newCategory.isNotEmpty()) Icons.Default.Done else Icons.Default.Close,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = contentColor
                     )
                 }
             }

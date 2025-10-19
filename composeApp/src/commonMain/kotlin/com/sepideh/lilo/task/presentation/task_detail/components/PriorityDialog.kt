@@ -38,6 +38,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PriorityDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
+
+    val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
     var selected by remember { mutableStateOf(state.selectedPriority) }
     AppDialog(dialogModel = DialogModel(content = {
         Column {
@@ -56,21 +58,21 @@ fun PriorityDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                             selected = priority
                         },
                         colors = CheckboxDefaults.colors(
-                            uncheckedColor = MaterialTheme.colorScheme.onSurface
+                            uncheckedColor = contentColor
                         )
                     )
                     AppText(
                         modifier = Modifier.padding(vertical = 4.dp),
                         text = priority.title,
                         textType = TextType.SubTitle,
-                        color = if (selected == priority) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        color = if (selected == priority) MaterialTheme.colorScheme.primary else contentColor
                     )
                 }
 
                 if (index != priorities.lastIndex) {
                     Spacer(
                         modifier = Modifier.fillMaxWidth().height(1.dp)
-                            .background(MaterialTheme.colorScheme.onSurface)
+                            .background(contentColor)
                     )
                 }
             }
