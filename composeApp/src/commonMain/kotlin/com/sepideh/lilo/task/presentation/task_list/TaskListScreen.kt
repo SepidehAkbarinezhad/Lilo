@@ -213,12 +213,12 @@ fun TaskListScreen(
                             AppText(
                                 text = Res.string.empty_list_title,
                                 textType = TextType.SubTitle,
-                                color = MaterialTheme.colorScheme.secondary
+                                color = palette.primaryContainerTitle
                             )
                             AppText(
                                 text = Res.string.empty_list_comment,
                                 textType = TextType.SubTitle,
-                                color = MaterialTheme.colorScheme.primary
+                                color = palette.primaryTitle
                             )
                         }
                     } else {

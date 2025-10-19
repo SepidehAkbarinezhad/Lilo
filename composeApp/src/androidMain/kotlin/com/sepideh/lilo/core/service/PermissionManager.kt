@@ -1,7 +1,6 @@
-package com.sepideh.lilo.core.domain
+package com.sepideh.lilo.core.service
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
@@ -16,6 +15,10 @@ actual class PermissionManager(private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun hasAlarmPermission(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            // Below Android 12, no exact alarm permission is needed
+            return true
+        }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val canSchedule = alarmManager.canScheduleExactAlarms()
         println("isXiaomi ${isXiaomi()} canSchedule $canSchedule")
@@ -41,7 +44,8 @@ actual class PermissionManager(private val context: Context) {
         // Without it, we will get an IllegalStateException because Android doesn't know how to properly launch the activity in a new task from a non-UI context
 
         when {
-            // If Android version is Android 12 (S), show the Exact Alarm permissions screen and it doesn't need notification permission
+            // Android 12 (S), show the Exact Alarm permissions screen
+            // Notification permission is not needed on this version
             Build.VERSION.SDK_INT == Build.VERSION_CODES.S -> {
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                     data = Uri.parse("package:${context.packageName}")
@@ -49,7 +53,7 @@ actual class PermissionManager(private val context: Context) {
                 }
                 context.startActivity(intent)
             }
-            // If Android version is Android 13+ (Tiramisu and above), open App Settings for permissions because it needs both alarm and notification setting
+            // Android 13+ (Tiramisu): open App Settings because both alarm & notification may need user action
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.parse("package:${context.packageName}")
@@ -59,7 +63,7 @@ actual class PermissionManager(private val context: Context) {
             }
 
             else -> {
-               // Android <12 doesn't require exact alarm or notification permission
+                // Android <12: no explicit alarm or notification permissions are needed
             }
         }
     }
@@ -69,7 +73,6 @@ actual class PermissionManager(private val context: Context) {
         requestNeededPermission()
     }
 
-    @SuppressLint("NewApi")
     actual fun isXiaomi(): Boolean {
        return  Build.MANUFACTURER.equals("xiaomi", ignoreCase = true)
     }

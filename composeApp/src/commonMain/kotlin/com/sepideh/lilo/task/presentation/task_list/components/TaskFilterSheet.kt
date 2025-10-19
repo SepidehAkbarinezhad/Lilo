@@ -85,7 +85,7 @@ fun FilterHeader(onEvent: (BaseAction) -> Unit) {
             modifier = Modifier.align(Alignment.Center),
             text = stringResource(Res.string.filter_label),
             textType = TextType.Title,
-            color = MaterialTheme.colorScheme.tertiary
+            color = MaterialTheme.colorScheme.secondary
         )
         IconButton(
             modifier = Modifier.align(Alignment.TopEnd),
@@ -93,7 +93,7 @@ fun FilterHeader(onEvent: (BaseAction) -> Unit) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "close filter",
-                tint = MaterialTheme.colorScheme.tertiary
+                tint = MaterialTheme.colorScheme.secondary
             )
         }
         Spacer(modifier = Modifier.height(4.dp))

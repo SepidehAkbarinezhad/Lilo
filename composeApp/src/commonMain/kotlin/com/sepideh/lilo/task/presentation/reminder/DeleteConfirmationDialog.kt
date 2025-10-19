@@ -43,7 +43,7 @@ fun DeleteConfirmationDialog(
                     painter = painterResource(Res.drawable.delete_task_logo),
                     contentDescription = ""
                 )
-                AppText(text = Res.string.delete_task_confirmation,textType = TextType.SubTitle)
+                AppText(text = Res.string.delete_task_confirmation,textType = TextType.SubTitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(8.dp))
                 AppRowButtons(
                     firstButtonTitle = Res.string.confirm_button,

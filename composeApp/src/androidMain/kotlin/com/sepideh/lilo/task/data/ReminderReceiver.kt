@@ -10,7 +10,7 @@ import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.sepideh.lilo.MainActivity
+import com.sepideh.lilo.app.MainActivity
 
 class ReminderReceiver : BroadcastReceiver() {
     companion object {
