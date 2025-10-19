@@ -225,10 +225,8 @@ class TaskListViewModel(
                     it.copy(
                         tempFilterOption = TaskFilterOption(),
                         taskFilterOption = TaskFilterOption(),
-                        isFilterSheetOpen = false
                     )
                 }
-                loadTasks()
             }
 
             is TaskListAction.OnDeleteTaskIcon -> {

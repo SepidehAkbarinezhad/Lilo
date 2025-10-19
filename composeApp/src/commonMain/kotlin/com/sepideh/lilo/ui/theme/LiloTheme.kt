@@ -9,23 +9,24 @@ import androidx.compose.runtime.CompositionLocalProvider
 
 val DarkColorScheme = darkColorScheme(
     background = BackGroundDark,
-    surface = SurfaceDark,
-    onSurface = OnSurfaceDark,
+    surfaceVariant = SurfaceVariantDark,
     surfaceContainer = SurfaceContainerDark,
     primary = PrimaryDark,
     onPrimary = OnPrimaryDark,
     primaryContainer = PrimaryContainerDark,
-    tertiary = TertiaryDark,
+    secondary = SecondaryLight,
 )
 val LightColorScheme = lightColorScheme(
     background = BackGroundLight,
     surface = SurfaceLight,
     onSurface = OnSurfaceLight,
+    surfaceVariant = SurfaceVariantLight,
+    onSurfaceVariant = OnSurfaceVariantLight,
     surfaceContainer = SurfaceContainerLight,
     primary = PrimaryLight,
     onPrimary = OnPrimaryLight,
     primaryContainer = PrimaryContainerLight,
-    tertiary = TertiaryLight,
+    secondary = SecondaryLight,
 )
 
 @Composable

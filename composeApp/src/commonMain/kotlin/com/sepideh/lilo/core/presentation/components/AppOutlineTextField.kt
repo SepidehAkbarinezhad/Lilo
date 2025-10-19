@@ -19,7 +19,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextDirection
 import com.sepideh.lilo.core.domain.model.ValidationStatus
 import com.sepideh.lilo.core.domain.model.resolveMessage
 import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.ui.theme.Amber600
 
 @Composable
 fun AppOutlineTextField(
@@ -44,8 +45,8 @@ fun AppOutlineTextField(
     color: TextFieldColors = OutlinedTextFieldDefaults.colors(
         unfocusedContainerColor = White,
         focusedContainerColor = White,
-        focusedBorderColor = MaterialTheme.colorScheme.primary,
-        unfocusedBorderColor = Gray,
+        focusedBorderColor = Amber600,
+        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
     ),
     textStyle: TextStyle = LocalTextStyle.current,
     maxLines : Int = 1
@@ -61,7 +62,7 @@ fun AppOutlineTextField(
 
     with(textFieldRequired) {
         val focusedColor = when (validationStatus.isSuccessful) {
-            true -> if (isFocused) MaterialTheme.colorScheme.primary else Gray
+            true -> if (isFocused) Amber600 else MaterialTheme.colorScheme.onSurface
             else -> MaterialTheme.colorScheme.error
         }
 
@@ -81,7 +82,7 @@ fun AppOutlineTextField(
                 onValueChange = onValueChange,
                 enabled = enabled,
                 readOnly = textFieldRequired.readOnly,
-                textStyle = textStyle.copy(textDirection = if (isLTR) TextDirection.Ltr else TextDirection.Rtl),
+                textStyle = textStyle.copy(color = Black, textDirection = if (isLTR) TextDirection.Ltr else TextDirection.Rtl),
                 placeholder = {
                     if (hint.isNotEmpty()) AppText(
                         modifier = Modifier,
