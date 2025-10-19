@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -149,7 +150,10 @@ fun PriorityFilterContainer(
                 AppText(text = priority.title)
                 Checkbox(
                     checked = priority in filterOption.priorityList,
-                    onCheckedChange = { onPriorityClicked(priority) }
+                    onCheckedChange = { onPriorityClicked(priority) },
+                    colors = CheckboxDefaults.colors(
+                        uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
             }
 
