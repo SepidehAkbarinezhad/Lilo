@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 
 val DarkColorScheme = darkColorScheme(
     background = BackGroundDark,
+    surface = SurfaceDark,
     surfaceVariant = SurfaceVariantDark,
     surfaceContainer = SurfaceContainerDark,
     primary = PrimaryDark,

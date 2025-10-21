@@ -48,9 +48,11 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.utils.getSystemLanguage
 import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
+import com.sepideh.lilo.ui.theme.LiloColors
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.empty_list
@@ -116,7 +118,7 @@ fun TaskListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (clickable){
+                    if (clickable) {
                         onAction(
                             BaseAction.OnNavigateTo(
                                 (AppRoutes.TaskDetail(taskId = null))
@@ -160,67 +162,11 @@ fun TaskListScreen(
                 ) {
 
                     if (state.categories.isNotEmpty()) {
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(items = state.categories) { category ->
-
-                                // Determine if the category is selected or if it's the first one when selectedCategory is null
-                                val isSelected =
-                                    category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
-                                val selectedTextColor =
-                                    if (isSelected) palette.selectedCategory else palette.unSelectedCategory
-
-                                AppText(
-                                    modifier = Modifier.widthIn(min = 100.dp) .border(
-                                        width = 1.dp,
-                                        color = selectedTextColor,
-                                        shape = RoundedCornerShape(8.dp),
-                                    ).padding(4.dp)
-                                        .clickable(indication = null, // Disable the ripple effect
-                                            interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
-                                        ) {
-                                            if (clickable) onAction(
-                                                TaskListAction.OnCategorySelected(
-                                                    category.id
-                                                )
-                                            )
-                                        },
-                                    text = category.title,
-                                    textAlign = TextAlign.Center,
-                                    color = selectedTextColor,
-                                    textType = TextType.SubTitle
-                                )
-                            }
-                        }
+                        CategoryList(state, palette, clickable, onAction)
                     }
 
                     if (state.tasksResult.isEmpty() && !isLoading) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Box {
-                                Image(
-                                    modifier = Modifier.fillMaxWidth(.5f),
-                                    painter = painterResource(Res.drawable.empty_list),
-                                    contentDescription = null
-                                )
-                            }
-
-                            AppText(
-                                text = Res.string.empty_list_title,
-                                textType = TextType.SubTitle,
-                                color = palette.primaryContainerTitle
-                            )
-                            AppText(
-                                text = Res.string.empty_list_comment,
-                                textType = TextType.SubTitle,
-                                color = palette.primaryTitle
-                            )
-                        }
+                        EmptyTaskList(palette)
                     } else {
                         TaskList(
                             tasks = state.tasksResult,
@@ -238,6 +184,79 @@ fun TaskListScreen(
     TaskFilterSheet(state = state, onAction = onAction)
 
 }
+
+@Composable
+fun CategoryList(
+    state: TaskListState,
+    palette: LiloColors,
+    clickable: Boolean,
+    onAction: (BaseAction) -> Unit
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(items = state.categories) { category ->
+
+            // Determine if the category is selected or if it's the first one when selectedCategory is null
+            val isSelected =
+                category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
+            val titleColor =
+                if (isSelected) palette.selectedCategory else palette.unSelectedCategory
+
+            AppText(
+                modifier = Modifier.widthIn(min = 100.dp).border(
+                    width = 1.dp,
+                    color = titleColor,
+                    shape = RoundedCornerShape(8.dp),
+                ).padding(4.dp)
+                    .clickable(
+                        indication = null, // Disable the ripple effect
+                        interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
+                    ) {
+                        if (clickable) onAction(
+                            TaskListAction.OnCategorySelected(
+                                category.id
+                            )
+                        )
+                    },
+                text = if (getSystemLanguage() == "fa") category.secondTitle else category.title,
+                textAlign = TextAlign.Center,
+                color = titleColor,
+                textType = TextType.SubTitle
+            )
+        }
+    }
+}
+
+@Composable
+fun EmptyTaskList(palette: LiloColors) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box {
+            Image(
+                modifier = Modifier.fillMaxWidth(.5f),
+                painter = painterResource(Res.drawable.empty_list),
+                contentDescription = null
+            )
+        }
+
+        AppText(
+            text = Res.string.empty_list_title,
+            textType = TextType.SubTitle,
+            color = palette.primaryContainerTitle
+        )
+        AppText(
+            text = Res.string.empty_list_comment,
+            textType = TextType.SubTitle,
+            color = palette.primaryTitle
+        )
+    }
+}
+
 
 @Composable
 fun TaskListHeader(
@@ -259,7 +278,7 @@ fun TaskListHeader(
             focusRequester = focusRequester,
             searchQuery = state.searchQuery,
             onSearchQueryChange = {
-                if (clickable){
+                if (clickable) {
                     onAction(
                         TaskListAction.OnSearchQueryChange(
                             it
