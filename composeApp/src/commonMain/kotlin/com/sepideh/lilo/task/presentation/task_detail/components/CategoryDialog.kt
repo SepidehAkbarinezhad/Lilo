@@ -49,6 +49,7 @@ import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
+import com.sepideh.lilo.core.utils.getSystemLanguage
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
@@ -89,7 +90,7 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                         )
                         AppText(
                             modifier = Modifier.padding(vertical = 4.dp),
-                            text = category.title,
+                            text = if (getSystemLanguage() == "fa") category.secondTitle else category.title,
                             textType = TextType.SubTitle,
                             color = if (selected == category) MaterialTheme.colorScheme.primary else contentColor
                         )
