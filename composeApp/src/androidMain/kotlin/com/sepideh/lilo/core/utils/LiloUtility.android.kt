@@ -1,5 +1,8 @@
 package com.sepideh.lilo.core.utils
 
-actual fun getSystemLanguage(): String {
-    return java.util.Locale.getDefault().language
+import java.util.Locale
+
+actual fun isPersianLanguage(): Boolean {
+    val locale = Locale.getDefault().language
+    return locale.startsWith("fa", ignoreCase = true)
 }

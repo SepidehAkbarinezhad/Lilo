@@ -25,7 +25,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -39,17 +38,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
-import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
-import com.sepideh.lilo.core.presentation.components.TextFieldRequired
-import com.sepideh.lilo.core.utils.getSystemLanguage
+import com.sepideh.lilo.core.utils.isPersianLanguage
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
@@ -90,7 +86,7 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                         )
                         AppText(
                             modifier = Modifier.padding(vertical = 4.dp),
-                            text = if (getSystemLanguage() == "fa") category.secondTitle else category.title,
+                            text = if (isPersianLanguage()) category.secondTitle else category.title,
                             textType = TextType.SubTitle,
                             color = if (selected == category) MaterialTheme.colorScheme.primary else contentColor
                         )
