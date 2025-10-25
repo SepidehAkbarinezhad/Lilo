@@ -39,7 +39,6 @@ fun TaskListItem(
     task: Task,
     onAction: (BaseAction) -> Unit
 ) {
-    val palette = LocalLiloColorsPalette.current
     Card(
         modifier = modifier, shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)

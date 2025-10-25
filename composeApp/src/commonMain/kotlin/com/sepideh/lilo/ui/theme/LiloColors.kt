@@ -16,7 +16,7 @@ val selectedCategoryLight = PrimaryLight
 val selectedCategoryDark = Color(color = 0xFFFFFFFF)
 
 val unSelectedCategoryLight = Gray
-val unSelectedCategoryDark = DarkGray
+val unSelectedCategoryDark = Gray
 
 val primaryTitleLight = PrimaryLight
 val primaryTitleDark = PrimaryLight
