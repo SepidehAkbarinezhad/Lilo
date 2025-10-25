@@ -2,6 +2,7 @@ package com.sepideh.lilo.task.presentation.task_detail
 
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.task.presentation.model.Category
+import org.jetbrains.compose.resources.StringResource
 
 sealed interface TaskDetailAction : BaseAction {
     data class OnTitleChanged(val title: String) : TaskDetailAction
@@ -14,7 +15,7 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnDismissReminderDialogButton : TaskDetailAction
     data object OnDismissTimeDialog : TaskDetailAction
     data class OnCategorySelected(val title: String) : TaskDetailAction
-    data class OnPrioritySelected(val title: String) : TaskDetailAction
+    data class OnPrioritySelected(val title: StringResource) : TaskDetailAction
     data class OnSelectReminderDate(val date: Pair<Long?, Long?>) : TaskDetailAction
     data class OnSelectReminderTime(val time: Pair<Int?, Int?>) : TaskDetailAction
     data class OnSelectReminderConfirm(val reminderModel: ReminderModel) : TaskDetailAction

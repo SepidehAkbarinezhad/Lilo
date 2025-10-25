@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="search_hint">جستجو...</string>
+    <string name="close_hint">پاک کردن جستجو</string>
+    <string name="all">همه</string>
+    <string name="no_result">نتیجه‌ای یافت نشد</string>
+    <string name="add_task_label">افزودن</string>
+    <string name="add_task_title">افزودن فعالیت</string>
+    <string name="edit_task_title">ویرایش فعالیت</string>
+    <string name="edit_task_label">ویرایش</string>
+    <string name="title_label">عنوان</string>
+    <string name="description_label">توضیحات</string>
+    <string name="category_label">دسته‌بندی</string>
+    <string name="category_all">همه</string>
+    <string name="category_general">عمومی</string>
+    <string name="category_work">کاری</string>
+    <string name="category_hobby">سرگرمی</string>
+    <string name="category_music">موسیقی</string>
+    <string name="priority_label">اولویت</string>
+    <string name="priority-high-label">زیاد</string>
+    <string name="priority-middle-label">متوسط</string>
+    <string name="priority-low-label">کم</string>
+    <string name="hour_label">ساعت</string>
+    <string name="minute_label">دقیقه</string>
+    <string name="delete_task_confirmation">آیا از حذف اطمینان دارید؟</string>
+    <string name="confirm_button">تأیید</string>
+    <string name="cancel_button">انصراف</string>
+    <string name="empty_list_title">لیست خالی است</string>
+    <string name="reminder_date_title">تاریخ یادآور</string>
+    <string name="reminder_time_title">زمان یادآور</string>
+    <string name="empty_list_comment">بیا شروع کنیم!</string>
+    <string name="filter_label">فیلتر</string>
+    <string name="status_filter_label">وضعیت:</string>
+    <string name="status-done-label">انجام‌شده</string>
+    <string name="status-Undone-label">انجام‌نشده</string>
+    <string name="priority_filter_label">اولویت :</string>
+    <string name="apply_label">اعمال</string>
+    <string name="reset_label">بازنشانی</string>
+    <string name="error_empty_field_label">%s نمی‌تواند خالی باشد</string>
+    <string name="least_length_limitation"> حداقل %s کاراکتر </string>
+    <string name="more_length_limitation"> نباید بیشتر از %s باشد</string>
+    <string name="repeat_password_is_not_correct">تکرار رمز عبور صحیح نیست</string>
+    <string name="permission_alert_dialog">برای تنظیم یادآوری، این برنامه به دسترسی‌های اعلان و یادآوری نیاز دارد. لطفاً آن‌ها را در تنظیمات فعال کنید تا یادآوری به درستی کار کنند.</string>
+    <string name="permission_Xiaomi_alert_dialog">برای عملکرد صحیح یادآوری در دستگاه شما، لطفاً اجازه اعلان را بدهید و گزینه صرفه‌جویی در باتری را برای این برنامه روی «بدون محدودیت» تنظیم کنید. در غیر این صورت یادآوری ممکن است فعال نشود.</string>
+    <string name="permission_alert_dialog_denied">برای کارکرد درست یادآوری ها، برنامه نیاز به مجوز اعلان و آلارم دارد. در صورت عدم اعطا، یادآور فعال نخواهد شد. آیا مایلید مجوزها را بدهید یا بدون آن ادامه می دهید؟</string>
+    <string name="grant_permission_button">اعطا مجوز</string>
+</resources>
