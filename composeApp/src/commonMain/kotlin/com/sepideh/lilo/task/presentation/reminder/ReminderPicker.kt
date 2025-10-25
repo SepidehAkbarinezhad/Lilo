@@ -62,7 +62,8 @@ fun ReminderPicker(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            DatePicker(
+
+           /* DatePicker(
                 state = datePickerState,
                 modifier = Modifier
                     .fillMaxWidth().statusBarsPadding(),
@@ -81,7 +82,7 @@ fun ReminderPicker(
                     )
                 },
                 showModeToggle = false // Hides the pen/calendar icon
-            )
+            )*/
             ReminderTimePicker(
                 initialHour = initialHour,
                 initialMinute = initialMinute,
