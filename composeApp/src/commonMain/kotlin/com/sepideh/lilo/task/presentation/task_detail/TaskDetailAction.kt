@@ -16,7 +16,6 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnDismissTimeDialog : TaskDetailAction
     data class OnCategorySelected(val title: String) : TaskDetailAction
     data class OnPrioritySelected(val title: StringResource) : TaskDetailAction
-    data class OnSelectReminderDate(val date: Pair<Long?, Long?>) : TaskDetailAction
     data class OnSelectReminderTime(val time: Pair<Int?, Int?>) : TaskDetailAction
     data class OnSelectReminderConfirm(val reminderModel: ReminderModel) : TaskDetailAction
     data class OnAddTaskButton(val checkDeniedPermission : Boolean = false) : TaskDetailAction
