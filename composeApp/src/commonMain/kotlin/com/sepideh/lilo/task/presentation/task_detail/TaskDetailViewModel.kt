@@ -149,13 +149,6 @@ class TaskDetailViewModel(
                 state.update { it.copy(selectedPriority = selectedPriority) }
                 onAction(TaskDetailAction.OnDismissPriorityDialog)
             }
-
-            is TaskDetailAction.OnSelectReminderDate -> {
-                with(action.date) {
-                    reminderModel = reminderModel.copy(startDay = first, endDay = second)
-                }
-            }
-
             is TaskDetailAction.OnSelectReminderTime -> {
                 with(action.time) {
                     reminderModel = reminderModel.copy(hour = first, minute = second)

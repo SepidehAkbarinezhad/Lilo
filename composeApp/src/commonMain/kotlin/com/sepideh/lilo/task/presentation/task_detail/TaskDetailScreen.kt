@@ -184,8 +184,6 @@ fun TaskDetailScreen(
             secondButtonTitle = Res.string.cancel_button,
             onSecondButtonClick = { onAction(BaseAction.OnNavigateTo(route = null)) }
         )
-
-
     }
 
 }
