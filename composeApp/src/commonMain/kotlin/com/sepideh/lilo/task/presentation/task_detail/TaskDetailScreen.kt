@@ -71,14 +71,11 @@ fun TaskDetailScreenRoot(
         navigateTo = onNavigateTo,
         onBack = onBack,
         bodyContainer = {
-            if (!state.reminderDialogOpen) {
-                TaskDetailScreen(
-                    state = state,
-                    task = task,
-                    onAction = viewModel::onAction
-                )
-            }
-
+            TaskDetailScreen(
+                state = state,
+                task = task,
+                onAction = viewModel::onAction
+            )
         },
         dialogContent = {
             if (state.categoryDialogOpen) {
@@ -114,12 +111,13 @@ fun TaskDetailScreen(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val isEdit = task.id != null
-    Box(modifier = Modifier.fillMaxSize().clickable(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = null
-    ) {
-        keyboardController?.hide()
-    }) {
+    Box(
+        modifier = Modifier.fillMaxSize().clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null
+        ) {
+            keyboardController?.hide()
+        }) {
         Column(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
         ) {

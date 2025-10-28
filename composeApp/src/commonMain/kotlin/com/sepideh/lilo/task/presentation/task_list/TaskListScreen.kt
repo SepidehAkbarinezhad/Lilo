@@ -33,9 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -49,7 +46,7 @@ import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.utils.isPersianLanguage
-import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
+import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import com.sepideh.lilo.ui.theme.LiloColors
