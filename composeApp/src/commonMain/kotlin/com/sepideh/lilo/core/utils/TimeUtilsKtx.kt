@@ -23,7 +23,6 @@ fun getCurrentDate(): Long {
 fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
     if (dayMillis == null || hour == null || minute == null) return null
 
-
     val timeZone = TimeZone.currentSystemDefault()
 
     val localDateTime = Instant.fromEpochMilliseconds(dayMillis)
@@ -45,6 +44,7 @@ fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
         null
     }
 }
+
 
 
 
