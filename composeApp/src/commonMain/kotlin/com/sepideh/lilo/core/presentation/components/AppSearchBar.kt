@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,11 +64,11 @@ fun AppSearchBar(
                 IconButton(onClick = {
                    onImeSearch()
                 }) {
-                   /* Icon(
-                        imageVector = Icons,
+                    Icon(
+                        imageVector = Icons.Filled.Close,
                         contentDescription = "Search Icon",
                         tint = if(searchQuery.isNotBlank()) MaterialTheme.colorScheme.secondary.copy(alpha = .7f) else MaterialTheme.colorScheme.onSurface
-                    )*/
+                    )
                 }
 
             },
