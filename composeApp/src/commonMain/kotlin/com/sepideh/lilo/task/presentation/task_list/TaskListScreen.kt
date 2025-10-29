@@ -18,8 +18,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -126,11 +124,11 @@ fun TaskListScreen(
                 },
                 shape = RoundedCornerShape(20.dp),
             ) {
-                Icon(
+                /*Icon(
                     Icons.Rounded.Add,
                     contentDescription = "Add task",
                     tint = White
-                )
+                )*/
             }
         },
     ) {

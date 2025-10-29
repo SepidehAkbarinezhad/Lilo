@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.presentation
+package com.sepideh.lilo.task.presentation.reminder
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +12,6 @@ import ir.huri.jcal.JalaliCalendar
 @Composable
 fun JalaliDatePicker(modifier: Modifier = Modifier) {
     val openDialog = remember { mutableStateOf(true) }
-
     JalaliDatePickerDialog(
         openDialog = openDialog,
         initialDate = JalaliCalendar(),
@@ -26,5 +25,6 @@ fun JalaliDatePicker(modifier: Modifier = Modifier) {
 private fun JalaliDatePickerPrev() {
  JalaliDatePicker()
 }
+
 
 

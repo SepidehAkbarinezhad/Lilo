@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
 fun getCurrentTime(): Pair<Int, Int> {
     val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -20,6 +21,7 @@ fun getCurrentDate(): Long {
     return currentDateTime
 }
 
+@OptIn(ExperimentalTime::class)
 fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
     if (dayMillis == null || hour == null || minute == null) return null
 

@@ -63,6 +63,8 @@ kotlin {
             implementation(libs.androidx.annotation)
             implementation(libs.material3.compose)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.persian.date.time)
+            implementation(libs.persian.date.picker)
         }
     }
 }

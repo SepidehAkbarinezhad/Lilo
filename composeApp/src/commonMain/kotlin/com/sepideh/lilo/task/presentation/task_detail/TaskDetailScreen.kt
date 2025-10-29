@@ -86,6 +86,7 @@ fun TaskDetailScreenRoot(
             }
             if (state.reminderDialogOpen) {
                 ReminderPicker(
+                    openDialog = state.reminderDialogOpen,
                     reminderModel = viewModel.reminderModel,
                     onAction = { viewModel.onAction(it) })
             }
