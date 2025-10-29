@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -83,11 +81,11 @@ fun PriorityDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                         onAction(TaskDetailAction.OnPrioritySelected(selected.title))
                     }
                 ) {
-                    Icon(
+                   /* Icon(
                         imageVector = Icons.Default.Done,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary
-                    )
+                    )*/
                 }
             }
 

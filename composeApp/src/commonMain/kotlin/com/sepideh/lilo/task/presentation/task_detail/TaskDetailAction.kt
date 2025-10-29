@@ -2,6 +2,7 @@ package com.sepideh.lilo.task.presentation.task_detail
 
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface TaskDetailAction : BaseAction {
