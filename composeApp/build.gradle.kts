@@ -41,8 +41,7 @@ kotlin {
             implementation(libs.androidx.material)
             implementation(compose.material3)
             implementation(libs.accompanist.systemuicontroller)
-            implementation(libs.jalali.datepicker)
-            implementation(libs.jalali.calendar)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
