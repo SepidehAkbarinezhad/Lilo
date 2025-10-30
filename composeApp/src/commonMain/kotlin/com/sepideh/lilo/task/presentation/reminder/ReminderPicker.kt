@@ -26,9 +26,6 @@ import com.sepideh.lilo.core.utils.getCurrentTime
 import com.sepideh.lilo.core.utils.isPersianLanguage
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
-import io.github.faridsolgi.date_picker.view.PersianDatePicker
-import io.github.faridsolgi.date_picker.view.rememberPersianDatePickerState
-import io.github.faridsolgi.share.PersianDatePickerDialog
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.apply_label
 import lilo.composeapp.generated.resources.cancel_button
@@ -43,7 +40,6 @@ fun ReminderPicker(
 ) {
 
     val dateRangePickerState = rememberDateRangePickerState()
-    val persianState = rememberPersianDatePickerState()
 
     val initialHour = reminderModel.hour ?: getCurrentTime().first
     val initialMinute = reminderModel.minute ?: getCurrentTime().second
@@ -59,7 +55,7 @@ fun ReminderPicker(
         }
 
         true -> {
-            PersianDatePickerDialog(
+          /*  PersianDatePickerDialog(
                 onDismissRequest = {  },
                 confirmButton = {
                     AppText(modifier = Modifier.clickable{
@@ -68,12 +64,12 @@ fun ReminderPicker(
                 }
             ) {
                 PersianDatePicker(state = persianState)
-            }
-            PlatformPersianDatePicker(
+            }*/
+          /*  PlatformPersianDatePicker(
                 openDialog = openDialog,
                 reminderModel = reminderModel,
                 onAction = onAction
-            )
+            )*/
         }
     }
 
