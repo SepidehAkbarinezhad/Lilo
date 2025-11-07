@@ -62,6 +62,8 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.androidx.annotation)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.persian.date.picker)
+            implementation(libs.persian.date.time)
 
         }
     }

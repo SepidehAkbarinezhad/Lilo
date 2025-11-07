@@ -26,7 +26,7 @@
     <string name="confirm_button">تأیید</string>
     <string name="cancel_button">انصراف</string>
     <string name="empty_list_title">لیست خالی است</string>
-    <string name="reminder_date_title">تاریخ یادآور</string>
+    <string name="reminder_date_title">تاریخ یادآوری را انتخاب کنید</string>
     <string name="reminder_time_title">زمان یادآور</string>
     <string name="empty_list_comment">بیا شروع کنیم!</string>
     <string name="filter_label">فیلتر</string>
