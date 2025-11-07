@@ -17,8 +17,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -135,20 +139,20 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (Category) -> Uni
                         addVisibility = true
                     }
                 ) {
-                   /* Icon(
+                   Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary
-                    )*/
+                    )
                 }
                 IconButton(
                     onClick = onDone
                 ) {
-                    /*Icon(
+                    Icon(
                         imageVector = Icons.Default.Done,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary
-                    )*/
+                    )
                 }
             }
         }
