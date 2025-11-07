@@ -66,7 +66,7 @@ class TaskDetailViewModel(
         state.copy(
             categories = categories, selectedCategory = validSelectedCategory
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L),state.value)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
 
     var task: Task by mutableStateOf(Task())
 
@@ -117,25 +117,29 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     updatePermissionState(checkDeniedPermission = false).await()
                     if (!state.value.shouldShowPermissionDialog) {
-                        setIsReminderDialogOpen(open = true)
+                        setReminderDateDialogOpen(open = true)
                     }
                 }
             }
 
-            is TaskDetailAction.OnDismissReminderDialogButton -> {
-                setIsReminderDialogOpen(open = false)
+            is TaskDetailAction.OnDismissDatePickerButton -> {
+                setReminderDateDialogOpen(open = false)
             }
 
-
-            is TaskDetailAction.OnDismissTimeDialog -> {
-                state.update {
-                    it.copy(timeDialogOpen = false)
-                }
+            is TaskDetailAction.OnDismissTimePickerButton -> {
+                reminderModel = ReminderModel()
+                setReminderTimeDialogOpen(open = false)
             }
 
-            is TaskDetailAction.OnSelectReminderConfirm -> {
+            is TaskDetailAction.OnReminderDateConfirm -> {
                 reminderModel = action.reminderModel
-                setIsReminderDialogOpen(open = false)
+                setReminderDateDialogOpen(open = false)
+                setReminderTimeDialogOpen(open = true)
+            }
+
+            is TaskDetailAction.OnReminderTimeConfirm -> {
+                reminderModel = action.reminderModel
+                setReminderTimeDialogOpen(open = false)
             }
 
             is TaskDetailAction.OnCategorySelected -> {
@@ -150,6 +154,7 @@ class TaskDetailViewModel(
                 state.update { it.copy(selectedPriority = selectedPriority) }
                 onAction(TaskDetailAction.OnDismissPriorityDialog)
             }
+
             is TaskDetailAction.OnSelectReminderTime -> {
                 with(action.time) {
                     reminderModel = reminderModel.copy(hour = first, minute = second)
@@ -216,11 +221,6 @@ class TaskDetailViewModel(
 
             TaskDetailAction.OnCancelPermissionDialog -> {
                 closePermissionDialog()
-                state.update {
-                    it.copy(
-                        timeDialogOpen = true,
-                    )
-                }
             }
         }
     }
@@ -351,9 +351,15 @@ class TaskDetailViewModel(
         return newTitleError.isSuccessful && newDescriptionError.isSuccessful && !state.value.shouldShowPermissionDeniedDialog
     }
 
-    private fun setIsReminderDialogOpen(open: Boolean) {
+    private fun setReminderDateDialogOpen(open: Boolean) {
         state.update {
-            it.copy(reminderDialogOpen = open)
+            it.copy(reminderDatePickerOpen = open)
+        }
+    }
+
+    private fun setReminderTimeDialogOpen(open: Boolean) {
+        state.update {
+            it.copy(reminderTimePickerOpen = open)
         }
     }
 

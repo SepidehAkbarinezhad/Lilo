@@ -13,12 +13,13 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnPriorityIcon : TaskDetailAction
     data object OnDismissPriorityDialog : TaskDetailAction
     data object OnDateReminderIcon : TaskDetailAction
-    data object OnDismissReminderDialogButton : TaskDetailAction
-    data object OnDismissTimeDialog : TaskDetailAction
+    data object OnDismissDatePickerButton : TaskDetailAction
+    data object OnDismissTimePickerButton : TaskDetailAction
     data class OnCategorySelected(val title: String) : TaskDetailAction
     data class OnPrioritySelected(val title: StringResource) : TaskDetailAction
     data class OnSelectReminderTime(val time: Pair<Int?, Int?>) : TaskDetailAction
-    data class OnSelectReminderConfirm(val reminderModel: ReminderModel) : TaskDetailAction
+    data class OnReminderDateConfirm(val reminderModel: ReminderModel) : TaskDetailAction
+    data class OnReminderTimeConfirm(val reminderModel: ReminderModel) : TaskDetailAction
     data class OnAddTaskButton(val checkDeniedPermission : Boolean = false) : TaskDetailAction
     data class OnAddNewCategory(val category: Category) : TaskDetailAction
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailAction
