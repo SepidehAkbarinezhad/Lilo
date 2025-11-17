@@ -41,6 +41,8 @@ kotlin {
             implementation(libs.androidx.material)
             implementation(compose.material3)
             implementation(libs.accompanist.systemuicontroller)
+            implementation(libs.persian.date.picker)
+            implementation(libs.persian.date.time)
 
         }
         commonMain.dependencies {
@@ -62,8 +64,6 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.androidx.annotation)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.persian.date.picker)
-            implementation(libs.persian.date.time)
 
         }
     }
