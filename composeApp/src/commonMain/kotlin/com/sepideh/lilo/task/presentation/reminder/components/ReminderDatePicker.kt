@@ -17,27 +17,18 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.utils.PlatformType
 import com.sepideh.lilo.core.utils.getCurrentDate
+import com.sepideh.lilo.core.utils.getPlatformType
 import com.sepideh.lilo.core.utils.isPersianLanguage
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
-import com.sepideh.lilo.ui.theme.LiloColors
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
-import io.github.faridsolgi.date_picker.view.PersianDatePicker
-import io.github.faridsolgi.date_picker.view.PersianDatePickerDefaults
-import io.github.faridsolgi.date_picker.view.rememberPersianDatePickerState
-import io.github.faridsolgi.persiandatetime.extensions.toEpochMilliseconds
-import io.github.faridsolgi.persiandatetime.extensions.toPersianDateTime
-import io.github.faridsolgi.share.PersianDatePickerDialog
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.ok_label
 import lilo.composeapp.generated.resources.reminder_date_title
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 @Composable
 fun ReminderDatePicker(
@@ -45,45 +36,17 @@ fun ReminderDatePicker(
     onAction: (BaseAction) -> Unit,
 ) {
 
-    val palette = LocalLiloColorsPalette.current
-
-    when (isPersianLanguage()) {
+    when (isPersianLanguage() && getPlatformType().name == PlatformType.ANDROID.name) {
         false -> {
-                DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
+            DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
         }
         true -> {
-            PersianDatePicker(palette = palette, onAction = onAction)
+            LiloPersianDatePicker (onAction = onAction)
         }
     }
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
-@Composable
-fun PersianDatePicker(palette: LiloColors, onAction: (BaseAction) -> Unit) {
-
-    val nowLocal = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    val state = rememberPersianDatePickerState(initialSelectedDate = nowLocal.toPersianDateTime())
-
-    PersianDatePickerDialog(
-        onDismissRequest = { },
-        confirmButton = {
-            ConfirmBtn(
-                selectedDate = state.selectedDate?.toEpochMilliseconds(),
-                onAction = onAction
-            )
-        },
-        dismissButton = {
-            CancelBtn(onAction = onAction)
-        },
-        colors =  PersianDatePickerDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        )
-    ) {
-        PersianDatePicker(state = state, title = { ReminderTitle(color = palette.primaryTitle) },
-            colors =  PersianDatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer),showModeToggle=false)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,7 +66,7 @@ fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Un
         dismissButton = {
             CancelBtn(onAction = onAction)
         },
-        colors =  DatePickerDefaults.colors(
+        colors = DatePickerDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             selectedDayContentColor = Color.White,
             selectedDayContainerColor = palette.primaryTitle,
@@ -117,7 +80,7 @@ fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Un
             title = {
                 ReminderTitle(color = palette.primaryTitle)
             },
-            colors =  DatePickerDefaults.colors(
+            colors = DatePickerDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
             ),
             showModeToggle = false // Hides the pen/calendar icon
@@ -170,7 +133,7 @@ fun CancelBtn(onAction: (BaseAction) -> Unit) {
 
 @Preview
 @Composable
-fun DatePickerPrev(){
-   ReminderDatePicker(reminderModel = ReminderModel(), onAction = {})
+fun DatePickerPrev() {
+    ReminderDatePicker(reminderModel = ReminderModel(), onAction = {})
 }
 
