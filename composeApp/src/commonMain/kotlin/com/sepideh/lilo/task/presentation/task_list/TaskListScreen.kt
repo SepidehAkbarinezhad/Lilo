@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_list
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
@@ -33,9 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -59,6 +58,8 @@ import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
 import lilo.composeapp.generated.resources.empty_list_title
 import lilo.composeapp.generated.resources.filter_icon
+import lilo.composeapp.generated.resources.ic_settings
+import lilo.composeapp.generated.resources.icon_search
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -270,37 +271,78 @@ fun TaskListHeader(
     val clickable = !state.isFilterSheetOpen
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(
-        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp)
+            .height(64.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        AppSearchBar(
-            modifier = Modifier.padding(8.dp).weight(1f),
-            focusRequester = focusRequester,
-            searchQuery = state.searchQuery,
-            onSearchQueryChange = {
-                if (clickable) {
-                    onAction(
-                        TaskListAction.OnSearchQueryChange(
-                            it
-                        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = {
+                    focusManager.clearFocus()
+                    if (clickable) onAction(TaskListAction.OnFilterIcon)
+                },
+                enabled = !state.isFilterSheetOpen,
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.filter_icon),
+                    contentDescription = null
+                )
+            }
+
+            AnimatedContent(
+                targetState = state.isSearchVisible,
+                label = "search-bar-animation"
+            ) { isSearchVisible ->
+                if (isSearchVisible) {
+
+                    AppSearchBar(
+                        modifier = Modifier.weight(1f),
+                        focusRequester = focusRequester,
+                        searchQuery = state.searchQuery,
+                        onSearchQueryChange = {
+                            if (clickable) {
+                                onAction(TaskListAction.OnSearchQueryChange(it))
+                            }
+                        },
+                        onClose = {
+                            onAction(TaskListAction.OnSearchToggle(false))
+                            keyboardController?.hide()
+                        },
+                        readonly = !clickable
+                    )
+
+                } else {
+                    Image(
+                        painterResource(Res.drawable.icon_search),
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            onAction(TaskListAction.OnSearchToggle(true))
+                        },
+                        contentDescription = "Open Search",
                     )
                 }
+            }
+        }
+
+
+       IconButton(
+            onClick = {
 
             },
-            onImeSearch = { keyboardController?.hide() },
-            readonly = !clickable
-        )
-        IconButton(
-            onClick = {
-                focusManager.clearFocus()
-                if (clickable) onAction(TaskListAction.OnFilterIcon)
-            },
-            enabled = !state.isFilterSheetOpen
+            enabled = !state.isFilterSheetOpen,
         ) {
-            Image(painter = painterResource(Res.drawable.filter_icon), contentDescription = null)
+            Image(
+                painter = painterResource(Res.drawable.ic_settings),
+                contentDescription = "Open setting"
+            )
         }
+
     }
 }
+
 
 
 

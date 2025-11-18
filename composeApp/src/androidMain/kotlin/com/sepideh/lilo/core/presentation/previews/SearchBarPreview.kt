@@ -26,7 +26,7 @@ fun SearchBarPreview() {
             modifier = Modifier.fillMaxWidth(),
             focusRequester = focusRequester,
             searchQuery = "",
-            onImeSearch = {},
+            onClose = {},
             readonly = false
         ) { }
     }
