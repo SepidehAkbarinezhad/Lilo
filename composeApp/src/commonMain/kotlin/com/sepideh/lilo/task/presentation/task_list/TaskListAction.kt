@@ -8,6 +8,7 @@ import com.sepideh.lilo.task.presentation.model.TaskStatus
 
 sealed interface TaskListAction : BaseAction {
     data class OnCategorySelected(val id: Long?) : TaskListAction
+    data class OnSearchToggle(val open: Boolean) : TaskListAction
     data class OnSearchQueryChange(val query: String) : TaskListAction
     data object OnFilterIcon : TaskListAction
     data object OnCloseFilterIcon : TaskListAction

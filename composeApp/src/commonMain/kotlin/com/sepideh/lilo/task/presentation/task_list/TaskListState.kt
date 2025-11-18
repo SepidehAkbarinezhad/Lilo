@@ -6,6 +6,7 @@ import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 
 data class TaskListState(
+    val isSearchVisible: Boolean = false,
     val searchQuery: String = "",
     val isFilterSheetOpen: Boolean = false,
     val taskFilterOption: TaskFilterOption = TaskFilterOption(),

@@ -289,6 +289,11 @@ class TaskListViewModel(
             is TaskListAction.OnPhotoPicked -> {
                 newTask = newTask?.copy(photo = action.bytes)
             }
+            is TaskListAction.OnSearchToggle->{
+                _state.update {
+                    it.copy(isSearchVisible = action.open)
+                }
+            }
 
         }
     }
