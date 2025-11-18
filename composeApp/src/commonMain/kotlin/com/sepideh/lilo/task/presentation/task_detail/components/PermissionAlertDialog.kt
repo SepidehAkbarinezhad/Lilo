@@ -20,7 +20,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.alert_icon
+import lilo.composeapp.generated.resources.ic_alert
 import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.confirm_button
 import lilo.composeapp.generated.resources.permission_Xiaomi_alert_dialog
@@ -41,7 +41,7 @@ fun PermissionAlertDialog(isXiaomi: Boolean, onAction: (BaseAction) -> Unit) {
         ) {
             Image(
                 modifier = Modifier.heightIn(max = 100.dp),
-                painter = painterResource(Res.drawable.alert_icon),
+                painter = painterResource(Res.drawable.ic_alert),
                 contentDescription = ""
             )
             AppText(text = reminderMessage, textType = TextType.SubTitle, color = MaterialTheme.colorScheme.onSurfaceVariant)

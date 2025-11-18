@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.category_icon
-import lilo.composeapp.generated.resources.date_icon
-import lilo.composeapp.generated.resources.priority_icon
+import lilo.composeapp.generated.resources.ic_category
+import lilo.composeapp.generated.resources.ic_date
+import lilo.composeapp.generated.resources.ic_priority
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -27,19 +27,19 @@ fun TaskDetailIcons(onAction: (BaseAction) -> Unit) {
     ) {
         IconButton(onClick = { onAction(TaskDetailAction.OnCategoryIcon) }) {
             Image(
-                painter = painterResource(Res.drawable.category_icon),
+                painter = painterResource(Res.drawable.ic_category),
                 contentDescription = null
             )
         }
         IconButton(onClick = { onAction(TaskDetailAction.OnPriorityIcon) }) {
             Image(
-                painter = painterResource(Res.drawable.priority_icon),
+                painter = painterResource(Res.drawable.ic_priority),
                 contentDescription = null
             )
         }
         IconButton(onClick = { onAction(TaskDetailAction.OnDateReminderIcon) }) {
             Image(
-                painter = painterResource(Res.drawable.date_icon),
+                painter = painterResource(Res.drawable.ic_date),
                 contentDescription = null
             )
         }

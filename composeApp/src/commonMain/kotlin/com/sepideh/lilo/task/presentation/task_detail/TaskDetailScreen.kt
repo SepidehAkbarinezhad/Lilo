@@ -117,9 +117,7 @@ fun TaskDetailScreen(
     Box(modifier = Modifier.fillMaxSize().clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = null
-    ) {
-        keyboardController?.hide()
-    }) {
+    ) { keyboardController?.hide() }) {
         Column(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
         ) {

@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.di
 
+import com.sepideh.lilo.task.presentation.settings.SettingsViewModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListViewModel
 import org.koin.core.module.Module
@@ -14,6 +15,7 @@ val categoryDatabaseQualifier = named("categoryDatabase")
 expect fun platformModule(): Module
 
 val viewModelModule = module {
+    viewModel { SettingsViewModel() }
     viewModel { TaskListViewModel(taskDatabase = get(taskDatabaseQualifier), categoryDatabase = get(categoryDatabaseQualifier) ,reminderScheduler = get()) }
     viewModel { TaskDetailViewModel(taskDatabase = get(taskDatabaseQualifier), categoryDatabase = get(categoryDatabaseQualifier), reminderScheduler = get(), permissionManager = get()) }
 }
