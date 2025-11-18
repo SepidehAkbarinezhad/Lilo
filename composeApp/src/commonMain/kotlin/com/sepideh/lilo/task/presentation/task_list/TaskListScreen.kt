@@ -57,9 +57,9 @@ import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
 import lilo.composeapp.generated.resources.empty_list_title
-import lilo.composeapp.generated.resources.filter_icon
+import lilo.composeapp.generated.resources.ic_filter
 import lilo.composeapp.generated.resources.ic_settings
-import lilo.composeapp.generated.resources.icon_search
+import lilo.composeapp.generated.resources.ic_search
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -150,7 +150,7 @@ fun TaskListScreen(
             TaskListHeader(
                 modifier = Modifier.statusBarsPadding(),
                 state = state,
-                onAction = onAction
+                onAction = onAction,
             )
 
             Surface(
@@ -285,7 +285,7 @@ fun TaskListHeader(
                 enabled = !state.isFilterSheetOpen,
             ) {
                 Image(
-                    painter = painterResource(Res.drawable.filter_icon),
+                    painter = painterResource(Res.drawable.ic_filter),
                     contentDescription = null
                 )
             }
@@ -314,7 +314,7 @@ fun TaskListHeader(
 
                 } else {
                     Image(
-                        painterResource(Res.drawable.icon_search),
+                        painterResource(Res.drawable.ic_search),
                         modifier = Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -328,10 +328,8 @@ fun TaskListHeader(
         }
 
 
-       IconButton(
-            onClick = {
-
-            },
+        IconButton(
+            onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) },
             enabled = !state.isFilterSheetOpen,
         ) {
             Image(

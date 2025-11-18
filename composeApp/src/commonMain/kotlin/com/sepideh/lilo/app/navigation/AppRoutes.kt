@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class AppRoutes {
+
     @Serializable
-    data object Splash : AppRoutes()
+    data object Settings : AppRoutes()
 
     @Serializable
     data object TaskList : AppRoutes()
