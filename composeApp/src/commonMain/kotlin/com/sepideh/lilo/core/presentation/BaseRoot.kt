@@ -41,6 +41,7 @@ fun BaseRoot(
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {
+
         bodyContainer()
 
         if (baseUiState.showLoading) {

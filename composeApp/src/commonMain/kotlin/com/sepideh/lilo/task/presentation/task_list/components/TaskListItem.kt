@@ -30,7 +30,6 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import com.sepideh.lilo.task.presentation.task_list.TaskListAction
-import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 
 @Composable
 fun TaskListItem(

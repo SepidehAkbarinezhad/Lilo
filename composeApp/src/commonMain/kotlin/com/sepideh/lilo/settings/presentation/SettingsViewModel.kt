@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.presentation.settings
+package com.sepideh.lilo.settings.presentation
 
 import com.sepideh.lilo.core.presentation.BaseViewModel
 

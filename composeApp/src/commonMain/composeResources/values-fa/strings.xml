@@ -4,8 +4,16 @@
     <string name="close_hint">پاک کردن جستجو</string>
     <string name="all">همه</string>
     <string name="no_result">نتیجه‌ای یافت نشد</string>
-    <string name="add_task_label">افزودن</string>
+    <string name="setting_task_title">تنظیمات</string>
+    <string name="language_label">زبان</string>
+    <string name="persian_label">فارسی</string>
+    <string name="english_label">انگلیسی</string>
+    <string name="theme_label">تم</string>
+    <string name="system_mode_label">سیستم</string>
+    <string name="light_mode_label">روشن</string>
+    <string name="dark_mode_label">تاریک</string>
     <string name="add_task_title">افزودن فعالیت</string>
+    <string name="add_task_label">افزودن</string>
     <string name="edit_task_title">ویرایش فعالیت</string>
     <string name="edit_task_label">ویرایش</string>
     <string name="title_label">عنوان</string>
