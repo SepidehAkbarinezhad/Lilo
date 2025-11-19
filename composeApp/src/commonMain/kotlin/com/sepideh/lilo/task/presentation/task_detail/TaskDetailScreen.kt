@@ -1,36 +1,24 @@
 package com.sepideh.lilo.task.presentation.task_detail
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
+import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
-import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
-import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.ReminderPicker
@@ -112,64 +100,41 @@ fun TaskDetailScreen(
     task: Task,
     onAction: (BaseAction) -> Unit
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
     val isEdit = task.id != null
-    Box(modifier = Modifier.fillMaxSize().clickable(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = null
-    ) { keyboardController?.hide() }) {
-        Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
-        ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                AppText(
-                    modifier = Modifier.statusBarsPadding().padding(18.dp),
-                    text = when (isEdit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        BaseScreen(
+            header = {
+                BaseHeader(
+                    title = when (isEdit) {
                         true -> Res.string.edit_task_title
                         else -> Res.string.add_task_title
-                    }, textType = TextType.Title, color = MaterialTheme.colorScheme.onPrimary
+                    }
                 )
-            }
-            Surface(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    AppOutlineTextField(
-                        containerModifier = Modifier.padding(18.dp),
-                        textFieldRequired = TextFieldRequired(
-                            value = task.title,
-                            onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) },
-                            label = stringResource(Res.string.title_label),
-                            validationStatus = state.titleError
-                        )
+            }, content = {
+                AppOutlineTextField(
+                    containerModifier = Modifier.padding(18.dp),
+                    textFieldRequired = TextFieldRequired(
+                        value = task.title,
+                        onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) },
+                        label = stringResource(Res.string.title_label),
+                        validationStatus = state.titleError
                     )
-
-
-                    AppOutlineTextField(
-                        containerModifier = Modifier.padding(18.dp),
-                        textFieldModifier = Modifier.heightIn(116.dp),
-                        textFieldRequired = TextFieldRequired(
-                            value = task.description,
-                            onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) },
-                            label = stringResource(Res.string.description_label),
-                            validationStatus = state.descriptionError
-                        ),
-                        singleLine = false,
-                        maxLines = 3,
-                    )
-
-                    TaskDetailIcons(onAction = onAction)
-                }
+                )
+                AppOutlineTextField(
+                    containerModifier = Modifier.padding(18.dp),
+                    textFieldModifier = Modifier.heightIn(116.dp),
+                    textFieldRequired = TextFieldRequired(
+                        value = task.description,
+                        onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) },
+                        label = stringResource(Res.string.description_label),
+                        validationStatus = state.descriptionError
+                    ),
+                    singleLine = false,
+                    maxLines = 3,
+                )
+                TaskDetailIcons(onAction = onAction)
             }
-
-        }
+        )
         AppRowButtons(
             modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
             firstButtonTitle = when (isEdit) {
@@ -182,8 +147,7 @@ fun TaskDetailScreen(
             secondButtonTitle = Res.string.cancel_button,
             onSecondButtonClick = { onAction(BaseAction.OnNavigateTo(route = null)) }
         )
-
-
     }
+
 
 }

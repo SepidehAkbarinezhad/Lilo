@@ -4,8 +4,16 @@
     <string name="close_hint">clear search</string>
     <string name="all">all</string>
     <string name="no_result">no result</string>
-    <string name="add_task_label">add</string>
+    <string name="setting_task_title">Settings</string>
+    <string name="language_label">Language</string>
+    <string name="persian_label">Persian</string>
+    <string name="english_label">English</string>
+    <string name="theme_label">theme</string>
+    <string name="system_mode_label">system</string>
+    <string name="light_mode_label">light</string>
+    <string name="dark_mode_label">dark</string>
     <string name="add_task_title">Add task</string>
+    <string name="add_task_label">add</string>
     <string name="edit_task_title">Edit task</string>
     <string name="edit_task_label">edit</string>
     <string name="title_label">title</string>

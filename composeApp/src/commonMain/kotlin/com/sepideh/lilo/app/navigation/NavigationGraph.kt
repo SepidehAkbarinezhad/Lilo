@@ -5,8 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.sepideh.lilo.task.presentation.settings.SettingsScreenRoot
-import com.sepideh.lilo.task.presentation.settings.SettingsViewModel
+import com.sepideh.lilo.settings.presentation.SettingsScreenRoot
+import com.sepideh.lilo.settings.presentation.SettingsViewModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListScreenRoot

@@ -1,6 +1,6 @@
 package com.sepideh.lilo.core.di
 
-import com.sepideh.lilo.task.presentation.settings.SettingsViewModel
+import com.sepideh.lilo.settings.presentation.SettingsViewModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListViewModel
 import org.koin.core.module.Module
