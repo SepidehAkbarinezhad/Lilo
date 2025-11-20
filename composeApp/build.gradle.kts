@@ -63,6 +63,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.data.store)
             implementation(libs.coil)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.svg)
         }
     }
 }
