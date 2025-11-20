@@ -1,5 +1,7 @@
 package com.sepideh.lilo.core.di
 
+import com.sepideh.lilo.category.di.categoryPlatformModule
+import com.sepideh.lilo.settings.di.settingsModule
 import com.sepideh.lilo.task.di.taskPlatformModule
 import com.sepideh.lilo.task.di.viewModelModule
 import org.koin.core.context.startKoin
@@ -11,7 +13,13 @@ fun initKoin(config : KoinAppDeclaration?= null){
         config?.invoke(this)
         //sets Koin's internal logger
         logger(PlatformLogger())
-        modules(viewModelModule, taskPlatformModule())
+        modules(
+            settingsModule,
+            corePlatformModule(),
+            taskPlatformModule(),
+            categoryPlatformModule(),
+            viewModelModule
+        )
     }
 }
 
