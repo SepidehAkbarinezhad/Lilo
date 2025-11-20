@@ -48,7 +48,6 @@ import com.sepideh.lilo.core.presentation.components.AppDialog
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
-import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.core.utils.getSystemLanguage
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
