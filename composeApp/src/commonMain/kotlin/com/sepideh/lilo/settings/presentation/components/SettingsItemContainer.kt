@@ -3,6 +3,7 @@ package com.sepideh.lilo.settings.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -76,7 +77,7 @@ fun SettingsItemHeader(icon: DrawableResource, title: StringResource) {
 private fun SettingsItemsRow(content: @Composable RowScope.() -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max), verticalAlignment = Alignment.Top) {
         Spacer(modifier = Modifier.weight(.2f).fillMaxHeight())
-        content()
+        Row(modifier = Modifier.weight(1f)) { content() }
     }
 }
 

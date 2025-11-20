@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.data
+package com.sepideh.lilo.task.data.local.room
 
 import androidx.room.Dao
 import androidx.room.Delete

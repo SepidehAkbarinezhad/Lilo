@@ -1,10 +1,8 @@
-package com.sepideh.lilo.database
+package com.sepideh.lilo.category.data.local.room
 
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.sepideh.lilo.task.data.TaskDatabase
-import com.sepideh.lilo.task.data.category.CategoryDatabase
 
 fun getCategoryDatabaseBuilder(ctx: Context): RoomDatabase.Builder<CategoryDatabase>{
     val appContext = ctx.applicationContext
