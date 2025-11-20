@@ -1,18 +1,17 @@
-package com.sepideh.lilo.database
+package com.sepideh.lilo.task.data.local.room
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.sepideh.lilo.task.data.category.CategoryDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 
-fun getCategoryDatabaseBuilder(): RoomDatabase.Builder<CategoryDatabase> {
-    val dbFilePath = documentDirectory() + "/category.db"
-    return Room.databaseBuilder<CategoryDatabase>(
+fun getTaskDatabaseBuilder(): RoomDatabase.Builder<TaskDatabase> {
+    val dbFilePath = documentDirectory() + "/task.db"
+    return Room.databaseBuilder<TaskDatabase>(
         name = dbFilePath,
     ).setDriver(BundledSQLiteDriver())
 }

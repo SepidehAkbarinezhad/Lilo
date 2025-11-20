@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.data.category
+package com.sepideh.lilo.category.data.local.room
 
 import androidx.room.ConstructedBy
 import androidx.room.Database
