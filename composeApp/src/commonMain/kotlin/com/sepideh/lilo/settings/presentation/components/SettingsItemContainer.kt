@@ -20,10 +20,10 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
@@ -35,11 +35,12 @@ fun SettingsItemContainer(
     title: StringResource,
     content: @Composable RowScope.() -> Unit
 ) {
+    val palette = LocalLiloColorsPalette.current
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(containerColor = palette.elevatedCard),
         modifier = Modifier
             .padding(16.dp)
     ) {

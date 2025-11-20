@@ -10,6 +10,7 @@ data class LiloColors(
     val unSelectedCategory: Color = Color.Unspecified,
     val primaryTitle: Color = Color.Unspecified,
     val primaryContainerTitle: Color = Color.Unspecified,
+    val elevatedCard: Color = Color.Unspecified,
 )
 
 val selectedCategoryLight = PrimaryLight
@@ -25,17 +26,22 @@ val primaryContainerTitleLight = PrimaryContainerLight
 val primaryContainerTitleDark = PrimaryContainerLight
 
 
+val elevatedCardLight = Color(color = 0xFFFFFFFF)
+val elevatedCardDark = Grey800
+
 val LiloColorsLight = LiloColors(
     selectedCategory = selectedCategoryLight,
     unSelectedCategory = unSelectedCategoryLight,
     primaryTitle = primaryTitleLight,
     primaryContainerTitle = primaryContainerTitleLight,
+    elevatedCard = elevatedCardLight
 )
 val LiloColorsDark = LiloColors(
     selectedCategory = selectedCategoryDark,
     unSelectedCategory = unSelectedCategoryDark,
     primaryTitle = primaryTitleDark,
-    primaryContainerTitle=primaryContainerTitleDark
+    primaryContainerTitle=primaryContainerTitleDark,
+    elevatedCard = elevatedCardDark
 )
 
 val LocalLiloColorsPalette = compositionLocalOf { LiloColors() }
