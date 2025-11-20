@@ -15,7 +15,6 @@ val taskDatabaseQualifier = named("taskDatabase")
 expect fun taskPlatformModule(): Module
 
 val viewModelModule = module {
-    viewModel { SettingsViewModel() }
     viewModel { TaskListViewModel(taskDatabase = get(taskDatabaseQualifier), categoryDatabase = get(categoryDatabaseQualifier) ,reminderScheduler = get()) }
     viewModel { TaskDetailViewModel(taskDatabase = get(taskDatabaseQualifier), categoryDatabase = get(categoryDatabaseQualifier), reminderScheduler = get(), permissionManager = get()) }
 }
