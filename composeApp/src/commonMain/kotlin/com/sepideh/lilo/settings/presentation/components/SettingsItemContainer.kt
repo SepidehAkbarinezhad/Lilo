@@ -75,14 +75,22 @@ fun SettingsItemHeader(icon: DrawableResource, title: StringResource) {
 
 @Composable
 private fun SettingsItemsRow(content: @Composable RowScope.() -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max), verticalAlignment = Alignment.Top) {
+    Row(
+        modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+        verticalAlignment = Alignment.Top
+    ) {
         Spacer(modifier = Modifier.weight(.2f).fillMaxHeight())
         Row(modifier = Modifier.weight(1f)) { content() }
     }
 }
 
 @Composable
-fun SettingItem(label: StringResource, selected: String, onSelected: () -> Unit) {
+fun <T> SettingItem(
+    label: StringResource,
+    value: T,
+    selectedValue: T,
+    onSelected: () -> Unit
+) {
     Row(
         modifier = Modifier
             .clickable { onSelected() }
@@ -94,7 +102,7 @@ fun SettingItem(label: StringResource, selected: String, onSelected: () -> Unit)
             modifier = Modifier.padding(start = 6.dp)
         )
         RadioButton(
-            selected = stringResource(label) == selected,
+            selected = value == selectedValue,
             onClick = { onSelected() }
         )
     }
