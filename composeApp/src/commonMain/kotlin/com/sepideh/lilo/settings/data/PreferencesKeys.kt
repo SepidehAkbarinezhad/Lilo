@@ -1,4 +1,4 @@
-package com.sepideh.lilo.core.data.local.dataStore
+package com.sepideh.lilo.settings.data
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey

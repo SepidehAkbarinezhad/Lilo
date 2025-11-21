@@ -1,10 +1,14 @@
 package com.sepideh.lilo.app
 
 import android.app.Application
+import com.sepideh.lilo.core.data.local.dataStore.createDataStoreAndroid
 import com.sepideh.lilo.core.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
 class LiloApplication : Application() {
+
+    val userPreferencesDataStore by lazy { createDataStoreAndroid(this) }
+
     override fun onCreate() {
         super.onCreate()
         initKoin {
