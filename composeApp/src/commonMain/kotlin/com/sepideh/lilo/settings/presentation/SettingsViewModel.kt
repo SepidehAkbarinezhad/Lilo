@@ -8,6 +8,7 @@ import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.settings.presentation.model.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(val userPreferencesRepository: UserPreferencesRepository): BaseViewModel() {
@@ -18,7 +19,9 @@ class SettingsViewModel(val userPreferencesRepository: UserPreferencesRepository
     init {
         viewModelScope.launch {
             userPreferencesRepository.userPreferences.collect { prefs ->
-                _state.value = SettingsState(userPreferences = prefs)
+                _state.update { currentState ->
+                    currentState.copy(userPreferences = prefs)
+                }
             }
         }
     }
