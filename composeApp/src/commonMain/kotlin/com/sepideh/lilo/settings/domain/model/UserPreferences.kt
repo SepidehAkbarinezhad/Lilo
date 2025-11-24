@@ -1,4 +1,4 @@
-package com.sepideh.lilo.settings.domain
+package com.sepideh.lilo.settings.domain.model
 
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.settings.presentation.model.AppTheme

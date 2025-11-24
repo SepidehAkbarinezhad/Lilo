@@ -7,8 +7,6 @@ import org.koin.android.ext.koin.androidContext
 
 class LiloApplication : Application() {
 
-    val userPreferencesDataStore by lazy { createDataStoreAndroid(this) }
-
     override fun onCreate() {
         super.onCreate()
         initKoin {
