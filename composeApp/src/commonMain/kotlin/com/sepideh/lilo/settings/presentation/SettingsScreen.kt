@@ -24,8 +24,7 @@ fun SettingsScreenRoot(
     onNavigateTo: (AppRoutes) -> Unit,
     onBack: () -> Boolean
 ) {
-    val state = viewModel.state.value
-    val state2 by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     BaseRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
@@ -54,7 +53,7 @@ fun SettingsScreen(
                 AppTheme.entries.forEach { themeV ->
                     SettingItem(
                         label = themeV.label, value = themeV , selectedValue = theme,
-                        onSelected = { onAction(SettingsAction.SelectTheme(theme = theme)) })
+                        onSelected = { onAction(SettingsAction.SelectTheme(theme = themeV)) })
                 }
             }
             SettingsItemContainer(
@@ -66,7 +65,7 @@ fun SettingsScreen(
                         label = languageV.label,
                         value = languageV,
                         selectedValue = language,
-                        onSelected = { onAction(SettingsAction.SelectLanguage(language = language)) })
+                        onSelected = { onAction(SettingsAction.SelectLanguage(language = languageV)) })
                 }
             }
 

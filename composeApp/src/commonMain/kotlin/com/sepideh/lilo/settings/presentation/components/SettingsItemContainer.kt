@@ -91,6 +91,7 @@ fun <T> SettingItem(
     selectedValue: T,
     onSelected: () -> Unit
 ) {
+
     Row(
         modifier = Modifier
             .clickable { onSelected() }
