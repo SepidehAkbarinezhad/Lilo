@@ -8,9 +8,9 @@ import lilo.composeapp.generated.resources.persian_label
 import lilo.composeapp.generated.resources.system_mode_label
 import org.jetbrains.compose.resources.StringResource
 
-enum class AppLanguage(val label: StringResource) {
-    FA(Res.string.persian_label),
-    EN(Res.string.english_label)
+enum class AppLanguage(val label: StringResource, val code: String) {
+    FA(label = Res.string.persian_label, code = "fa"),
+    EN(label = Res.string.english_label, code = "en")
 }
 
 enum class AppTheme(val label: StringResource) {

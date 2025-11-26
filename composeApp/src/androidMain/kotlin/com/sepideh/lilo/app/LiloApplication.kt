@@ -1,7 +1,6 @@
 package com.sepideh.lilo.app
 
 import android.app.Application
-import com.sepideh.lilo.core.data.local.dataStore.createDataStoreAndroid
 import com.sepideh.lilo.core.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
