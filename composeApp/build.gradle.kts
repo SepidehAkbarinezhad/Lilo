@@ -41,11 +41,15 @@ kotlin {
             implementation(libs.androidx.material)
             implementation(compose.material3)
             implementation(libs.accompanist.systemuicontroller)
+            implementation(libs.persian.date.picker)
+            implementation(libs.persian.date.time)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)

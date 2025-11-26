@@ -1,13 +1,15 @@
 package com.sepideh.lilo.core.utils
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun getCurrentTime(): Pair<Int, Int> {
     val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val hour = currentDateTime.hour
@@ -15,14 +17,15 @@ fun getCurrentTime(): Pair<Int, Int> {
     return Pair(hour, minute)
 }
 
+@OptIn(ExperimentalTime::class)
 fun getCurrentDate(): Long {
     val currentDateTime = Clock.System.now().toEpochMilliseconds()
     return currentDateTime
 }
 
+@OptIn(ExperimentalTime::class)
 fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
     if (dayMillis == null || hour == null || minute == null) return null
-
 
     val timeZone = TimeZone.currentSystemDefault()
 
@@ -45,6 +48,7 @@ fun setReminderTime(dayMillis: Long?, hour: Int?, minute: Int?): Long? {
         null
     }
 }
+
 
 
 

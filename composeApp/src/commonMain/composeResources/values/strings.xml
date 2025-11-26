@@ -42,6 +42,7 @@
     <string name="status-done-label">Done</string>
     <string name="status-Undone-label">Undone</string>
     <string name="priority_filter_label">priority:</string>
+    <string name="ok_label">ok</string>
     <string name="apply_label">apply</string>
     <string name="reset_label">reset</string>
     <string name="error_empty_field_label">% can not be empty</string>
