@@ -31,8 +31,8 @@ fun App() {
     CompositionLocalProvider(
         LocalAppLocale provides Locale(languagePreference.code)
     ) {
-       // ApplyLanguage(languagePreference)
-        LiloTheme(darkTheme = true) {
+        ApplyLanguage(languagePreference)
+        LiloTheme(darkTheme = darkTheme) {
             val navHostController = rememberNavController()
             NavigationGraph(navHostController = navHostController)
         }

@@ -63,7 +63,6 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.androidx.annotation)
-            implementation(libs.material3.compose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.data.store)
         }
