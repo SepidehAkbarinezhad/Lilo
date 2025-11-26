@@ -21,7 +21,8 @@ import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.reminder.ReminderPicker
+import com.sepideh.lilo.task.presentation.reminder.components.ReminderDatePicker
+import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
 import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
@@ -59,14 +60,11 @@ fun TaskDetailScreenRoot(
         navigateTo = onNavigateTo,
         onBack = onBack,
         bodyContainer = {
-            if (!state.reminderDialogOpen) {
-                TaskDetailScreen(
-                    state = state,
-                    task = task,
-                    onAction = viewModel::onAction
-                )
-            }
-
+            TaskDetailScreen(
+                state = state,
+                task = task,
+                onAction = viewModel::onAction
+            )
         },
         dialogContent = {
             if (state.categoryDialogOpen) {
@@ -75,8 +73,13 @@ fun TaskDetailScreenRoot(
             if (state.priorityDialogOpen) {
                 PriorityDialog(state = state, onAction = { viewModel.onAction(it) })
             }
-            if (state.reminderDialogOpen) {
-                ReminderPicker(
+            if (state.reminderDatePickerOpen) {
+                ReminderDatePicker(
+                    reminderModel = viewModel.reminderModel,
+                    onAction = { viewModel.onAction(it) })
+            }
+            if (state.reminderTimePickerOpen) {
+                ReminderTimePicker(
                     reminderModel = viewModel.reminderModel,
                     onAction = { viewModel.onAction(it) })
             }

@@ -34,14 +34,15 @@
     <string name="confirm_button">تأیید</string>
     <string name="cancel_button">انصراف</string>
     <string name="empty_list_title">لیست خالی است</string>
-    <string name="reminder_date_title">تاریخ یادآور</string>
-    <string name="reminder_time_title">زمان یادآور</string>
+    <string name="reminder_date_title">تاریخ یادآوری را انتخاب کنید</string>
+    <string name="reminder_time_title">زمان یادآوری را انتخاب کنید</string>
     <string name="empty_list_comment">بیا شروع کنیم!</string>
     <string name="filter_label">فیلتر</string>
     <string name="status_filter_label">وضعیت:</string>
     <string name="status-done-label">انجام‌شده</string>
     <string name="status-Undone-label">انجام‌نشده</string>
     <string name="priority_filter_label">اولویت :</string>
+    <string name="ok_label">تایید</string>
     <string name="apply_label">اعمال</string>
     <string name="reset_label">بازنشانی</string>
     <string name="error_empty_field_label">%s نمی‌تواند خالی باشد</string>

@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.presentation.task_detail
+package com.sepideh.lilo.task.presentation.reminder
 
 data class ReminderModel(
     val hour: Int? = null,

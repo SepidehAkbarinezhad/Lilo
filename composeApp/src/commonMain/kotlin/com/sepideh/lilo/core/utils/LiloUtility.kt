@@ -1,3 +1,7 @@
 package com.sepideh.lilo.core.utils
 
-expect fun getSystemLanguage(): String
+enum class PlatformType {
+    ANDROID, IOS
+}
+expect fun getPlatformType(): PlatformType
+expect fun isPersianLanguage(): Boolean

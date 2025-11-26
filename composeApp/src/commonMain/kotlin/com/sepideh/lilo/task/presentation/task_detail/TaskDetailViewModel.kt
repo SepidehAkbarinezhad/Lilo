@@ -21,6 +21,7 @@ import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,7 +66,7 @@ class TaskDetailViewModel(
         state.copy(
             categories = categories, selectedCategory = validSelectedCategory
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L),state.value)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
 
     var task: Task by mutableStateOf(Task())
 
@@ -116,25 +117,29 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     updatePermissionState(checkDeniedPermission = false).await()
                     if (!state.value.shouldShowPermissionDialog) {
-                        setIsReminderDialogOpen(open = true)
+                        setReminderDateDialogOpen(open = true)
                     }
                 }
             }
 
-            is TaskDetailAction.OnDismissReminderDialogButton -> {
-                setIsReminderDialogOpen(open = false)
+            is TaskDetailAction.OnDismissDatePickerButton -> {
+                setReminderDateDialogOpen(open = false)
             }
 
-
-            is TaskDetailAction.OnDismissTimeDialog -> {
-                state.update {
-                    it.copy(timeDialogOpen = false)
-                }
+            is TaskDetailAction.OnDismissTimePickerButton -> {
+                reminderModel = ReminderModel()
+                setReminderTimeDialogOpen(open = false)
             }
 
-            is TaskDetailAction.OnSelectReminderConfirm -> {
+            is TaskDetailAction.OnReminderDateConfirm -> {
                 reminderModel = action.reminderModel
-                setIsReminderDialogOpen(open = false)
+                setReminderDateDialogOpen(open = false)
+                setReminderTimeDialogOpen(open = true)
+            }
+
+            is TaskDetailAction.OnReminderTimeConfirm -> {
+                reminderModel = action.reminderModel
+                setReminderTimeDialogOpen(open = false)
             }
 
             is TaskDetailAction.OnCategorySelected -> {
@@ -148,12 +153,6 @@ class TaskDetailViewModel(
                 val selectedPriority = Priority.getByTitle(action.title)
                 state.update { it.copy(selectedPriority = selectedPriority) }
                 onAction(TaskDetailAction.OnDismissPriorityDialog)
-            }
-
-            is TaskDetailAction.OnSelectReminderDate -> {
-                with(action.date) {
-                    reminderModel = reminderModel.copy(startDay = first, endDay = second)
-                }
             }
 
             is TaskDetailAction.OnSelectReminderTime -> {
@@ -222,11 +221,6 @@ class TaskDetailViewModel(
 
             TaskDetailAction.OnCancelPermissionDialog -> {
                 closePermissionDialog()
-                state.update {
-                    it.copy(
-                        timeDialogOpen = true,
-                    )
-                }
             }
         }
     }
@@ -357,9 +351,15 @@ class TaskDetailViewModel(
         return newTitleError.isSuccessful && newDescriptionError.isSuccessful && !state.value.shouldShowPermissionDeniedDialog
     }
 
-    private fun setIsReminderDialogOpen(open: Boolean) {
+    private fun setReminderDateDialogOpen(open: Boolean) {
         state.update {
-            it.copy(reminderDialogOpen = open)
+            it.copy(reminderDatePickerOpen = open)
+        }
+    }
+
+    private fun setReminderTimeDialogOpen(open: Boolean) {
+        state.update {
+            it.copy(reminderTimePickerOpen = open)
         }
     }
 
