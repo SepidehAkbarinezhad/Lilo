@@ -276,7 +276,7 @@ fun TaskListHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
             IconButton(
                 onClick = {
                     focusManager.clearFocus()
@@ -297,7 +297,6 @@ fun TaskListHeader(
                 if (isSearchVisible) {
 
                     AppSearchBar(
-                        modifier = Modifier.weight(1f),
                         focusRequester = focusRequester,
                         searchQuery = state.searchQuery,
                         onSearchQueryChange = {
