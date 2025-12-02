@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
@@ -138,49 +139,31 @@ fun TaskListScreen(
             }
         },
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    keyboardController?.hide()
-                },
-        ) {
-            TaskListHeader(
-                modifier = Modifier.statusBarsPadding(),
-                state = state,
-                onAction = onAction,
-            )
 
-            Surface(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-
-                    if (state.categories.isNotEmpty()) {
-                        CategoryList(state, palette, clickable, onAction)
-                    }
-
-                    if (state.tasksResult.isEmpty() && !isLoading) {
-                        EmptyTaskList(palette)
-                    } else {
-                        TaskList(
-                            tasks = state.tasksResult,
-                            clickable = clickable,
-                            onAction = onAction,
-                            modifier = Modifier.fillMaxSize(),
-                            scrollState = searchResultListState
-                        )
-                    }
-                }
+        BaseScreen(
+            header = {
+                TaskListHeader(
+                    modifier = Modifier.statusBarsPadding(),
+                    state = state,
+                    onAction = onAction,
+                )
+            },
+            content = {  if (state.categories.isNotEmpty()) {
+                CategoryList(state, palette, clickable, onAction)
             }
-        }
 
+                if (state.tasksResult.isEmpty() && !isLoading) {
+                    EmptyTaskList(palette)
+                } else {
+                    TaskList(
+                        tasks = state.tasksResult,
+                        clickable = clickable,
+                        onAction = onAction,
+                        modifier = Modifier.fillMaxSize(),
+                        scrollState = searchResultListState
+                    )
+                }}
+        )
     }
     TaskFilterSheet(state = state, onAction = onAction)
 
@@ -325,7 +308,6 @@ fun TaskListHeader(
                 }
             }
         }
-
 
         IconButton(
             onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) },
