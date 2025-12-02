@@ -18,7 +18,7 @@ internal val OnSurfaceLight = Gray600
 internal val SurfaceVariantLight = Color(0x0DFFAB00)
 internal val OnSurfaceVariantLight = Grey900
 internal val SurfaceContainerLight = Color(0xFFFFFFFF)
-internal val PrimaryLight = Amber600//Amber600
+internal val PrimaryLight = Amber600
 internal val OnPrimaryLight = Color(0xFFFFFFFF)
 internal val PrimaryContainerLight = Amber500
 internal val SecondaryLight = Blue600
@@ -27,7 +27,7 @@ internal val BackGroundDark = Color(0xFF121212)
 internal val SurfaceDark = Grey900
 internal val SurfaceVariantDark =Grey800
 internal val SurfaceContainerDark = BlueGray900
-internal val PrimaryDark = Color(0xFF000000)
+internal val PrimaryDark = Amber600
 internal val OnPrimaryDark = Color(0xFFFFFFFF)
 internal val PrimaryContainerDark = Grey800
 

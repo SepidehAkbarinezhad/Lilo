@@ -17,16 +17,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 
 @Composable
 fun BaseScreen(
     header: @Composable () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val palette = LocalLiloColorsPalette.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
+        modifier = Modifier.fillMaxSize().background(palette.headerSurface)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
