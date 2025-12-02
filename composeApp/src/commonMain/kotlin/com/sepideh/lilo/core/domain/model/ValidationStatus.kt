@@ -14,15 +14,25 @@ data class ValidationStatus(
 @Composable
 fun ValidationStatus.resolveMessage(): String {
     return if (messageId != null) {
-        var base = stringResource(messageId)
-            args.forEach {
-                val replacement = when (it) {
-                    is StringResource -> stringResource(it)
-                    else -> it.toString()
+        // Convert all arguments to strings
+        val stringArgs = args.map { arg ->
+            if (arg is StringResource) stringResource(arg) else arg.toString()
+        }
+
+        // Let Android's stringResource function handle the formatting
+        when (stringArgs.size) {
+            0 -> stringResource(messageId)
+            1 -> stringResource(messageId, stringArgs[0])
+            2 -> stringResource(messageId, stringArgs[0], stringArgs[1])
+            else -> {
+                // For 3+ arguments, we need a different approach
+                var result = stringResource(messageId)
+                stringArgs.forEachIndexed { index, arg ->
+                    result = result.replace("%${index + 1}\$s", arg)
                 }
-                base = base.replace("%", replacement)
+                result
             }
-        base
+        }
     } else {
         value
     }
