@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -89,11 +91,11 @@ fun FilterHeader(onEvent: (BaseAction) -> Unit) {
         IconButton(
             modifier = Modifier.align(Alignment.TopEnd),
             onClick = { onEvent(TaskListAction.OnCloseFilterIcon) }) {
-           /* Icon(
+            Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "close filter",
                 tint = MaterialTheme.colorScheme.secondary
-            )*/
+            )
         }
         Spacer(modifier = Modifier.height(4.dp))
     }
