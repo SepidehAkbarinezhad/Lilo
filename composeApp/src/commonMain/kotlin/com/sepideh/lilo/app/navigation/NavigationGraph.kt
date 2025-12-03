@@ -5,6 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.sepideh.lilo.settings.presentation.SettingsScreenRoot
+import com.sepideh.lilo.settings.presentation.SettingsViewModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListScreenRoot
@@ -24,7 +26,11 @@ fun NavigationGraph(navHostController: NavHostController) {
 
         composable<AppRoutes.TaskList> {
             val viewModel = koinViewModel<TaskListViewModel>()
-            TaskListScreenRoot(viewModel = viewModel, onNavigateTo = onNavigate, onBack = onBackPressed)
+            TaskListScreenRoot(
+                viewModel = viewModel,
+                onNavigateTo = onNavigate,
+                onBack = onBackPressed
+            )
         }
 
         composable<AppRoutes.TaskDetail> {
@@ -37,6 +43,16 @@ fun NavigationGraph(navHostController: NavHostController) {
                 onBack = onBackPressed
             )
         }
+
+        composable<AppRoutes.Settings> {
+            val viewModel = koinViewModel<SettingsViewModel>()
+            SettingsScreenRoot(
+                viewModel = viewModel,
+                onNavigateTo = onNavigate,
+                onBack = onBackPressed
+            )
+        }
+
 
     }
 }

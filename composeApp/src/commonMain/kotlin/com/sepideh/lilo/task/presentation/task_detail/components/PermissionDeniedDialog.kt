@@ -21,7 +21,7 @@ import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task_label
-import lilo.composeapp.generated.resources.alert_icon
+import lilo.composeapp.generated.resources.ic_alert
 import lilo.composeapp.generated.resources.grant_permission_button
 import lilo.composeapp.generated.resources.permission_alert_dialog_denied
 import org.jetbrains.compose.resources.painterResource
@@ -35,7 +35,7 @@ fun PermissionDeniedDialog(state: TaskDetailState, onAction: (BaseAction) -> Uni
         ) {
             Image(
                 modifier = Modifier.heightIn(max = 100.dp),
-                painter = painterResource(Res.drawable.alert_icon),
+                painter = painterResource(Res.drawable.ic_alert),
                 contentDescription = ""
             )
             AppText(text = Res.string.permission_alert_dialog_denied,textType = TextType.SubTitle,)

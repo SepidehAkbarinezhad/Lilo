@@ -32,7 +32,7 @@ val LightColorScheme = lightColorScheme(
 
 @Composable
 internal fun LiloTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean ,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
