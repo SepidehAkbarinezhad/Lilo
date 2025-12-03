@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -192,11 +193,11 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (Category) -> Uni
 
                     }
                 ) {
-                  /*  Icon(
+                   Icon(
                         imageVector = if (newCategory.isNotEmpty()) Icons.Default.Done else Icons.Default.Close,
                         contentDescription = null,
                         tint = contentColor
-                    )*/
+                    )
                 }
             }
         }
