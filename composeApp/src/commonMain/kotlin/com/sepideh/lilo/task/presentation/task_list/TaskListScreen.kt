@@ -45,7 +45,6 @@ import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.utils.isPersianLanguage
 import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
@@ -201,7 +200,7 @@ fun CategoryList(
                             )
                         )
                     },
-                text =  if (isPersianLanguage()) category.titleFa else category.titleEn,
+                text = category.title,
                 textAlign = TextAlign.Center,
                 color = titleColor,
                 textType = TextType.SubTitle

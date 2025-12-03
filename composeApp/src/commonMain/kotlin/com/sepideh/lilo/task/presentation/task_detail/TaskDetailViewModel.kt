@@ -11,17 +11,20 @@ import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.local.room.TaskDatabase
 import com.sepideh.lilo.category.data.local.room.CategoryDatabase
-import com.sepideh.lilo.category.data.local.room.toCategory
-import com.sepideh.lilo.category.data.local.room.toCategoryList
+import com.sepideh.lilo.category.data.local.room.toDomain
+import com.sepideh.lilo.category.data.local.room.toDomainList
 import com.sepideh.lilo.category.data.local.room.toEntity
-import com.sepideh.lilo.category.domain.factory.CategoryFactory
+import com.sepideh.lilo.category.domain.CategoryFactory
 import com.sepideh.lilo.task.data.local.room.toEntity
 import com.sepideh.lilo.task.data.local.room.toTask
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
-import com.sepideh.lilo.category.domain.model.Category
+import com.sepideh.lilo.category.domain.CategoryDomain
+import com.sepideh.lilo.category.domain.toPresentation
+import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.settings.domain.LanguageProvider
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -35,21 +38,23 @@ import kotlinx.coroutines.launch
 
 class TaskDetailViewModel(
     private val categoryFactory: CategoryFactory,
+    private val languageProvider: LanguageProvider,
     private val taskDatabase: TaskDatabase,
     private val categoryDatabase: CategoryDatabase,
     private val reminderScheduler: ReminderScheduler,
     private val permissionManager: PermissionManager
 ) : BaseViewModel() {
 
+    val currentLanguage = languageProvider.currentLanguage
     val isXiaomi = permissionManager.isXiaomi()
     private val _categories = categoryDatabase.categoryDao().getAllCategories()
         .map {
             println("categoryDatabase $it")
 
-            it.toCategoryList() }
+            it.toDomainList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
-    private val state = MutableStateFlow(TaskDetailState())
+    private val state = MutableStateFlow(TaskDetailState(selectedCategory = CategoryDomain.first.toPresentation(languageProvider.currentLanguage)))
 
     /*
   * `combine`:
@@ -68,10 +73,10 @@ class TaskDetailViewModel(
         println("categories $categories")
 
         // On Room update: Retain the selected category if it still exists; otherwise, select the first item in the list.
-        val validSelectedCategory = categories.find { it.id == state.selectedCategory?.id }
-            ?: categories.first()
+        val validSelectedCategory = categories.find { it.id == state.selectedCategory.id }
+            ?: CategoryDomain.first
         state.copy(
-            categories = categories, selectedCategory = validSelectedCategory
+            categories = categories.toPresentationList(currentLanguage), selectedCategory = validSelectedCategory.toPresentation(currentLanguage)
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
 
@@ -150,9 +155,9 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailAction.OnCategorySelected -> {
-                val selectedCategory = stateValue.value.categories.find { it == action.category }
-                    ?: Category.categories[0]
-                state.update { it.copy(selectedCategory = selectedCategory) }
+                val selectedCategoryDomain = stateValue.value.categories.find { it == action.category }
+                    ?: CategoryDomain.categories[0].toPresentation(currentLanguage)
+                state.update { it.copy(selectedCategory = selectedCategoryDomain) }
                 onAction(TaskDetailAction.OnDismissCategoryDialog)
             }
 
@@ -172,7 +177,7 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     val tempTask = task.copy(
                         category = stateValue.value.selectedCategory?.id
-                            ?: Category.categories[0].id,
+                            ?: CategoryDomain.categories[0].id,
                         priority = stateValue.value.selectedPriority.id,
                         hour = reminderModel.hour,
                         minute = reminderModel.minute,
@@ -199,7 +204,7 @@ class TaskDetailViewModel(
                 viewModelScope.launch {
                     categoryDatabase.categoryDao().upsert(category = categoryFactory.create(action.categoryTitle).toEntity())
                 }
-                state.update { it.copy(selectedCategory = null) }
+                //state.update { it.copy(selectedCategory) }
             }
 
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
@@ -248,7 +253,7 @@ class TaskDetailViewModel(
         categoryDatabase.categoryDao().getCategoryById(categoryId = categoryId)
             ?.let { selectedCategory ->
                 state.update {
-                    it.copy(selectedCategory = selectedCategory.toCategory())
+                    it.copy(selectedCategory = selectedCategory.toDomain().toPresentation(currentLanguage))
                 }
             }
     }
