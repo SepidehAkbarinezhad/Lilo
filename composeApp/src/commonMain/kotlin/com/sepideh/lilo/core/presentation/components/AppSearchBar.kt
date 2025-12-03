@@ -54,11 +54,7 @@ fun AppSearchBar(
             unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
         ),
         placeholder = {
-            AppText(
-                text = stringResource(
-                    Res.string.search_hint
-                )
-            )
+            AppText(text = stringResource(Res.string.search_hint))
         },
         leadingIcon = {
             Icon(
@@ -66,7 +62,6 @@ fun AppSearchBar(
                 contentDescription = "Search Icon",
                 tint = if (searchQuery.isNotBlank()) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
             )
-
         },
         singleLine = true,
         keyboardActions = KeyboardActions(onSearch = { onClose() }),
@@ -87,7 +82,6 @@ fun AppSearchBar(
                 }
         },
         readOnly = readonly,
-
 
     )
 }
