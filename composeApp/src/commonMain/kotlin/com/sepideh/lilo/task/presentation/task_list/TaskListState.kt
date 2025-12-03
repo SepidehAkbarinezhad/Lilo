@@ -1,7 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_list
 
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.category.domain.model.Category
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 
 data class TaskListState(
