@@ -56,11 +56,9 @@ import org.koin.compose.koinInject
 @Composable
 fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
 
-    val languageProvider: LanguageProvider = koinInject()
-
     val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
-
     var selected by remember { mutableStateOf(state.selectedCategory) }
+
     AppDialog(dialogModel = DialogModel(content = {
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -81,7 +79,7 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = selected.id == category.id, onCheckedChange = {
+                            checked = selected == category, onCheckedChange = {
                                 selected = category
                             },
                             colors = CheckboxDefaults.colors(
@@ -105,9 +103,10 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                 }
             }
             AddCategoryContainer(onDone = {
-                onAction(
-                    TaskDetailAction.OnCategorySelected(selected)
-                )
+                selected?.let {
+                    onAction(TaskDetailAction.OnCategorySelected(it))
+                }
+
             }, onAddNewCategory = { onAction(TaskDetailAction.OnAddNewCategory(it)) })
 
         }

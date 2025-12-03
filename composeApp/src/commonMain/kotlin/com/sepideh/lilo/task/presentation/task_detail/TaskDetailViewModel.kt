@@ -54,7 +54,7 @@ class TaskDetailViewModel(
             it.toDomainList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
-    private val state = MutableStateFlow(TaskDetailState(selectedCategory = CategoryDomain.first.toPresentation(languageProvider.currentLanguage)))
+    private val state = MutableStateFlow(TaskDetailState())
 
     /*
   * `combine`:
@@ -70,14 +70,11 @@ class TaskDetailViewModel(
         state,
         _categories,
     ) { state, categories ->
-        println("categories $categories")
-
         // On Room update: Retain the selected category if it still exists; otherwise, select the first item in the list.
-        val validSelectedCategory = categories.find { it.id == state.selectedCategory.id }
-            ?: CategoryDomain.first
-        state.copy(
-            categories = categories.toPresentationList(currentLanguage), selectedCategory = validSelectedCategory.toPresentation(currentLanguage)
-        )
+        val validSelectedCategory =
+            if (categories.isEmpty()) { null } else { categories.find { it.id == state.selectedCategory?.id } ?: categories.first() }
+        state.copy(categories = categories.toPresentationList(currentLanguage),
+            selectedCategory = validSelectedCategory?.toPresentation(currentLanguage))
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
 
     var task: Task by mutableStateOf(Task())

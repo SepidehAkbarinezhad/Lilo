@@ -14,7 +14,5 @@ data class CategoryDomain(
                 CategoryDomain(titleEn = "hobby", titleFa = "سرگرمی"),
                 CategoryDomain(titleEn = "music", titleFa = "موسیقی")
             )
-
-        val first = categories.first()
     }
 }
