@@ -13,15 +13,17 @@ import com.sepideh.lilo.task.data.local.room.TaskDatabase
 import com.sepideh.lilo.category.data.local.room.CategoryDatabase
 import com.sepideh.lilo.category.data.local.room.toCategoryList
 import com.sepideh.lilo.category.data.local.room.toEntity
+import com.sepideh.lilo.category.presentation.visibleFor
 import com.sepideh.lilo.task.data.local.room.toEntity
 import com.sepideh.lilo.task.data.local.room.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
-import com.sepideh.lilo.task.presentation.model.Category
+import com.sepideh.lilo.category.domain.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
 import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.settings.domain.LanguageProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
@@ -40,6 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TaskListViewModel(
+    private val languageProvider: LanguageProvider,
     private val taskDatabase: TaskDatabase,
     private val categoryDatabase: CategoryDatabase,
     private val reminderScheduler: ReminderScheduler,
@@ -52,7 +55,7 @@ class TaskListViewModel(
                 upsertCategories()
             }
         }
-            .map { it.toCategoryList() }
+            .map { it.toCategoryList().visibleFor(languageProvider.currentLanguage) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())

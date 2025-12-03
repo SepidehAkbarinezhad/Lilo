@@ -20,7 +20,8 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.utils.PlatformType
 import com.sepideh.lilo.core.utils.getCurrentDate
 import com.sepideh.lilo.core.utils.getPlatformType
-import com.sepideh.lilo.core.utils.isPersianLanguage
+import com.sepideh.lilo.settings.domain.LanguageProvider
+import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
@@ -29,6 +30,7 @@ import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.ok_label
 import lilo.composeapp.generated.resources.reminder_date_title
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 @Composable
 fun ReminderDatePicker(
@@ -36,13 +38,13 @@ fun ReminderDatePicker(
     onAction: (BaseAction) -> Unit,
 ) {
 
-    when (isPersianLanguage() && getPlatformType().name == PlatformType.ANDROID.name) {
-        false -> {
-            DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
+    val languageProvider: LanguageProvider = koinInject()
+    when (languageProvider.currentLanguage) {
+        AppLanguage.FA -> {
+            if (getPlatformType().name == PlatformType.ANDROID.name)
+                LiloPersianDatePicker(onAction = onAction)
         }
-        true -> {
-            LiloPersianDatePicker (onAction = onAction)
-        }
+        AppLanguage.EN -> DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
     }
 
 }

@@ -1,6 +1,7 @@
 package com.sepideh.lilo.settings.di
 
 import com.sepideh.lilo.settings.data.UserPreferencesRepositoryImpl
+import com.sepideh.lilo.settings.domain.LanguageProvider
 import com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository
 import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
 import com.sepideh.lilo.settings.presentation.SettingsViewModel
@@ -16,6 +17,7 @@ val settingsModule = module {
     single<UserPreferencesRepository> {
         UserPreferencesRepositoryImpl(dataStore = get())
     }
+    single<LanguageProvider> { LanguageProvider(get()) }
 
     viewModel {
         SettingsViewModel(userPreferencesManager = get())
