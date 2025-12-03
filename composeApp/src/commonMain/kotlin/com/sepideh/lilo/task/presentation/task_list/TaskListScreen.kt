@@ -259,6 +259,7 @@ fun TaskListHeader(
             IconButton(
                 onClick = {
                     focusManager.clearFocus()
+                    onAction(TaskListAction.OnSearchToggle(false))
                     if (clickable) onAction(TaskListAction.OnFilterIcon)
                 },
                 enabled = !state.isFilterSheetOpen,
@@ -274,7 +275,6 @@ fun TaskListHeader(
                 label = "search-bar-animation"
             ) { isSearchVisible ->
                 if (isSearchVisible) {
-
                     AppSearchBar(
                         focusRequester = focusRequester,
                         searchQuery = state.searchQuery,
@@ -306,7 +306,10 @@ fun TaskListHeader(
         }
 
         IconButton(
-            onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) },
+            onClick = {
+                focusManager.clearFocus()
+                onAction(TaskListAction.OnSearchToggle(false))
+                onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) },
             enabled = !state.isFilterSheetOpen,
         ) {
             Image(
@@ -314,7 +317,6 @@ fun TaskListHeader(
                 contentDescription = "Open setting"
             )
         }
-
     }
 }
 
