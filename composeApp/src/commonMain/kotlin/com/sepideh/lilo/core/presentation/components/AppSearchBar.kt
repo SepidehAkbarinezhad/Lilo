@@ -1,6 +1,5 @@
 package com.sepideh.lilo.core.presentation.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -31,68 +30,66 @@ fun AppSearchBar(
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester,
     searchQuery: String,
-    onImeSearch: () -> Unit,
+    onClose: () -> Unit,
     readonly: Boolean,
     onSearchQueryChange: (String) -> Unit
 ) {
 
-    LaunchedEffect(Unit){
-        focusRequester.captureFocus()
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 
-        OutlinedTextField(
-            modifier = modifier.background(
-                shape = RoundedCornerShape(100),
-                color = Color.White
-            ).focusRequester(focusRequester),
+    OutlinedTextField(
+        modifier = modifier.background(
             shape = RoundedCornerShape(100),
-            value = searchQuery,
-            onValueChange = onSearchQueryChange,
-            textStyle = TextStyle(color = Color.Black),
-            colors = OutlinedTextFieldDefaults.colors(
-                cursorColor = MaterialTheme.colorScheme.secondary,
-                focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-            ),
-            placeholder = {
-                AppText(
-                    text = stringResource(
-                        Res.string.search_hint
-                    )
+            color = Color.White
+        ).focusRequester(focusRequester),
+        shape = RoundedCornerShape(100),
+        value = searchQuery,
+        onValueChange = onSearchQueryChange,
+        textStyle = TextStyle(color = Color.Black),
+        colors = OutlinedTextFieldDefaults.colors(
+            cursorColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+        placeholder = {
+            AppText(
+                text = stringResource(
+                    Res.string.search_hint
                 )
-            },
-            leadingIcon = {
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon",
+                tint = if (searchQuery.isNotBlank()) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
+            )
+
+        },
+        singleLine = true,
+        keyboardActions = KeyboardActions(onSearch = { onClose() }),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Search
+        ),
+        trailingIcon = {
                 IconButton(onClick = {
-                   onImeSearch()
+                    onSearchQueryChange("")
+                    onClose()
                 }) {
                     Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon",
-                        tint = if(searchQuery.isNotBlank()) MaterialTheme.colorScheme.secondary.copy(alpha = .7f) else MaterialTheme.colorScheme.onSurface
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(Res.string.search_hint),
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
+        },
+        readOnly = readonly,
 
-            },
-            singleLine = true,
-            keyboardActions = KeyboardActions(onSearch = { onImeSearch() }),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Search
-            ),
-            trailingIcon = {
-                AnimatedVisibility(visible = searchQuery.isNotBlank()) {
-                    IconButton(onClick = { onSearchQueryChange("") }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(Res.string.search_hint),
-                            tint = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-                        )
-                    }
-                }
-            },
-            readOnly = readonly
 
-        )
-    }
+    )
+}
 
 

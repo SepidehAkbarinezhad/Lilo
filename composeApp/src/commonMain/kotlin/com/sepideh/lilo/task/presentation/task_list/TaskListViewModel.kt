@@ -9,12 +9,12 @@ import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.data.Reminder
-import com.sepideh.lilo.task.data.TaskDatabase
-import com.sepideh.lilo.task.data.category.CategoryDatabase
-import com.sepideh.lilo.task.data.category.toCategoryList
-import com.sepideh.lilo.task.data.category.toEntity
-import com.sepideh.lilo.task.data.toEntity
-import com.sepideh.lilo.task.data.toTaskList
+import com.sepideh.lilo.task.data.local.room.TaskDatabase
+import com.sepideh.lilo.category.data.local.room.CategoryDatabase
+import com.sepideh.lilo.category.data.local.room.toCategoryList
+import com.sepideh.lilo.category.data.local.room.toEntity
+import com.sepideh.lilo.task.data.local.room.toEntity
+import com.sepideh.lilo.task.data.local.room.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.presentation.model.Category
@@ -288,6 +288,11 @@ class TaskListViewModel(
 
             is TaskListAction.OnPhotoPicked -> {
                 newTask = newTask?.copy(photo = action.bytes)
+            }
+            is TaskListAction.OnSearchToggle->{
+                _state.update {
+                    it.copy(isSearchVisible = action.open)
+                }
             }
 
         }

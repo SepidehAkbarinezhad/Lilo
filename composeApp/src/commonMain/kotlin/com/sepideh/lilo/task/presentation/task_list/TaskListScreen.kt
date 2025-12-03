@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.presentation.task_list
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
@@ -33,9 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -45,11 +44,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.utils.getSystemLanguage
-import com.sepideh.lilo.task.presentation.reminder.DeleteConfirmationDialog
+import com.sepideh.lilo.core.utils.isPersianLanguage
+import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
 import com.sepideh.lilo.ui.theme.LiloColors
@@ -58,7 +58,9 @@ import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
 import lilo.composeapp.generated.resources.empty_list_title
-import lilo.composeapp.generated.resources.filter_icon
+import lilo.composeapp.generated.resources.ic_filter
+import lilo.composeapp.generated.resources.ic_settings
+import lilo.composeapp.generated.resources.ic_search
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -137,49 +139,31 @@ fun TaskListScreen(
             }
         },
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    keyboardController?.hide()
-                },
-        ) {
-            TaskListHeader(
-                modifier = Modifier.statusBarsPadding(),
-                state = state,
-                onAction = onAction
-            )
 
-            Surface(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-
-                    if (state.categories.isNotEmpty()) {
-                        CategoryList(state, palette, clickable, onAction)
-                    }
-
-                    if (state.tasksResult.isEmpty() && !isLoading) {
-                        EmptyTaskList(palette)
-                    } else {
-                        TaskList(
-                            tasks = state.tasksResult,
-                            clickable = clickable,
-                            onAction = onAction,
-                            modifier = Modifier.fillMaxSize(),
-                            scrollState = searchResultListState
-                        )
-                    }
-                }
+        BaseScreen(
+            header = {
+                TaskListHeader(
+                    modifier = Modifier.statusBarsPadding(),
+                    state = state,
+                    onAction = onAction,
+                )
+            },
+            content = {  if (state.categories.isNotEmpty()) {
+                CategoryList(state, palette, clickable, onAction)
             }
-        }
 
+                if (state.tasksResult.isEmpty() && !isLoading) {
+                    EmptyTaskList(palette)
+                } else {
+                    TaskList(
+                        tasks = state.tasksResult,
+                        clickable = clickable,
+                        onAction = onAction,
+                        modifier = Modifier.fillMaxSize(),
+                        scrollState = searchResultListState
+                    )
+                }}
+        )
     }
     TaskFilterSheet(state = state, onAction = onAction)
 
@@ -220,7 +204,7 @@ fun CategoryList(
                             )
                         )
                     },
-                text = if (getSystemLanguage() == "fa") category.secondTitle else category.title,
+                text =  if (isPersianLanguage()) category.secondTitle else category.title,
                 textAlign = TextAlign.Center,
                 color = titleColor,
                 textType = TextType.SubTitle
@@ -270,37 +254,74 @@ fun TaskListHeader(
     val clickable = !state.isFilterSheetOpen
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(
-        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp)
+            .height(64.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        AppSearchBar(
-            modifier = Modifier.padding(8.dp).weight(1f),
-            focusRequester = focusRequester,
-            searchQuery = state.searchQuery,
-            onSearchQueryChange = {
-                if (clickable) {
-                    onAction(
-                        TaskListAction.OnSearchQueryChange(
-                            it
-                        )
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = {
+                    focusManager.clearFocus()
+                    if (clickable) onAction(TaskListAction.OnFilterIcon)
+                },
+                enabled = !state.isFilterSheetOpen,
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_filter),
+                    contentDescription = null
+                )
+            }
+
+            AnimatedContent(
+                targetState = state.isSearchVisible,
+                label = "search-bar-animation"
+            ) { isSearchVisible ->
+                if (isSearchVisible) {
+
+                    AppSearchBar(
+                        focusRequester = focusRequester,
+                        searchQuery = state.searchQuery,
+                        onSearchQueryChange = {
+                            if (clickable) {
+                                onAction(TaskListAction.OnSearchQueryChange(it))
+                            }
+                        },
+                        onClose = {
+                            onAction(TaskListAction.OnSearchToggle(false))
+                            keyboardController?.hide()
+                        },
+                        readonly = !clickable
+                    )
+
+                } else {
+                    Image(
+                        painterResource(Res.drawable.ic_search),
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            onAction(TaskListAction.OnSearchToggle(true))
+                        },
+                        contentDescription = "Open Search",
                     )
                 }
-
-            },
-            onImeSearch = { keyboardController?.hide() },
-            readonly = !clickable
-        )
-        IconButton(
-            onClick = {
-                focusManager.clearFocus()
-                if (clickable) onAction(TaskListAction.OnFilterIcon)
-            },
-            enabled = !state.isFilterSheetOpen
-        ) {
-            Image(painter = painterResource(Res.drawable.filter_icon), contentDescription = null)
+            }
         }
+
+        IconButton(
+            onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) },
+            enabled = !state.isFilterSheetOpen,
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.ic_settings),
+                contentDescription = "Open setting"
+            )
+        }
+
     }
 }
+
 
 
 

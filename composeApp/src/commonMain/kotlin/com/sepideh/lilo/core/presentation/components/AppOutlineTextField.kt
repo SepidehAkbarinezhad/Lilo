@@ -45,6 +45,7 @@ fun AppOutlineTextField(
     color: TextFieldColors = OutlinedTextFieldDefaults.colors(
         unfocusedContainerColor = White,
         focusedContainerColor = White,
+        cursorColor = Amber600,
         focusedBorderColor = Amber600,
         unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
     ),
