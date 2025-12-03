@@ -1,14 +1,14 @@
 package com.sepideh.lilo.category.data.local.room
 
-import com.sepideh.lilo.category.domain.model.Category
+import com.sepideh.lilo.category.domain.CategoryDomain
 
-fun CategoryEntity.toCategory(): Category = Category(
+fun CategoryEntity.toDomain(): CategoryDomain = CategoryDomain(
     id = id,
     titleEn = titleEn,
     titleFa = titleFa
 )
 
-fun List<CategoryEntity>.toCategoryList() = this.map { it.toCategory() }
+fun List<CategoryEntity>.toDomainList() = this.map { it.toDomain() }
 
-fun Category.toEntity(): CategoryEntity =
+fun CategoryDomain.toEntity(): CategoryEntity =
     CategoryEntity(id = id, titleFa = titleFa, titleEn = titleEn)

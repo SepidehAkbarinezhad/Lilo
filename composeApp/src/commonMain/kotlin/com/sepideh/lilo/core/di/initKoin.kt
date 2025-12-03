@@ -15,8 +15,8 @@ fun initKoin(config : KoinAppDeclaration?= null){
         //sets Koin's internal logger
         logger(PlatformLogger())
         modules(
-            settingsModule,
             coreModule,
+            settingsModule,
             categoryModule,
             corePlatformModule(),
             taskPlatformModule(),

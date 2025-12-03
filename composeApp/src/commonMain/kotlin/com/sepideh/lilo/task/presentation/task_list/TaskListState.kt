@@ -1,7 +1,7 @@
 package com.sepideh.lilo.task.presentation.task_list
 
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.category.domain.model.Category
+import com.sepideh.lilo.category.presentation.CategoryPresentation
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 
 data class TaskListState(
@@ -11,7 +11,7 @@ data class TaskListState(
     val taskFilterOption: TaskFilterOption = TaskFilterOption(),
     val tempFilterOption: TaskFilterOption = TaskFilterOption(),
     val tasksResult: List<Task> = emptyList(),
-    val categories: List<Category> = emptyList(),
+    val categories: List<CategoryPresentation> = emptyList(),
     val isDeleteDialogOpen :Boolean = false,
     val selectedCategory : Long?= null,
     val selectedTask: Task? = null,

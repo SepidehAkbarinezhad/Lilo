@@ -45,9 +45,7 @@ import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
-import com.sepideh.lilo.category.domain.model.Category
 import com.sepideh.lilo.settings.domain.LanguageProvider
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
 import lilo.composeapp.generated.resources.Res
@@ -80,14 +78,10 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
             ) {
 
                 state.categories.forEachIndexed { index, category ->
-                    val title = when (languageProvider.currentLanguage) {
-                        AppLanguage.FA -> category.titleFa
-                        AppLanguage.EN -> category.titleEn
-                    }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = selected == category, onCheckedChange = {
+                            checked = selected.id == category.id, onCheckedChange = {
                                 selected = category
                             },
                             colors = CheckboxDefaults.colors(
@@ -96,7 +90,7 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                         )
                         AppText(
                             modifier = Modifier.padding(vertical = 4.dp),
-                            text = title,
+                            text = category.title,
                             textType = TextType.SubTitle,
                             color = if (selected == category) MaterialTheme.colorScheme.primary else contentColor
                         )
