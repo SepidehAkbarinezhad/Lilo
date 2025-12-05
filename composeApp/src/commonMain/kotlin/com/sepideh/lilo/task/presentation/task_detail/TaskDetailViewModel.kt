@@ -147,7 +147,9 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailAction.OnReminderTimeConfirm -> {
-                reminderModel = action.reminderModel
+                with(action.reminderModel){
+                    reminderModel = reminderModel.copy(hour = hour,minute=minute)
+                }
                 setReminderTimeDialogOpen(open = false)
             }
 
