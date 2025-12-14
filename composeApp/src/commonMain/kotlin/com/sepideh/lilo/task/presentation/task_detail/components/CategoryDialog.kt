@@ -45,13 +45,11 @@ import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
-import com.sepideh.lilo.settings.domain.LanguageProvider
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_label
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
