@@ -28,7 +28,6 @@ import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SettingsItemContainer(
@@ -56,8 +55,8 @@ fun SettingsItemContainer(
 @Composable
 fun SettingsItemHeader(icon: DrawableResource, title: StringResource) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth().padding(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -79,7 +78,7 @@ private fun SettingsItemsRow(content: @Composable RowScope.() -> Unit) {
         modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
         verticalAlignment = Alignment.Top
     ) {
-        Spacer(modifier = Modifier.weight(.2f).fillMaxHeight())
+        Spacer(modifier = Modifier.weight(.1f).fillMaxHeight())
         Row(modifier = Modifier.weight(1f)) { content() }
     }
 }
@@ -94,13 +93,11 @@ fun <T> SettingItem(
 
     Row(
         modifier = Modifier
-            .clickable { onSelected() }
-            .padding(8.dp),
+            .clickable { onSelected() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         AppText(
             text = label,
-            modifier = Modifier.padding(start = 6.dp)
         )
         RadioButton(
             selected = value == selectedValue,
@@ -108,4 +105,3 @@ fun <T> SettingItem(
         )
     }
 }
-

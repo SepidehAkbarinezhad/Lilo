@@ -7,6 +7,7 @@ import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
+import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.presentation.components.SettingItem
 import com.sepideh.lilo.settings.presentation.components.SettingsItemContainer
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
@@ -17,6 +18,7 @@ import lilo.composeapp.generated.resources.ic_theme
 import lilo.composeapp.generated.resources.language_label
 import lilo.composeapp.generated.resources.setting_task_title
 import lilo.composeapp.generated.resources.theme_label
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SettingsScreenRoot(
@@ -76,4 +78,12 @@ fun SettingsScreen(
 
 
 
+
+@Preview
+@Composable
+fun SettingsScreenPreview(){
+    SettingsScreen(state = SettingsState(
+        userPreferences = UserPreferences(theme = AppTheme.DARK, language = AppLanguage.FA)
+    ), onAction = {})
+}
 

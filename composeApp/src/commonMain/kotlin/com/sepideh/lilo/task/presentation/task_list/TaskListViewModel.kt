@@ -84,8 +84,9 @@ class TaskListViewModel(
         _state,
         _tasks,
         _categories,
-        _debouncedSearchQuery
-    ) { state, tasks, categories, searchQuery ->
+        _debouncedSearchQuery,
+        languageProvider.languageFlow
+    ) { state, tasks, categories, searchQuery,currentLanguage ->
         val updatedCategories : List<CategoryDomain> =
             listOf(CategoryDomain.categories[0]) + categories // Add "All" as the first item in the list
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
@@ -105,7 +106,7 @@ class TaskListViewModel(
                     ) || task.description.contains(searchQuery, ignoreCase = true)
                 }
             },
-            categories = updatedCategories.toPresentationList(languageProvider.currentLanguage),
+            categories = updatedCategories.toPresentationList(currentLanguage),
             selectedCategory = validSelectedCategory?.id
         )
 
