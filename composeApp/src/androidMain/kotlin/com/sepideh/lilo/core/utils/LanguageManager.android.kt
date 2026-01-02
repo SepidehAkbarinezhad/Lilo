@@ -1,23 +1,33 @@
 package com.sepideh.lilo.core.utils
 
-import android.app.LocaleManager
-import android.os.Build
-import android.os.LocaleList
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.os.LocaleListCompat
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
+import androidx.compose.runtime.ProvidedValue
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalResources
 import java.util.Locale
 
-@Composable
-actual fun ApplyLanguage(language: AppLanguage) {
-    val context = LocalContext.current
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        context.getSystemService(LocaleManager::class.java).applicationLocales = LocaleList(Locale(language.code))
-    }  else {
-        // Fallback for older Android versions using AppCompatDelegate
-        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language.code))
+actual object LocalAppLocale {
+    private var default: Locale? = null
+    actual val current: String
+        @Composable get() = Locale.getDefault().toString()
+
+    @Composable
+    actual infix fun provides(value: String?): ProvidedValue<*> {
+        val configuration = LocalConfiguration.current
+
+        if (default == null) {
+            default = Locale.getDefault()
+        }
+
+        val new = when(value) {
+            null -> default!!
+            else -> Locale(value)
+        }
+        Locale.setDefault(new)
+        configuration.setLocale(new)
+        val resources = LocalResources.current
+
+        resources.updateConfiguration(configuration, resources.displayMetrics)
+        return LocalConfiguration.provides(configuration)
     }
 }
-
