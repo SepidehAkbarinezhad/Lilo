@@ -2,11 +2,15 @@ package com.sepideh.lilo.settings.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
+import com.sepideh.lilo.core.utils.LocalLocalization
 import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.presentation.components.SettingItem
 import com.sepideh.lilo.settings.presentation.components.SettingsItemContainer
@@ -44,6 +48,7 @@ fun SettingsScreen(
     state: SettingsState,
     onAction: (SettingsAction) -> Unit
 ) {
+
     with(state.userPreferences) {
         BaseScreen(header = {
             BaseHeader(title = Res.string.setting_task_title)
@@ -67,7 +72,8 @@ fun SettingsScreen(
                         label = languageV.label,
                         value = languageV,
                         selectedValue = language,
-                        onSelected = { onAction(SettingsAction.SelectLanguage(language = languageV)) })
+                        onSelected = {
+                            onAction(SettingsAction.SelectLanguage(language = languageV)) })
                 }
             }
 
