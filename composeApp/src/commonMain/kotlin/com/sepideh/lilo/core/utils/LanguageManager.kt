@@ -1,11 +1,14 @@
 package com.sepideh.lilo.core.utils
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.text.intl.Locale
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
+import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
-@Composable
-expect fun ApplyLanguage(language: AppLanguage)
-val LocalAppLocale = compositionLocalOf { Locale("en") }
+var customAppLocale by mutableStateOf<String?>(null)
+expect object LocalAppLocale {
+    val current: String @Composable get
+    @Composable infix fun provides(value: String?): ProvidedValue<*>
+}
 
