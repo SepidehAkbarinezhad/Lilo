@@ -73,6 +73,8 @@ fun ReminderTimePicker(
     }
 
     LaunchedEffect(minuteListState) {
+
+
         snapshotFlow { minuteListState.firstVisibleItemIndex }
             .collect { minute ->
                 selectedMin = minute
