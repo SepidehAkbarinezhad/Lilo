@@ -3,14 +3,13 @@ package com.sepideh.lilo.app
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.sepideh.lilo.app.navigation.NavigationGraph
-import com.sepideh.lilo.core.utils.LocalLocalization
+import com.sepideh.lilo.core.utils.LocalLanguageCode
 import com.sepideh.lilo.core.utils.changeLanguage
 import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
@@ -38,7 +37,7 @@ fun App() {
     }
 
 
-    CompositionLocalProvider(LocalLocalization provides languageCode) {
+    CompositionLocalProvider(LocalLanguageCode provides languageCode) {
         LiloTheme(darkTheme = darkTheme, languageCode = userPreferences.language.code) {
             val navHostController = rememberNavController()
             NavigationGraph(navHostController = navHostController)
