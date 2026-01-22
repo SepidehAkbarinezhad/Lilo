@@ -23,8 +23,6 @@ class UserPreferencesManager(
     }
 
     suspend fun updateLanguage(language: AppLanguage) {
-        println("updateLanguage  ddffdd ${language.code}")
-
         userPreferencesRepository.updateLanguage(language)
     }
 
