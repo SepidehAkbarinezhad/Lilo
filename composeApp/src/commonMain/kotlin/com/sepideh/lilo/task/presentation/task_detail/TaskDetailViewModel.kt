@@ -4,27 +4,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.core.service.PermissionManager
-import com.sepideh.lilo.core.domain.ValidateField
-import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.core.presentation.BaseViewModel
-import com.sepideh.lilo.task.data.Reminder
-import com.sepideh.lilo.task.data.local.room.TaskDatabase
 import com.sepideh.lilo.category.data.local.room.CategoryDatabase
 import com.sepideh.lilo.category.data.local.room.toDomain
 import com.sepideh.lilo.category.data.local.room.toDomainList
 import com.sepideh.lilo.category.data.local.room.toEntity
+import com.sepideh.lilo.category.domain.CategoryDomain
 import com.sepideh.lilo.category.domain.CategoryFactory
+import com.sepideh.lilo.category.domain.toPresentation
+import com.sepideh.lilo.category.domain.toPresentationList
+import com.sepideh.lilo.core.domain.ValidateField
+import com.sepideh.lilo.core.presentation.BaseAction
+import com.sepideh.lilo.core.presentation.BaseViewModel
+import com.sepideh.lilo.core.service.PermissionManager
+import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
+import com.sepideh.lilo.task.data.Reminder
+import com.sepideh.lilo.task.data.local.room.TaskDatabase
 import com.sepideh.lilo.task.data.local.room.toEntity
 import com.sepideh.lilo.task.data.local.room.toTask
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
-import com.sepideh.lilo.category.domain.CategoryDomain
-import com.sepideh.lilo.category.domain.toPresentation
-import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.task.presentation.model.Priority
-import com.sepideh.lilo.core.utils.setReminderTime
-import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -49,8 +49,6 @@ class TaskDetailViewModel(
     val isXiaomi = permissionManager.isXiaomi()
     private val _categories = categoryDatabase.categoryDao().getAllCategories()
         .map {
-            println("categoryDatabase $it")
-
             it.toDomainList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 

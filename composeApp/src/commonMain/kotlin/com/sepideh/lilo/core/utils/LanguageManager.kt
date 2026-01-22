@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 
 
-val LocalLocalization = staticCompositionLocalOf {AppLanguage.FA.code }
+val LocalLanguageCode = staticCompositionLocalOf {AppLanguage.FA.code }
 expect fun changeLanguage(language: String)
 
 
