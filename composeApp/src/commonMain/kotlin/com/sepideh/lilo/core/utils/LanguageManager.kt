@@ -2,11 +2,10 @@ package com.sepideh.lilo.core.utils
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.LayoutDirection
-import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 
 
-val LocalLocalization = staticCompositionLocalOf { "en" }
+val LocalLocalization = staticCompositionLocalOf {AppLanguage.FA.code }
 expect fun changeLanguage(language: String)
 
 
@@ -14,12 +13,11 @@ object LanguageUtils {
 
     private val rtlLanguages = setOf(AppLanguage.FA.code)
 
-    lateinit var languageProvider: LanguageProvider
+    fun isRtl(languageCode: String): Boolean {
 
-    fun isRtl(): Boolean {
-        return languageProvider.currentLanguage.code.lowercase() in rtlLanguages
+        return languageCode.lowercase() in rtlLanguages
     }
 
-    fun layoutDirection(): LayoutDirection =
-        if (isRtl()) LayoutDirection.Rtl else LayoutDirection.Ltr
+    fun layoutDirection(languageCode: String): LayoutDirection =
+        if (isRtl(languageCode)) LayoutDirection.Rtl else LayoutDirection.Ltr
 }

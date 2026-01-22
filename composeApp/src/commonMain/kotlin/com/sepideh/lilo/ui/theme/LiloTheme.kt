@@ -5,8 +5,9 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.sepideh.lilo.core.utils.LanguageUtils.layoutDirection
+import com.sepideh.lilo.core.utils.LanguageUtils
 
 val DarkColorScheme = darkColorScheme(
     background = BackGroundDark,
@@ -34,10 +35,15 @@ val LightColorScheme = lightColorScheme(
 @Composable
 internal fun LiloTheme(
     darkTheme: Boolean,
+    languageCode: String,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val liloColorsPalette = if (darkTheme) LiloColorsDark else LiloColorsLight
+
+    val layoutDirection = remember(languageCode) {
+        LanguageUtils.layoutDirection(languageCode)
+    }
 
     CompositionLocalProvider(
         LocalLiloColorsPalette provides liloColorsPalette,

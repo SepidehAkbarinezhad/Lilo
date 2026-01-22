@@ -43,7 +43,6 @@ class SettingsViewModel(val userPreferencesManager: UserPreferencesManager): Bas
     fun updateLanguage(language: AppLanguage) {
         viewModelScope.launch {
             userPreferencesManager.updateLanguage(language)
-            changeLanguage(language.code)
         }
     }
 
