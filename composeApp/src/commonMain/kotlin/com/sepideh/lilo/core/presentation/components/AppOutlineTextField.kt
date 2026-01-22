@@ -34,7 +34,6 @@ fun AppOutlineTextField(
     containerModifier: Modifier = Modifier,
     textFieldModifier: Modifier = Modifier,
     textFieldRequired: TextFieldRequired,
-    leadingIconBackgroundColor: Color = Color.Transparent,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,

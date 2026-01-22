@@ -1,21 +1,23 @@
-package com.sepideh.lilo.settings.domain
+package com.sepideh.lilo.settings.domain.usecase
 
-import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-//Domain-layer helper → accessible everywhere
 class LanguageProvider(userPreferencesManager: UserPreferencesManager) {
 
     private val scope = CoroutineScope(SupervisorJob())
 
     val languageFlow: StateFlow<AppLanguage> = userPreferencesManager.userPreferences
-        .map { it.language }
+        .map {
+            it.language }
         .stateIn(
             scope = scope,
-            started = SharingStarted.Eagerly,
+            started = SharingStarted.Companion.Eagerly,
             initialValue = AppLanguage.FA
         )
 

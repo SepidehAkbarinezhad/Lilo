@@ -24,7 +24,7 @@ import com.sepideh.lilo.category.domain.toPresentation
 import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.core.utils.setReminderTime
-import com.sepideh.lilo.settings.domain.LanguageProvider
+import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async

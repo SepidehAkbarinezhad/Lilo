@@ -20,7 +20,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.utils.PlatformType
 import com.sepideh.lilo.core.utils.getCurrentDate
 import com.sepideh.lilo.core.utils.getPlatformType
-import com.sepideh.lilo.settings.domain.LanguageProvider
+import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction

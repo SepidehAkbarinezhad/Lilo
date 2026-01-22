@@ -1,6 +1,6 @@
 package com.sepideh.lilo.category.domain
 
-import com.sepideh.lilo.settings.domain.LanguageProvider
+import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 
 class CategoryFactory(
