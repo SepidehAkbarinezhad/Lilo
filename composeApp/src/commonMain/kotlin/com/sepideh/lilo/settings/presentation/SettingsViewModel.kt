@@ -3,6 +3,7 @@ package com.sepideh.lilo.settings.presentation
 import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
+import com.sepideh.lilo.core.utils.changeLanguage
 import com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository
 import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
 import com.sepideh.lilo.settings.presentation.model.AppLanguage

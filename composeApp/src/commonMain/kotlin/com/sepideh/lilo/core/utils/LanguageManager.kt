@@ -1,11 +1,23 @@
 package com.sepideh.lilo.core.utils
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.text.intl.Locale
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.unit.LayoutDirection
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 
-@Composable
-expect fun ApplyLanguage(language: AppLanguage)
-val LocalAppLocale = compositionLocalOf { Locale("en") }
 
+val LocalLanguageCode = staticCompositionLocalOf {AppLanguage.FA.code }
+expect fun changeLanguage(language: String)
+
+
+object LanguageUtils {
+
+    private val rtlLanguages = setOf(AppLanguage.FA.code)
+
+    fun isRtl(languageCode: String): Boolean {
+
+        return languageCode.lowercase() in rtlLanguages
+    }
+
+    fun layoutDirection(languageCode: String): LayoutDirection =
+        if (isRtl(languageCode)) LayoutDirection.Rtl else LayoutDirection.Ltr
+}

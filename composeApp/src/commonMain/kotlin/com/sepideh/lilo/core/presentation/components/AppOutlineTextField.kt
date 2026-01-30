@@ -34,14 +34,12 @@ fun AppOutlineTextField(
     containerModifier: Modifier = Modifier,
     textFieldModifier: Modifier = Modifier,
     textFieldRequired: TextFieldRequired,
-    leadingIconBackgroundColor: Color = Color.Transparent,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     singleLine: Boolean = true,
     requestFocus: Boolean = false,
-    isLTR: Boolean = true,
     color: TextFieldColors = OutlinedTextFieldDefaults.colors(
         unfocusedContainerColor = White,
         focusedContainerColor = White,
@@ -83,7 +81,7 @@ fun AppOutlineTextField(
                 onValueChange = onValueChange,
                 enabled = enabled,
                 readOnly = textFieldRequired.readOnly,
-                textStyle = textStyle.copy(color = Black, textDirection = if (isLTR) TextDirection.Ltr else TextDirection.Rtl),
+                textStyle = textStyle.copy(color = Black),
                 placeholder = {
                     if (hint.isNotEmpty()) AppText(
                         modifier = Modifier,

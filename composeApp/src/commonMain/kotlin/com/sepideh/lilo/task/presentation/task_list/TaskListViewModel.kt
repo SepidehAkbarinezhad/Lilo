@@ -6,22 +6,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.sepideh.lilo.category.data.local.room.CategoryDatabase
+import com.sepideh.lilo.category.data.local.room.toDomainList
+import com.sepideh.lilo.category.data.local.room.toEntity
+import com.sepideh.lilo.category.domain.CategoryDomain
+import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
+import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.data.local.room.TaskDatabase
-import com.sepideh.lilo.category.data.local.room.CategoryDatabase
-import com.sepideh.lilo.category.data.local.room.toCategoryList
-import com.sepideh.lilo.category.data.local.room.toEntity
 import com.sepideh.lilo.task.data.local.room.toEntity
 import com.sepideh.lilo.task.data.local.room.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
-import com.sepideh.lilo.task.presentation.model.Category
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
 import com.sepideh.lilo.task.presentation.model.TaskStatus
-import com.sepideh.lilo.core.utils.setReminderTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
@@ -40,19 +42,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TaskListViewModel(
+    private val languageProvider: LanguageProvider,
     private val taskDatabase: TaskDatabase,
     private val categoryDatabase: CategoryDatabase,
     private val reminderScheduler: ReminderScheduler,
     ) : BaseViewModel() {
 
-    private val _categories =
+    private val _categories : StateFlow<List<CategoryDomain>> =
         categoryDatabase.categoryDao().getAllCategories().onEach { categories ->
             if (categories.isEmpty()) {
                 // Perform upsert only if categories are empty after fetching
                 upsertCategories()
             }
-        }
-            .map { it.toCategoryList() }
+        }.map{ it.toDomainList()}
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
@@ -80,10 +82,11 @@ class TaskListViewModel(
         _state,
         _tasks,
         _categories,
-        _debouncedSearchQuery
-    ) { state, tasks, categories, searchQuery ->
-        val updatedCategories =
-            listOf(Category.categories[0]) + categories // Add "All" as the first item in the list
+        _debouncedSearchQuery,
+        languageProvider.languageFlow
+    ) { state, tasks, categories, searchQuery,currentLanguage ->
+        val updatedCategories : List<CategoryDomain> =
+            listOf(CategoryDomain.categories[0]) + categories // Add "All" as the first item in the list
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
         state.copy(
             tasksResult = tasks.let { taskList ->
@@ -101,7 +104,7 @@ class TaskListViewModel(
                     ) || task.description.contains(searchQuery, ignoreCase = true)
                 }
             },
-            categories = updatedCategories,
+            categories = updatedCategories.toPresentationList(currentLanguage),
             selectedCategory = validSelectedCategory?.id
         )
 
@@ -131,7 +134,7 @@ class TaskListViewModel(
 
     private fun upsertCategories() {
         viewModelScope.launch {
-            Category.categories.subList(1, Category.categories.size).forEach { item ->
+            CategoryDomain.categories.subList(1, CategoryDomain.categories.size).forEach { item ->
                 categoryDatabase.categoryDao().upsert(item.toEntity())
             }
         }
