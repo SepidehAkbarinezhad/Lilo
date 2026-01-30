@@ -2,15 +2,11 @@ package com.sepideh.lilo.settings.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
-import com.sepideh.lilo.core.utils.LocalLocalization
 import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.presentation.components.SettingItem
 import com.sepideh.lilo.settings.presentation.components.SettingsItemContainer
