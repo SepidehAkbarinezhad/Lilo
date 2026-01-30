@@ -5,6 +5,6 @@ import com.sepideh.lilo.settings.presentation.model.AppTheme
 
 data class UserPreferences(
     val theme: AppTheme = AppTheme.SYSTEM,
-    val language: AppLanguage = AppLanguage.EN,
+    val language: AppLanguage = AppLanguage.FA,
     val notificationsEnabled: Boolean = true
 )

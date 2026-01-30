@@ -2,7 +2,6 @@ package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,9 +24,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,7 +45,6 @@ import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.utils.isPersianLanguage
 import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
@@ -204,7 +200,7 @@ fun CategoryList(
                             )
                         )
                     },
-                text =  if (isPersianLanguage()) category.secondTitle else category.title,
+                text = category.title,
                 textAlign = TextAlign.Center,
                 color = titleColor,
                 textType = TextType.SubTitle
@@ -263,6 +259,7 @@ fun TaskListHeader(
             IconButton(
                 onClick = {
                     focusManager.clearFocus()
+                    onAction(TaskListAction.OnSearchToggle(false))
                     if (clickable) onAction(TaskListAction.OnFilterIcon)
                 },
                 enabled = !state.isFilterSheetOpen,
@@ -278,7 +275,6 @@ fun TaskListHeader(
                 label = "search-bar-animation"
             ) { isSearchVisible ->
                 if (isSearchVisible) {
-
                     AppSearchBar(
                         focusRequester = focusRequester,
                         searchQuery = state.searchQuery,
@@ -310,7 +306,10 @@ fun TaskListHeader(
         }
 
         IconButton(
-            onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) },
+            onClick = {
+                focusManager.clearFocus()
+                onAction(TaskListAction.OnSearchToggle(false))
+                onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) },
             enabled = !state.isFilterSheetOpen,
         ) {
             Image(
@@ -318,7 +317,6 @@ fun TaskListHeader(
                 contentDescription = "Open setting"
             )
         }
-
     }
 }
 

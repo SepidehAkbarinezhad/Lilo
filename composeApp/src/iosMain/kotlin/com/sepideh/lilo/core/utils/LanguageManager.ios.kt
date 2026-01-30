@@ -1,8 +1,8 @@
 package com.sepideh.lilo.core.utils
 
-import androidx.compose.runtime.Composable
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
+import platform.Foundation.NSUserDefaults
 
-@Composable
-actual fun ApplyLanguage(language: AppLanguage) {
+actual fun changeLanguage(language: String) {
+    NSUserDefaults.standardUserDefaults
+        .setObject(arrayListOf(language), "AppleLanguages")
 }
