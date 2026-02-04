@@ -5,5 +5,6 @@ import com.sepideh.lilo.core.presentation.BaseAction
 
 @Composable
 expect fun LiloPersianDatePicker(
+    selectedDay: Long?,
     onAction: (BaseAction) -> Unit
 )

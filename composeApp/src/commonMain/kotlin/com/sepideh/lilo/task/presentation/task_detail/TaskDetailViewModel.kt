@@ -76,8 +76,7 @@ class TaskDetailViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
 
     var task: Task by mutableStateOf(Task())
-
-    var reminderModel: ReminderModel = ReminderModel()
+    private var reminderModel = state.value.reminderModel
 
 
     override fun onAction(action: BaseAction) {
@@ -134,25 +133,27 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailAction.OnDismissTimePickerButton -> {
-                reminderModel = ReminderModel()
+                state.update {
+                    it.copy(reminderModel =ReminderModel())
+                }
                 setReminderTimeDialogOpen(open = false)
             }
 
             is TaskDetailAction.OnReminderDateConfirm -> {
-                reminderModel = action.reminderModel
+                with(action.reminderModel) { updateReminder( startDay = startDay, endDay = endDay) }
                 setReminderDateDialogOpen(open = false)
                 setReminderTimeDialogOpen(open = true)
             }
 
             is TaskDetailAction.OnReminderTimeConfirm -> {
                 with(action.reminderModel){
-                    reminderModel = reminderModel.copy(hour = hour,minute=minute)
+                    updateReminder( hour = hour,minute=minute)
                 }
                 setReminderTimeDialogOpen(open = false)
             }
 
             is TaskDetailAction.OnCategorySelected -> {
-                val selectedCategoryDomain = stateValue.value.categories.find { it == action.category }
+                val selectedCategoryDomain = state.value.categories.find { it == action.category }
                     ?: CategoryDomain.categories[0].toPresentation(currentLanguage)
                 state.update { it.copy(selectedCategory = selectedCategoryDomain) }
                 onAction(TaskDetailAction.OnDismissCategoryDialog)
@@ -166,23 +167,24 @@ class TaskDetailViewModel(
 
             is TaskDetailAction.OnSelectReminderTime -> {
                 with(action.time) {
-                    reminderModel = reminderModel.copy(hour = first, minute = second)
+                    updateReminder(hour = first, minute = second)
                 }
             }
 
             is TaskDetailAction.OnAddTaskButton -> {
                 viewModelScope.launch {
-                    val tempTask = task.copy(
-                        category = stateValue.value.selectedCategory?.id
-                            ?: CategoryDomain.categories[0].id,
-                        priority = stateValue.value.selectedPriority.id,
-                        hour = reminderModel.hour,
-                        minute = reminderModel.minute,
-                        startDate = reminderModel.startDay,
-                        endDate = reminderModel.endDay,
-                        id = task.id
-                    )
-
+                    val tempTask = with(state.value){
+                        task.copy(
+                            category = selectedCategory?.id
+                                ?: CategoryDomain.categories[0].id,
+                            priority =selectedPriority.id,
+                            hour = reminderModel.hour,
+                            minute = reminderModel.minute,
+                            startDate = reminderModel.startDay,
+                            endDate = reminderModel.endDay,
+                            id = task.id
+                        )
+                    }
                     viewModelScope.launch {
                         if (isFormValid(checkDeniedPermission = action.checkDeniedPermission)) {
                             //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
@@ -211,7 +213,13 @@ class TaskDetailViewModel(
                             task = selectedTask
                             updateSelectedCategory(selectedTask.category)
                             updateSelectedPriority(selectedTask.priority)
-                            updateReminder(task = selectedTask)
+                              with(selectedTask){
+                                 updateReminder(  hour = hour,
+                                    minute = minute,
+                                    startDay = startDate,
+                                    endDay = endDate)
+                            }
+
                         }
                 }
             }
@@ -261,15 +269,13 @@ class TaskDetailViewModel(
         }
     }
 
-    private fun updateReminder(task: Task) {
-        with(task) {
-            reminderModel = reminderModel.copy(
-                hour = hour,
-                minute = minute,
-                startDay = startDate,
-                endDay = endDate
-            )
-        }
+    private fun updateReminder(hour: Int? = reminderModel.hour, minute: Int? = reminderModel.minute, startDay: Long? = reminderModel.startDay, endDay: Long? = reminderModel.endDay) {
+           reminderModel = reminderModel.copy(hour = hour, minute = minute, startDay = startDay, endDay = endDay)
+            state.update {
+                it.copy(reminderModel = reminderModel)
+            }
+
+
     }
 
     override fun onResetState() {
