@@ -67,18 +67,15 @@ fun ReminderTimePicker(
         minuteListState.scrollToItem(initialMinute)
     }
 
-    LaunchedEffect(hourListState) {
-        snapshotFlow { hourListState.firstVisibleItemIndex }
-            .collect { hour -> { selectedHour = hour } }
-    }
-
-    LaunchedEffect(minuteListState) {
-
-
-        snapshotFlow { minuteListState.firstVisibleItemIndex }
-            .collect { minute ->
-                selectedMin = minute
-            }
+    LaunchedEffect(hourListState, minuteListState) {
+        snapshotFlow {
+            Pair(hourListState.firstVisibleItemIndex, minuteListState.firstVisibleItemIndex)
+        }.collect { (hour, minute) ->
+            println("ReminderTimePicker hour $hour")
+            println("ReminderTimePicker minute $minute")
+            selectedHour = hour
+            selectedMin = minute
+        }
     }
     AppDialog(dialogModel = DialogModel(content = {
         Column {
@@ -186,7 +183,6 @@ fun ReminderTimePicker(
 @Composable
 fun TimePickerButtons(onConfirmed: () -> Unit, onCancel: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-        val layoutDirection = LocalLayoutDirection.current
             AppText(
                 modifier = Modifier.padding(8.dp).clickable { onCancel() },
                 text = Res.string.cancel_button,
