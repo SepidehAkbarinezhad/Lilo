@@ -42,7 +42,7 @@ fun ReminderDatePicker(
     when (languageProvider.currentLanguage) {
         AppLanguage.FA -> {
             if (getPlatformType().name == PlatformType.ANDROID.name)
-                LiloPersianDatePicker(onAction = onAction)
+                LiloPersianDatePicker(selectedDay = reminderModel.startDay, onAction = onAction,)
         }
         AppLanguage.EN -> DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
     }
