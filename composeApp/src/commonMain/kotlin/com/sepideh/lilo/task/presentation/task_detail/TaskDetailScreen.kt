@@ -75,12 +75,12 @@ fun TaskDetailScreenRoot(
             }
             if (state.reminderDatePickerOpen) {
                 ReminderDatePicker(
-                    reminderModel = viewModel.reminderModel,
+                    reminderModel = state.reminderModel,
                     onAction = { viewModel.onAction(it) })
             }
             if (state.reminderTimePickerOpen) {
                 ReminderTimePicker(
-                    reminderModel = viewModel.reminderModel,
+                    reminderModel = state.reminderModel,
                     onAction = { viewModel.onAction(it) })
             }
             if (state.shouldShowPermissionDialog) {
