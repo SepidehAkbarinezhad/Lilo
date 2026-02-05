@@ -179,7 +179,7 @@ class TaskListViewModel(
                     with(state.value.taskFilterOption) {
                         onAction(BaseAction.ShowLoading(true))
                         taskDatabase.taskDao().getTaskByFilter(
-                            done = if (taskStatus.isEmpty()) null else TaskStatus.DONE in taskStatus,
+                            done = if (taskStatus.isEmpty() || taskStatus.size==2) null else TaskStatus.DONE in taskStatus,
                             priority = priorityList.map { it.id }
                                 .ifEmpty { Priority.priorities.map { it.id } }
                         ).collect { tasksList ->
@@ -203,6 +203,7 @@ class TaskListViewModel(
                         }
                     val tempFilter =
                         state.value.tempFilterOption.copy(taskStatus = updatedList)
+
                     _state.update { it.copy(tempFilterOption = tempFilter) }
                 }
             }
