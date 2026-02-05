@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.firebase)
 }
 
 kotlin {
@@ -43,6 +44,9 @@ kotlin {
             implementation(libs.accompanist.systemuicontroller)
             implementation(libs.persian.date.picker)
             implementation(libs.persian.date.time)
+            implementation(libs.firebase.bom)
+            implementation(libs.firebase.analytics)
+            implementation(libs.firebase.messaging)
 
         }
         commonMain.dependencies {
@@ -82,7 +86,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.sepideh.lilo"
+        applicationId = "com.sepideh.lilo.kmp"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
