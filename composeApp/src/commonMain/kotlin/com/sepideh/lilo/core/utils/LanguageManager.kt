@@ -13,11 +13,11 @@ object LanguageUtils {
 
     private val rtlLanguages = setOf(AppLanguage.FA.code)
 
+    fun layoutDirection(languageCode: String): LayoutDirection =
+        if (isRtl(languageCode)) LayoutDirection.Rtl else LayoutDirection.Ltr
+
     fun isRtl(languageCode: String): Boolean {
 
         return languageCode.lowercase() in rtlLanguages
     }
-
-    fun layoutDirection(languageCode: String): LayoutDirection =
-        if (isRtl(languageCode)) LayoutDirection.Rtl else LayoutDirection.Ltr
 }

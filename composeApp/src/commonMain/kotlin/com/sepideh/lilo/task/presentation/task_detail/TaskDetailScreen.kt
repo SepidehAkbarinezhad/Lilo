@@ -63,7 +63,8 @@ fun TaskDetailScreenRoot(
             TaskDetailScreen(
                 state = state,
                 task = task,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                onBack = onBack,
             )
         },
         dialogContent = {
@@ -101,8 +102,9 @@ fun TaskDetailScreenRoot(
 fun TaskDetailScreen(
     state: TaskDetailState,
     task: Task,
-    onAction: (BaseAction) -> Unit
-) {
+    onAction: (BaseAction) -> Unit,
+    onBack: () -> Boolean,
+    ) {
     val isEdit = task.id != null
     Box(modifier = Modifier.fillMaxSize()) {
         BaseScreen(
@@ -111,7 +113,8 @@ fun TaskDetailScreen(
                     title = when (isEdit) {
                         true -> Res.string.edit_task_title
                         else -> Res.string.add_task_title
-                    }
+                    },
+                    onBackPressed = onBack
                 )
             }, content = {
                 AppOutlineTextField(
