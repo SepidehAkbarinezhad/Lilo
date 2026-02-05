@@ -9,5 +9,5 @@ import com.sepideh.lilo.settings.presentation.SettingsState
 @Preview
 @Composable
 fun SettingsScreenPreview(modifier: Modifier = Modifier) {
-    SettingsScreen(state = SettingsState(), onAction = {})
+    SettingsScreen(state = SettingsState(), onAction = {}, onBack = { true })
 }

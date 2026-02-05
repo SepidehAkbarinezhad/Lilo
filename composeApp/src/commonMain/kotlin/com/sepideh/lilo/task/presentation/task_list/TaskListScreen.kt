@@ -304,7 +304,7 @@ fun TaskListHeader(
                             },
                             contentDescription = "Open Search",
                         )
-                        BaseHeader(modifier= Modifier.weight(1f),title = Res.string.tasks_list_title)
+                        BaseHeader(modifier= Modifier.weight(1f),title = Res.string.tasks_list_title, mainScreen = true)
 
                     }
                 }

@@ -34,7 +34,9 @@ fun SettingsScreenRoot(
         bodyContainer = {
             SettingsScreen(
                 state = state,
-                onAction = { action -> viewModel.onAction(action) })
+                onAction = { action -> viewModel.onAction(action) },
+                onBack = onBack
+            )
         }
     )
 }
@@ -42,12 +44,13 @@ fun SettingsScreenRoot(
 @Composable
 fun SettingsScreen(
     state: SettingsState,
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    onBack: () -> Boolean,
 ) {
 
     with(state.userPreferences) {
         BaseScreen(header = {
-            BaseHeader(title = Res.string.setting_task_title)
+            BaseHeader(title = Res.string.setting_task_title , onBackPressed = onBack)
         }, content = {
             SettingsItemContainer(
                 icon = Res.drawable.ic_theme,
@@ -55,7 +58,7 @@ fun SettingsScreen(
             ) {
                 AppTheme.entries.forEach { themeV ->
                     SettingItem(
-                        label = themeV.label, value = themeV , selectedValue = theme,
+                        label = themeV.label, value = themeV, selectedValue = theme,
                         onSelected = { onAction(SettingsAction.SelectTheme(theme = themeV)) })
                 }
             }
@@ -69,23 +72,23 @@ fun SettingsScreen(
                         value = languageV,
                         selectedValue = language,
                         onSelected = {
-                            onAction(SettingsAction.SelectLanguage(language = languageV)) })
+                            onAction(SettingsAction.SelectLanguage(language = languageV))
+                        })
                 }
             }
 
         })
     }
-
 }
-
-
 
 
 @Preview
 @Composable
-fun SettingsScreenPreview(){
-    SettingsScreen(state = SettingsState(
+fun SettingsScreenPreview() {
+    SettingsScreen(
+        state = SettingsState(
         userPreferences = UserPreferences(theme = AppTheme.DARK, language = AppLanguage.FA)
-    ), onAction = {})
+    ), onAction = {}, onBack = { true }
+    )
 }
 
