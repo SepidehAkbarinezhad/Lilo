@@ -47,7 +47,7 @@ internal fun LiloTheme(
 
     CompositionLocalProvider(
         LocalLiloColorsPalette provides liloColorsPalette,
-        LocalLayoutDirection provides layoutDirection
+        LocalLayoutDirection provides layoutDirection,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

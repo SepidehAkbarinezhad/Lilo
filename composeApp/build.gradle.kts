@@ -65,6 +65,8 @@ kotlin {
             implementation(libs.androidx.annotation)
             implementation(libs.kotlinx.datetime)
             implementation(libs.data.store)
+            implementation(libs.material3.compose)
+
         }
     }
 }
