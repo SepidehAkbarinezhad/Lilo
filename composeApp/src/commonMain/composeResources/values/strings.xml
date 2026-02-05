@@ -14,6 +14,7 @@
     <string name="dark_mode_label">dark</string>
     <string name="add_task_title">Add task</string>
     <string name="add_task_label">add</string>
+    <string name="tasks_list_title">Tasks</string>
     <string name="edit_task_title">Edit task</string>
     <string name="edit_task_label">edit</string>
     <string name="title_label">title</string>
