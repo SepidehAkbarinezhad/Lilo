@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
+import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.TextType
@@ -57,6 +58,7 @@ import lilo.composeapp.generated.resources.empty_list_title
 import lilo.composeapp.generated.resources.ic_filter
 import lilo.composeapp.generated.resources.ic_settings
 import lilo.composeapp.generated.resources.ic_search
+import lilo.composeapp.generated.resources.tasks_list_title
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -291,16 +293,20 @@ fun TaskListHeader(
                     )
 
                 } else {
-                    Image(
-                        painterResource(Res.drawable.ic_search),
-                        modifier = Modifier.clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            onAction(TaskListAction.OnSearchToggle(true))
-                        },
-                        contentDescription = "Open Search",
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painterResource(Res.drawable.ic_search),
+                            modifier = Modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                onAction(TaskListAction.OnSearchToggle(true))
+                            },
+                            contentDescription = "Open Search",
+                        )
+                        BaseHeader(modifier= Modifier.weight(1f),title = Res.string.tasks_list_title)
+
+                    }
                 }
             }
         }

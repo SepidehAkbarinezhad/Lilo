@@ -153,8 +153,12 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailAction.OnCategorySelected -> {
-                val selectedCategoryDomain = state.value.categories.find { it == action.category }
+                println("OnCategorySelected  ${action.category}")
+                println("OnCategorySelected  ${state.value.categories}")
+                println("OnCategorySelected  ${state.value}")
+                val selectedCategoryDomain = stateValue.value.categories.find { it == action.category }
                     ?: CategoryDomain.categories[0].toPresentation(currentLanguage)
+                println("OnCategorySelected  $selectedCategoryDomain")
                 state.update { it.copy(selectedCategory = selectedCategoryDomain) }
                 onAction(TaskDetailAction.OnDismissCategoryDialog)
             }
