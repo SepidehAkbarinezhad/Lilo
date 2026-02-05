@@ -13,9 +13,9 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import org.jetbrains.compose.resources.StringResource
 
 @Composable
-fun BaseHeader(title: StringResource) {
+fun BaseHeader(modifier: Modifier =  Modifier.fillMaxWidth(),title: StringResource) {
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         AppText(
