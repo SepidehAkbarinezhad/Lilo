@@ -32,6 +32,7 @@ data-store = "1.2.0"
 material3="1.9.0"
 google-services="4.4.4"
 firebase-bom = "34.8.0"
+firebaseCommonKtx = "22.0.1"
 
 
 [libraries]
@@ -72,7 +73,8 @@ persian-date-picker= { module = "io.github.faridsolgi:persian-date-picker", vers
 persian-date-time= { module = "io.github.faridsolgi:persianDateTime", version.ref = "persian-date" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics"}
-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx"}
+firebase-messaging = { module = "com.google.firebase:firebase-messaging"}
+firebase-common-ktx = { group = "com.google.firebase", name = "firebase-common" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
