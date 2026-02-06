@@ -1,3 +1,4 @@
+import com.android.sdklib.AndroidTargetHash.isPlatform
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -44,7 +45,7 @@ kotlin {
             implementation(libs.accompanist.systemuicontroller)
             implementation(libs.persian.date.picker)
             implementation(libs.persian.date.time)
-            implementation(libs.firebase.bom)
+            implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.messaging)
 
