@@ -32,6 +32,7 @@ data-store = "1.2.0"
 material3="1.9.0"
 google-services="4.4.4"
 firebase-bom = "34.8.0"
+firebase-crashlytics = "3.0.6"
 firebaseCommonKtx = "22.0.1"
 
 
@@ -74,6 +75,7 @@ persian-date-time= { module = "io.github.faridsolgi:persianDateTime", version.re
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics"}
 firebase-messaging = { module = "com.google.firebase:firebase-messaging"}
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics"}
 firebase-common-ktx = { group = "com.google.firebase", name = "firebase-common" }
 
 [plugins]
@@ -86,3 +88,4 @@ kotlinSerialization = {id = "org.jetbrains.kotlin.plugin.serialization",version.
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
 firebase = { id = "com.google.gms.google-services", version.ref = "google-services" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics" }

@@ -1,4 +1,3 @@
-import com.android.sdklib.AndroidTargetHash.isPlatform
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -11,6 +10,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.firebase)
+    alias(libs.plugins.crashlytics)
 }
 
 kotlin {
@@ -48,6 +48,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.messaging)
+            implementation(libs.firebase.crashlytics)
 
         }
         commonMain.dependencies {
