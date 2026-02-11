@@ -118,6 +118,8 @@ class TaskListViewModel(
 
     init {
         loadTasks()
+        throw RuntimeException("🧪 TEST CRASH - For testing purposes")
+
     }
 
     private fun loadTasks() {
