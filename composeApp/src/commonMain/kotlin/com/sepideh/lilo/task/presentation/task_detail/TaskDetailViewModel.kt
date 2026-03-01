@@ -153,9 +153,6 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailAction.OnCategorySelected -> {
-                println("OnCategorySelected  ${action.category}")
-                println("OnCategorySelected  ${state.value.categories}")
-                println("OnCategorySelected  ${state.value}")
                 val selectedCategoryDomain = stateValue.value.categories.find { it == action.category }
                     ?: CategoryDomain.categories[0].toPresentation(currentLanguage)
                 println("OnCategorySelected  $selectedCategoryDomain")
@@ -208,6 +205,9 @@ class TaskDetailViewModel(
                     categoryDatabase.categoryDao().upsert(category = categoryFactory.create(action.categoryTitle).toEntity())
                 }
                 //state.update { it.copy(selectedCategory) }
+            }
+            is TaskDetailAction.OnDeleteCategory->{
+                viewModelScope.launch { categoryDatabase.categoryDao().deleteById(action.categoryId) }
             }
 
             is TaskDetailAction.OnGetSelectedTaskInfo -> {

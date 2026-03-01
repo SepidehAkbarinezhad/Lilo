@@ -86,7 +86,8 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                         category = category,
                         selected = selected,
                         uncheckedColor = contentColor,
-                        onCheckedChange = { selected = it }
+                        onCheckedChange = { selected = it },
+                        onDeleteCategory = {id->onAction(TaskDetailAction.OnDeleteCategory(id))}
                     )
 
                     if (index != state.categories.lastIndex) {
@@ -114,10 +115,15 @@ fun CategoryItem(
     category: CategoryPresentation,
     selected: CategoryPresentation?,
     uncheckedColor: Color,
-    onCheckedChange: (CategoryPresentation) -> Unit
+    onCheckedChange: (CategoryPresentation) -> Unit,
+    onDeleteCategory: (Long) -> Unit
 ) {
 
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(
                 checked = selected == category, onCheckedChange = {
@@ -135,9 +141,7 @@ fun CategoryItem(
             )
         }
 
-        IconButton(onClick = {
-
-        }) {
+        IconButton(onClick = { onDeleteCategory(category.id) }) {
             Icon(
                 imageVector = Icons.Outlined.Delete,
                 contentDescription = "delete Icon",

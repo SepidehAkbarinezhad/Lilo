@@ -22,6 +22,7 @@ sealed interface TaskDetailAction : BaseAction {
     data class OnReminderTimeConfirm(val reminderModel: ReminderModel) : TaskDetailAction
     data class OnAddTaskButton(val checkDeniedPermission : Boolean = false) : TaskDetailAction
     data class OnAddNewCategory(val categoryTitle: String) : TaskDetailAction
+    data class OnDeleteCategory(val categoryId: Long) : TaskDetailAction
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailAction
     data class OnGrantPermissionButton(val firstTime : Boolean) : TaskDetailAction
     data object OnCancelPermissionDialog : TaskDetailAction
