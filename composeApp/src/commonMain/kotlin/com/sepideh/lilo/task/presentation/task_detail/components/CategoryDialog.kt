@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +21,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -38,8 +41,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.category.presentation.CategoryPresentation
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppDialog
@@ -47,15 +52,17 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
+import com.sepideh.lilo.task.presentation.task_list.TaskListAction
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_label
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
-
-    val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
     var selected by remember { mutableStateOf(state.selectedCategory) }
+    val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
+
 
     AppDialog(dialogModel = DialogModel(content = {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -75,22 +82,12 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
 
                 state.categories.forEachIndexed { index, category ->
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = selected == category, onCheckedChange = {
-                                selected = category
-                            },
-                            colors = CheckboxDefaults.colors(
-                                uncheckedColor = contentColor
-                            )
-                        )
-                        AppText(
-                            modifier = Modifier.padding(vertical = 4.dp),
-                            text = category.title,
-                            textType = TextType.SubTitle,
-                            color = if (selected == category) MaterialTheme.colorScheme.primary else contentColor
-                        )
-                    }
+                    CategoryItem(
+                        category = category,
+                        selected = selected,
+                        uncheckedColor = contentColor,
+                        onCheckedChange = { selected = it }
+                    )
 
                     if (index != state.categories.lastIndex) {
                         Spacer(
@@ -110,6 +107,44 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
         }
 
     }, onDismissRequest = { onAction(TaskDetailAction.OnDismissCategoryDialog) }))
+}
+
+@Composable
+fun CategoryItem(
+    category: CategoryPresentation,
+    selected: CategoryPresentation?,
+    uncheckedColor: Color,
+    onCheckedChange: (CategoryPresentation) -> Unit
+) {
+
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = selected == category, onCheckedChange = {
+                    onCheckedChange(category)
+                },
+                colors = CheckboxDefaults.colors(
+                    uncheckedColor = uncheckedColor
+                )
+            )
+            AppText(
+                modifier = Modifier.padding(vertical = 4.dp),
+                text = category.title,
+                textType = TextType.SubTitle,
+                color = if (selected == category) MaterialTheme.colorScheme.primary else uncheckedColor
+            )
+        }
+
+        IconButton(onClick = {
+
+        }) {
+            Icon(
+                imageVector = Icons.Outlined.Delete,
+                contentDescription = "delete Icon",
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
 }
 
 @Composable
@@ -201,5 +236,14 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (String) -> Unit)
             }
         }
     }
+}
+
+@Preview(backgroundColor = 0xFFFFFFFF)
+@Composable
+fun CategoryDialogPrev() {
+    CategoryDialog(
+        state = TaskDetailState(categories = listOf(CategoryPresentation(title = "test"))),
+        onAction = {}
+    )
 }
 
