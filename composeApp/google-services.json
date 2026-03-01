@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "809457203767",
+    "project_id": "lilo-kmp-6e652",
+    "storage_bucket": "lilo-kmp-6e652.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809457203767:android:8526080bd562be6cecddb2",
+        "android_client_info": {
+          "package_name": "com.sepideh.lilo.kmp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg0WbHcP43Uq-1T8d1SW22QqDQ0Xz8JlE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
