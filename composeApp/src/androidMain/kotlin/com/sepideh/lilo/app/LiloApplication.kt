@@ -16,26 +16,23 @@ class LiloApplication : Application() {
             androidContext(this@LiloApplication)
         }
 
-        // Initialize Firebase
         FirebaseApp.initializeApp(this)
 
-        // 🔵 CRITICAL FIX: Wait for token before subscribing
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val token = task.result
                     Log.d("FCM", "✅ Token received: $token")
 
-                    // 🔴 NOW subscribe AFTER token is confirmed
-                   // subscribeToTopic()
+                    subscribeToTopic()
                 } else {
                     Log.e("FCM", "❌ Failed to get token", task.exception)
                 }
             }
     }
 
-  /*  private fun subscribeToTopic() {
-        FirebaseMessaging.getInstance().subscribeToTopic("news")
+    private fun subscribeToTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic("all_users")
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("FCM", "✅ Successfully subscribed to 'news' topic")
@@ -43,8 +40,7 @@ class LiloApplication : Application() {
                     Log.e("FCM", "❌ Subscription FAILED", task.exception)
                     Log.e("FCM", "Error message: ${task.exception?.message}")
 
-                    // Optional: Retry logic
                 }
             }
-    }*/
+    }
 }
