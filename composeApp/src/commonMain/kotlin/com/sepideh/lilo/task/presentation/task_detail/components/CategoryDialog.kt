@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Checkbox
@@ -52,7 +50,6 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
-import com.sepideh.lilo.task.presentation.task_list.TaskListAction
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.category_label
 import org.jetbrains.compose.resources.stringResource
@@ -62,19 +59,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
     var selected by remember { mutableStateOf(state.selectedCategory) }
     val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
+    var categoriesEmpty by remember { mutableStateOf(state.categories.isEmpty()) }
 
 
     AppDialog(dialogModel = DialogModel(content = {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                AppText(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(Res.string.category_label),
-                    textType = TextType.Title,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-
+            DialogTitle()
+            Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))
             Column(
                 modifier = Modifier.heightIn(max = 200.dp)
                     .verticalScroll(rememberScrollState())
@@ -87,7 +78,7 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                         selected = selected,
                         uncheckedColor = contentColor,
                         onCheckedChange = { selected = it },
-                        onDeleteCategory = {id->onAction(TaskDetailAction.OnDeleteCategory(id))}
+                        onDeleteCategory = { id -> onAction(TaskDetailAction.OnDeleteCategory(id)) }
                     )
 
                     if (index != state.categories.lastIndex) {
@@ -98,16 +89,36 @@ fun CategoryDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
                     }
                 }
             }
-            AddCategoryContainer(onDone = {
-                selected?.let {
-                    onAction(TaskDetailAction.OnCategorySelected(it))
-                }
+            if (!categoriesEmpty) {
+                CategoryDialogButtons(
+                    onDone = {
+                        selected?.let {
+                            onAction(TaskDetailAction.OnCategorySelected(it))
+                        }
+                    }, onAddNewCategory = { onAction(TaskDetailAction.OnAddNewCategory(it)) })
+            } else {
+                AddCategory(
+                    addVisibility = true,
+                    onAddNewCategory = { onAction(TaskDetailAction.OnAddNewCategory(it)) })
 
-            }, onAddNewCategory = { onAction(TaskDetailAction.OnAddNewCategory(it)) })
+
+            }
 
         }
 
     }, onDismissRequest = { onAction(TaskDetailAction.OnDismissCategoryDialog) }))
+}
+
+@Composable
+fun DialogTitle() {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        AppText(
+            modifier = Modifier.align(Alignment.Center),
+            text = stringResource(Res.string.category_label),
+            textType = TextType.Title,
+            color = MaterialTheme.colorScheme.secondary
+        )
+    }
 }
 
 @Composable
@@ -134,7 +145,6 @@ fun CategoryItem(
                 )
             )
             AppText(
-                modifier = Modifier.padding(vertical = 4.dp),
                 text = category.title,
                 textType = TextType.SubTitle,
                 color = if (selected == category) MaterialTheme.colorScheme.primary else uncheckedColor
@@ -152,23 +162,14 @@ fun CategoryItem(
 }
 
 @Composable
-fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (String) -> Unit) {
-    val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
-
+fun CategoryDialogButtons(
+    onDone: () -> Unit,
+    onAddNewCategory: (String) -> Unit
+) {
     var addVisibility by remember { mutableStateOf(false) }
-    var newCategory by remember { mutableStateOf("") }
 
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(addVisibility) {
-        if (addVisibility)
-            focusRequester.requestFocus()
-    }
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        contentAlignment = Alignment.BottomCenter
+        modifier = Modifier.fillMaxWidth(),
     ) {
 
         if (!addVisibility) {
@@ -195,48 +196,71 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (String) -> Unit)
                 }
             }
         }
+        AddCategory(
+            addVisibility = addVisibility,
+            onAddNewCategory = {
+                addVisibility = !addVisibility
+                onAddNewCategory(it)
+            }
+        )
 
-        AnimatedVisibility(
-            visible = addVisibility,
-            enter = fadeIn() + slideInHorizontally(
-                initialOffsetX = { it },
-                animationSpec = tween(300)
-            ),
-            exit = fadeOut() + slideOutHorizontally(
-                targetOffsetX = { -it },
-                animationSpec = tween(300)
-            )
+    }
+}
+
+@Composable
+fun AddCategory(
+    addVisibility: Boolean,
+    onAddNewCategory: (String) -> Unit
+) {
+    var newCategory by remember { mutableStateOf("") }
+    val contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(addVisibility) {
+        if (addVisibility)
+            focusRequester.requestFocus()
+    }
+
+    AnimatedVisibility(
+        visible = addVisibility,
+        enter = fadeIn() + slideInHorizontally(
+            initialOffsetX = { it },
+            animationSpec = tween(300)
+        ),
+        exit = fadeOut() + slideOutHorizontally(
+            targetOffsetX = { -it },
+            animationSpec = tween(300)
+        )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = newCategory,
-                    onValueChange = { newCategory = it },
-                    modifier = Modifier.weight(1f).focusRequester(focusRequester),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = contentColor,
-                        focusedBorderColor = contentColor,
-                    ),
-                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface)
-                )
-                IconButton(
-                    onClick = {
-                        if (newCategory.isNotEmpty()) {
-                            onAddNewCategory(newCategory)
-                        }
-                        addVisibility = !addVisibility
-                        newCategory = ""
-
+            OutlinedTextField(
+                value = newCategory,
+                onValueChange = { newCategory = it },
+                modifier = Modifier.weight(1f).focusRequester(focusRequester),
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = contentColor,
+                    focusedBorderColor = contentColor,
+                ),
+                textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface)
+            )
+            IconButton(
+                onClick = {
+                    if (newCategory.isNotEmpty()) {
+                        onAddNewCategory(newCategory)
                     }
-                ) {
-                    Icon(
-                        imageVector = if (newCategory.isNotEmpty()) Icons.Default.Done else Icons.Default.Close,
-                        contentDescription = null,
-                        tint = contentColor
-                    )
+
+                    newCategory = ""
+
                 }
+            ) {
+                Icon(
+                    imageVector = if (newCategory.isNotEmpty()) Icons.Default.Done else Icons.Default.Close,
+                    contentDescription = null,
+                    tint = contentColor
+                )
             }
         }
     }
@@ -247,6 +271,15 @@ fun AddCategoryContainer(onDone: () -> Unit, onAddNewCategory: (String) -> Unit)
 fun CategoryDialogPrev() {
     CategoryDialog(
         state = TaskDetailState(categories = listOf(CategoryPresentation(title = "test"))),
+        onAction = {}
+    )
+}
+
+@Preview(backgroundColor = 0xFFFFFFFF)
+@Composable
+fun CategoryDialogEmptyPrev() {
+    CategoryDialog(
+        state = TaskDetailState(categories = emptyList()),
         onAction = {}
     )
 }
