@@ -60,6 +60,7 @@ import lilo.composeapp.generated.resources.ic_settings
 import lilo.composeapp.generated.resources.ic_search
 import lilo.composeapp.generated.resources.tasks_list_title
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -326,6 +327,14 @@ fun TaskListHeader(
     }
 }
 
-
+@Preview
+@Composable
+fun TaskListScreenPrev() {
+    TaskListScreen(
+        state = TaskListState(),
+        isLoading = false,
+        onAction = {}
+    )
+}
 
 
