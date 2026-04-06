@@ -1,5 +1,6 @@
 package com.sepideh.lilo.category.domain
 
+import com.sepideh.lilo.category.GENERAL_CATEGORY
 import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.category.presentation.CategoryPresentation
 
@@ -22,8 +23,10 @@ fun CategoryDomain.toPresentation(language: AppLanguage): CategoryPresentation {
     }
 
     // Determine effective title
-    val effectiveTitle =titleInSelectedLang.ifBlank { fallbackTitle }
-   return CategoryPresentation(id = this.id, title = effectiveTitle)
+    val effectiveTitle = titleInSelectedLang.ifBlank { fallbackTitle }
+
+    val isDeletable = this.titleEn != GENERAL_CATEGORY
+    return CategoryPresentation(id = this.id, title = effectiveTitle, isDeletable = isDeletable)
 }
 
 

@@ -42,6 +42,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.category.GENERAL_CATEGORY
 import com.sepideh.lilo.category.presentation.CategoryPresentation
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
@@ -151,13 +152,16 @@ fun CategoryItem(
             )
         }
 
-        IconButton(onClick = { onDeleteCategory(category.id) }) {
-            Icon(
-                imageVector = Icons.Outlined.Delete,
-                contentDescription = "delete Icon",
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+        if (category.title != GENERAL_CATEGORY) {
+            IconButton(onClick = { onDeleteCategory(category.id) }) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "delete Icon",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
+
     }
 }
 
@@ -270,7 +274,14 @@ fun AddCategory(
 @Composable
 fun CategoryDialogPrev() {
     CategoryDialog(
-        state = TaskDetailState(categories = listOf(CategoryPresentation(title = "test"))),
+        state = TaskDetailState(
+            categories = listOf(
+                CategoryPresentation(
+                    title = "test",
+                    isDeletable = true
+                )
+            )
+        ),
         onAction = {}
     )
 }
