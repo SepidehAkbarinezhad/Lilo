@@ -3,7 +3,7 @@ package com.sepideh.lilo.category.domain
 data class CategoryDomain(
     val id: Long = 0,
     val titleEn: String = "",
-    val titleFa: String = ""
+    val titleFa: String = "",
 ) {
     companion object {
         val categories =
