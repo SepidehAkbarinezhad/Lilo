@@ -23,7 +23,8 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
-import com.sepideh.lilo.task.presentation.model.TaskStatus
+import com.sepideh.lilo.task.presentation.model.Enums
+import com.sepideh.lilo.task.presentation.model.SortOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
@@ -97,12 +98,17 @@ class TaskListViewModel(
                 } else {
                     taskList
                 }
-                filteredBasedOnCategory.filter { task ->
+                val filtered = filteredBasedOnCategory.filter { task ->
                     task.title.contains(
                         searchQuery,
                         ignoreCase = true
                     ) || task.description.contains(searchQuery, ignoreCase = true)
                 }
+                val sorted = when (state.sortOrder) {
+                    SortOrder.Priority -> filtered.sortedBy { it.priority }
+                    SortOrder.Date -> filtered.sortedByDescending { it.startDate ?: 0L }
+                }
+                sorted
             },
             categories = updatedCategories.toPresentationList(currentLanguage),
             selectedCategory = validSelectedCategory?.id
@@ -143,6 +149,9 @@ class TaskListViewModel(
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
+            is TaskListAction.OnSortOrderChanged -> {
+                _state.update { it.copy(sortOrder = action.sortOrder) }
+            }
             is TaskListAction.OnCategorySelected -> {
                 _state.update {
                     it.copy(selectedCategory = action.id)
@@ -179,7 +188,7 @@ class TaskListViewModel(
                     with(state.value.taskFilterOption) {
                         onAction(BaseAction.ShowLoading(true))
                         taskDatabase.taskDao().getTaskByFilter(
-                            done = if (taskStatus.isEmpty() || taskStatus.size==2) null else TaskStatus.DONE in taskStatus,
+                            done = if (taskStatus.isEmpty() || taskStatus.size==2) null else Enums.DONE in taskStatus,
                             priority = priorityList.map { it.id }
                                 .ifEmpty { Priority.priorities.map { it.id } }
                         ).collect { tasksList ->
