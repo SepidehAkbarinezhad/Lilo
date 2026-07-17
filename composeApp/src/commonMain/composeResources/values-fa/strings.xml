@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
+    <string name="task_feature_title">کارها</string>
+    <string name="note_feature_title">یادداشت‌ها</string>
+    <string name="expence_feature_title">هزینه‌ها</string>
+    <string name="password_feature_title">گذرواژه‌ها</string>
     <string name="search_hint">جستجو...</string>
     <string name="close_hint">پاک کردن جستجو</string>
     <string name="all">همه</string>

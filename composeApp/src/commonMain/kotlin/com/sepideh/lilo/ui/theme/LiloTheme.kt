@@ -6,30 +6,31 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.sepideh.lilo.core.utils.LanguageUtils
 
 val DarkColorScheme = darkColorScheme(
-    background = BackGroundDark,
-    surface = SurfaceDark,
-    surfaceVariant = SurfaceVariantDark,
-    surfaceContainer = SurfaceContainerDark,
-    primary = PrimaryDark,
-    onPrimary = OnPrimaryDark,
-    primaryContainer = PrimaryContainerDark,
-    secondary = SecondaryLight,
+    background = Color(0xFF121212),
+    surface = Grey900,
+    surfaceVariant = Grey800,
+    surfaceContainer = BlueGray900,
+    primary = Amber600,
+    onPrimary = White,
+    primaryContainer = Grey800,
+    secondary = Blue600,
 )
 val LightColorScheme = lightColorScheme(
-    background = BackGroundLight,
-    surface = SurfaceLight,
-    onSurface = OnSurfaceLight,
-    surfaceVariant = SurfaceVariantLight,
-    onSurfaceVariant = OnSurfaceVariantLight,
-    surfaceContainer = SurfaceContainerLight,
-    primary = PrimaryLight,
-    onPrimary = OnPrimaryLight,
-    primaryContainer = PrimaryContainerLight,
-    secondary = SecondaryLight,
+    background = White,
+    surface = White,
+    onSurface = Gray600,
+    surfaceVariant = Color(0x0DFFAB00),
+    onSurfaceVariant = Grey900,
+    surfaceContainer = White,
+    primary = Amber600,
+    onPrimary = White,
+    primaryContainer = Amber500,
+    secondary = Blue600,
 )
 
 @Composable
@@ -56,4 +57,9 @@ internal fun LiloTheme(
         )
     }
 
+}
+
+object AppTheme {
+    val liloColor: LiloColors
+        @Composable get() = LocalLiloColorsPalette.current
 }

@@ -1,12 +1,16 @@
 package com.sepideh.lilo.ui.theme
 
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
 
 data class LiloColors(
+    val taskColor: Color = Color.Unspecified,
+    val noteColor: Color = Color.Unspecified,
+    val expenseColor: Color = Color.Unspecified,
+    val passwordColor: Color = Color.Unspecified,
+
     val headerSurface: Color = Color.Unspecified,
     val selectedCategory: Color = Color.Unspecified,
     val unSelectedCategory: Color = Color.Unspecified,
@@ -15,40 +19,31 @@ data class LiloColors(
     val elevatedCard: Color = Color.Unspecified,
 )
 
-val headerSurfaceLight = PrimaryLight
-val headerSurfaceDark = Black
-
-val selectedCategoryLight = PrimaryLight
-val selectedCategoryDark = Color(color = 0xFFFFFFFF)
-
-val unSelectedCategoryLight = Gray
-val unSelectedCategoryDark = Gray
-
-val primaryTitleLight = PrimaryLight
-val primaryTitleDark = PrimaryLight
-
-val primaryContainerTitleLight = PrimaryContainerLight
-val primaryContainerTitleDark = PrimaryContainerLight
-
-
-val elevatedCardLight = Color(color = 0xFFFFFFFF)
-val elevatedCardDark = Grey800
 
 val LiloColorsLight = LiloColors(
-    headerSurface=headerSurfaceLight,
-    selectedCategory = selectedCategoryLight,
-    unSelectedCategory = unSelectedCategoryLight,
-    primaryTitle = primaryTitleLight,
-    primaryContainerTitle = primaryContainerTitleLight,
-    elevatedCard = elevatedCardLight
-)
-val LiloColorsDark = LiloColors(
-    headerSurface = headerSurfaceDark,
-    selectedCategory = selectedCategoryDark,
-    unSelectedCategory = unSelectedCategoryDark,
-    primaryTitle = primaryTitleDark,
-    primaryContainerTitle=primaryContainerTitleDark,
-    elevatedCard = elevatedCardDark
+    taskColor = Amber500,
+    noteColor = Green500,
+    expenseColor = Blue700,
+    passwordColor = Purple500,
+    headerSurface = Amber600,
+    selectedCategory = Amber600,
+    unSelectedCategory = Gray,
+    primaryTitle = Amber600,
+    primaryContainerTitle = Amber500,
+    elevatedCard = White
 )
 
-val LocalLiloColorsPalette = compositionLocalOf { LiloColors() }
+val LiloColorsDark = LiloColors(
+    taskColor = Amber300,
+    noteColor = Green300,
+    expenseColor = Blue300,
+    passwordColor = Purple200,
+    headerSurface = Black,
+    selectedCategory = White,
+    unSelectedCategory = Gray,
+    primaryTitle = Amber600,
+    primaryContainerTitle = Grey800,
+    elevatedCard = Grey800
+)
+
+val LocalLiloColorsPalette = staticCompositionLocalOf { LiloColors() }
