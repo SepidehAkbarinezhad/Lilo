@@ -1,15 +1,13 @@
 package com.sepideh.lilo.core.service
 
-import android.Manifest
 import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
 
 actual class PermissionManager(private val context: Context) {
 
@@ -26,46 +24,25 @@ actual class PermissionManager(private val context: Context) {
     }
 
     actual suspend fun hasNotificationPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // For Android 13+ (API 33+), notification is a runtime permission
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true  // For Android 12 and lower, permission is always granted automatically
-        }
+        // NotificationManagerCompat.areNotificationsEnabled() works correctly across ALL API levels:
+        // - API 33+ (Tiramisu): internally checks the POST_NOTIFICATIONS runtime permission grant state
+        // - API < 33/Android 13: notifications are granted automatically by the system at install time (no runtime
+        //   prompt exists), but the user can still disable them later from the app's Settings screen —
+        //   this call correctly detects that manual disable, which checkSelfPermission cannot.
+        //
+        // This is more reliable than checkSelfPermission(POST_NOTIFICATIONS) alone, since that call
+        // is only meaningful on API 33+ and would incorrectly report "granted" on older devices
+        // even if the user turned notifications off from Settings.
+        return NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
+
     actual suspend fun requestNeededPermission() {
-        // the flag is required when starting an activity from a non-Activity context (like Application or Service).
-        // We're launching the system settings screen from PermissionManager, which uses an application context — so NEW_TASK is necessary.
-        // Without it, we will get an IllegalStateException because Android doesn't know how to properly launch the activity in a new task from a non-UI context
-
-        when {
-            // Android 12 (S), show the Exact Alarm permissions screen
-            // Notification permission is not needed on this version
-            Build.VERSION.SDK_INT == Build.VERSION_CODES.S -> {
-                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                    data = Uri.parse("package:${context.packageName}")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                context.startActivity(intent)
-            }
-            // Android 13+ (Tiramisu): open App Settings because both alarm & notification may need user action
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.parse("package:${context.packageName}")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                context.startActivity(intent)
-            }
-
-            else -> {
-                // Android <12: no explicit alarm or notification permissions are needed
-            }
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = "package:${context.packageName}".toUri()
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
+        context.startActivity(intent)
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
