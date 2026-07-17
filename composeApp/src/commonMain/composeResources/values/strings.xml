@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
+    <string name="task_feature_title">Tasks</string>
+    <string name="note_feature_title">Notes</string>
+    <string name="expence_feature_title">Expenses</string>
+    <string name="password_feature_title">Passwords</string>
+
     <string name="search_hint">search...</string>
     <string name="close_hint">clear search</string>
     <string name="all">all</string>

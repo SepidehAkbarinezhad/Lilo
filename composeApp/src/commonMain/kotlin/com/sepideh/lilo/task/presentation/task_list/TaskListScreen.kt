@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +50,8 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
+import com.sepideh.lilo.ui.icons.TaskCardIcon
+import com.sepideh.lilo.ui.theme.AppTheme
 import com.sepideh.lilo.ui.theme.LiloColors
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
@@ -108,7 +111,6 @@ fun TaskListScreen(
     val clickable = !state.isFilterSheetOpen
     val searchResultListState = rememberLazyListState()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val palette = LocalLiloColorsPalette.current
 
 
     LaunchedEffect(key1 = state.tasksResult) {
@@ -148,11 +150,11 @@ fun TaskListScreen(
                 )
             },
             content = {  if (state.categories.isNotEmpty()) {
-                CategoryList(state, palette, clickable, onAction)
+                CategoryList(state, clickable, onAction)
             }
 
                 if (state.tasksResult.isEmpty() && !isLoading) {
-                    EmptyTaskList(palette)
+                    EmptyTaskList()
                 } else {
                     TaskList(
                         tasks = state.tasksResult,
@@ -171,7 +173,6 @@ fun TaskListScreen(
 @Composable
 fun CategoryList(
     state: TaskListState,
-    palette: LiloColors,
     clickable: Boolean,
     onAction: (BaseAction) -> Unit
 ) {
@@ -185,7 +186,7 @@ fun CategoryList(
             val isSelected =
                 category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
             val titleColor =
-                if (isSelected) palette.selectedCategory else palette.unSelectedCategory
+                if (isSelected) AppTheme.liloColor.selectedCategory else AppTheme.liloColor.unSelectedCategory
 
             AppText(
                 modifier = Modifier.widthIn(min = 100.dp).border(
@@ -213,7 +214,7 @@ fun CategoryList(
 }
 
 @Composable
-fun EmptyTaskList(palette: LiloColors) {
+fun EmptyTaskList() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -230,12 +231,12 @@ fun EmptyTaskList(palette: LiloColors) {
         AppText(
             text = Res.string.empty_list_title,
             textType = TextType.SubTitle,
-            color = palette.primaryContainerTitle
+            color = AppTheme.liloColor.primaryContainerTitle
         )
         AppText(
             text = Res.string.empty_list_comment,
             textType = TextType.SubTitle,
-            color = palette.primaryTitle
+            color = AppTheme.liloColor.primaryTitle
         )
     }
 }
@@ -336,5 +337,3 @@ fun TaskListScreenPrev() {
         onAction = {}
     )
 }
-
-
