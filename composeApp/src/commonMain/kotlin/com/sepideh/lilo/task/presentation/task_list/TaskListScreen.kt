@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
@@ -50,10 +49,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
-import com.sepideh.lilo.ui.icons.TaskCardIcon
-import com.sepideh.lilo.ui.theme.AppTheme
-import com.sepideh.lilo.ui.theme.LiloColors
-import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
+import com.sepideh.lilo.ui.theme.LiloAppTheme
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
@@ -186,7 +182,7 @@ fun CategoryList(
             val isSelected =
                 category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
             val titleColor =
-                if (isSelected) AppTheme.liloColor.selectedCategory else AppTheme.liloColor.unSelectedCategory
+                if (isSelected) LiloAppTheme.liloColor.selectedCategory else LiloAppTheme.liloColor.unSelectedCategory
 
             AppText(
                 modifier = Modifier.widthIn(min = 100.dp).border(
@@ -231,12 +227,12 @@ fun EmptyTaskList() {
         AppText(
             text = Res.string.empty_list_title,
             textType = TextType.SubTitle,
-            color = AppTheme.liloColor.primaryContainerTitle
+            color = LiloAppTheme.liloColor.primaryContainerTitle
         )
         AppText(
             text = Res.string.empty_list_comment,
             textType = TextType.SubTitle,
-            color = AppTheme.liloColor.primaryTitle
+            color = LiloAppTheme.liloColor.primaryTitle
         )
     }
 }

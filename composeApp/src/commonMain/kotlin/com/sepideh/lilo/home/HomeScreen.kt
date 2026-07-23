@@ -9,6 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.BaseScreen
+import com.sepideh.lilo.core.presentation.components.AppPreviews
+import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.home.domain.FeatureCardFactory
 import com.sepideh.lilo.home.domain.fakeFeatureCardFactory
 import com.sepideh.lilo.home.presentation.HomeAction
@@ -16,10 +19,7 @@ import com.sepideh.lilo.home.presentation.HomeState
 import com.sepideh.lilo.home.presentation.HomeViewModel
 import com.sepideh.lilo.home.presentation.components.FeatureCardShell
 import com.sepideh.lilo.home.presentation.model.LiloFeature
-import com.sepideh.lilo.settings.presentation.SettingsScreen
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
-import kotlin.collections.forEach
 
 @Composable
 fun Homescreen(
@@ -47,37 +47,46 @@ fun HomeScreenContent(
     onAction: (HomeAction) -> Unit,
     featureCardFactory: FeatureCardFactory = koinInject()
 ) {
-    LazyColumn {
-        items(LiloFeature.entries, key = { it.name }) { feature ->
+    BaseScreen(
+        header = {}
+    ) {
+        LazyColumn {
+            items(LiloFeature.entries, key = { it.name }) { feature ->
 
-            // Each card triggers its own data subscription once it enters composition
-            LaunchedEffect(feature) {
-                onAction(HomeAction.ObserveFeature(feature))
-            }
+                // Each card triggers its own data subscription once it enters composition
+                LaunchedEffect(feature) {
+                    onAction(HomeAction.ObserveFeature(feature))
+                }
 
-            val renderStrategy = remember(feature) {
-                featureCardFactory.cardFor(feature).getReportRender()
-            }
+                val renderStrategy = remember(feature) {
+                    featureCardFactory.cardFor(feature).getReportRender()
+                }
 
-            FeatureCardShell(
-                feature = feature,
-                onAddClick = { onAction(HomeAction.AddClicked(feature)) },
-                onMoreClick = { onAction(HomeAction.MoreClicked(feature)) },
-                onCardClick = { onAction(HomeAction.FeatureCardClicked(feature)) }
-            ) {
-                state.reportDetails[feature]?.let { detail ->
-                    renderStrategy.Render(detail)
+                FeatureCardShell(
+                    feature = feature,
+                    onAddClick = { onAction(HomeAction.AddClicked(feature)) },
+                    onMoreClick = { onAction(HomeAction.MoreClicked(feature)) },
+                    onCardClick = { onAction(HomeAction.FeatureCardClicked(feature)) }
+                ) {
+                    state.reportDetails[feature]?.let { detail ->
+                        renderStrategy.Render(detail)
+                    }
                 }
             }
         }
     }
+
 }
 
-
-@Preview
+@AppPreviews
 @Composable
-fun HomescreenContentPrev() {
-    HomeScreenContent(
-        state = HomeState(), onAction = {}, featureCardFactory = fakeFeatureCardFactory()
-    )
+private fun HomeLightFaPreview() {
+    LiloPreviewWrapper{
+        HomeScreenContent(
+            state = HomeState(),
+            onAction = {},
+            featureCardFactory = fakeFeatureCardFactory()
+        )
+    }
 }
+

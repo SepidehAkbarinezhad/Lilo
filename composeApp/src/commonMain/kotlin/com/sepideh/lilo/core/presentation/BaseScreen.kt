@@ -28,7 +28,7 @@ fun BaseScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
-        modifier = Modifier.fillMaxSize().background(palette.headerSurface)
+        modifier = Modifier.fillMaxSize()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -40,7 +40,6 @@ fun BaseScreen(
 
         Surface(
             modifier = Modifier.weight(1f).fillMaxWidth(),
-            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

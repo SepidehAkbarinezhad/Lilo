@@ -16,6 +16,7 @@ import org.jetbrains.compose.resources.StringResource
 
 enum class LiloFeature(
     val titleRes: StringResource,
+    val contentSize: Int = 0,
     val iconRes: ImageVector,
     val accentColor: (LiloColors) -> Color// Lambda that takes the light/dark palette in runtime and returns the active Color
 ) {
