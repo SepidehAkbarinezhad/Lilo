@@ -22,9 +22,9 @@ val White = Color(0xFFFFFFFF)
 val Amber600 = Color(0xFFFFA000)
 val Blue600 = Color(0xFF1565C0)
 val Gray600 = Color(0xFF757575)
-val Grey800 = Color(0xFF424242)
+val Gray800 = Color(0xFF424242)
 val BlueGray900 = Color(0xFF263238)
-val Grey900 = Color(0xFF212121)
+val Gray900 = Color(0xFF212121)
 
 
 

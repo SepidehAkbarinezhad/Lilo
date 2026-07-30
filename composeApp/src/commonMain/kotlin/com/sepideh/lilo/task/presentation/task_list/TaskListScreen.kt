@@ -49,7 +49,7 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
-import com.sepideh.lilo.ui.theme.LiloAppTheme
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.empty_list
 import lilo.composeapp.generated.resources.empty_list_comment
@@ -182,7 +182,7 @@ fun CategoryList(
             val isSelected =
                 category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
             val titleColor =
-                if (isSelected) LiloAppTheme.liloColor.selectedCategory else LiloAppTheme.liloColor.unSelectedCategory
+                if (isSelected) LiloExtendedTheme.colors.selectedCategory else LiloExtendedTheme.colors.unSelectedCategory
 
             AppText(
                 modifier = Modifier.widthIn(min = 100.dp).border(
@@ -227,12 +227,12 @@ fun EmptyTaskList() {
         AppText(
             text = Res.string.empty_list_title,
             textType = TextType.SubTitle,
-            color = LiloAppTheme.liloColor.primaryContainerTitle
+            color = LiloExtendedTheme.colors.primaryContainerTitle
         )
         AppText(
             text = Res.string.empty_list_comment,
             textType = TextType.SubTitle,
-            color = LiloAppTheme.liloColor.primaryTitle
+            color = LiloExtendedTheme.colors.primaryTitle
         )
     }
 }

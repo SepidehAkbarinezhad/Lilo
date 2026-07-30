@@ -1,8 +1,9 @@
 package com.sepideh.lilo.core.utils
 
-import java.util.Locale
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 
 actual fun changeLanguage(language: String) {
-    val locale = Locale(language)
-    Locale.setDefault(locale)
+    val localeList = LocaleListCompat.forLanguageTags(language)
+    AppCompatDelegate.setApplicationLocales(localeList)
 }

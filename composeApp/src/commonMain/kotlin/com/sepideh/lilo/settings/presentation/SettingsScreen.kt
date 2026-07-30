@@ -4,14 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
+import com.sepideh.lilo.core.domain.model.AppLanguage
+import com.sepideh.lilo.core.domain.model.AppTheme
 import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.presentation.components.SettingItem
 import com.sepideh.lilo.settings.presentation.components.SettingsItemContainer
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
-import com.sepideh.lilo.settings.presentation.model.AppTheme
+import com.sepideh.lilo.settings.presentation.model.labelRes
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.ic_language
 import lilo.composeapp.generated.resources.ic_theme
@@ -58,7 +59,7 @@ fun SettingsScreen(
             ) {
                 AppTheme.entries.forEach { themeV ->
                     SettingItem(
-                        label = themeV.label, value = themeV, selectedValue = theme,
+                        label = themeV.labelRes, value = themeV, selectedValue = theme,
                         onSelected = { onAction(SettingsAction.SelectTheme(theme = themeV)) })
                 }
             }
@@ -68,7 +69,7 @@ fun SettingsScreen(
             ) {
                 AppLanguage.entries.forEach { languageV ->
                     SettingItem(
-                        label = languageV.label,
+                        label = languageV.labelRes,
                         value = languageV,
                         selectedValue = language,
                         onSelected = {

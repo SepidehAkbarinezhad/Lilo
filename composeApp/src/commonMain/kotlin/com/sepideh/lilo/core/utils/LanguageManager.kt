@@ -1,7 +1,7 @@
 package com.sepideh.lilo.core.utils
 
 import androidx.compose.ui.unit.LayoutDirection
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
+import com.sepideh.lilo.core.domain.model.AppLanguage
 
 
 expect fun changeLanguage(language: String)
