@@ -3,10 +3,10 @@ package com.sepideh.lilo.settings.data
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.sepideh.lilo.core.domain.model.AppLanguage
+import com.sepideh.lilo.core.domain.model.AppTheme
 import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
-import com.sepideh.lilo.settings.presentation.model.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

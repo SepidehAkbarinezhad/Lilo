@@ -19,12 +19,9 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.home.presentation.model.LiloFeature
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.ui.theme.LiloColors
-import com.sepideh.lilo.ui.theme.LiloTheme
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FeatureCardShell(
@@ -77,19 +74,3 @@ fun FeatureCardShell(
     }
 }
 
-@Preview
-@Composable
-fun FeatureCardShellPrev() {
-    LiloTheme(
-        darkTheme = false,
-        languageCode = AppLanguage.FA.code
-    ) {
-        FeatureCardShell(
-            feature = LiloFeature.TASKS,
-            onAddClick = {},
-            onMoreClick = {},
-            onCardClick = {},
-            detailContent = {}
-        )
-    }
-}

@@ -1,6 +1,6 @@
 package com.sepideh.lilo.settings.domain.usecase
 
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
+import com.sepideh.lilo.core.domain.model.AppLanguage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.SharingStarted
