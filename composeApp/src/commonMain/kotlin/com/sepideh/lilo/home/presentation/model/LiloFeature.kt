@@ -2,9 +2,9 @@ package com.sepideh.lilo.home.presentation.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.composables.ExpensesCardIcon
-import com.composables.NoteCardIcon
-import com.composables.PasswordCardIcon
+import com.composables.ExpenseCardIcon
+import com.sepideh.lilo.ui.icons.PasswordCardIcon
+import com.sepideh.lilo.ui.icons.NoteCardIcon
 import com.sepideh.lilo.ui.icons.TaskCardIcon
 import com.sepideh.lilo.ui.theme.LiloColors
 import lilo.composeapp.generated.resources.Res
@@ -30,7 +30,7 @@ enum class LiloFeature(
         accentColor = { colors -> colors.noteColor }),
     EXPENSES(
         titleRes = Res.string.expence_feature_title,
-        iconRes = ExpensesCardIcon,
+        iconRes = ExpenseCardIcon,
         accentColor = { colors -> colors.expenseColor }),
     PASSWORDS(
         titleRes = Res.string.password_feature_title,

@@ -9,13 +9,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.sepideh.lilo.core.domain.model.AppTheme
+import com.sepideh.lilo.core.utils.LanguageManager
 import com.sepideh.lilo.core.utils.LanguageUtils
-import com.sepideh.lilo.core.utils.changeLanguage
 import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
 import org.koin.mp.KoinPlatform.getKoin
@@ -54,6 +55,14 @@ internal fun LiloTheme(
 ) {
     val userPreferencesManager: UserPreferencesManager = remember { getKoin().get() }
     val userPreferences by userPreferencesManager.userPreferences.collectAsState(UserPreferences())
+    val languageManager: LanguageManager = remember { getKoin().get() }
+    //todo this should be changed
+    val languageCode by produceState(initialValue = UserPreferences().language.code) {
+        userPreferencesManager.userPreferences.collect { prefs ->
+            value = prefs.language.code
+            languageManager.applyLanguage(value) // runs after value updated
+        }
+    }
 
     val darkTheme = when (userPreferences.theme) {
         AppTheme.LIGHT -> false
@@ -61,19 +70,24 @@ internal fun LiloTheme(
         AppTheme.SYSTEM -> isSystemInDarkTheme()
     }
 
-    val languageCode = userPreferences.language.code
+
+// Apply platform-level changes whenever languageCode updates
     LaunchedEffect(languageCode) {
-        changeLanguage(languageCode)
+        languageManager.applyLanguage(languageCode)
     }
+
+    // Derive layout direction directly from the state flow (synchronous with state)
     val layoutDirection = remember(languageCode) {
         LanguageUtils.layoutDirection(languageCode)
     }
 
-    LiloTheme(
-        darkTheme = darkTheme,
-        layoutDirection = layoutDirection,
-        content = content
-    )
+        LiloTheme(
+            darkTheme = darkTheme,
+            layoutDirection = layoutDirection,
+            content = content
+        )
+
+
 }
 
 //  Pure, parameterized version: used by previews & tests, no Koin needed, no runtime process
