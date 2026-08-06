@@ -24,7 +24,7 @@ enum class LiloFeature(
         titleRes = Res.string.task_feature_title,
         iconRes = TaskCardIcon,
         accentColor = { colors -> colors.taskColor }),
-    NOTES(
+  /*  NOTES(
         titleRes = Res.string.note_feature_title,
         iconRes = NoteCardIcon,
         accentColor = { colors -> colors.noteColor }),
@@ -36,5 +36,5 @@ enum class LiloFeature(
         titleRes = Res.string.password_feature_title,
         iconRes = PasswordCardIcon,
         accentColor = { colors -> colors.passwordColor }
-    )
+    )*/
 }
