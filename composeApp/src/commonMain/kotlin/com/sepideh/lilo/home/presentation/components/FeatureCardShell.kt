@@ -17,9 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppCircleButton
+import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
+import com.sepideh.lilo.home.HomeScreenContent
+import com.sepideh.lilo.home.domain.fakeFeatureCardFactory
+import com.sepideh.lilo.home.presentation.HomeState
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.ui.theme.LiloColors
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import org.jetbrains.compose.resources.stringResource
 
@@ -31,7 +38,7 @@ fun FeatureCardShell(
     onCardClick: () -> Unit,
     detailContent: @Composable () -> Unit
 ) {
-    val colors: LiloColors = LocalLiloColorsPalette.current
+    val colors: LiloColors = LiloExtendedTheme.colors
     with(feature) {
         Card(
             modifier = Modifier.padding(12.dp),
@@ -65,12 +72,26 @@ fun FeatureCardShell(
 
                     AppText(text = stringResource(feature.titleRes), textType = TextType.SubTitle)
                 }
-                IconButton(onClick = onAddClick) { }
-                IconButton(onClick = onMoreClick) { }
+                Spacer(modifier = Modifier.weight(1f))
+                AppCircleButton(color = feature.accentColor(colors), onClick = onAddClick)
             }
             detailContent()
         }
 
+    }
+}
+
+@AppPreviews
+@Composable
+private fun HomeScreenPreview() {
+    LiloPreviewWrapper {
+        FeatureCardShell(
+            feature = LiloFeature.TASKS,
+            onAddClick = {},
+            onMoreClick = {},
+            onCardClick = {},
+            detailContent = {}
+        )
     }
 }
 

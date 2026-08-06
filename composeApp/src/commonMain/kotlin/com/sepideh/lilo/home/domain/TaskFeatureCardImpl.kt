@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class TaskFeatureCardImpl(
-    private val repo: TaskRepository
 ) : FeatureCard<TaskReportDetail> {
     override val feature = LiloFeature.TASKS
 

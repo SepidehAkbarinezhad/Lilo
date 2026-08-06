@@ -1,7 +1,6 @@
 package com.sepideh.lilo.task.di
 
 import com.sepideh.lilo.category.di.categoryDatabaseQualifier
-import com.sepideh.lilo.settings.presentation.SettingsViewModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListViewModel
 import org.koin.core.module.Module
@@ -13,7 +12,7 @@ val taskDatabaseQualifier = named("taskDatabase")
 
 expect fun taskPlatformModule(): Module
 
-val viewModelModule = module {
+val taskModule = module {
     viewModel {
         TaskListViewModel(
             languageProvider = get(),

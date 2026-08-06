@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
+    <string name="app_name">لیلو</string>
     <string name="task_feature_title">کارها</string>
     <string name="note_feature_title">یادداشت‌ها</string>
     <string name="expence_feature_title">هزینه‌ها</string>

@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
+import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.components.AppPreviews
@@ -18,11 +19,15 @@ import com.sepideh.lilo.home.presentation.HomeAction
 import com.sepideh.lilo.home.presentation.HomeState
 import com.sepideh.lilo.home.presentation.HomeViewModel
 import com.sepideh.lilo.home.presentation.components.FeatureCardShell
+import com.sepideh.lilo.home.presentation.components.HomeHeader
 import com.sepideh.lilo.home.presentation.model.LiloFeature
+import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.add_task_title
+import lilo.composeapp.generated.resources.edit_task_title
 import org.koin.compose.koinInject
 
 @Composable
-fun Homescreen(
+fun HomescreenRoot(
     viewModel: HomeViewModel,
     onNavigateTo: (AppRoutes) -> Unit,
     onBack: () -> Boolean
@@ -35,7 +40,7 @@ fun Homescreen(
         bodyContainer = {
             HomeScreenContent(
                 state = state,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
             )
         }
     )
@@ -48,7 +53,9 @@ fun HomeScreenContent(
     featureCardFactory: FeatureCardFactory = koinInject()
 ) {
     BaseScreen(
-        header = {}
+        header = {
+            HomeHeader()
+        }
     ) {
         LazyColumn {
             items(LiloFeature.entries, key = { it.name }) { feature ->
@@ -80,8 +87,8 @@ fun HomeScreenContent(
 
 @AppPreviews
 @Composable
-private fun HomeLightFaPreview() {
-    LiloPreviewWrapper{
+private fun HomeScreenPreview() {
+    LiloPreviewWrapper {
         HomeScreenContent(
             state = HomeState(),
             onAction = {},
