@@ -120,7 +120,7 @@ fun TaskListScreen(
                     if (clickable) {
                         onAction(
                             BaseAction.OnNavigateTo(
-                                (AppRoutes.TaskDetail(taskId = null))
+                                (AppRoutes.Tasks.Detail(taskId = null))
                             )
                         )
                     }

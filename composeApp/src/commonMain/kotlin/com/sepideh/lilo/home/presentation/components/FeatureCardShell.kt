@@ -1,5 +1,6 @@
 package com.sepideh.lilo.home.presentation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,14 +35,13 @@ import org.jetbrains.compose.resources.stringResource
 fun FeatureCardShell(
     feature: LiloFeature,
     onAddClick: () -> Unit,
-    onMoreClick: () -> Unit,
     onCardClick: () -> Unit,
     detailContent: @Composable () -> Unit
 ) {
     val colors: LiloColors = LiloExtendedTheme.colors
     with(feature) {
         Card(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(12.dp).clickable{onCardClick()},
             colors = CardDefaults.cardColors(
                 containerColor = accentColor(colors).copy(alpha = 0.12f)
             )
@@ -88,7 +88,6 @@ private fun HomeScreenPreview() {
         FeatureCardShell(
             feature = LiloFeature.TASKS,
             onAddClick = {},
-            onMoreClick = {},
             onCardClick = {},
             detailContent = {}
         )
