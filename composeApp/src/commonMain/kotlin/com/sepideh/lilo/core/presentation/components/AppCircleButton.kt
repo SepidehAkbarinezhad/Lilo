@@ -1,6 +1,7 @@
 package com.sepideh.lilo.core.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,16 +12,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 
 @Composable
-fun AppCircleButton(imageVector: ImageVector = Icons.Default.Add, color: Color, onClick: () -> Unit) {
+fun AppCircleButton(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector = Icons.Default.Add,
+    color: Color,
+    onClick: () -> Unit
+) {
     IconButton(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .clip(CircleShape)
-            .background(color)
+            .background(color).size(32.dp)
     ) {
         Icon(
             imageVector = imageVector,
@@ -35,7 +42,9 @@ fun AppCircleButton(imageVector: ImageVector = Icons.Default.Add, color: Color, 
 @Composable
 private fun HomeScreenPreview() {
     val liloColor =
-    LiloPreviewWrapper {
-        AppCircleButton(color = LiloFeature.TASKS.accentColor(LiloExtendedTheme.colors), onClick = {})
-    }
+        LiloPreviewWrapper {
+            AppCircleButton(
+                color = LiloFeature.TASKS.accentColor(LiloExtendedTheme.colors),
+                onClick = {})
+        }
 }

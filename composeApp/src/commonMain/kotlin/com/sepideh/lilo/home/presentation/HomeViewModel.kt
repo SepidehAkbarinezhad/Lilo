@@ -29,9 +29,6 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory) : BaseVi
 
         when (action) {
             is HomeAction.ObserveFeature -> observeFeature(action.feature)
-            is HomeAction.AddClicked -> handleAdd(action.feature)
-            is HomeAction.MoreClicked -> handleMore(action.feature)
-            is HomeAction.FeatureCardClicked -> handleCardClick(action.feature)
         }
     }
 

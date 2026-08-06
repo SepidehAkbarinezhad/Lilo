@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
-import com.sepideh.lilo.core.presentation.BaseHeader
+import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.components.AppPreviews
@@ -21,10 +21,9 @@ import com.sepideh.lilo.home.presentation.HomeViewModel
 import com.sepideh.lilo.home.presentation.components.FeatureCardShell
 import com.sepideh.lilo.home.presentation.components.HomeHeader
 import com.sepideh.lilo.home.presentation.model.LiloFeature
-import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.add_task_title
-import lilo.composeapp.generated.resources.edit_task_title
 import org.koin.compose.koinInject
+import com.sepideh.lilo.app.navigation.routeForAdding
+import com.sepideh.lilo.app.navigation.routeForList
 
 @Composable
 fun HomescreenRoot(
@@ -49,7 +48,7 @@ fun HomescreenRoot(
 @Composable
 fun HomeScreenContent(
     state: HomeState,
-    onAction: (HomeAction) -> Unit,
+    onAction: (BaseAction) -> Unit,
     featureCardFactory: FeatureCardFactory = koinInject()
 ) {
     BaseScreen(
@@ -71,9 +70,14 @@ fun HomeScreenContent(
 
                 FeatureCardShell(
                     feature = feature,
-                    onAddClick = { onAction(HomeAction.AddClicked(feature)) },
-                    onMoreClick = { onAction(HomeAction.MoreClicked(feature)) },
-                    onCardClick = { onAction(HomeAction.FeatureCardClicked(feature)) }
+                    onAddClick = {
+                        onAction(
+                            BaseAction.OnNavigateTo(feature.routeForAdding(featureId = null))
+                        )
+                    },
+                    onCardClick = {  onAction(
+                        BaseAction.OnNavigateTo(feature.routeForList())
+                    ) }
                 ) {
                     state.reportDetails[feature]?.let { detail ->
                         renderStrategy.Render(detail)

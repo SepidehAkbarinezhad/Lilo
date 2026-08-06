@@ -38,7 +38,7 @@ fun TaskList(
                     if (clickable) {
                         onAction(
                             BaseAction.OnNavigateTo(
-                                    (AppRoutes.TaskDetail(taskId = task.id))
+                                    (AppRoutes.Tasks.Detail(taskId = task.id))
                             )
                         )
                     }
