@@ -1,6 +1,7 @@
 package com.sepideh.lilo.home.presentation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +30,7 @@ fun HomeHeader(
 ) {
     AppHeader {
         AppText(
-            modifier = Modifier,
+            modifier = Modifier.padding(horizontal = 4.dp),
             text =
                 Res.string.app_name,
             textType = TextType.Title,
@@ -41,15 +42,15 @@ fun HomeHeader(
 
 @Composable
 fun SettingButton(onSettingClicked: () -> Unit) {
-    IconButton(
-        onClick = onSettingClicked,
-    ) {
-        Image(
-            painter = painterResource(Res.drawable.ic_settings),
-            contentDescription = "Open setting"
-        )
-    }
+
+    Image(
+        modifier = Modifier.clickable { onSettingClicked() },
+        painter = painterResource(Res.drawable.ic_settings),
+        contentDescription = "Open setting"
+    )
+
 }
+
 @AppPreview
 @Composable
 fun BaseHeaderPreview() {
