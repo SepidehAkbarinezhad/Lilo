@@ -16,6 +16,9 @@ object PreviewLocales {
 
 
 @Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_NO)
+annotation class AppPreview
+
+@Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_NO)
 @Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_YES)
 @Preview(locale = PreviewLocales.EN, uiMode = UI_MODE_NIGHT_NO)
 @Preview(locale = PreviewLocales.EN, uiMode = UI_MODE_NIGHT_YES)
@@ -34,3 +37,4 @@ fun LiloPreviewWrapper(
         content()
     }
 }
+

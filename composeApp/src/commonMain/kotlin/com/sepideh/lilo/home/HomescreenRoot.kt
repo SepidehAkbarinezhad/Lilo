@@ -24,6 +24,7 @@ import com.sepideh.lilo.home.presentation.model.LiloFeature
 import org.koin.compose.koinInject
 import com.sepideh.lilo.app.navigation.routeForAdding
 import com.sepideh.lilo.app.navigation.routeForList
+import com.sepideh.lilo.home.presentation.model.TaskReportDetail
 
 @Composable
 fun HomescreenRoot(
@@ -47,13 +48,13 @@ fun HomescreenRoot(
 
 @Composable
 fun HomeScreenContent(
+    featureCardFactory: FeatureCardFactory = koinInject(),
     state: HomeState,
     onAction: (BaseAction) -> Unit,
-    featureCardFactory: FeatureCardFactory = koinInject()
 ) {
     BaseScreen(
         header = {
-            HomeHeader()
+            HomeHeader(onAction = onAction)
         }
     ) {
         LazyColumn {
@@ -64,11 +65,8 @@ fun HomeScreenContent(
                     onAction(HomeAction.ObserveFeature(feature))
                 }
 
-                val renderStrategy = remember(feature) {
-                    featureCardFactory.cardFor(feature).getReportRender()
-                }
-
                 FeatureCardShell(
+                    featureCardFactory = featureCardFactory,
                     feature = feature,
                     onAddClick = {
                         onAction(
@@ -77,12 +75,9 @@ fun HomeScreenContent(
                     },
                     onCardClick = {  onAction(
                         BaseAction.OnNavigateTo(feature.routeForList())
-                    ) }
-                ) {
-                    state.reportDetails[feature]?.let { detail ->
-                        renderStrategy.Render(detail)
-                    }
-                }
+                    ) },
+                    detail = state.reportDetails[feature]
+                )
             }
         }
     }
@@ -94,9 +89,9 @@ fun HomeScreenContent(
 private fun HomeScreenPreview() {
     LiloPreviewWrapper {
         HomeScreenContent(
-            state = HomeState(),
+            featureCardFactory = fakeFeatureCardFactory(),
+            state = HomeState( ),
             onAction = {},
-            featureCardFactory = fakeFeatureCardFactory()
         )
     }
 }

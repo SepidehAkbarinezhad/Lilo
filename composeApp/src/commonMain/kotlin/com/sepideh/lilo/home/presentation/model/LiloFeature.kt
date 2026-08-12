@@ -2,29 +2,25 @@ package com.sepideh.lilo.home.presentation.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.composables.ExpenseCardIcon
-import com.sepideh.lilo.ui.icons.PasswordCardIcon
-import com.sepideh.lilo.ui.icons.NoteCardIcon
 import com.sepideh.lilo.ui.icons.TaskCardIcon
 import com.sepideh.lilo.ui.theme.LiloColors
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.expence_feature_title
-import lilo.composeapp.generated.resources.note_feature_title
-import lilo.composeapp.generated.resources.password_feature_title
+import lilo.composeapp.generated.resources.task_feature_subTitle
 import lilo.composeapp.generated.resources.task_feature_title
 import org.jetbrains.compose.resources.StringResource
 
 enum class LiloFeature(
     val titleRes: StringResource,
-    val contentSize: Int = 0,
+    val subTitleRes: StringResource ,
     val iconRes: ImageVector,
     val accentColor: (LiloColors) -> Color// Lambda that takes the light/dark palette in runtime and returns the active Color
 ) {
     TASKS(
         titleRes = Res.string.task_feature_title,
+        subTitleRes = Res.string.task_feature_subTitle,
         iconRes = TaskCardIcon,
         accentColor = { colors -> colors.taskColor }),
-  /*  NOTES(
+    /*NOTES(
         titleRes = Res.string.note_feature_title,
         iconRes = NoteCardIcon,
         accentColor = { colors -> colors.noteColor }),

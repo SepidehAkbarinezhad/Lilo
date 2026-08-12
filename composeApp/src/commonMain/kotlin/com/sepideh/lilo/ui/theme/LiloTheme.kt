@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.sepideh.lilo.core.domain.model.AppTheme
@@ -39,7 +40,7 @@ val LightColorScheme = lightColorScheme(
     onSurfaceVariant = Gray900,
     surfaceContainer = White,
     primary = Amber600,
-    onPrimary = White,
+    onPrimary = Black,
     primaryContainer = Amber500,
     secondary = Blue600,
 )
