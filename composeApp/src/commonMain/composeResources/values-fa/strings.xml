@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <string name="app_name">لیلو</string>
-    <string name="task_feature_title">کارها</string>
+    <string name="task_feature_title">فعالیت ها</string>
+    <string name="task_feature_subTitle">%1$s فعالیت برای امروز</string>
     <string name="note_feature_title">یادداشت‌ها</string>
     <string name="expence_feature_title">هزینه‌ها</string>
     <string name="password_feature_title">گذرواژه‌ها</string>
@@ -19,7 +20,6 @@
     <string name="dark_mode_label">تاریک</string>
     <string name="add_task_title">افزودن فعالیت</string>
     <string name="add_task_label">افزودن</string>
-    <string name="tasks_list_title">فعالیت ها</string>
     <string name="edit_task_title">ویرایش فعالیت</string>
     <string name="edit_task_label">ویرایش</string>
     <string name="title_label">عنوان</string>

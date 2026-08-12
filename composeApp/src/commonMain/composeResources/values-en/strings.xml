@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Lilo</string>
     <string name="task_feature_title">Tasks</string>
+    <string name="task_feature_subTitle">%1$s tasks for today</string>
     <string name="note_feature_title">Notes</string>
     <string name="expence_feature_title">Expenses</string>
     <string name="password_feature_title">Passwords</string>
@@ -19,7 +20,6 @@
     <string name="dark_mode_label">dark</string>
     <string name="add_task_title">Add task</string>
     <string name="add_task_label">add</string>
-    <string name="tasks_list_title">Tasks</string>
     <string name="edit_task_title">Edit task</string>
     <string name="edit_task_label">edit</string>
     <string name="title_label">title</string>

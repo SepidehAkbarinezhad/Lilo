@@ -7,8 +7,7 @@ import com.sepideh.lilo.task.data.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class TaskFeatureCardImpl(
-) : FeatureCard<TaskReportDetail> {
+class TaskFeatureCardImpl : FeatureCard<TaskReportDetail> {
     override val feature = LiloFeature.TASKS
 
     override fun getReportDetailStrategy(): ReportDetailStrategy<TaskReportDetail> =
@@ -17,7 +16,8 @@ class TaskFeatureCardImpl(
               return  flowOf  (TaskReportDetail(
                   nextTaskTitle ="",
                   nextTaskTime = "",
-                  remainingCount = 1
+                  remainingCount = 1,
+                  subTitleReportCount = 2
               ) )
             }
 
