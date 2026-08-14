@@ -6,13 +6,11 @@ import kotlinx.coroutines.flow.Flow
 interface TaskRepository {
 
     fun getAllTasks(): Flow<List<Task>>
-
     fun getTasksByFilter(
         done: Boolean?,
         priority: List<Int>
     ): Flow<List<Task>>
-
     suspend fun deleteTask(id: Long)
-
-    suspend fun upsertTask(task: Task)
+    suspend fun upsertTask(task: Task): Long
+    suspend fun getTaskById(id: Long): Task?
 }

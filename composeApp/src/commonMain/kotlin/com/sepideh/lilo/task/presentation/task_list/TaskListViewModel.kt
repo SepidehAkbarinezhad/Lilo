@@ -10,15 +10,13 @@ import com.sepideh.lilo.category.data.local.room.CategoryDatabase
 import com.sepideh.lilo.category.data.local.room.toDomainList
 import com.sepideh.lilo.category.data.local.room.toEntity
 import com.sepideh.lilo.category.domain.CategoryDomain
+import com.sepideh.lilo.category.domain.repository.CategoryRepository
 import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.core.utils.setReminderTime
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.data.Reminder
-import com.sepideh.lilo.task.data.local.room.TaskDatabase
-import com.sepideh.lilo.task.data.local.room.toEntity
-import com.sepideh.lilo.task.data.local.room.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.repository.TaskRepository
@@ -47,17 +45,12 @@ import kotlin.time.Duration.Companion.milliseconds
 class TaskListViewModel(
     private val languageProvider: LanguageProvider,
     private val taskRepository: TaskRepository,
-    private val categoryDatabase: CategoryDatabase,
+    private val categoryRepository: CategoryRepository,
     private val reminderScheduler: ReminderScheduler,
 ) : BaseViewModel() {
 
     private val _categories: StateFlow<List<CategoryDomain>> =
-        categoryDatabase.categoryDao().getAllCategories().onEach { categories ->
-            if (categories.isEmpty()) {
-                // Perform upsert only if categories are empty after fetching
-                upsertCategories()
-            }
-        }.map { it.toDomainList() }
+        categoryRepository.getAllCategories()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
@@ -137,14 +130,6 @@ class TaskListViewModel(
                     _tasks.value = tasksList
                     onAction(BaseAction.ShowLoading(false))
                 }
-        }
-    }
-
-    private fun upsertCategories() {
-        viewModelScope.launch {
-            CategoryDomain.categories.subList(1, CategoryDomain.categories.size).forEach { item ->
-                categoryDatabase.categoryDao().upsert(item.toEntity())
-            }
         }
     }
 
@@ -264,7 +249,7 @@ class TaskListViewModel(
                     viewModelScope.launch {
                         delay(500)
                         withContext(Dispatchers.IO) {
-                            it.id?.let {id -> taskRepository.deleteTask(id = id) }
+                            it.id?.let { id -> taskRepository.deleteTask(id = id) }
                         }
                         onAction(BaseAction.ShowLoading(false))
                     }
@@ -303,7 +288,7 @@ class TaskListViewModel(
 
                 }
                 viewModelScope.launch {
-                   taskRepository.upsertTask(task = action.task)
+                    taskRepository.upsertTask(task = action.task)
                 }
             }
 
