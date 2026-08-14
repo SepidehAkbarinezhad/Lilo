@@ -78,7 +78,8 @@ fun FeatureCardShell(
                             text = stringResource(
                                 feature.subTitleRes,
                                 detail.subTitleReportCount
-                            ), textType = TextType.SubTitle
+                            ), textType = TextType.SubTitle,
+                            color = colors.subtitleText
                         )
                     }
                 }
