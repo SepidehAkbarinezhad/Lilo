@@ -15,13 +15,13 @@ object PreviewLocales {
 }
 
 
-@Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_NO)
+@Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_NO, showBackground = true)
 annotation class AppPreview
 
-@Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_NO)
-@Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_YES)
-@Preview(locale = PreviewLocales.EN, uiMode = UI_MODE_NIGHT_NO)
-@Preview(locale = PreviewLocales.EN, uiMode = UI_MODE_NIGHT_YES)
+@Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_NO, showBackground = true)
+@Preview(locale = PreviewLocales.FA, uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+@Preview(locale = PreviewLocales.EN, uiMode = UI_MODE_NIGHT_NO, showBackground = true)
+@Preview(locale = PreviewLocales.EN, uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 annotation class AppPreviews
 
 @Composable
