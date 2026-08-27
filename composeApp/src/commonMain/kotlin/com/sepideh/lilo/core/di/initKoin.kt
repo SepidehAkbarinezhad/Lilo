@@ -3,6 +3,8 @@ package com.sepideh.lilo.core.di
 import com.sepideh.lilo.category.di.categoryModule
 import com.sepideh.lilo.category.di.categoryPlatformModule
 import com.sepideh.lilo.home.di.homeModule
+import com.sepideh.lilo.note.di.noteModule
+import com.sepideh.lilo.note.di.notePlatformModule
 import com.sepideh.lilo.settings.di.settingsModule
 import com.sepideh.lilo.task.di.taskModule
 import com.sepideh.lilo.task.di.taskPlatformModule
@@ -22,8 +24,10 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             categoryModule,
             corePlatformModule(),
             taskPlatformModule(),
+            notePlatformModule(),
             categoryPlatformModule(),
-            taskModule
+            taskModule,
+            noteModule
         )
     }
 }

@@ -8,5 +8,5 @@ fun getTaskDatabaseBuilder(ctx: Context): RoomDatabase.Builder<TaskDatabase> {
     return Room.databaseBuilder<TaskDatabase>(
         context = ctx.applicationContext,
         name = "task.db"
-    ).fallbackToDestructiveMigration()
+    )
 }
