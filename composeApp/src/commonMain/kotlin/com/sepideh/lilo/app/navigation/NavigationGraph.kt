@@ -5,6 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.sepideh.lilo.home.HomescreenRoot
+import com.sepideh.lilo.home.presentation.HomeViewModel
 import com.sepideh.lilo.settings.presentation.SettingsScreenRoot
 import com.sepideh.lilo.settings.presentation.SettingsViewModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
@@ -15,7 +17,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NavigationGraph(navHostController: NavHostController) {
-    NavHost(navController = navHostController, startDestination = AppRoutes.TaskList) {
+    NavHost(navController = navHostController, startDestination = AppRoutes.Home) {
 
         val onBackPressed = { navHostController.navigateUp() }
         val onNavigate: (AppRoutes) -> Unit =
@@ -23,8 +25,12 @@ fun NavigationGraph(navHostController: NavHostController) {
                 navHostController.navigate(route = route)
             }
 
+        composable<AppRoutes.Home> {
+            val viewModel = koinViewModel<HomeViewModel>()
+            HomescreenRoot(viewModel = viewModel, onNavigateTo = onNavigate, onBack = onBackPressed)
+        }
 
-        composable<AppRoutes.TaskList> {
+        composable<AppRoutes.Tasks.List> {
             val viewModel = koinViewModel<TaskListViewModel>()
             TaskListScreenRoot(
                 viewModel = viewModel,
@@ -33,8 +39,8 @@ fun NavigationGraph(navHostController: NavHostController) {
             )
         }
 
-        composable<AppRoutes.TaskDetail> {
-            val args = it.toRoute<AppRoutes.TaskDetail>()
+        composable<AppRoutes.Tasks.Detail> {
+            val args = it.toRoute<AppRoutes.Tasks.Detail>()
             val viewModel = koinViewModel<TaskDetailViewModel>()
             TaskDetailScreenRoot(
                 taskId = args.taskId,

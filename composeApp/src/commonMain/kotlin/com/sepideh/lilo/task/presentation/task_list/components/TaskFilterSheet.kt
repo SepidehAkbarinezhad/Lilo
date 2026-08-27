@@ -29,7 +29,7 @@ import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
-import com.sepideh.lilo.task.presentation.model.TaskStatus
+import com.sepideh.lilo.task.presentation.model.Enums
 import com.sepideh.lilo.task.presentation.task_list.TaskListAction
 import com.sepideh.lilo.task.presentation.task_list.TaskListState
 import lilo.composeapp.generated.resources.Res
@@ -104,7 +104,7 @@ fun FilterHeader(onEvent: (BaseAction) -> Unit) {
 @Composable
 fun StatusFilterContainer(
     filterOption: TaskFilterOption,
-    onStatusClicked: (TaskStatus) -> Unit
+    onStatusClicked: (Enums) -> Unit
 ) {
     AppText(text = stringResource(Res.string.status_filter_label), textType = TextType.SubTitle)
 
@@ -113,11 +113,11 @@ fun StatusFilterContainer(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TaskStatus.entries.forEach { status ->
+        Enums.entries.forEach { status ->
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (status != TaskStatus.ALL) {
+                if (status != Enums.ALL) {
                     AppText(text = status.label)
                     Checkbox(
                         checked = status in filterOption.taskStatus,

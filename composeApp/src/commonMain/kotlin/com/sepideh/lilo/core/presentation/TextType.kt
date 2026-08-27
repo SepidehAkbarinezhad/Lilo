@@ -15,8 +15,8 @@ sealed interface TextType {
 @Composable
 fun styleText(textType: TextType): TextStyle {
     return when (textType) {
-        is TextType.Title -> MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-        is TextType.SubTitle -> MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+        is TextType.Title -> MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+        is TextType.SubTitle -> MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
         is TextType.Body -> MaterialTheme.typography.bodyMedium
         is TextType.FieldError -> MaterialTheme.typography.bodySmall
     }

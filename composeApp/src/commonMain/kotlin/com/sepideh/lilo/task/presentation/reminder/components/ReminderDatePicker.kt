@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.core.domain.model.AppLanguage
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
@@ -21,7 +22,6 @@ import com.sepideh.lilo.core.utils.PlatformType
 import com.sepideh.lilo.core.utils.getCurrentDate
 import com.sepideh.lilo.core.utils.getPlatformType
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
@@ -42,7 +42,7 @@ fun ReminderDatePicker(
     when (languageProvider.currentLanguage) {
         AppLanguage.FA -> {
             if (getPlatformType().name == PlatformType.ANDROID.name)
-                LiloPersianDatePicker(selectedDay = reminderModel.startDay, onAction = onAction,)
+                LiloPersianDatePicker(selectedDay = reminderModel.reminderStartDate, onAction = onAction,)
         }
         AppLanguage.EN -> DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
     }
@@ -55,7 +55,7 @@ fun ReminderDatePicker(
 fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Unit) {
     val palette = LocalLiloColorsPalette.current
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = reminderModel.startDay ?: getCurrentDate(),
+        initialSelectedDateMillis = reminderModel.reminderStartDate ?: getCurrentDate(),
     )
     DatePickerDialog(
         onDismissRequest = {},
@@ -109,7 +109,7 @@ fun ConfirmBtn(selectedDate: Long?, onAction: (BaseAction) -> Unit) {
             onAction(
                 TaskDetailAction.OnReminderDateConfirm(
                     reminderModel = ReminderModel(
-                        startDay = selectedDate
+                        reminderStartDate = selectedDate
                     )
                 )
             )

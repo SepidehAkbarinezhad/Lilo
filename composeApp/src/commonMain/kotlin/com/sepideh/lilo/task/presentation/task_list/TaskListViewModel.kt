@@ -6,24 +6,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.category.data.local.room.CategoryDatabase
-import com.sepideh.lilo.category.data.local.room.toDomainList
-import com.sepideh.lilo.category.data.local.room.toEntity
 import com.sepideh.lilo.category.domain.CategoryDomain
+import com.sepideh.lilo.category.domain.repository.CategoryRepository
 import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
-import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.core.utils.combineDateAndTime
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.data.Reminder
-import com.sepideh.lilo.task.data.local.room.TaskDatabase
-import com.sepideh.lilo.task.data.local.room.toEntity
-import com.sepideh.lilo.task.data.local.room.toTaskList
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
+import com.sepideh.lilo.task.domain.repository.TaskRepository
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.model.TaskFilterOption
-import com.sepideh.lilo.task.presentation.model.TaskStatus
+import com.sepideh.lilo.task.presentation.model.Enums
+import com.sepideh.lilo.task.presentation.model.SortOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
@@ -35,26 +32,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 class TaskListViewModel(
     private val languageProvider: LanguageProvider,
-    private val taskDatabase: TaskDatabase,
-    private val categoryDatabase: CategoryDatabase,
+    private val taskRepository: TaskRepository,
+    private val categoryRepository: CategoryRepository,
     private val reminderScheduler: ReminderScheduler,
-    ) : BaseViewModel() {
+) : BaseViewModel() {
 
-    private val _categories : StateFlow<List<CategoryDomain>> =
-        categoryDatabase.categoryDao().getAllCategories().onEach { categories ->
-            if (categories.isEmpty()) {
-                // Perform upsert only if categories are empty after fetching
-                upsertCategories()
-            }
-        }.map{ it.toDomainList()}
+    private val _categories: StateFlow<List<CategoryDomain>> =
+        categoryRepository.getAllCategories()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
@@ -84,8 +76,8 @@ class TaskListViewModel(
         _categories,
         _debouncedSearchQuery,
         languageProvider.languageFlow
-    ) { state, tasks, categories, searchQuery,currentLanguage ->
-        val updatedCategories : List<CategoryDomain> =
+    ) { state, tasks, categories, searchQuery, currentLanguage ->
+        val updatedCategories: List<CategoryDomain> =
             listOf(CategoryDomain.categories[0]) + categories // Add "All" as the first item in the list
         val validSelectedCategory = categories.find { it.id == state.selectedCategory }
         state.copy(
@@ -97,12 +89,17 @@ class TaskListViewModel(
                 } else {
                     taskList
                 }
-                filteredBasedOnCategory.filter { task ->
+                val filtered = filteredBasedOnCategory.filter { task ->
                     task.title.contains(
                         searchQuery,
                         ignoreCase = true
                     ) || task.description.contains(searchQuery, ignoreCase = true)
                 }
+                val sorted = when (state.sortOrder) {
+                    SortOrder.Priority -> filtered.sortedBy { it.priority }
+                    SortOrder.Date -> filtered.sortedByDescending { it.reminderStartDate ?: 0L }
+                }
+                sorted
             },
             categories = updatedCategories.toPresentationList(currentLanguage),
             selectedCategory = validSelectedCategory?.id
@@ -123,26 +120,22 @@ class TaskListViewModel(
     private fun loadTasks() {
         onAction(BaseAction.ShowLoading(true))
         viewModelScope.launch {
-            taskDatabase.taskDao().getAllTasks()
+            taskRepository.getAllTasks()
                 .collect { tasksList ->
                     delay(500)
-                    _tasks.value = tasksList.toTaskList()
+                    _tasks.value = tasksList
                     onAction(BaseAction.ShowLoading(false))
                 }
-        }
-    }
-
-    private fun upsertCategories() {
-        viewModelScope.launch {
-            CategoryDomain.categories.subList(1, CategoryDomain.categories.size).forEach { item ->
-                categoryDatabase.categoryDao().upsert(item.toEntity())
-            }
         }
     }
 
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
+            is TaskListAction.OnSortOrderChanged -> {
+                _state.update { it.copy(sortOrder = action.sortOrder) }
+            }
+
             is TaskListAction.OnCategorySelected -> {
                 _state.update {
                     it.copy(selectedCategory = action.id)
@@ -178,13 +171,13 @@ class TaskListViewModel(
                 viewModelScope.launch {
                     with(state.value.taskFilterOption) {
                         onAction(BaseAction.ShowLoading(true))
-                        taskDatabase.taskDao().getTaskByFilter(
-                            done = if (taskStatus.isEmpty() || taskStatus.size==2) null else TaskStatus.DONE in taskStatus,
+                        taskRepository.getTasksByFilter(
+                            done = if (taskStatus.isEmpty() || taskStatus.size == 2) null else Enums.DONE in taskStatus,
                             priority = priorityList.map { it.id }
                                 .ifEmpty { Priority.priorities.map { it.id } }
                         ).collect { tasksList ->
-                            delay(500)
-                            _tasks.value = tasksList.toTaskList()
+                            delay(500.milliseconds)
+                            _tasks.value = tasksList
                             onAction(BaseAction.ShowLoading(false))
                         }
                     }
@@ -252,7 +245,7 @@ class TaskListViewModel(
                     viewModelScope.launch {
                         delay(500)
                         withContext(Dispatchers.IO) {
-                            it.id?.let { taskDatabase.taskDao().deleteById(it) }
+                            it.id?.let { id -> taskRepository.deleteTask(id = id) }
                         }
                         onAction(BaseAction.ShowLoading(false))
                     }
@@ -269,16 +262,21 @@ class TaskListViewModel(
             }
 
             is TaskListAction.OnDoneChange -> {
-                if(action.task.done){
-                    action.task.id?.let{
-                        with(action.task){
-                            reminderScheduler.cancelReminder( reminder = Reminder(
-                                id = id?.toInt()!!,
-                                title = title,
-                                content = "",
-                                startDate = startDate,
-                                endDate = setReminderTime(dayMillis = endDate, hour = hour, minute = minute)
-                            )
+                if (action.task.done) {
+                    action.task.id?.let {
+                        with(action.task) {
+                            reminderScheduler.cancelReminder(
+                                reminder = Reminder(
+                                    id = id?.toInt()!!,
+                                    title = title,
+                                    content = "",
+                                    startDate = reminderStartDate,
+                                    endDate = combineDateAndTime(
+                                        dayMillis = reminderEndDate,
+                                        hour = reminderHour,
+                                        minute = reminderMinute
+                                    )
+                                )
                             )
                         }
 
@@ -286,14 +284,12 @@ class TaskListViewModel(
 
                 }
                 viewModelScope.launch {
-                    taskDatabase.taskDao().upsert(task = action.task.toEntity())
+                    taskRepository.upsertTask(task = action.task)
                 }
             }
 
-            is TaskListAction.OnPhotoPicked -> {
-                newTask = newTask?.copy(photo = action.bytes)
-            }
-            is TaskListAction.OnSearchToggle->{
+
+            is TaskListAction.OnSearchToggle -> {
                 _state.update {
                     it.copy(isSearchVisible = action.open)
                 }
