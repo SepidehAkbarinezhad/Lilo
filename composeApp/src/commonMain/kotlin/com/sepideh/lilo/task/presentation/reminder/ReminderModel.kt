@@ -1,8 +1,8 @@
 package com.sepideh.lilo.task.presentation.reminder
 
 data class ReminderModel(
-    val hour: Int? = null,
-    val minute: Int? = null,
-    val startDay: Long? = null,
-    val endDay: Long? = null
+    val reminderHour: Int? = null,
+    val reminderMinute: Int? = null,
+    val reminderStartDate: Long? = null,
+    val reminderEndDate: Long? = null
 )

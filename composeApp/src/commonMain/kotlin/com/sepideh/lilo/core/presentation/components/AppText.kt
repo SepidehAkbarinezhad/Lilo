@@ -48,7 +48,7 @@ fun AppText(
     text: String,
     textType: TextType = TextType.Body,
     color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    textAlign: TextAlign = TextAlign.Justify,
+    textAlign: TextAlign = TextAlign.Start,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,
     maxLines: Int = Int.MAX_VALUE,

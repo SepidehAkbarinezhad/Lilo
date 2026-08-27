@@ -42,7 +42,7 @@ fun ReminderDatePicker(
     when (languageProvider.currentLanguage) {
         AppLanguage.FA -> {
             if (getPlatformType().name == PlatformType.ANDROID.name)
-                LiloPersianDatePicker(selectedDay = reminderModel.startDay, onAction = onAction,)
+                LiloPersianDatePicker(selectedDay = reminderModel.reminderStartDate, onAction = onAction,)
         }
         AppLanguage.EN -> DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
     }
@@ -55,7 +55,7 @@ fun ReminderDatePicker(
 fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Unit) {
     val palette = LocalLiloColorsPalette.current
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = reminderModel.startDay ?: getCurrentDate(),
+        initialSelectedDateMillis = reminderModel.reminderStartDate ?: getCurrentDate(),
     )
     DatePickerDialog(
         onDismissRequest = {},
@@ -109,7 +109,7 @@ fun ConfirmBtn(selectedDate: Long?, onAction: (BaseAction) -> Unit) {
             onAction(
                 TaskDetailAction.OnReminderDateConfirm(
                     reminderModel = ReminderModel(
-                        startDay = selectedDate
+                        reminderStartDate = selectedDate
                     )
                 )
             )

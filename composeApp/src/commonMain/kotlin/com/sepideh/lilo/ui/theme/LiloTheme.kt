@@ -37,7 +37,6 @@ val LightColorScheme = lightColorScheme(
     surface = White,
     onSurface = Gray600,
     surfaceVariant = Color(0x0DFFAB00),
-    onSurfaceVariant = Gray900,
     surfaceContainer = White,
     primary = Amber600,
     onPrimary = Black,
