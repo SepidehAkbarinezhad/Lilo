@@ -253,14 +253,6 @@ class TaskListViewModel(
 
             }
 
-            is TaskListAction.OnTitleChanged -> {
-                newTask = newTask?.copy(title = action.title)
-            }
-
-            is TaskListAction.OnDescriptionChanged -> {
-                newTask = newTask?.copy(description = action.value)
-            }
-
             is TaskListAction.OnDoneChange -> {
                 if (action.task.done) {
                     action.task.id?.let {

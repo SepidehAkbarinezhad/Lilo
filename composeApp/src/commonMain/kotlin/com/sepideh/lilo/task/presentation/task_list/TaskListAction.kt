@@ -21,7 +21,5 @@ sealed interface TaskListAction : BaseAction {
     data class OnDeleteTaskIcon(val task: Task?) : TaskListAction
     data object OnDismissDeleteDialog : TaskListAction
     data object OnDeleteTaskConfirm : TaskListAction
-    data class OnTitleChanged(val title: String) : TaskListAction
-    data class OnDescriptionChanged(val value: String) : TaskListAction
     data class OnDoneChange(val task : Task) : TaskListAction
 }

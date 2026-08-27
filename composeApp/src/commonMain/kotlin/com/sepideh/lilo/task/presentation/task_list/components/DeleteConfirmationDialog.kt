@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.presentation.task_list.components
+package com.sepideh.lilo.core.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -12,19 +12,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.components.AppDialog
-import com.sepideh.lilo.core.presentation.components.AppRowButtons
-import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.presentation.components.DialogModel
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.confirm_button
-import lilo.composeapp.generated.resources.delete_task_confirmation
-import lilo.composeapp.generated.resources.delete_task_logo
+import lilo.composeapp.generated.resources.delete_item_confirmation
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun DeleteConfirmationDialog(
+    logo: DrawableResource,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -36,10 +34,14 @@ fun DeleteConfirmationDialog(
             ) {
                 Image(
                     modifier = Modifier.heightIn(max = 100.dp),
-                    painter = painterResource(Res.drawable.delete_task_logo),
+                    painter = painterResource(logo),
                     contentDescription = ""
                 )
-                AppText(text = Res.string.delete_task_confirmation,textType = TextType.SubTitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                AppText(
+                    text = Res.string.delete_item_confirmation,
+                    textType = TextType.SubTitle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 AppRowButtons(
                     firstButtonTitle = Res.string.confirm_button,
