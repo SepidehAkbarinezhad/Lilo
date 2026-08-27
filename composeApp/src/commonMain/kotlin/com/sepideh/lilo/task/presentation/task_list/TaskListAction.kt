@@ -24,5 +24,4 @@ sealed interface TaskListAction : BaseAction {
     data class OnTitleChanged(val title: String) : TaskListAction
     data class OnDescriptionChanged(val value: String) : TaskListAction
     data class OnDoneChange(val task : Task) : TaskListAction
-    class OnPhotoPicked(val bytes: ByteArray) : TaskListAction
 }

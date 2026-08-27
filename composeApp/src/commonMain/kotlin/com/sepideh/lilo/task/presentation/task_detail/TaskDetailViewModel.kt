@@ -13,7 +13,7 @@ import com.sepideh.lilo.core.domain.ValidateField
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.core.service.PermissionManager
-import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.core.utils.combineDateAndTime
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.domain.model.Task
@@ -132,14 +132,14 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailAction.OnReminderDateConfirm -> {
-                with(action.reminderModel) { updateReminder( startDay = startDay, endDay = endDay) }
+                with(action.reminderModel) { updateReminder( startDay = reminderStartDate, endDay = reminderEndDate) }
                 setReminderDateDialogOpen(open = false)
                 setReminderTimeDialogOpen(open = true)
             }
 
             is TaskDetailAction.OnReminderTimeConfirm -> {
                 with(action.reminderModel){
-                    updateReminder( hour = hour,minute=minute)
+                    updateReminder( hour = reminderHour,minute=reminderMinute)
                 }
                 setReminderTimeDialogOpen(open = false)
             }
@@ -171,10 +171,10 @@ class TaskDetailViewModel(
                             category = selectedCategory?.id
                                 ?: CategoryDomain.categories[0].id,
                             priority =selectedPriority.id,
-                            hour = reminderModel.hour,
-                            minute = reminderModel.minute,
-                            startDate = reminderModel.startDay,
-                            endDate = reminderModel.endDay,
+                            reminderHour = reminderModel.reminderHour,
+                            reminderMinute = reminderModel.reminderMinute,
+                            reminderStartDate = reminderModel.reminderStartDate,
+                            reminderEndDate = reminderModel.reminderEndDate,
                             id = task.id
                         )
                     }
@@ -210,10 +210,10 @@ class TaskDetailViewModel(
                             updateSelectedCategory(selectedTask.category)
                             updateSelectedPriority(selectedTask.priority)
                               with(selectedTask){
-                                 updateReminder(  hour = hour,
-                                    minute = minute,
-                                    startDay = startDate,
-                                    endDay = endDate)
+                                 updateReminder(  hour = reminderHour,
+                                    minute = reminderMinute,
+                                    startDay = reminderStartDate,
+                                    endDay = reminderEndDate)
                             }
 
                         }
@@ -265,8 +265,8 @@ class TaskDetailViewModel(
         }
     }
 
-    private fun updateReminder(hour: Int? = reminderModel.hour, minute: Int? = reminderModel.minute, startDay: Long? = reminderModel.startDay, endDay: Long? = reminderModel.endDay) {
-           reminderModel = reminderModel.copy(hour = hour, minute = minute, startDay = startDay, endDay = endDay)
+    private fun updateReminder(hour: Int? = reminderModel.reminderHour, minute: Int? = reminderModel.reminderMinute, startDay: Long? = reminderModel.reminderStartDate, endDay: Long? = reminderModel.reminderEndDate) {
+           reminderModel = reminderModel.copy(reminderHour = hour, reminderMinute = minute, reminderStartDate = startDay, reminderEndDate = endDay)
             state.update {
                 it.copy(reminderModel = reminderModel)
             }
@@ -295,9 +295,9 @@ class TaskDetailViewModel(
             val shouldShowPermissionDeniedDialog = when (checkDeniedPermission) {
                 true -> {
                     if (isXiaomi) {
-                        reminderModel.hour != null && !hasNotification
+                        reminderModel.reminderHour != null && !hasNotification
                     } else {
-                        reminderModel.hour != null && (!hasNotification || !hasAlarm)
+                        reminderModel.reminderHour != null && (!hasNotification || !hasAlarm)
                     }
                 }
 
@@ -319,14 +319,14 @@ class TaskDetailViewModel(
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
         with(reminderModel) {
-            setReminderTime(dayMillis = startDay, hour = hour, minute = minute)?.let {
+            combineDateAndTime(dayMillis = reminderStartDate, hour = reminderHour, minute = reminderMinute)?.let {
                 reminderScheduler.scheduleReminder(
                     reminder = Reminder(
                         id = taskId.toInt(),
                         title = task.title,
                         content = "",
                         startDate = it,
-                        endDate = setReminderTime(dayMillis = endDay, hour = hour, minute = minute)
+                        endDate = combineDateAndTime(dayMillis = reminderEndDate, hour = reminderHour, minute = reminderMinute)
                     )
                 )
             }

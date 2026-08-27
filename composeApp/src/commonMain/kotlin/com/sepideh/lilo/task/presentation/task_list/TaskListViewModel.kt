@@ -6,15 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.category.data.local.room.CategoryDatabase
-import com.sepideh.lilo.category.data.local.room.toDomainList
-import com.sepideh.lilo.category.data.local.room.toEntity
 import com.sepideh.lilo.category.domain.CategoryDomain
 import com.sepideh.lilo.category.domain.repository.CategoryRepository
 import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
-import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.core.utils.combineDateAndTime
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.domain.model.Task
@@ -35,7 +32,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -101,7 +97,7 @@ class TaskListViewModel(
                 }
                 val sorted = when (state.sortOrder) {
                     SortOrder.Priority -> filtered.sortedBy { it.priority }
-                    SortOrder.Date -> filtered.sortedByDescending { it.startDate ?: 0L }
+                    SortOrder.Date -> filtered.sortedByDescending { it.reminderStartDate ?: 0L }
                 }
                 sorted
             },
@@ -274,11 +270,11 @@ class TaskListViewModel(
                                     id = id?.toInt()!!,
                                     title = title,
                                     content = "",
-                                    startDate = startDate,
-                                    endDate = setReminderTime(
-                                        dayMillis = endDate,
-                                        hour = hour,
-                                        minute = minute
+                                    startDate = reminderStartDate,
+                                    endDate = combineDateAndTime(
+                                        dayMillis = reminderEndDate,
+                                        hour = reminderHour,
+                                        minute = reminderMinute
                                     )
                                 )
                             )
@@ -292,9 +288,6 @@ class TaskListViewModel(
                 }
             }
 
-            is TaskListAction.OnPhotoPicked -> {
-                newTask = newTask?.copy(photo = action.bytes)
-            }
 
             is TaskListAction.OnSearchToggle -> {
                 _state.update {

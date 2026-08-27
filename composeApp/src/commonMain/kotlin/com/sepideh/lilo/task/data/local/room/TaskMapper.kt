@@ -9,15 +9,16 @@ fun TaskEntity.toTask(): Task = Task(
     done = done,
     category = category,
     priority = priority,
-    hour = hour,
-    minute = minute,
-    startDate = startDate,
-    endDate = endDate
+    reminderHour = reminderHour,
+    reminderMinute = reminderMinute,
+    reminderStartDate = reminderStartDate,
+    reminderEndDate = reminderEndDate,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    completedAt = completedAt,
 )
 
-fun List<TaskEntity>.toTaskList() = this.map {
-    it.toTask()
-}
+fun List<TaskEntity>.toTaskList() = this.map { it.toTask() }
 
 fun Task.toEntity(): TaskEntity = TaskEntity(
     id = id,
@@ -26,8 +27,11 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     done = done,
     category = category,
     priority = priority,
-    hour = hour,
-    minute = minute,
-    startDate = startDate,
-    endDate = endDate
+    reminderHour = reminderHour,
+    reminderMinute = reminderMinute,
+    reminderStartDate = reminderStartDate,
+    reminderEndDate = reminderEndDate,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    completedAt = completedAt,
 )
