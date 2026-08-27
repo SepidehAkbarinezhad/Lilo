@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
@@ -24,7 +23,6 @@ import com.sepideh.lilo.home.presentation.model.LiloFeature
 import org.koin.compose.koinInject
 import com.sepideh.lilo.app.navigation.routeForAdding
 import com.sepideh.lilo.app.navigation.routeForList
-import com.sepideh.lilo.home.presentation.model.TaskReportDetail
 
 @Composable
 fun HomescreenRoot(
@@ -70,7 +68,7 @@ fun HomeScreenContent(
                     feature = feature,
                     onAddClick = {
                         onAction(
-                            BaseAction.OnNavigateTo(feature.routeForAdding(featureId = null))
+                            BaseAction.OnNavigateTo(feature.routeForAdding(itemId = null))
                         )
                     },
                     onCardClick = {  onAction(

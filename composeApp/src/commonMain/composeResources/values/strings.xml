@@ -36,7 +36,7 @@
     <string name="priority_label">priority</string>
     <string name="hour_label">Hour</string>
     <string name="minute_label">Minute</string>
-    <string name="delete_task_confirmation">are you sure you want to delete?</string>
+    <string name="delete_item_confirmation">Are you sure you want to delete this?</string>
     <string name="confirm_button">ok</string>
     <string name="cancel_button">cancel</string>
     <string name="empty_list_title">List is empty</string>

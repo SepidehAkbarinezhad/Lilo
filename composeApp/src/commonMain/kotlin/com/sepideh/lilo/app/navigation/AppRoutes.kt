@@ -21,6 +21,15 @@ sealed class AppRoutes {
     }
 
 
+    @Serializable
+    sealed class Notes : AppRoutes() {
+        @Serializable
+        data object List : AppRoutes()
+        @Serializable
+        data class Detail(val noteId : Long?) : AppRoutes()
+    }
+
+
 
 
 }

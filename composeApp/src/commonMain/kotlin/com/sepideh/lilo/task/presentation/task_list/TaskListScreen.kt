@@ -2,23 +2,11 @@ package com.sepideh.lilo.task.presentation.task_list
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,7 +25,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
@@ -45,29 +32,23 @@ import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
-import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.components.AppCircleButton
 import com.sepideh.lilo.core.presentation.components.AppHeader
 import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.AppSearchBar
-import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.presentation.components.CategoryList
+import com.sepideh.lilo.core.presentation.components.DeleteConfirmationDialog
 import com.sepideh.lilo.core.presentation.components.FeatureEmptyIcon
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.home.presentation.model.LiloFeature
-import com.sepideh.lilo.task.presentation.task_list.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.task_list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.task_list.components.TaskList
-import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.empty_list
-import lilo.composeapp.generated.resources.empty_list_comment
-import lilo.composeapp.generated.resources.empty_list_title
+import lilo.composeapp.generated.resources.delete_task_logo
 import lilo.composeapp.generated.resources.ic_filter
-import lilo.composeapp.generated.resources.ic_settings
 import lilo.composeapp.generated.resources.ic_search
+import lilo.composeapp.generated.resources.ic_settings
 import lilo.composeapp.generated.resources.tasks_list_title
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -93,12 +74,14 @@ fun TaskListScreenRoot(
         },
         dialogContent = {
             if (state.isDeleteDialogOpen) {
-                DeleteConfirmationDialog(onConfirm = {
-                    viewModel.onAction(
-                        TaskListAction.OnDeleteTaskConfirm
-                    )
-                    viewModel.onAction(TaskListAction.OnDismissDeleteDialog)
-                }, onDismiss = { viewModel.onAction(TaskListAction.OnDismissDeleteDialog) })
+                DeleteConfirmationDialog(
+                    logo = Res.drawable.delete_task_logo,
+                    onConfirm = {
+                        viewModel.onAction(TaskListAction.OnDeleteTaskConfirm)
+                        viewModel.onAction(TaskListAction.OnDismissDeleteDialog)
+                    },
+                    onDismiss = { viewModel.onAction(TaskListAction.OnDismissDeleteDialog) }
+                )
             }
         }
 
@@ -177,48 +160,7 @@ fun TaskListScreen(
 
 }
 
-@Composable
-fun CategoryList(
-    state: TaskListState,
-    clickable: Boolean,
-    onAction: (BaseAction) -> Unit
-) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(items = state.categories) { category ->
 
-            // Determine if the category is selected or if it's the first one when selectedCategory is null
-            val isSelected =
-                category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
-            val titleColor =
-                if (isSelected) LiloExtendedTheme.colors.selectedCategory else LiloExtendedTheme.colors.unSelectedCategory
-
-            AppText(
-                modifier = Modifier.widthIn(min = 100.dp).border(
-                    width = 1.dp,
-                    color = titleColor,
-                    shape = RoundedCornerShape(8.dp),
-                ).padding(4.dp)
-                    .clickable(
-                        indication = null, // Disable the ripple effect
-                        interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
-                    ) {
-                        if (clickable) onAction(
-                            TaskListAction.OnCategorySelected(
-                                category.id
-                            )
-                        )
-                    },
-                text = category.title,
-                textAlign = TextAlign.Center,
-                color = titleColor,
-                textType = TextType.SubTitle
-            )
-        }
-    }
-}
 
 
 @Composable

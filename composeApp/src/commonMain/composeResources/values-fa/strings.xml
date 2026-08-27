@@ -4,6 +4,7 @@
     <string name="task_feature_title">فعالیت ها</string>
     <string name="task_feature_subTitle">%1$s فعالیت برای امروز</string>
     <string name="note_feature_title">یادداشت‌ها</string>
+    <string name="note_feature_subTitle">%1$s یادداشت</string>
     <string name="expence_feature_title">هزینه‌ها</string>
     <string name="password_feature_title">گذرواژه‌ها</string>
     <string name="search_hint">جستجو...</string>
@@ -36,7 +37,7 @@
     <string name="priority-low-label">کم</string>
     <string name="hour_label">ساعت</string>
     <string name="minute_label">دقیقه</string>
-    <string name="delete_task_confirmation">آیا از حذف اطمینان دارید؟</string>
+    <string name="delete_item_confirmation">آیا از حذف این مورد اطمینان دارید؟</string>
     <string name="confirm_button">تأیید</string>
     <string name="cancel_button">انصراف</string>
     <string name="empty_list_title">لیست خالی است</string>

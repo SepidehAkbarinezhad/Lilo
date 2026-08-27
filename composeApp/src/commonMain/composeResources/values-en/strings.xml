@@ -4,6 +4,7 @@
     <string name="task_feature_title">Tasks</string>
     <string name="task_feature_subTitle">%1$s tasks for today</string>
     <string name="note_feature_title">Notes</string>
+    <string name="note_feature_subTitle">%1$s notes</string>
     <string name="expence_feature_title">Expenses</string>
     <string name="password_feature_title">Passwords</string>
     <string name="search_hint">search...</string>
@@ -36,7 +37,7 @@
     <string name="priority_label">priority</string>
     <string name="hour_label">Hour</string>
     <string name="minute_label">Minute</string>
-    <string name="delete_task_confirmation">are you sure you want to delete?</string>
+    <string name="delete_item_confirmation">Are you sure you want to delete this?</string>
     <string name="confirm_button">ok</string>
     <string name="cancel_button">cancel</string>
     <string name="empty_list_title">List is empty</string>
