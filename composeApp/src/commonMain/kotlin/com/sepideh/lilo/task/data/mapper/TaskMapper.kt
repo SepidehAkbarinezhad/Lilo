@@ -1,5 +1,6 @@
-package com.sepideh.lilo.task.data.local.room
+package com.sepideh.lilo.task.data.mapper
 
+import com.sepideh.lilo.task.data.local.room.TaskEntity
 import com.sepideh.lilo.task.domain.model.Task
 
 fun TaskEntity.toTask(): Task = Task(
