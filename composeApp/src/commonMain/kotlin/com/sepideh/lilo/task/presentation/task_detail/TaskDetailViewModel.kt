@@ -4,26 +4,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.category.data.local.room.CategoryDatabase
-import com.sepideh.lilo.category.data.local.room.toDomain
-import com.sepideh.lilo.category.data.local.room.toDomainList
-import com.sepideh.lilo.category.data.local.room.toEntity
 import com.sepideh.lilo.category.domain.CategoryDomain
 import com.sepideh.lilo.category.domain.CategoryFactory
+import com.sepideh.lilo.category.domain.repository.CategoryRepository
 import com.sepideh.lilo.category.domain.toPresentation
 import com.sepideh.lilo.category.domain.toPresentationList
 import com.sepideh.lilo.core.domain.ValidateField
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.core.service.PermissionManager
-import com.sepideh.lilo.core.utils.setReminderTime
+import com.sepideh.lilo.core.utils.combineDateAndTime
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.data.Reminder
-import com.sepideh.lilo.task.data.local.room.TaskDatabase
-import com.sepideh.lilo.task.data.local.room.toEntity
-import com.sepideh.lilo.task.data.local.room.toTask
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
+import com.sepideh.lilo.task.domain.repository.TaskRepository
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import kotlinx.coroutines.Deferred
@@ -31,7 +26,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,17 +33,15 @@ import kotlinx.coroutines.launch
 class TaskDetailViewModel(
     private val categoryFactory: CategoryFactory,
     private val languageProvider: LanguageProvider,
-    private val taskDatabase: TaskDatabase,
-    private val categoryDatabase: CategoryDatabase,
+    private val taskRepository: TaskRepository,
+    private val categoryRepository: CategoryRepository,
     private val reminderScheduler: ReminderScheduler,
     private val permissionManager: PermissionManager
 ) : BaseViewModel() {
 
     val currentLanguage = languageProvider.currentLanguage
     val isXiaomi = permissionManager.isXiaomi()
-    private val _categories = categoryDatabase.categoryDao().getAllCategories()
-        .map {
-            it.toDomainList() }
+    private val _categories = categoryRepository.getAllCategories()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     private val state = MutableStateFlow(TaskDetailState())
@@ -140,14 +132,14 @@ class TaskDetailViewModel(
             }
 
             is TaskDetailAction.OnReminderDateConfirm -> {
-                with(action.reminderModel) { updateReminder( startDay = startDay, endDay = endDay) }
+                with(action.reminderModel) { updateReminder( startDay = reminderStartDate, endDay = reminderEndDate) }
                 setReminderDateDialogOpen(open = false)
                 setReminderTimeDialogOpen(open = true)
             }
 
             is TaskDetailAction.OnReminderTimeConfirm -> {
                 with(action.reminderModel){
-                    updateReminder( hour = hour,minute=minute)
+                    updateReminder( hour = reminderHour,minute=reminderMinute)
                 }
                 setReminderTimeDialogOpen(open = false)
             }
@@ -179,17 +171,17 @@ class TaskDetailViewModel(
                             category = selectedCategory?.id
                                 ?: CategoryDomain.categories[0].id,
                             priority =selectedPriority.id,
-                            hour = reminderModel.hour,
-                            minute = reminderModel.minute,
-                            startDate = reminderModel.startDay,
-                            endDate = reminderModel.endDay,
+                            reminderHour = reminderModel.reminderHour,
+                            reminderMinute = reminderModel.reminderMinute,
+                            reminderStartDate = reminderModel.reminderStartDate,
+                            reminderEndDate = reminderModel.reminderEndDate,
                             id = task.id
                         )
                     }
                     viewModelScope.launch {
                         if (isFormValid(checkDeniedPermission = action.checkDeniedPermission)) {
                             //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
-                            val resultId = taskDatabase.taskDao().upsert(tempTask.toEntity())
+                            val resultId = taskRepository.upsertTask(tempTask)
                             //Use the correct ID for scheduling a reminder:
                             //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
                             val actualId = if (resultId == -1L) tempTask.id!! else resultId
@@ -202,26 +194,26 @@ class TaskDetailViewModel(
 
             is TaskDetailAction.OnAddNewCategory -> {
                 viewModelScope.launch {
-                    categoryDatabase.categoryDao().upsert(category = categoryFactory.create(action.categoryTitle).toEntity())
+                    categoryRepository.addCategory(category = categoryFactory.create(action.categoryTitle))
                 }
                 //state.update { it.copy(selectedCategory) }
             }
             is TaskDetailAction.OnDeleteCategory->{
-                viewModelScope.launch { categoryDatabase.categoryDao().deleteById(action.categoryId) }
+                viewModelScope.launch {categoryRepository.getCategoryById(action.categoryId) }
             }
 
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
                 viewModelScope.launch {
-                    taskDatabase.taskDao().getTaskById(action.taskId)?.toTask()
+                    taskRepository.getTaskById(action.taskId)
                         ?.let { selectedTask ->
                             task = selectedTask
                             updateSelectedCategory(selectedTask.category)
                             updateSelectedPriority(selectedTask.priority)
                               with(selectedTask){
-                                 updateReminder(  hour = hour,
-                                    minute = minute,
-                                    startDay = startDate,
-                                    endDay = endDate)
+                                 updateReminder(  hour = reminderHour,
+                                    minute = reminderMinute,
+                                    startDay = reminderStartDate,
+                                    endDay = reminderEndDate)
                             }
 
                         }
@@ -259,10 +251,10 @@ class TaskDetailViewModel(
 
 
     private suspend fun updateSelectedCategory(categoryId: Long) {
-        categoryDatabase.categoryDao().getCategoryById(categoryId = categoryId)
+        categoryRepository.getCategoryById(id = categoryId)
             ?.let { selectedCategory ->
                 state.update {
-                    it.copy(selectedCategory = selectedCategory.toDomain().toPresentation(currentLanguage))
+                    it.copy(selectedCategory = selectedCategory.toPresentation(currentLanguage))
                 }
             }
     }
@@ -273,8 +265,8 @@ class TaskDetailViewModel(
         }
     }
 
-    private fun updateReminder(hour: Int? = reminderModel.hour, minute: Int? = reminderModel.minute, startDay: Long? = reminderModel.startDay, endDay: Long? = reminderModel.endDay) {
-           reminderModel = reminderModel.copy(hour = hour, minute = minute, startDay = startDay, endDay = endDay)
+    private fun updateReminder(hour: Int? = reminderModel.reminderHour, minute: Int? = reminderModel.reminderMinute, startDay: Long? = reminderModel.reminderStartDate, endDay: Long? = reminderModel.reminderEndDate) {
+           reminderModel = reminderModel.copy(reminderHour = hour, reminderMinute = minute, reminderStartDate = startDay, reminderEndDate = endDay)
             state.update {
                 it.copy(reminderModel = reminderModel)
             }
@@ -303,9 +295,9 @@ class TaskDetailViewModel(
             val shouldShowPermissionDeniedDialog = when (checkDeniedPermission) {
                 true -> {
                     if (isXiaomi) {
-                        reminderModel.hour != null && !hasNotification
+                        reminderModel.reminderHour != null && !hasNotification
                     } else {
-                        reminderModel.hour != null && (!hasNotification || !hasAlarm)
+                        reminderModel.reminderHour != null && (!hasNotification || !hasAlarm)
                     }
                 }
 
@@ -327,14 +319,14 @@ class TaskDetailViewModel(
     //todo set reminder in a way can add custom title description
     private fun startReminder(taskId: Long) {
         with(reminderModel) {
-            setReminderTime(dayMillis = startDay, hour = hour, minute = minute)?.let {
+            combineDateAndTime(dayMillis = reminderStartDate, hour = reminderHour, minute = reminderMinute)?.let {
                 reminderScheduler.scheduleReminder(
                     reminder = Reminder(
                         id = taskId.toInt(),
                         title = task.title,
                         content = "",
                         startDate = it,
-                        endDate = setReminderTime(dayMillis = endDay, hour = hour, minute = minute)
+                        endDate = combineDateAndTime(dayMillis = reminderEndDate, hour = reminderHour, minute = reminderMinute)
                     )
                 )
             }

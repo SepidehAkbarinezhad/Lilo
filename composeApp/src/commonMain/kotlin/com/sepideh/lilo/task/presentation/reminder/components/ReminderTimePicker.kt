@@ -50,8 +50,8 @@ fun ReminderTimePicker(
     reminderModel: ReminderModel,
     onAction: (BaseAction) -> Unit,
 ) {
-    val initialHour = reminderModel.hour ?: getCurrentTime().first
-    val initialMinute = reminderModel.minute ?: getCurrentTime().second
+    val initialHour = reminderModel.reminderHour ?: getCurrentTime().first
+    val initialMinute = reminderModel.reminderMinute ?: getCurrentTime().second
     var selectedHour = initialHour
     var selectedMin = initialMinute
     val palette = LocalLiloColorsPalette.current
@@ -171,8 +171,8 @@ fun ReminderTimePicker(
             TimePickerButtons(onConfirmed = {
                 onAction(TaskDetailAction.OnReminderTimeConfirm(
                     reminderModel = ReminderModel(
-                        hour = selectedHour,
-                        minute = selectedMin
+                        reminderHour = selectedHour,
+                        reminderMinute = selectedMin
                     )
                 )
                 ) }, onCancel = { onAction(TaskDetailAction.OnDismissTimePickerButton) })

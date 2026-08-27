@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
+    <string name="app_name">لیلو</string>
+    <string name="task_feature_title">فعالیت ها</string>
+    <string name="task_feature_subTitle">%1$s فعالیت برای امروز</string>
+    <string name="note_feature_title">یادداشت‌ها</string>
+    <string name="expence_feature_title">هزینه‌ها</string>
+    <string name="password_feature_title">گذرواژه‌ها</string>
     <string name="search_hint">جستجو...</string>
     <string name="close_hint">پاک کردن جستجو</string>
     <string name="all">همه</string>
@@ -14,7 +20,6 @@
     <string name="dark_mode_label">تاریک</string>
     <string name="add_task_title">افزودن فعالیت</string>
     <string name="add_task_label">افزودن</string>
-    <string name="tasks_list_title">فعالیت ها</string>
     <string name="edit_task_title">ویرایش فعالیت</string>
     <string name="edit_task_label">ویرایش</string>
     <string name="title_label">عنوان</string>
@@ -54,4 +59,6 @@
     <string name="permission_Xiaomi_alert_dialog">برای عملکرد صحیح یادآوری در دستگاه شما، لطفاً اجازه اعلان را بدهید و گزینه صرفه‌جویی در باتری را برای این برنامه روی «بدون محدودیت» تنظیم کنید. در غیر این صورت یادآوری ممکن است فعال نشود.</string>
     <string name="permission_alert_dialog_denied">برای کارکرد درست یادآوری ها، برنامه نیاز به مجوز اعلان و آلارم دارد. در صورت عدم اعطا، یادآور فعال نخواهد شد. آیا مایلید مجوزها را بدهید یا بدون آن ادامه می دهید؟</string>
     <string name="grant_permission_button">اعطا مجوز</string>
+    <string name="sort_priority_label">اولویت</string>
+    <string name="sort_date_label">تاریخ</string>
 </resources>

@@ -6,12 +6,21 @@ import kotlinx.serialization.Serializable
 sealed class AppRoutes {
 
     @Serializable
+    data object Home : AppRoutes()
+
+    @Serializable
     data object Settings : AppRoutes()
 
-    @Serializable
-    data object TaskList : AppRoutes()
 
     @Serializable
-    data class TaskDetail(val taskId : Long?) : AppRoutes()
+    sealed class Tasks : AppRoutes() {
+        @Serializable
+        data object List : AppRoutes()
+        @Serializable
+        data class Detail(val taskId : Long?) : AppRoutes()
+    }
+
+
+
 
 }

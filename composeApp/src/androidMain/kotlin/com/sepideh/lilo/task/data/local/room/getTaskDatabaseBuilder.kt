@@ -5,10 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 fun getTaskDatabaseBuilder(ctx: Context): RoomDatabase.Builder<TaskDatabase> {
-    val appContext = ctx.applicationContext
-    val dbFile = appContext.getDatabasePath("task.db")
     return Room.databaseBuilder<TaskDatabase>(
-        context = appContext,
-        name = dbFile.absolutePath
-    )
+        context = ctx.applicationContext,
+        name = "task.db"
+    ).fallbackToDestructiveMigration()
 }
