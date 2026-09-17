@@ -18,9 +18,9 @@ import com.sepideh.lilo.core.domain.model.AppLanguage
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.utils.LiloInfo
 import com.sepideh.lilo.core.utils.PlatformType
 import com.sepideh.lilo.core.utils.getCurrentDate
-import com.sepideh.lilo.core.utils.getPlatformType
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
@@ -37,11 +37,12 @@ fun ReminderDatePicker(
     reminderModel: ReminderModel,
     onAction: (BaseAction) -> Unit,
 ) {
+    val liloInfo: LiloInfo = koinInject()
 
     val languageProvider: LanguageProvider = koinInject()
     when (languageProvider.currentLanguage) {
         AppLanguage.FA -> {
-            if (getPlatformType().name == PlatformType.ANDROID.name)
+            if (liloInfo.platformType.name == PlatformType.ANDROID.name)
                 LiloPersianDatePicker(selectedDay = reminderModel.reminderStartDate, onAction = onAction,)
         }
         AppLanguage.EN -> DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)

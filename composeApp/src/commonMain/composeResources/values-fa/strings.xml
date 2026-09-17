@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
-    <string name="app_name">لیلو</string>
+    <string name="app_name">Lilo</string>
+    <string name="app_slogan">به زندگیت سروسامون بده</string>
     <string name="task_feature_title">فعالیت ها</string>
     <string name="task_feature_subTitle">%1$s فعالیت برای امروز</string>
     <string name="note_feature_title">یادداشت‌ها</string>

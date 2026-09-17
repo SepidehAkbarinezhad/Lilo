@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 */
 
 // Feature Primitives (Light)
+val DeepOrange500 = Color(0xFFFF5722)
 val Amber500 = Color(0xFFFFC107)
 val Green500 = Color(0xFF4CAF50)
 val Blue700 = Color(0xFF1976D2)

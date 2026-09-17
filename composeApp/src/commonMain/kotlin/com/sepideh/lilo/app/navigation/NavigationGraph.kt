@@ -9,6 +9,7 @@ import com.sepideh.lilo.home.HomescreenRoot
 import com.sepideh.lilo.home.presentation.HomeViewModel
 import com.sepideh.lilo.settings.presentation.SettingsScreenRoot
 import com.sepideh.lilo.settings.presentation.SettingsViewModel
+import com.sepideh.lilo.splash.SplashScreen
 import com.sepideh.lilo.task.presentation.note.note_detail.NoteDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
@@ -18,13 +19,16 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NavigationGraph(navHostController: NavHostController) {
-    NavHost(navController = navHostController, startDestination = AppRoutes.Home) {
+    NavHost(navController = navHostController, startDestination = AppRoutes.SplashScreen) {
 
         val onBackPressed = { navHostController.navigateUp() }
         val onNavigate: (AppRoutes) -> Unit =
             { route ->
                 navHostController.navigate(route = route)
             }
+        composable<AppRoutes.SplashScreen> {
+            SplashScreen(onNavigateTo = onNavigate)
+        }
 
         composable<AppRoutes.Home> {
             val viewModel = koinViewModel<HomeViewModel>()
