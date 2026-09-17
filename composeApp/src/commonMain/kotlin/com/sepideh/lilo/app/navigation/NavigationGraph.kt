@@ -9,6 +9,7 @@ import com.sepideh.lilo.home.HomescreenRoot
 import com.sepideh.lilo.home.presentation.HomeViewModel
 import com.sepideh.lilo.settings.presentation.SettingsScreenRoot
 import com.sepideh.lilo.settings.presentation.SettingsViewModel
+import com.sepideh.lilo.task.presentation.note.note_detail.NoteDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.task_list.TaskListScreenRoot
@@ -44,6 +45,17 @@ fun NavigationGraph(navHostController: NavHostController) {
             val viewModel = koinViewModel<TaskDetailViewModel>()
             TaskDetailScreenRoot(
                 taskId = args.taskId,
+                viewModel = viewModel,
+                onNavigateTo = onNavigate,
+                onBack = onBackPressed
+            )
+        }
+
+        composable<AppRoutes.Notes.Detail> {
+            val args = it.toRoute<AppRoutes.Notes.Detail>()
+            val viewModel = koinViewModel<TaskDetailViewModel>()
+            NoteDetailScreenRoot(
+                noteId = args.noteId,
                 viewModel = viewModel,
                 onNavigateTo = onNavigate,
                 onBack = onBackPressed

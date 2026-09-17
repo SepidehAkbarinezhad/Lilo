@@ -62,4 +62,6 @@
     <string name="grant_permission_button">اعطا مجوز</string>
     <string name="sort_priority_label">اولویت</string>
     <string name="sort_date_label">تاریخ</string>
+    <string name="add_note_title">افزودن یادداشت</string>
+    <string name="edit_note_title">ویرایش یادداشت</string>
 </resources>
