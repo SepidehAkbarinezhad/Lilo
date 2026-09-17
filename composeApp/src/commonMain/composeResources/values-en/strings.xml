@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <string name="app_name">Lilo</string>
+    <string name="app_slogan">Organize your life</string>
     <string name="task_feature_title">Tasks</string>
     <string name="task_feature_subTitle">%1$s tasks for today</string>
     <string name="note_feature_title">Notes</string>
@@ -19,6 +20,7 @@
     <string name="system_mode_label">system</string>
     <string name="light_mode_label">light</string>
     <string name="dark_mode_label">dark</string>
+    <string name="tasks_list_title">Tasks</string>
     <string name="add_task_title">Add task</string>
     <string name="add_task_label">add</string>
     <string name="edit_task_title">Edit task</string>
