@@ -23,7 +23,7 @@ import com.sepideh.lilo.core.utils.PlatformType
 import com.sepideh.lilo.core.utils.getCurrentDate
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
+import com.sepideh.lilo.task.presentation.detail.TaskDetailAction
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.cancel_button

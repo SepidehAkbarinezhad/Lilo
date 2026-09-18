@@ -18,33 +18,27 @@ import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
-import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
-import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
-import com.sepideh.lilo.home.HomeScreenContent
-import com.sepideh.lilo.home.domain.fakeFeatureCardFactory
-import com.sepideh.lilo.home.presentation.HomeState
+import com.sepideh.lilo.note.presentation.detail.NoteDetailViewModel
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderDatePicker
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailState
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
-import com.sepideh.lilo.task.presentation.task_detail.components.CategoryDialog
-import com.sepideh.lilo.task.presentation.task_detail.components.PermissionAlertDialog
-import com.sepideh.lilo.task.presentation.task_detail.components.PermissionDeniedDialog
-import com.sepideh.lilo.task.presentation.task_detail.components.PriorityDialog
-import com.sepideh.lilo.task.presentation.task_detail.components.TaskDetailIcons
+import com.sepideh.lilo.task.presentation.detail.TaskDetailAction
+import com.sepideh.lilo.task.presentation.detail.TaskDetailState
+import com.sepideh.lilo.task.presentation.detail.TaskDetailViewModel
+import com.sepideh.lilo.task.presentation.detail.components.CategoryDialog
+import com.sepideh.lilo.task.presentation.detail.components.PermissionAlertDialog
+import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
+import com.sepideh.lilo.task.presentation.detail.components.PriorityDialog
+import com.sepideh.lilo.task.presentation.detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_note_title
 import lilo.composeapp.generated.resources.add_task_label
-import lilo.composeapp.generated.resources.add_task_title
 import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.description_label
 import lilo.composeapp.generated.resources.edit_note_title
 import lilo.composeapp.generated.resources.edit_task_label
-import lilo.composeapp.generated.resources.edit_task_title
 import lilo.composeapp.generated.resources.title_label
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,7 +46,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun NoteDetailScreenRoot(
     noteId: Long?,
-    viewModel: TaskDetailViewModel,
+    viewModel: NoteDetailViewModel,
     onNavigateTo: (AppRoutes) -> Unit,
     onBack: () -> Boolean
 ) {
