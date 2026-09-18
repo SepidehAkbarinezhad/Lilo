@@ -3,8 +3,8 @@ package com.sepideh.lilo.task.di
 import com.sepideh.lilo.task.data.local.room.TaskDatabase
 import com.sepideh.lilo.task.data.repoImpl.TaskRepoImpl
 import com.sepideh.lilo.task.domain.repository.TaskRepository
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailViewModel
-import com.sepideh.lilo.task.presentation.task_list.TaskListViewModel
+import com.sepideh.lilo.task.presentation.detail.TaskDetailViewModel
+import com.sepideh.lilo.task.presentation.list.TaskListViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named

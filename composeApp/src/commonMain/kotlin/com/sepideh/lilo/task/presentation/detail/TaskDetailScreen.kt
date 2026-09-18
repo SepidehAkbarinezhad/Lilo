@@ -1,4 +1,4 @@
-package com.sepideh.lilo.task.presentation.note.note_detail
+package com.sepideh.lilo.task.presentation.detail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,41 +20,37 @@ import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
-import com.sepideh.lilo.note.presentation.detail.NoteDetailViewModel
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderDatePicker
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
-import com.sepideh.lilo.task.presentation.detail.TaskDetailAction
-import com.sepideh.lilo.task.presentation.detail.TaskDetailState
-import com.sepideh.lilo.task.presentation.detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.detail.components.CategoryDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.task.presentation.detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.detail.components.TaskDetailIcons
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.add_note_title
 import lilo.composeapp.generated.resources.add_task_label
+import lilo.composeapp.generated.resources.add_task_title
 import lilo.composeapp.generated.resources.cancel_button
 import lilo.composeapp.generated.resources.description_label
-import lilo.composeapp.generated.resources.edit_note_title
 import lilo.composeapp.generated.resources.edit_task_label
+import lilo.composeapp.generated.resources.edit_task_title
 import lilo.composeapp.generated.resources.title_label
 import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
-fun NoteDetailScreenRoot(
-    noteId: Long?,
-    viewModel: NoteDetailViewModel,
+fun TaskDetailScreenRoot(
+    taskId: Long?,
+    viewModel: TaskDetailViewModel,
     onNavigateTo: (AppRoutes) -> Unit,
     onBack: () -> Boolean
 ) {
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
     val task = viewModel.task
 
-    LaunchedEffect(noteId) {
-        noteId?.let {
+    LaunchedEffect(taskId) {
+        taskId?.let {
             viewModel.onAction(TaskDetailAction.OnGetSelectedTaskInfo(it))
         }
     }
@@ -64,7 +60,7 @@ fun NoteDetailScreenRoot(
         navigateTo = onNavigateTo,
         onBack = onBack,
         bodyContainer = {
-            NoteDetailScreen(
+            TaskDetailScreen(
                 state = state,
                 task = task,
                 onAction = viewModel::onAction,
@@ -103,7 +99,7 @@ fun NoteDetailScreenRoot(
 }
 
 @Composable
-fun NoteDetailScreen(
+fun TaskDetailScreen(
     state: TaskDetailState,
     task: Task,
     onAction: (BaseAction) -> Unit,
@@ -115,8 +111,8 @@ fun NoteDetailScreen(
             header = {
                 BaseHeader(
                     title = when (isEdit) {
-                        true -> Res.string.edit_note_title
-                        else -> Res.string.add_note_title
+                        true -> Res.string.edit_task_title
+                        else -> Res.string.add_task_title
                     },
                     onBackPressed = onBack
                 )

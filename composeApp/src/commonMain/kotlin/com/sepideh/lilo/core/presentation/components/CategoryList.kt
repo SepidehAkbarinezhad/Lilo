@@ -17,8 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.task.presentation.task_list.TaskListAction
-import com.sepideh.lilo.task.presentation.task_list.TaskListState
+import com.sepideh.lilo.task.presentation.list.TaskListAction
+import com.sepideh.lilo.task.presentation.list.TaskListState
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 
 @Composable
