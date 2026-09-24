@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
@@ -39,6 +40,7 @@ import com.sepideh.lilo.core.presentation.components.FeatureEmptyIcon
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.note.presentation.list.components.NoteList
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.delete_task_logo
 import lilo.composeapp.generated.resources.ic_search
@@ -101,8 +103,10 @@ fun NoteListScreen(
                     )
                 },
                 shape = RoundedCornerShape(20.dp),
+                containerColor =  LiloExtendedTheme.colors.noteColor,
+                contentColor = Color.Black
             ) {
-                Icon(Icons.Rounded.Add, contentDescription = "Add note", tint = White)
+                Icon(Icons.Rounded.Add, contentDescription = "Add note")
             }
         },
     ) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,7 +31,6 @@ import com.sepideh.lilo.home.presentation.model.TaskReportDetail
 import com.sepideh.lilo.ui.theme.LiloColors
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun FeatureCardShell(
@@ -41,75 +41,72 @@ fun FeatureCardShell(
     detail: ReportDetail?
 ) {
     val colors: LiloColors = LiloExtendedTheme.colors
+    val accentColor = feature.accentColor(colors)
+
     val renderStrategy = remember(feature) {
         featureCardFactory.cardFor(feature).getReportRender()
     }
-    with(feature) {
-        Card(
-            modifier = Modifier.padding(12.dp).clickable { onCardClick() },
-            colors = CardDefaults.cardColors(
-                containerColor = accentColor(colors).copy(alpha = 0.12f)
-            )
+
+    Card(
+        modifier = Modifier
+            .padding(12.dp)
+            .clickable { onCardClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = accentColor.copy(alpha = 0.12f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Row(
-                Modifier.fillMaxWidth().padding(12.dp),
-
-                verticalAlignment = Alignment.CenterVertically
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = accentColor
+                )
             ) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = feature.accentColor(colors)
-                    )
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(12.dp).size(24.dp),
-                        imageVector = feature.iconRes,
-                        tint = Color.White,
-                        contentDescription = ""
-                    )
+                Icon(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .size(24.dp),
+                    imageVector = feature.iconRes,
+                    tint = Color.White,
+                    contentDescription = null
+                )
+            }
 
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column {
+                AppText(
+                    text = stringResource(feature.titleRes),
+                    textType = TextType.Title,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                detail?.subTitleReportCount?.let {
+                    AppText(
+                        text = stringResource(
+                            feature.subTitleRes,
+                            detail.subTitleReportCount
+                        ),
+                        textType = TextType.SubTitle,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    AppText(text = stringResource(feature.titleRes), textType = TextType.Title)
-                    detail?.subTitleReportCount?.let {
-                        AppText(
-                            text = stringResource(
-                                feature.subTitleRes,
-                                detail.subTitleReportCount
-                            ), textType = TextType.SubTitle,
-                            color = colors.subtitleText
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                AppCircleButton(color = feature.accentColor(colors), onClick = onAddClick)
             }
-            detail?.let { detail ->
-                renderStrategy.Render(detail)
-            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            AppCircleButton(
+                color = accentColor,
+                onClick = onAddClick
+            )
         }
 
+        detail?.let { report ->
+            renderStrategy.Render(report)
+        }
     }
 }
-
-@AppPreviews
-@Composable
-private fun HomeScreenPreview() {
-    LiloPreviewWrapper {
-        FeatureCardShell(
-            featureCardFactory = fakeFeatureCardFactory(),
-            feature = LiloFeature.TASKS,
-            onAddClick = {},
-            onCardClick = {},
-            detail = TaskReportDetail(
-                nextTaskTitle = "",
-                nextTaskTime = "",
-                remainingCount = 12,
-                subTitleReportCount = 2
-            )
-        )
-    }
-}
-

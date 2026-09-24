@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -42,6 +43,7 @@ import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.task.presentation.list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.list.components.TaskList
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.delete_task_logo
 import lilo.composeapp.generated.resources.ic_filter
@@ -118,11 +120,12 @@ fun TaskListScreen(
 
                 },
                 shape = RoundedCornerShape(20.dp),
+                containerColor =  LiloExtendedTheme.colors.taskColor,
+                contentColor = Color.Black
             ) {
                 Icon(
                     Icons.Rounded.Add,
                     contentDescription = "Add task",
-                    tint = White
                 )
             }
         },

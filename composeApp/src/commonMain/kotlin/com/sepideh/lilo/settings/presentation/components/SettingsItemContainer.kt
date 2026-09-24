@@ -35,19 +35,24 @@ fun SettingsItemContainer(
     title: StringResource,
     content: @Composable RowScope.() -> Unit
 ) {
-    val palette = LocalLiloColorsPalette.current
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
-        colors = CardDefaults.cardColors(containerColor = palette.elevatedCard),
-        modifier = Modifier
-            .padding(16.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        modifier = Modifier.padding(16.dp)
     ) {
+        Column {
+            SettingsItemHeader(
+                icon = icon,
+                title = title
+            )
 
-        Column(modifier = Modifier) {
-            SettingsItemHeader(icon = icon, title = title)
-            SettingsItemsRow { content() }
+            SettingsItemsRow {
+                content()
+            }
         }
     }
 }

@@ -18,8 +18,13 @@ import com.sepideh.lilo.core.presentation.BaseHeader
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.components.AppOutlineTextField
+import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.AppRowButtons
+import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.core.presentation.components.TextFieldRequired
+import com.sepideh.lilo.home.HomeScreenContent
+import com.sepideh.lilo.home.domain.fakeFeatureCardFactory
+import com.sepideh.lilo.home.presentation.HomeState
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderDatePicker
 import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
@@ -28,6 +33,7 @@ import com.sepideh.lilo.task.presentation.detail.components.PermissionAlertDialo
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.task.presentation.detail.components.PriorityDialog
 import com.sepideh.lilo.task.presentation.detail.components.TaskDetailIcons
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.add_task_label
 import lilo.composeapp.generated.resources.add_task_title
@@ -106,6 +112,7 @@ fun TaskDetailScreen(
     onBack: () -> Boolean,
     ) {
     val isEdit = task.id != null
+    val accentColor = LiloExtendedTheme.colors.taskColor
     Box(modifier = Modifier.fillMaxSize()) {
         BaseScreen(
             header = {
@@ -118,25 +125,37 @@ fun TaskDetailScreen(
                 )
             }, content = {
                 AppOutlineTextField(
-                    containerModifier = Modifier.padding(18.dp),
+                    containerModifier = Modifier.padding(
+                        horizontal = 18.dp,
+                        vertical = 10.dp
+                    ),
+                    accentColor = accentColor,
                     textFieldRequired = TextFieldRequired(
                         value = task.title,
-                        onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) },
+                        onValueChange = {
+                            onAction(TaskDetailAction.OnTitleChanged(it))
+                        },
                         label = stringResource(Res.string.title_label),
                         validationStatus = state.titleError
                     )
                 )
                 AppOutlineTextField(
-                    containerModifier = Modifier.padding(18.dp),
-                    textFieldModifier = Modifier.heightIn(116.dp),
+                    containerModifier = Modifier.padding(
+                        horizontal = 18.dp,
+                        vertical = 10.dp
+                    ),
+                    textFieldModifier = Modifier.heightIn(min = 116.dp),
+                    accentColor = accentColor,
                     textFieldRequired = TextFieldRequired(
                         value = task.description,
-                        onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) },
+                        onValueChange = {
+                            onAction(TaskDetailAction.OnDescriptionChanged(it))
+                        },
                         label = stringResource(Res.string.description_label),
                         validationStatus = state.descriptionError
                     ),
                     singleLine = false,
-                    maxLines = 3,
+                    maxLines = 4
                 )
                 TaskDetailIcons(onAction = onAction)
             }
@@ -156,4 +175,17 @@ fun TaskDetailScreen(
     }
 
 
+}
+
+@AppPreviews
+@Composable
+private fun TaskDetailPreview() {
+    LiloPreviewWrapper {
+        TaskDetailScreen(
+            state = TaskDetailState(),
+            task = Task(),
+            onAction = {},
+            onBack = {true},
+        )
+    }
 }

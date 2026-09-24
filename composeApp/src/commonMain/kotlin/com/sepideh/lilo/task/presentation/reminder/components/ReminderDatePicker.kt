@@ -24,6 +24,7 @@ import com.sepideh.lilo.core.utils.getCurrentDate
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import com.sepideh.lilo.task.presentation.detail.TaskDetailAction
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.cancel_button
@@ -54,7 +55,6 @@ fun ReminderDatePicker(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Unit) {
-    val palette = LocalLiloColorsPalette.current
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = reminderModel.reminderStartDate ?: getCurrentDate(),
     )
@@ -72,7 +72,7 @@ fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Un
         colors = DatePickerDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             selectedDayContentColor = Color.White,
-            selectedDayContainerColor = palette.primaryTitle,
+            selectedDayContainerColor = LiloExtendedTheme.colors.taskColor,
             headlineContentColor = MaterialTheme.colorScheme.onSurface,
         )
     ) {
@@ -81,7 +81,7 @@ fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Un
             modifier = Modifier
                 .fillMaxWidth().statusBarsPadding(),
             title = {
-                ReminderTitle(color = palette.primaryTitle)
+                ReminderTitle(color =  LiloExtendedTheme.colors.taskColor)
             },
             colors = DatePickerDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -104,20 +104,25 @@ fun ReminderTitle(color: Color) {
 }
 
 @Composable
-fun ConfirmBtn(selectedDate: Long?, onAction: (BaseAction) -> Unit) {
+fun ConfirmBtn(
+    selectedDate: Long?,
+    onAction: (BaseAction) -> Unit
+) {
     AppText(
-        modifier = Modifier.padding(8.dp).clickable {
-            onAction(
-                TaskDetailAction.OnReminderDateConfirm(
-                    reminderModel = ReminderModel(
-                        reminderStartDate = selectedDate
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable {
+                onAction(
+                    TaskDetailAction.OnReminderDateConfirm(
+                        reminderModel = ReminderModel(
+                            reminderStartDate = selectedDate
+                        )
                     )
                 )
-            )
-        },
+            },
         text = Res.string.ok_label,
         textType = TextType.SubTitle,
-        color = MaterialTheme.colorScheme.primary
+        color = LiloExtendedTheme.colors.taskColor
     )
 }
 

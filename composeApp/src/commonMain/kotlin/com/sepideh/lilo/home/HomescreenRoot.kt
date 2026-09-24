@@ -84,7 +84,7 @@ fun HomeScreenContent(
 
 @AppPreviews
 @Composable
-private fun HomeScreenPreview() {
+private fun HomePreview() {
     LiloPreviewWrapper {
         HomeScreenContent(
             featureCardFactory = fakeFeatureCardFactory(),
