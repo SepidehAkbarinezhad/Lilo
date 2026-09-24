@@ -10,9 +10,9 @@ import androidx.compose.ui.unit.dp
 
 val NoteCardIcon: ImageVector
     get() {
-        if (_NoteSvgrepoCom != null) return _NoteSvgrepoCom!!
+        if (_NoteCardIcon != null) return _NoteCardIcon!!
         
-        _NoteSvgrepoCom = ImageVector.Builder(
+        _NoteCardIcon = ImageVector.Builder(
             name = "NoteCardIcon",
             defaultWidth = 800.dp,
             defaultHeight = 800.dp,
@@ -60,8 +60,8 @@ val NoteCardIcon: ImageVector
             }
         }.build()
         
-        return _NoteSvgrepoCom!!
+        return _NoteCardIcon!!
     }
 
-private var _NoteSvgrepoCom: ImageVector? = null
+private var _NoteCardIcon: ImageVector? = null
 

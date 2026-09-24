@@ -1,16 +1,22 @@
 package com.sepideh.lilo.home.presentation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
@@ -19,6 +25,9 @@ import com.sepideh.lilo.core.presentation.components.AppHeader
 import com.sepideh.lilo.core.presentation.components.AppPreview
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
+import com.sepideh.lilo.ui.icons.SettingIcon
+import com.sepideh.lilo.ui.theme.Amber600
+import com.sepideh.lilo.ui.theme.Indigo900
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.app_name
 import lilo.composeapp.generated.resources.ic_settings
@@ -43,9 +52,11 @@ fun HomeHeader(
 @Composable
 fun SettingButton(onSettingClicked: () -> Unit) {
 
-    Image(
+
+    Icon(
         modifier = Modifier.clickable { onSettingClicked() },
-        painter = painterResource(Res.drawable.ic_settings),
+        imageVector = SettingIcon,
+        tint = Indigo900,
         contentDescription = "Open setting"
     )
 
