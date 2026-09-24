@@ -22,27 +22,6 @@ import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
 import org.koin.mp.KoinPlatform.getKoin
 
-val DarkColorScheme = darkColorScheme(
-    background = Color(0xFF121212),
-    surface = Gray900,
-    surfaceVariant = Gray800,
-    surfaceContainer = BlueGray900,
-    primary = Amber600,
-    onPrimary = White,
-    primaryContainer = Gray800,
-    secondary = Blue600,
-)
-val LightColorScheme = lightColorScheme(
-    background = White,
-    surface = White,
-    onSurface = Gray600,
-    surfaceVariant = Color(0x0DFFAB00),
-    surfaceContainer = White,
-    primary = Amber600,
-    onPrimary = Black,
-    primaryContainer = Amber500,
-    secondary = Blue600,
-)
 
 /*
 * Real app entry point:

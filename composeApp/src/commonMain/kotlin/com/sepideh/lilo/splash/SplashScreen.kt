@@ -22,7 +22,6 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.core.utils.LiloInfo
 import com.sepideh.lilo.core.utils.PlatformType
-import com.sepideh.lilo.ui.theme.DeepOrange500
 import com.sepideh.lilo.ui.theme.White
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.app_name
@@ -47,7 +46,7 @@ fun SplashScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DeepOrange500),
+                .background( MaterialTheme.colorScheme.primary),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

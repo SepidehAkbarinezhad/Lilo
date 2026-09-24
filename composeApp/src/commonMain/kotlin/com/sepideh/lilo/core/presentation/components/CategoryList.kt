@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -27,37 +28,66 @@ fun CategoryList(
     clickable: Boolean,
     onAction: (BaseAction) -> Unit
 ) {
+    val selectedColor = LiloExtendedTheme.colors.taskColor
+    val unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val unselectedBorderColor = MaterialTheme.colorScheme.outlineVariant
+
     LazyRow(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(items = state.categories) { category ->
+        items(
+            items = state.categories,
+            key = { it.id }
+        ) { category ->
 
-            // Determine if the category is selected or if it's the first one when selectedCategory is null
             val isSelected =
-                category.id == state.selectedCategory || (state.selectedCategory == null && category == state.categories.first())
-            val titleColor =
-                if (isSelected) LiloExtendedTheme.colors.selectedCategory else LiloExtendedTheme.colors.unSelectedCategory
+                category.id == state.selectedCategory ||
+                        (
+                                state.selectedCategory == null &&
+                                        category == state.categories.first()
+                                )
+
+            val textColor = if (isSelected) {
+                selectedColor
+            } else {
+                unselectedTextColor
+            }
+
+            val borderColor = if (isSelected) {
+                selectedColor
+            } else {
+                unselectedBorderColor
+            }
 
             AppText(
-                modifier = Modifier.widthIn(min = 100.dp).border(
-                    width = 1.dp,
-                    color = titleColor,
-                    shape = RoundedCornerShape(8.dp),
-                ).padding(4.dp)
+                modifier = Modifier
+                    .widthIn(min = 100.dp)
+                    .border(
+                        width = 1.dp,
+                        color = borderColor,
+                        shape = RoundedCornerShape(8.dp)
+                    )
                     .clickable(
-                        indication = null, // Disable the ripple effect
-                        interactionSource = remember { MutableInteractionSource() } // Prevent the ripple interaction
+                        enabled = clickable,
+                        indication = null,
+                        interactionSource = remember {
+                            MutableInteractionSource()
+                        }
                     ) {
-                        if (clickable) onAction(
-                            TaskListAction.OnCategorySelected(
-                                category.id
-                            )
+                        onAction(
+                            TaskListAction.OnCategorySelected(category.id)
                         )
-                    },
+                    }
+                    .padding(
+                        horizontal = 12.dp,
+                        vertical = 6.dp
+                    ),
                 text = category.title,
                 textAlign = TextAlign.Center,
-                color = titleColor,
+                color = textColor,
                 textType = TextType.SubTitle
             )
         }
