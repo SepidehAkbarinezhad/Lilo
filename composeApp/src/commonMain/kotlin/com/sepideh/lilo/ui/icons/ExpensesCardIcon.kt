@@ -1,4 +1,4 @@
-package com.composables
+package com.sepideh.lilo.ui.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -10,9 +10,9 @@ import androidx.compose.ui.unit.dp
 
 val ExpenseCardIcon: ImageVector
     get() {
-        if (_Wallet2SvgrepoCom != null) return _Wallet2SvgrepoCom!!
+        if (_ExpensesCardIcon != null) return _ExpensesCardIcon!!
         
-        _Wallet2SvgrepoCom = ImageVector.Builder(
+        _ExpensesCardIcon = ImageVector.Builder(
             name = "ExpenseCardIcon",
             defaultWidth = 800.dp,
             defaultHeight = 800.dp,
@@ -73,8 +73,8 @@ val ExpenseCardIcon: ImageVector
             }
         }.build()
         
-        return _Wallet2SvgrepoCom!!
+        return _ExpensesCardIcon!!
     }
 
-private var _Wallet2SvgrepoCom: ImageVector? = null
+private var _ExpensesCardIcon: ImageVector? = null
 

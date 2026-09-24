@@ -10,9 +10,9 @@ import androidx.compose.ui.unit.dp
 
 val TaskCardIcon: ImageVector
     get() {
-        if (_TaskSquareSvgrepoCom != null) return _TaskSquareSvgrepoCom!!
+        if (_TaskCardIcon != null) return _TaskCardIcon!!
         
-        _TaskSquareSvgrepoCom = ImageVector.Builder(
+        _TaskCardIcon = ImageVector.Builder(
             name = "TaskCardIcon.kt.kt",
             defaultWidth = 800.dp,
             defaultHeight = 800.dp,
@@ -76,8 +76,8 @@ val TaskCardIcon: ImageVector
             }
         }.build()
         
-        return _TaskSquareSvgrepoCom!!
+        return _TaskCardIcon!!
     }
 
-private var _TaskSquareSvgrepoCom: ImageVector? = null
+private var _TaskCardIcon: ImageVector? = null
 

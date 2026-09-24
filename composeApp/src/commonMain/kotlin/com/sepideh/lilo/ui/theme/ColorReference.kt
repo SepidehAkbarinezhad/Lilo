@@ -20,6 +20,7 @@ val Blue300 = Color(0xFF64B5F6)
 val Purple200 = Color(0xFFCE93D8)
 
 val White = Color(0xFFFFFFFF)
+val Indigo900 = Color(0xFF1A237E)
 val Amber600 = Color(0xFFFFA000)
 val Blue600 = Color(0xFF1565C0)
 val Gray400 = Color(0xFFBDBDBD)
