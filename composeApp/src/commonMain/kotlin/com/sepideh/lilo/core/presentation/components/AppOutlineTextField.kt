@@ -24,8 +24,8 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDirection
-import com.sepideh.lilo.core.domain.model.ValidationStatus
-import com.sepideh.lilo.core.domain.model.resolveMessage
+import com.sepideh.lilo.core.presentation.validation.ValidationStatus
+import com.sepideh.lilo.core.presentation.validation.resolveMessage
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.ui.theme.Amber600
 
@@ -114,6 +114,8 @@ fun AppOutlineTextField(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
 
                     focusedBorderColor = accentColor,
+                    focusedLeadingIconColor = accentColor,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     unfocusedBorderColor =
                         MaterialTheme.colorScheme.outlineVariant,
 

@@ -10,6 +10,7 @@ interface TaskRepository {
         done: Boolean?,
         priority: List<Int>
     ): Flow<List<Task>>
+    suspend fun clearGroup(id: Long)
     suspend fun deleteTask(id: Long)
     suspend fun upsertTask(task: Task): Long
     suspend fun getTaskById(id: Long): Task?

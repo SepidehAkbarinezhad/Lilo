@@ -19,6 +19,7 @@ data class TaskListState(
     val selectedTask: Task? = null,
     val titleError: String? = null,
     val isLoading: Boolean = false,
+    val hasError: Boolean = false,
 )
 
 

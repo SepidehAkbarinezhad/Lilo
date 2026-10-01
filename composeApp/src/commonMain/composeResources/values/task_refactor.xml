@@ -1,0 +1,21 @@
+<resources>
+    <string name="save_task_action">Save</string>
+    <string name="task_operation_error">Could not complete the action. Please try again.</string>
+    <string name="choose_group_title">Choose group</string>
+    <string name="manage_groups_action">Manage groups</string>
+    <string name="new_group_hint">New group name</string>
+    <string name="no_group_label">No group</string>
+    <string name="add_group_action">Add group</string>
+    <string name="confirm_action">Confirm</string>
+    <string name="reminder_label">Reminder</string>
+    <string name="not_set_label">Not set</string>
+    <string name="remove_reminder_action">Remove reminder</string>
+    <string name="description_optional">Description (optional)</string>
+    <string name="task_title_hint">What do you need to do?</string>
+    <string name="delete_group_message">Delete this group? Its tasks will remain without a group.</string>
+    <string name="delete_action">Delete</string>
+    <string name="task_no_results">No matching tasks</string>
+    <string name="task_complete_action">Mark complete</string>
+    <string name="task_reopen_action">Mark incomplete</string>
+    <string name="search_tasks_action">Search tasks</string>
+</resources>

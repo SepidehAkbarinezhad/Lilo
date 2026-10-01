@@ -1,163 +1,47 @@
 package com.sepideh.lilo.task.presentation.list.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.data.ScreenSize
 import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.components.AppBottomSheet
-import com.sepideh.lilo.core.presentation.components.AppRowButtons
-import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.task.presentation.model.Priority
-import com.sepideh.lilo.task.presentation.model.TaskFilterOption
-import com.sepideh.lilo.task.presentation.model.Enums
 import com.sepideh.lilo.task.presentation.list.TaskListAction
 import com.sepideh.lilo.task.presentation.list.TaskListState
-import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.apply_label
-import lilo.composeapp.generated.resources.filter_label
-import lilo.composeapp.generated.resources.priority_filter_label
-import lilo.composeapp.generated.resources.reset_label
-import lilo.composeapp.generated.resources.status_filter_label
+import com.sepideh.lilo.task.presentation.model.Enums
+import com.sepideh.lilo.task.presentation.model.Priority
+import com.sepideh.lilo.task.presentation.model.SortOrder
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
+import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun TaskFilterSheet(
-    state: TaskListState,
-    onAction: (BaseAction) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-
-    val height = (.5 * ScreenSize.heightDp).dp
-
-    AppBottomSheet(
-        visible = state.isFilterSheetOpen,
-        height = height,
-        modifier = modifier.fillMaxWidth()
-    ) {
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.padding(bottom = 56.dp)) {
-                FilterHeader(onAction)
-                PriorityFilterContainer(
-                    filterOption = state.tempFilterOption,
-                    onPriorityClicked = { selectedPriority ->
-                        onAction(TaskListAction.OnPriorityFilterChanged(selectedPriority))
-                    })
-                StatusFilterContainer(filterOption = state.tempFilterOption, onStatusClicked = {
-                    onAction(TaskListAction.OnStatusFilterChanged(it))
-                })
+fun TaskFilterSheet(state: TaskListState, onAction: (BaseAction) -> Unit, modifier: Modifier = Modifier) {
+    if (!state.isFilterSheetOpen) return
+    val accent = LiloExtendedTheme.colors.taskColor
+    ModalBottomSheet(onDismissRequest = { onAction(TaskListAction.OnCloseFilterIcon) }, containerColor = MaterialTheme.colorScheme.background) {
+        Column(modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(Res.string.filter_label), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                TextButton(onClick = { onAction(TaskListAction.OnApplyFilter) }, colors = ButtonDefaults.textButtonColors(contentColor = accent)) { Text(stringResource(Res.string.apply_label)) }
             }
-            AppRowButtons(
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-                firstButtonTitle = Res.string.apply_label,
-                onFirstButtonClick = {
-                    onAction(TaskListAction.OnApplyFilter)
-                },
-                secondButtonTitle = Res.string.reset_label,
-                onSecondButtonClick = { onAction(TaskListAction.OnResetFilter) })
-        }
-    }
-}
-
-@Composable
-fun FilterHeader(onEvent: (BaseAction) -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        AppText(
-            modifier = Modifier.align(Alignment.Center),
-            text = stringResource(Res.string.filter_label),
-            textType = TextType.Title,
-            color = MaterialTheme.colorScheme.secondary
-        )
-        IconButton(
-            modifier = Modifier.align(Alignment.TopEnd),
-            onClick = { onEvent(TaskListAction.OnCloseFilterIcon) }) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "close filter",
-                tint = MaterialTheme.colorScheme.secondary
-            )
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-    }
-}
-
-@Composable
-fun StatusFilterContainer(
-    filterOption: TaskFilterOption,
-    onStatusClicked: (Enums) -> Unit
-) {
-    AppText(text = stringResource(Res.string.status_filter_label), textType = TextType.SubTitle)
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Enums.entries.forEach { status ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (status != Enums.ALL) {
-                    AppText(text = status.label)
-                    Checkbox(
-                        checked = status in filterOption.taskStatus,
-                        onCheckedChange = { onStatusClicked(status) }
-                    )
+            Text(stringResource(Res.string.status_filter_label), style = MaterialTheme.typography.labelLarge)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(Enums.DONE, Enums.UNDONE).forEach { status ->
+                    FilterChip(selected = status in state.tempFilterOption.taskStatus, onClick = { onAction(TaskListAction.OnStatusFilterChanged(status)) }, label = { Text(stringResource(status.label)) },
+                        colors = FilterChipDefaults.filterChipColors(selectedContainerColor = accent.copy(alpha = .16f)))
                 }
             }
-        }
-
-    }
-
-}
-
-@Composable
-fun PriorityFilterContainer(
-    filterOption: TaskFilterOption,
-    onPriorityClicked: (Priority) -> Unit
-) {
-    AppText(text = stringResource(Res.string.priority_filter_label), textType = TextType.SubTitle)
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Priority.priorities.forEach { priority ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AppText(text = priority.title)
-                Checkbox(
-                    checked = priority in filterOption.priorityList,
-                    onCheckedChange = { onPriorityClicked(priority) },
-                    colors = CheckboxDefaults.colors(
-                        uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
+            Text(stringResource(Res.string.priority_filter_label), style = MaterialTheme.typography.labelLarge)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Priority.priorities.forEach { priority ->
+                    FilterChip(selected = priority in state.tempFilterOption.priorityList, onClick = { onAction(TaskListAction.OnPriorityFilterChanged(priority)) }, label = { Text(stringResource(priority.title)) },
+                        colors = FilterChipDefaults.filterChipColors(selectedContainerColor = accent.copy(alpha = .16f)))
+                }
             }
-
+            TextButton(onClick = { onAction(TaskListAction.OnResetFilter) }) { Text(stringResource(Res.string.reset_label)) }
         }
     }
-
 }

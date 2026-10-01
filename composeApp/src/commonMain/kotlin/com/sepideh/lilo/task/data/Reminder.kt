@@ -1,9 +1,4 @@
 package com.sepideh.lilo.task.data
 
-data class Reminder(
-    val id: Int,
-    val title: String,
-    val content: String,
-    val startDate: Long?,
-    val endDate: Long?
-)
+/** Compatibility for the existing Notes feature. New code imports the domain model. */
+typealias Reminder = com.sepideh.lilo.task.domain.reminder.Reminder

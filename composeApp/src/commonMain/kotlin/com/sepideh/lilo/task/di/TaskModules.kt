@@ -1,7 +1,7 @@
 package com.sepideh.lilo.task.di
 
 import com.sepideh.lilo.task.data.local.room.TaskDatabase
-import com.sepideh.lilo.task.data.repoImpl.TaskRepoImpl
+import com.sepideh.lilo.task.data.repository.TaskRepoImpl
 import com.sepideh.lilo.task.domain.repository.TaskRepository
 import com.sepideh.lilo.task.presentation.detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.list.TaskListViewModel
@@ -15,6 +15,8 @@ val taskDatabaseQualifier = named("taskDatabase")
 expect fun taskPlatformModule(): Module
 
 val taskModule = module {
+    single<com.sepideh.lilo.task.domain.reminder.ReminderPermissions> { com.sepideh.lilo.task.data.PlatformReminderPermissions(get()) }
+    single { com.sepideh.lilo.task.domain.usecase.TaskMutations(get(), get()) }
 
     single { get<TaskDatabase>(taskDatabaseQualifier).taskDao() }
 
@@ -29,7 +31,7 @@ val taskModule = module {
             languageProvider = get(),
             taskRepository = get(),
             categoryRepository = get(),
-            reminderScheduler = get()
+            mutations = get()
         )
     }
     viewModel {
@@ -38,8 +40,8 @@ val taskModule = module {
             languageProvider = get(),
             taskRepository = get(),
             categoryRepository = get(),
-            reminderScheduler = get(),
-            permissionManager = get()
+            mutations = get(),
+            permissions = get()
         )
     }
 }

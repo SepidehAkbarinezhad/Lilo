@@ -28,9 +28,9 @@ fun TaskList(
     LazyColumn(
         modifier = modifier,
         state = scrollState,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(top = 12.dp, bottom = 54.dp)
+        contentPadding = PaddingValues(top = 12.dp, bottom = 96.dp)
     ) {
         items(items = tasks, key = { it.id ?: 0 }) { task ->
             TaskListItem(

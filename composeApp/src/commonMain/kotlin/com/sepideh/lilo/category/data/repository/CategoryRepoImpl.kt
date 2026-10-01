@@ -1,4 +1,4 @@
-package com.sepideh.lilo.category.data.reposirotyImpl
+package com.sepideh.lilo.category.data.repository
 
 import com.sepideh.lilo.category.data.local.room.CategoryDao
 import com.sepideh.lilo.category.data.local.room.toDomain
@@ -19,15 +19,11 @@ class CategoryRepositoryImpl(
             .map { it.toDomainList() }
 
     private suspend fun upsertDefaultCategories() {
-        CategoryDomain.categories
-            .subList(1, CategoryDomain.categories.size)
-            .forEach { item ->
-                categoryDao.upsert(item.toEntity())
-            }
+        categoryDao.seedIfEmpty(CategoryDomain.categories.drop(1).map { it.toEntity() })
     }
 
-    override suspend fun addCategory(category: CategoryDomain) {
-        categoryDao.upsert(category.toEntity())
+    override suspend fun addCategory(category: CategoryDomain): Long {
+        return categoryDao.upsert(category.toEntity())
     }
 
     override suspend fun deleteCategory(id: Long) {

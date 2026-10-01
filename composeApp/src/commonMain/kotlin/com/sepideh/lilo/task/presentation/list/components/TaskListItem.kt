@@ -1,155 +1,54 @@
 package com.sepideh.lilo.task.presentation.list.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.model.Priority.Companion.priorities
 import com.sepideh.lilo.task.presentation.list.TaskListAction
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import com.sepideh.lilo.task.presentation.model.Priority
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
+import lilo.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskListItem(
-    modifier: Modifier = Modifier,
-    clickable: Boolean,
-    task: Task,
-    onAction: (BaseAction) -> Unit
-) {
-    Card(
-        modifier = modifier, shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-
-    ) {
-        with(task) {
-            Row(
-                Modifier.fillMaxWidth().height(IntrinsicSize.Max),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CircularCheckbox(
-                    checked = done,
-                    onCheckedChange = {
-                        if (clickable) onAction(
-                            TaskListAction.OnDoneChange(
-                                task = task.copy(done = !done)
-                            )
-                        )
-                    },
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                Column(
-                    Modifier.weight(.8f).padding(vertical = 8.dp , horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    AppText(
-                        text = title,
-                        textType = TextType.SubTitle,
+fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, onAction: (BaseAction) -> Unit) {
+    val deleteLabel = stringResource(Res.string.delete_action)
+    val completionLabel = stringResource(if (task.done) Res.string.task_reopen_action else Res.string.task_complete_action)
+    val dismiss = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
+        if (value == SwipeToDismissBoxValue.EndToStart && clickable) onAction(TaskListAction.OnDeleteTaskIcon(task))
+        false // The row remains until deletion is confirmed and persisted.
+    })
+    SwipeToDismissBox(state = dismiss, enableDismissFromStartToEnd = false, enableDismissFromEndToStart = clickable,
+        backgroundContent = {
+            Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer).padding(20.dp), contentAlignment = Alignment.CenterEnd) {
+                Icon(Icons.Outlined.Delete, deleteLabel, tint = MaterialTheme.colorScheme.onErrorContainer)
+            }
+        }) {
+        Surface(modifier = modifier.semantics {
+            customActions = listOf(CustomAccessibilityAction(deleteLabel) { onAction(TaskListAction.OnDeleteTaskIcon(task)); true })
+        }, color = MaterialTheme.colorScheme.background) {
+            Row(Modifier.fillMaxWidth().heightIn(min = 76.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.width(3.dp).height(32.dp).background(Priority.getById(task.priority).color))
+                Checkbox(checked = task.done, onCheckedChange = { onAction(TaskListAction.OnDoneChange(task.copy(done = it))) }, enabled = clickable,
+                    modifier = Modifier.semantics { contentDescription = completionLabel },
+                    colors = CheckboxDefaults.colors(checkedColor = LiloExtendedTheme.colors.taskColor, checkmarkColor = MaterialTheme.colorScheme.onSurface))
+                Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(task.title, style = MaterialTheme.typography.bodyLarge, maxLines = 2,
                         textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (task.done) 0.5f else 1f)
-                    )
-                    AppText(
-                        text = description,
-                        textType = TextType.Body,
-                        maxLines = 1,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (task.done) 0.6f else 0.9f)
-                    )
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (task.done) .5f else 1f))
+                    if (task.description.isNotBlank()) Text(task.description, style = MaterialTheme.typography.bodySmall, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                IconButton(onClick = {
-                    if (clickable)
-                        onAction(TaskListAction.OnDeleteTaskIcon(task = task))
-                }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = "delete Icon",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp, horizontal = 8.dp)
-                        .width(4.dp)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(50))
-                        .background(color = priorities[priority].color)
-                )
             }
         }
     }
-}
-
-@Composable
-fun CircularCheckbox(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
-) {
-    val color = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-
-    Box(
-        modifier = modifier
-            .size(22.dp)
-            .clip(CircleShape)
-            .border(width = 2.dp, color = color, shape = CircleShape)
-            .clickable(enabled = enabled) { onCheckedChange(!checked) },
-        contentAlignment = Alignment.Center
-    ) {
-        if (checked) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(14.dp)
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun PendingTaskItemPreview(modifier: Modifier = Modifier) {
-    TaskListItem(
-        task = Task(id = 0, title = "title", description = "description"),
-        clickable = true
-    ) { }
-}
-
-@Preview
-@Composable
-fun DoneTaskItemPreview(modifier: Modifier = Modifier) {
-    TaskListItem(
-        task = Task(id = 0, title = "title", description = "description",done = true),
-        clickable = true
-    ) { }
 }
