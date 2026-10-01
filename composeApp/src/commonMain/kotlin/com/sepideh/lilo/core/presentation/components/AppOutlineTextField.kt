@@ -40,65 +40,96 @@ fun AppOutlineTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     singleLine: Boolean = true,
     requestFocus: Boolean = false,
-    color: TextFieldColors = OutlinedTextFieldDefaults.colors(
-        unfocusedContainerColor = White,
-        focusedContainerColor = White,
-        cursorColor = Amber600,
-        focusedBorderColor = Amber600,
-        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
-    ),
+    accentColor: Color = MaterialTheme.colorScheme.primary,
     textStyle: TextStyle = LocalTextStyle.current,
-    maxLines : Int = 1
+    maxLines: Int = 1
 ) {
     val focusRequester = remember { FocusRequester() }
+
     LaunchedEffect(Unit) {
-        if (requestFocus)
+        if (requestFocus) {
             focusRequester.requestFocus()
+        }
     }
+
     var isFocused by remember {
         mutableStateOf(false)
     }
 
     with(textFieldRequired) {
-        val focusedColor = when (validationStatus.isSuccessful) {
-            true -> if (isFocused) Amber600 else MaterialTheme.colorScheme.onSurface
-            else -> MaterialTheme.colorScheme.error
+
+        val labelColor = when {
+            !validationStatus.isSuccessful ->
+                MaterialTheme.colorScheme.error
+
+            isFocused ->
+                accentColor
+
+            else ->
+                MaterialTheme.colorScheme.onSurfaceVariant
         }
 
-        Column(modifier = containerModifier.fillMaxWidth()) {
+        Column(
+            modifier = containerModifier.fillMaxWidth()
+        ) {
             AppText(
                 text = label,
                 textType = TextType.SubTitle,
-                color = focusedColor,
+                color = labelColor
             )
 
             OutlinedTextField(
                 modifier = textFieldModifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
-                    .onFocusChanged { isFocused = it.isFocused },
+                    .onFocusChanged {
+                        isFocused = it.isFocused
+                    },
                 value = value,
                 onValueChange = onValueChange,
                 enabled = enabled,
-                readOnly = textFieldRequired.readOnly,
-                textStyle = textStyle.copy(color = Black),
+                readOnly = readOnly,
                 placeholder = {
-                    if (hint.isNotEmpty()) AppText(
-                        modifier = Modifier,
-                        text = hint,
-                        textType = TextType.Body
-                    )
+                    if (hint.isNotEmpty()) {
+                        AppText(
+                            text = hint,
+                            textType = TextType.Body,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 },
+
                 leadingIcon = leadingIcon,
                 trailingIcon = trailingIcon,
                 visualTransformation = visualTransformation,
                 keyboardOptions = keyboardOptions,
                 singleLine = singleLine,
                 isError = !validationStatus.isSuccessful,
-                colors = color,
-                maxLines = maxLines
-            )
+                maxLines = maxLines,
 
+                shape = MaterialTheme.shapes.medium,
+
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+
+                    focusedBorderColor = accentColor,
+                    unfocusedBorderColor =
+                        MaterialTheme.colorScheme.outlineVariant,
+
+                    cursorColor = accentColor,
+
+                    focusedTextColor =
+                        MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor =
+                        MaterialTheme.colorScheme.onSurface,
+
+                    focusedPlaceholderColor =
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedPlaceholderColor =
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
 
             if (!validationStatus.isSuccessful) {
                 AppText(

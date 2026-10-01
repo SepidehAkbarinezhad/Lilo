@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
+    <string name="app_name">Lilo</string>
+    <string name="app_slogan">به زندگیت سروسامون بده</string>
+    <string name="task_feature_title">فعالیت ها</string>
+    <string name="task_feature_subTitle">%1$s فعالیت برای امروز</string>
+    <string name="note_feature_title">یادداشت‌ها</string>
+    <string name="note_feature_subTitle">%1$s یادداشت</string>
+    <string name="expence_feature_title">هزینه‌ها</string>
+    <string name="password_feature_title">گذرواژه‌ها</string>
     <string name="search_hint">جستجو...</string>
     <string name="close_hint">پاک کردن جستجو</string>
     <string name="all">همه</string>
@@ -14,7 +22,6 @@
     <string name="dark_mode_label">تاریک</string>
     <string name="add_task_title">افزودن فعالیت</string>
     <string name="add_task_label">افزودن</string>
-    <string name="tasks_list_title">فعالیت ها</string>
     <string name="edit_task_title">ویرایش فعالیت</string>
     <string name="edit_task_label">ویرایش</string>
     <string name="title_label">عنوان</string>
@@ -31,7 +38,7 @@
     <string name="priority-low-label">کم</string>
     <string name="hour_label">ساعت</string>
     <string name="minute_label">دقیقه</string>
-    <string name="delete_task_confirmation">آیا از حذف اطمینان دارید؟</string>
+    <string name="delete_item_confirmation">آیا از حذف این مورد اطمینان دارید؟</string>
     <string name="confirm_button">تأیید</string>
     <string name="cancel_button">انصراف</string>
     <string name="empty_list_title">لیست خالی است</string>
@@ -56,4 +63,6 @@
     <string name="grant_permission_button">اعطا مجوز</string>
     <string name="sort_priority_label">اولویت</string>
     <string name="sort_date_label">تاریخ</string>
+    <string name="add_note_title">افزودن یادداشت</string>
+    <string name="edit_note_title">ویرایش یادداشت</string>
 </resources>

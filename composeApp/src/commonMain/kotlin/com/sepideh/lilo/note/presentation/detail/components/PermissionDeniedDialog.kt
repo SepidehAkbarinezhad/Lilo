@@ -1,0 +1,50 @@
+package com.sepideh.lilo.note.presentation.detail.components
+
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.core.presentation.BaseAction
+import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppDialog
+import com.sepideh.lilo.core.presentation.components.AppRowButtons
+import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.presentation.components.DialogModel
+import com.sepideh.lilo.task.presentation.detail.TaskDetailAction
+import com.sepideh.lilo.task.presentation.detail.TaskDetailState
+import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.add_task_label
+import lilo.composeapp.generated.resources.grant_permission_button
+import lilo.composeapp.generated.resources.ic_alert
+import lilo.composeapp.generated.resources.permission_alert_dialog_denied
+import org.jetbrains.compose.resources.painterResource
+
+@Composable
+fun PermissionDeniedDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
+    AppDialog(dialogModel = DialogModel(content = {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.heightIn(max = 100.dp),
+                painter = painterResource(Res.drawable.ic_alert),
+                contentDescription = ""
+            )
+            AppText(text = Res.string.permission_alert_dialog_denied,textType = TextType.SubTitle,)
+            Spacer(modifier = Modifier.height(8.dp))
+            AppRowButtons(firstButtonTitle = Res.string.grant_permission_button,
+                onFirstButtonClick = { onAction(TaskDetailAction.OnGrantPermissionButton(firstTime = false)) },
+                secondButtonTitle = Res.string.add_task_label,
+                onSecondButtonClick = { onAction(TaskDetailAction.OnAddTaskButton(checkDeniedPermission = false)) })
+        }
+    }, onDismissRequest = { onAction(TaskDetailAction.OnCancelPermissionDialog) }))
+}
+

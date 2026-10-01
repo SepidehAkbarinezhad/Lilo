@@ -12,8 +12,11 @@ data class TaskEntity(
     val done: Boolean = false,
     val category: Long = 0,
     val priority: Int = 0,
-    val hour: Int? = null,
-    val minute: Int? = null,
-    val startDate: Long?,
-    val endDate: Long?
+    val reminderStartDate: Long? = null,
+    val reminderEndDate: Long? = null,   // null = single-day reminder, non-null = range (future version)
+    val reminderHour: Int? = null,
+    val reminderMinute: Int? = null,
+    val createdAt: Long,
+    val updatedAt: Long,
+    val completedAt: Long? = null
 )

@@ -1,13 +1,11 @@
 package com.sepideh.lilo.settings.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.sepideh.lilo.core.domain.model.AppLanguage
+import com.sepideh.lilo.core.domain.model.AppTheme
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
-import com.sepideh.lilo.core.utils.changeLanguage
-import com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository
 import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
-import com.sepideh.lilo.settings.presentation.model.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

@@ -35,7 +35,8 @@ import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DialogModel
 import com.sepideh.lilo.core.utils.getCurrentTime
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
-import com.sepideh.lilo.task.presentation.task_detail.TaskDetailAction
+import com.sepideh.lilo.task.presentation.detail.TaskDetailAction
+import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import com.sepideh.lilo.ui.theme.LocalLiloColorsPalette
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.cancel_button
@@ -50,8 +51,8 @@ fun ReminderTimePicker(
     reminderModel: ReminderModel,
     onAction: (BaseAction) -> Unit,
 ) {
-    val initialHour = reminderModel.hour ?: getCurrentTime().first
-    val initialMinute = reminderModel.minute ?: getCurrentTime().second
+    val initialHour = reminderModel.reminderHour ?: getCurrentTime().first
+    val initialMinute = reminderModel.reminderMinute ?: getCurrentTime().second
     var selectedHour = initialHour
     var selectedMin = initialMinute
     val palette = LocalLiloColorsPalette.current
@@ -83,7 +84,7 @@ fun ReminderTimePicker(
                 modifier = Modifier.padding(4.dp),
                 text = Res.string.reminder_time_title,
                 textType = TextType.SubTitle,
-                color = palette.primaryTitle
+                color =  LiloExtendedTheme.colors.taskColor
             )
             Spacer(modifier = Modifier.fillMaxWidth().height(16.dp))
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -171,8 +172,8 @@ fun ReminderTimePicker(
             TimePickerButtons(onConfirmed = {
                 onAction(TaskDetailAction.OnReminderTimeConfirm(
                     reminderModel = ReminderModel(
-                        hour = selectedHour,
-                        minute = selectedMin
+                        reminderHour = selectedHour,
+                        reminderMinute = selectedMin
                     )
                 )
                 ) }, onCancel = { onAction(TaskDetailAction.OnDismissTimePickerButton) })

@@ -1,7 +1,7 @@
 package com.sepideh.lilo.category.domain
 
+import com.sepideh.lilo.core.domain.model.AppLanguage
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
 
 class CategoryFactory(
     private val languageProvider: LanguageProvider
