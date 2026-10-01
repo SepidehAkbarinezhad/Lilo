@@ -44,7 +44,7 @@ actual fun LiloPersianDatePicker(selectedDay : Long? , onAction: (BaseAction) ->
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         )
     ) {
-        PersianDatePicker(state = state, title = { ReminderTitle(color = palette.primaryTitle) },
+        PersianDatePicker(state = state, title = { ReminderTitle(color = palette.taskColor) },
             colors =  PersianDatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer),showModeToggle=false)
     }
 

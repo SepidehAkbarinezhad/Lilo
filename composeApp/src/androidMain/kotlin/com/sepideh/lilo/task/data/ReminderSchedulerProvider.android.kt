@@ -40,6 +40,9 @@ class ReminderSchedulerProvider(private val context: Context) :
             var triggerTime = startDate
             triggerTime?.let {
                 while (triggerTime <= endDate!!) {
+                    // TODO: has bug :requestCode here (id.hashCode() + triggerTime.hashCode()) must exactly match
+                    //  whatever cancelReminder() regenerates per-day, or range cancel will miss alarms.
+                    //  See ReminderSchedulerProvider.ios.kt's "${id}_$current" scheme for a cleaner pattern.
                     val intent = Intent(context, ReminderReceiver::class.java).apply {
                         putExtra(NOTIFICATION_ID_TAG, reminder.id)
                         putExtra(NOTIFICATION_TITLE_TAG, reminder.title)
@@ -126,4 +129,5 @@ class ReminderSchedulerProvider(private val context: Context) :
         alarmManager.cancel(pendingIntent)
         NotificationManagerCompat.from(context).cancel(reminder.id)
     }
+
 }

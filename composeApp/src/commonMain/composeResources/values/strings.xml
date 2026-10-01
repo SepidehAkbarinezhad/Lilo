@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
+    <string name="app_name">Lilo</string>
+    <string name="app_slogan">Organize your life</string>
+    <string name="task_feature_title">Tasks</string>
+    <string name="task_feature_subTitle">%1$s tasks for today</string>
+    <string name="note_feature_title">Notes</string>
+    <string name="note_feature_subTitle">%1$s notes</string>
+    <string name="expence_feature_title">Expenses</string>
+    <string name="password_feature_title">Passwords</string>
     <string name="search_hint">search...</string>
     <string name="close_hint">clear search</string>
     <string name="all">all</string>
@@ -12,9 +20,9 @@
     <string name="system_mode_label">system</string>
     <string name="light_mode_label">light</string>
     <string name="dark_mode_label">dark</string>
+    <string name="tasks_list_title">Tasks</string>
     <string name="add_task_title">Add task</string>
     <string name="add_task_label">add</string>
-    <string name="tasks_list_title">Tasks</string>
     <string name="edit_task_title">Edit task</string>
     <string name="edit_task_label">edit</string>
     <string name="title_label">title</string>
@@ -31,7 +39,7 @@
     <string name="priority_label">priority</string>
     <string name="hour_label">Hour</string>
     <string name="minute_label">Minute</string>
-    <string name="delete_task_confirmation">are you sure you want to delete?</string>
+    <string name="delete_item_confirmation">Are you sure you want to delete this?</string>
     <string name="confirm_button">ok</string>
     <string name="cancel_button">cancel</string>
     <string name="empty_list_title">List is empty</string>
@@ -56,4 +64,5 @@
     <string name="grant_permission_button">grant</string>
     <string name="sort_priority_label">priority</string>
     <string name="sort_date_label">date</string>
-</resources>
+    <string name="add_note_title">Add note</string>
+    <string name="edit_note_title">Edit note</string></resources>

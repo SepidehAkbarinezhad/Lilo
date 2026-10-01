@@ -1,9 +1,10 @@
 package com.sepideh.lilo.settings.domain.usecase
 
+
+import com.sepideh.lilo.core.domain.model.AppLanguage
+import com.sepideh.lilo.core.domain.model.AppTheme
 import com.sepideh.lilo.settings.domain.model.UserPreferences
 import com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository
-import com.sepideh.lilo.settings.presentation.model.AppLanguage
-import com.sepideh.lilo.settings.presentation.model.AppTheme
 import kotlinx.coroutines.flow.Flow
 
 /*
