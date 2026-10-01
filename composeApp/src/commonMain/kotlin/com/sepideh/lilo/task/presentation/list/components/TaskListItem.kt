@@ -12,6 +12,8 @@ import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
+import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.list.TaskListAction
 import com.sepideh.lilo.task.presentation.model.Priority
@@ -43,10 +45,10 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
                     modifier = Modifier.semantics { contentDescription = completionLabel },
                     colors = CheckboxDefaults.colors(checkedColor = LiloExtendedTheme.colors.taskColor, checkmarkColor = MaterialTheme.colorScheme.onSurface))
                 Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(task.title, style = MaterialTheme.typography.bodyLarge, maxLines = 2,
+                    AppText(text = task.title, textType = TextType.BodyLarge, maxLines = 2,
                         textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (task.done) .5f else 1f))
-                    if (task.description.isNotBlank()) Text(task.description, style = MaterialTheme.typography.bodySmall, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (task.description.isNotBlank()) AppText(text = task.description, textType = TextType.Caption, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

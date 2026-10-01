@@ -1,6 +1,7 @@
 package com.sepideh.lilo.core.presentation.components
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,8 +22,8 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: StringResource,
     textType: TextType = TextType.Body,
-    color: Color = MaterialTheme.colorScheme.onBackground,
-    textAlign: TextAlign = TextAlign.Justify,
+    color: Color = LocalContentColor.current,
+    textAlign: TextAlign = TextAlign.Start,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,
     maxLines: Int = Int.MAX_VALUE,
@@ -39,6 +40,7 @@ fun AppText(
         textAlign = textAlign,
         maxLines = maxLines,
         minLines = minLines,
+        overflow = TextOverflow.Ellipsis
     )
 }
 
@@ -47,7 +49,7 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: String,
     textType: TextType = TextType.Body,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    color: Color = LocalContentColor.current,
     textAlign: TextAlign = TextAlign.Start,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,

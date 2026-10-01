@@ -33,9 +33,9 @@
     <string name="category_work">work</string>
     <string name="category_hobby">hobby</string>
     <string name="category_music">music</string>
-    <string name="priority-high-label">high</string>
-    <string name="priority-middle-label">middle</string>
-    <string name="priority-low-label">low</string>
+    <string name="priority-high-label">High</string>
+    <string name="priority-middle-label">Medium</string>
+    <string name="priority-low-label">Low</string>
     <string name="priority_label">priority</string>
     <string name="hour_label">Hour</string>
     <string name="minute_label">Minute</string>

@@ -19,6 +19,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.BaseListScreen
+import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DeleteConfirmationDialog
 import com.sepideh.lilo.task.presentation.list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.list.components.TaskList
@@ -41,8 +44,13 @@ fun TaskListScreenRoot(viewModel: TaskListViewModel, onNavigateTo: (AppRoutes) -
 @Composable
 fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (BaseAction) -> Unit) {
     val accent = LiloExtendedTheme.colors.taskColor
-    Scaffold(containerColor = MaterialTheme.colorScheme.background,
-        topBar = { TaskListHeader(state, onAction) },
+    BaseListScreen(title = Res.string.tasks_list_title, accent = accent,
+        searchVisible = state.isSearchVisible, query = state.searchQuery, searchHint = Res.string.search_tasks_action,
+        filtersActive = state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty(),
+        onBack = { onAction(BaseAction.OnNavigateTo(null)); true },
+        onSearchVisible = { onAction(TaskListAction.OnSearchToggle(it)) },
+        onQueryChange = { onAction(TaskListAction.OnSearchQueryChange(it)) },
+        onFilter = { onAction(TaskListAction.OnFilterIcon) },
         floatingActionButton = {
             FloatingActionButton(onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Tasks.Detail(null))) }, containerColor = accent, contentColor = Color.Black) {
                 Icon(Icons.Outlined.Add, stringResource(Res.string.add_task_label))
@@ -53,36 +61,15 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
             LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(state.categories, key = { it.id }) { category ->
                     val id = category.id.takeIf { it != 0L }
-                    FilterChip(selected = state.selectedCategory == id, onClick = { onAction(TaskListAction.OnCategorySelected(id)) }, label = { Text(category.title) },
+                    FilterChip(selected = state.selectedCategory == id, onClick = { onAction(TaskListAction.OnCategorySelected(id)) }, label = { AppText(text = category.title) },
                         colors = FilterChipDefaults.filterChipColors(selectedContainerColor = accent.copy(alpha = .16f)))
                 }
             }
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             if (state.tasksResult.isEmpty() && !isLoading) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(Res.string.task_no_results), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                AppText(text = Res.string.task_no_results, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else TaskList(state.tasksResult, !state.isFilterSheetOpen, onAction, Modifier.fillMaxSize())
         }
     }
     TaskFilterSheet(state, onAction)
-}
-
-@Composable
-fun TaskListHeader(state: TaskListState, onAction: (BaseAction) -> Unit, modifier: Modifier = Modifier) {
-    val accent = LiloExtendedTheme.colors.taskColor
-    Row(modifier.fillMaxWidth().statusBarsPadding().heightIn(min = 64.dp).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { onAction(BaseAction.OnNavigateTo(null)) }) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(Res.string.cancel_button), Modifier.size(20.dp)) }
-        if (state.isSearchVisible) {
-            TextField(value = state.searchQuery, onValueChange = { onAction(TaskListAction.OnSearchQueryChange(it)) }, singleLine = true,
-                modifier = Modifier.weight(1f), placeholder = { Text(stringResource(Res.string.search_tasks_action)) },
-                colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.background, unfocusedContainerColor = MaterialTheme.colorScheme.background, focusedIndicatorColor = accent),
-                trailingIcon = { IconButton(onClick = { onAction(TaskListAction.OnSearchToggle(false)) }) { Icon(Icons.Outlined.Close, stringResource(Res.string.cancel_button), Modifier.size(20.dp)) } })
-        } else {
-            Text(stringResource(Res.string.tasks_list_title), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-            IconButton(onClick = { onAction(TaskListAction.OnSearchToggle(true)) }) { Icon(Icons.Outlined.Search, stringResource(Res.string.search_tasks_action), Modifier.size(20.dp)) }
-        }
-        IconButton(onClick = { onAction(TaskListAction.OnFilterIcon) }) {
-            Icon(Icons.Outlined.Tune, stringResource(Res.string.filter_label), Modifier.size(20.dp),
-                tint = if (state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty()) accent else MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
 }

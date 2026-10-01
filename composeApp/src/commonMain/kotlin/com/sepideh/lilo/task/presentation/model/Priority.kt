@@ -16,9 +16,9 @@ data class Priority(
 ) {
     companion object {
         val priorities = listOf(
-            Priority(id = 0, title = Res.string.priority_high_label, color = Color.Companion.Red, value = TaskPriority.HIGH),
-            Priority(id = 1, title = Res.string.priority_middle_label, color = Color.Companion.Green, value = TaskPriority.MEDIUM),
-            Priority(id = 2, title = Res.string.priority_low_label, color = Color.Companion.Yellow, value = TaskPriority.LOW),
+            Priority(id = 0, title = Res.string.priority_high_label, color = Color(0xFFEA4545), value = TaskPriority.HIGH),
+            Priority(id = 1, title = Res.string.priority_middle_label, color = Color(0xFFFFC107), value = TaskPriority.MEDIUM),
+            Priority(id = 2, title = Res.string.priority_low_label, color = Color(0xFF2BB86A), value = TaskPriority.LOW),
         )
         fun getById(id: Int): Priority = priorities.find { it.id == id } ?: priorities.first { it.value == TaskPriority.MEDIUM }
 

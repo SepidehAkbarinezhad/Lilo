@@ -1,93 +1,36 @@
 package com.sepideh.lilo.core.presentation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
-import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.presentation.detail.TaskDetailScreen
-import com.sepideh.lilo.task.presentation.detail.TaskDetailState
 import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.tasks_list_title
+import lilo.composeapp.generated.resources.back_action
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.resources.stringResource
 
+/** Shared geometry. Screen wrappers own system insets; this header owns only its content. */
 @Composable
 fun BaseHeader(
     modifier: Modifier = Modifier,
     title: StringResource,
     mainScreen: Boolean = false,
-    onBackPressed: () -> Boolean = { true }
+    onBackPressed: () -> Boolean = { true },
+    actions: @Composable RowScope.() -> Unit = {},
+    titleContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val contentColor = MaterialTheme.colorScheme.onBackground
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp)
-            .padding(horizontal = 8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        AppText(
-            modifier = Modifier.padding(horizontal = 48.dp),
-            text = title,
-            textType = TextType.Title,
-            color = contentColor
-        )
-
-        if (!mainScreen) {
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterStart),
-                onClick = { onBackPressed() }
-            ) {
-                Icon(
-                    imageVector = if (isRtl) {
-                        Icons.Default.ArrowForwardIos
-                    } else {
-                        Icons.Default.ArrowBackIosNew
-                    },
-                    contentDescription = null,
-                    tint = contentColor,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+    Row(modifier.fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (!mainScreen) IconButton(onClick = { onBackPressed() }) {
+            Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(Res.string.back_action), Modifier.size(22.dp))
         }
-    }
-}
-
-@AppPreviews
-@Composable
-private fun TaskDetailPreview() {
-    LiloPreviewWrapper {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            BaseHeader(
-                title = Res.string.tasks_list_title,
-                mainScreen = false,
-                onBackPressed = { true }
-            )
-        }
-
+        if (titleContent != null) titleContent()
+        else AppText(text = title, modifier = Modifier.weight(1f).padding(horizontal = 8.dp), textType = TextType.ScreenTitle, maxLines = 1)
+        actions()
     }
 }
