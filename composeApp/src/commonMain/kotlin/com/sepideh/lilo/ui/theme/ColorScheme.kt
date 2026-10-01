@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
  *
  * onSurface
  * → High-emphasis content displayed on a surface.
- * → Example: user-entered text in a text field, task title, card title.
+ * → Example: user-entered text in a text field,for example task title.
  *
  * surfaceVariant
  * → Alternative/subtle surface used to visually separate content.
