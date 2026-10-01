@@ -1,6 +1,8 @@
 package com.sepideh.lilo.core.presentation.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
@@ -41,7 +43,7 @@ fun AppOutlineTextField(
     singleLine: Boolean = true,
     requestFocus: Boolean = false,
     accentColor: Color = MaterialTheme.colorScheme.primary,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     maxLines: Int = 1
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -74,7 +76,8 @@ fun AppOutlineTextField(
         ) {
             AppText(
                 text = label,
-                textType = TextType.SubTitle,
+                textType = TextType.FieldLabel,
+                modifier = Modifier.padding(start = 2.dp, bottom = 8.dp),
                 color = labelColor
             )
 
@@ -85,6 +88,7 @@ fun AppOutlineTextField(
                     .onFocusChanged {
                         isFocused = it.isFocused
                     },
+                textStyle = textStyle,
                 value = value,
                 onValueChange = onValueChange,
                 enabled = enabled,

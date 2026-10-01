@@ -1,6 +1,7 @@
 package com.sepideh.lilo.core.presentation.components.selection
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +15,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import com.sepideh.lilo.core.presentation.SheetHeader
+import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppText
 import androidx.compose.ui.unit.dp
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -34,13 +40,8 @@ fun GroupSelectionSheet(
     LaunchedEffect(addedVersion) { if (addedVersion > 0) { adding = false; name = "" } }
     ModalBottomSheet(onDismissRequest = { if (!isAdding) onDismiss() }, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(Res.string.choose_group_title), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-                TextButton(onClick = onConfirm, enabled = !adding && !isAdding, colors = ButtonDefaults.textButtonColors(contentColor = accent)) {
-                    Text(stringResource(Res.string.confirm_action))
-                }
-            }
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 320.dp)) {
+            SheetHeader(Res.string.choose_group_title, Res.string.confirm_action, accent, !adding && !isAdding, onConfirm)
+            LazyColumn(Modifier.fillMaxWidth().heightIn(min = 240.dp, max = 360.dp)) {
                 item {
                     GroupRow(stringResource(Res.string.no_group_label), selectedId == null, accent) { onSelect(null) }
                 }
@@ -49,10 +50,12 @@ fun GroupSelectionSheet(
                 }
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .5f))
-            Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 24.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (adding) {
+                    val focus = remember { FocusRequester() }
+                    LaunchedEffect(Unit) { focus.requestFocus() }
                     OutlinedTextField(value = name, onValueChange = { name = it }, enabled = !isAdding,
-                        singleLine = true, modifier = Modifier.weight(1f), placeholder = { Text(stringResource(Res.string.new_group_hint)) },
+                        singleLine = true, modifier = Modifier.weight(1f).focusRequester(focus), shape = RoundedCornerShape(10.dp), textStyle = MaterialTheme.typography.bodyLarge, placeholder = { AppText(text = Res.string.new_group_hint) },
                         colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent))
                     IconButton(onClick = { onCreate(name.trim()) }, enabled = name.isNotBlank() && !isAdding) {
                         Icon(Icons.Outlined.Check, stringResource(Res.string.confirm_action), tint = accent, modifier = Modifier.size(20.dp))
@@ -65,8 +68,8 @@ fun GroupSelectionSheet(
                         Icon(Icons.Outlined.Add, stringResource(Res.string.add_group_action), modifier = Modifier.size(20.dp), tint = accent)
                     }
                     Spacer(Modifier.weight(1f))
-                    TextButton(onClick = onManage, colors = ButtonDefaults.textButtonColors(contentColor = accent)) {
-                        Text(stringResource(Res.string.manage_groups_action))
+                    OutlinedButton(onClick = onManage, shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)) {
+                        AppText(text = Res.string.manage_groups_action, textType = TextType.Action)
                     }
                 }
             }
@@ -76,8 +79,11 @@ fun GroupSelectionSheet(
 
 @Composable
 private fun GroupRow(label: String, selected: Boolean, accent: Color, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-        RadioButton(selected, onClick = null, modifier = Modifier.padding(12.dp), colors = RadioButtonDefaults.colors(selectedColor = accent))
+    Column {
+        Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).clickable(onClick = onClick).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            AppText(text = label, modifier = Modifier.weight(1f).padding(start = 8.dp), textType = TextType.BodyLarge)
+            RadioButton(selected, onClick = null, modifier = Modifier.padding(12.dp), colors = RadioButtonDefaults.colors(selectedColor = accent))
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f))
     }
 }

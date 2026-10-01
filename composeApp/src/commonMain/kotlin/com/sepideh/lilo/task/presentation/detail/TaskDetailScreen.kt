@@ -1,6 +1,9 @@
 package com.sepideh.lilo.task.presentation.detail
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,6 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
+import com.sepideh.lilo.core.presentation.BaseFormScreen
+import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.components.selection.GroupOption
 import com.sepideh.lilo.core.presentation.components.selection.GroupSelectionSheet
@@ -62,60 +67,61 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
 @Composable
 fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) -> Unit, onBack: () -> Boolean) {
     val accent = LiloExtendedTheme.colors.taskColor
-    Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
-        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { onBack() }) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(Res.string.cancel_button), modifier = Modifier.size(20.dp)) }
-            Text(stringResource(if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-            Button(onClick = { onAction(TaskDetailAction.OnAddTaskButton(true)) }, enabled = !state.isSaving && !state.isLoading,
-                colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = Color.Black),
-                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp)) {
-                Text(stringResource(Res.string.save_task_action))
-            }
-        }
-    }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    BaseFormScreen(
+        title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
+        accent = accent, saveEnabled = !state.isSaving && !state.isLoading,
+        onBack = onBack, onSave = { onAction(TaskDetailAction.OnAddTaskButton(true)) },
+    ) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
             if (state.hasError) Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)
             if (state.isLoading || state.isSaving) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             AppOutlineTextField(accentColor = accent,
-                leadingIcon = { Icon(Icons.Outlined.Edit, null, Modifier.size(20.dp)) },
+                leadingIcon = { Icon(Icons.Outlined.Title, null, Modifier.size(20.dp)) },
                 textFieldRequired = TextFieldRequired(label = stringResource(Res.string.title_label), value = task.title,
                     hint = stringResource(Res.string.task_title_hint), enabled = !state.isLoading && !state.isSaving,
                     onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) }, validationStatus = state.titleError))
             AppOutlineTextField(accentColor = accent, singleLine = false, maxLines = 8,
-                textFieldModifier = Modifier.heightIn(min = 132.dp),
+                textFieldModifier = Modifier.heightIn(min = 144.dp),
                 leadingIcon = { Icon(Icons.Outlined.Notes, null, Modifier.size(20.dp)) },
-                textFieldRequired = TextFieldRequired(label = stringResource(Res.string.description_optional), value = task.description,
+                textFieldRequired = TextFieldRequired(label = stringResource(Res.string.description_label), value = task.description, hint = stringResource(Res.string.task_description_hint),
                     enabled = !state.isLoading && !state.isSaving, onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) }))
-            Column {
-                Text(stringResource(Res.string.priority_label), style = MaterialTheme.typography.labelLarge)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Priority.priorities.forEach { priority ->
-                        FilterChip(selected = task.priority == priority.id, onClick = { onAction(TaskDetailAction.OnPrioritySelected(priority.title)) },
-                            enabled = !state.isSaving, label = { Text(stringResource(priority.title)) },
-                            colors = FilterChipDefaults.filterChipColors(selectedContainerColor = accent.copy(alpha = .16f), selectedLabelColor = MaterialTheme.colorScheme.onSurface))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                AppText(text = Res.string.priority_label, textType = TextType.FieldLabel)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    listOf(2, 1, 0).map { Priority.getById(it) }.forEach { priority ->
+                        val selected = task.priority == priority.id
+                        val dot = when (priority.id) { 2 -> Color(0xFF2BB86A); 1 -> accent; else -> Color(0xFFEA4545) }
+                        FilterChip(selected = selected, onClick = { onAction(TaskDetailAction.OnPrioritySelected(priority.title)) },
+                            modifier = Modifier.weight(1f).heightIn(min = 44.dp), shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant),
+                            enabled = !state.isSaving,
+                            leadingIcon = { Box(Modifier.size(10.dp).background(dot, CircleShape)) },
+                            label = { AppText(text = priority.title, textType = TextType.Body) },
+                            colors = FilterChipDefaults.filterChipColors(selectedContainerColor = accent.copy(alpha = .10f), selectedLabelColor = MaterialTheme.colorScheme.onSurface))
                     }
                 }
             }
             TaskOptionRow(Icons.Outlined.Notifications, stringResource(Res.string.reminder_label),
-                reminderLabel(state), state.reminderModel.reminderStartDate != null, accent,
+                reminderLabel(state),
                 onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },
                 onClear = if (state.reminderModel.reminderStartDate != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
-            TaskOptionRow(Icons.Outlined.FolderOpen, stringResource(Res.string.category_label),
-                state.selectedCategory?.title ?: stringResource(Res.string.no_group_label), state.selectedCategory != null, accent,
+            TaskOptionRow(Icons.Outlined.FolderOpen, stringResource(Res.string.group_field_label),
+                state.selectedCategory?.title ?: stringResource(Res.string.no_group_label),
                 onClick = { onAction(TaskDetailAction.OnCategoryIcon) })
         }
     }
 }
 
 @Composable
-private fun TaskOptionRow(icon: ImageVector, title: String, value: String, selected: Boolean, accent: Color, onClick: () -> Unit, onClear: (() -> Unit)? = null) {
+private fun TaskOptionRow(icon: ImageVector, title: String, value: String, onClick: () -> Unit, onClear: (() -> Unit)? = null) {
     Surface(onClick = onClick, shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.background,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f))) {
-        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(icon, null, Modifier.size(20.dp), tint = if (selected) accent else MaterialTheme.colorScheme.onSurfaceVariant)
-            Column(Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(value, style = MaterialTheme.typography.bodyMedium)
+        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Icon(icon, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            AppText(text = title, modifier = Modifier.weight(1f), textType = TextType.BodyLarge)
+            Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = .045f)) {
+                AppText(text = value, modifier = Modifier.widthIn(max = 172.dp).padding(horizontal = 12.dp, vertical = 8.dp),
+                    textType = TextType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
             }
             if (onClear != null) IconButton(onClick = onClear) { Icon(Icons.Outlined.Close, stringResource(Res.string.remove_reminder_action), Modifier.size(18.dp)) }
         }
@@ -135,7 +141,7 @@ private fun reminderLabel(state: TaskDetailState): String {
 private fun GroupManagementDialog(state: TaskDetailState, onAction: (BaseAction) -> Unit) {
     var deleteId by remember { mutableStateOf<Long?>(null) }
     AlertDialog(onDismissRequest = { onAction(TaskDetailAction.OnCloseManageGroups) },
-        title = { Text(stringResource(Res.string.manage_groups_action)) },
+        title = { AppText(text = Res.string.manage_groups_action, textType = TextType.SectionTitle) },
         text = {
             Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
                 if (state.hasError) Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)
@@ -146,10 +152,19 @@ private fun GroupManagementDialog(state: TaskDetailState, onAction: (BaseAction)
                     }
                 }
             }
-        }, confirmButton = { TextButton(onClick = { onAction(TaskDetailAction.OnCloseManageGroups) }) { Text(stringResource(Res.string.confirm_action)) } })
+        }, confirmButton = { TextButton(onClick = { onAction(TaskDetailAction.OnCloseManageGroups) }) { AppText(text = Res.string.confirm_action, textType = TextType.Action) } })
     deleteId?.let { id ->
         AlertDialog(onDismissRequest = { deleteId = null }, text = { Text(stringResource(Res.string.delete_group_message)) },
-            confirmButton = { TextButton(onClick = { onAction(TaskDetailAction.OnDeleteCategory(id)); deleteId = null }) { Text(stringResource(Res.string.delete_action)) } },
-            dismissButton = { TextButton(onClick = { deleteId = null }) { Text(stringResource(Res.string.cancel_button)) } })
+            confirmButton = { TextButton(onClick = { onAction(TaskDetailAction.OnDeleteCategory(id)); deleteId = null }) { AppText(text = Res.string.delete_action, textType = TextType.Action) } },
+            dismissButton = { TextButton(onClick = { deleteId = null }) { AppText(text = Res.string.cancel_button, textType = TextType.Action) } })
+    }
+}
+
+@AppPreviews
+@Composable
+private fun TaskFormPreview() {
+    LiloPreviewWrapper {
+        val task = Task(title = "Practice violin", priority = 1)
+        TaskDetailScreen(TaskDetailState(task = task), task, {}, { true })
     }
 }

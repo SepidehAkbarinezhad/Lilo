@@ -41,3 +41,13 @@ The existing iOS scheduler reports asynchronous notification errors through its 
 - Local Gradle build/test is blocked before configuration: the environment cannot download Gradle 8.13 from services.gradle.org. No successful compile or device run is claimed.
 
 Before merging, run `./gradlew :composeApp:testDebugUnitTest :composeApp:assembleDebug` in an Android SDK environment, and build the iOS simulator target on macOS. Verify add/edit, repeated filters, group create/cancel/confirm, reminder edit/cancel/reopen/delete, and English/Persian light/dark layouts on devices.
+
+## UI refinement against new_task_form.png
+
+The follow-up keeps `BaseHeader` and introduces shared `BaseFormScreen` and `BaseListScreen` scaffolds. `SheetHeader` shares title/action styling between group selection and filters. These are presentation-only components with values/callbacks.
+
+`AppText` retains the project typography abstraction and consistently inherits Material content color and start alignment in both overloads. TextType adds explicit screen-title, section-title, field-label, action, body-large, and caption roles based on Material typography. Screen/sheet headings and actions use semibold weights. Field labels have 8dp separation from the outline, and the previously unused textStyle parameter is now applied to input text.
+
+The form uses Low/Medium/High chips with colored dots, a compact filled Save button, neutral outline icons, and right-aligned value badges. Group confirmation is filled; group rows have subtle dividers; Manage groups is outlined. Search animates into a rounded outlined input, focuses automatically, and puts Close at the opposite logical edge from the collapsed search action. RTL follows layout direction. Closing search clears its query through the existing ViewModel action.
+
+Photos remain unimplemented and are not represented by a nonfunctional button. Reminder clearing remains an explicit small action beside the value badge. No pixel-perfect or runtime verification is claimed while Gradle is unavailable. Shared text/header changes also affect screens consuming those components, though Notes source files remain unchanged.
