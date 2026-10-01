@@ -1,6 +1,6 @@
 package com.sepideh.lilo.task.domain.reminder
 
-import com.sepideh.lilo.task.data.Reminder
+import com.sepideh.lilo.task.domain.reminder.Reminder
 
 interface ReminderScheduler {
     fun scheduleReminder(reminder: Reminder)

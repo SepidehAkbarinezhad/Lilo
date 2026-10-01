@@ -6,6 +6,11 @@ import com.sepideh.lilo.task.presentation.reminder.ReminderModel
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface TaskDetailAction : BaseAction {
+    data class OnGroupDraftSelected(val id: Long?) : TaskDetailAction
+    data object OnManageGroups : TaskDetailAction
+    data object OnCloseManageGroups : TaskDetailAction
+    data object OnConfirmGroup : TaskDetailAction
+    data object OnClearReminder : TaskDetailAction
     data class OnTitleChanged(val title: String) : TaskDetailAction
     data class OnDescriptionChanged(val description: String) : TaskDetailAction
     data object OnCategoryIcon : TaskDetailAction

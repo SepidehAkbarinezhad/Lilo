@@ -1,0 +1,21 @@
+<resources>
+    <string name="save_task_action">ذخیره</string>
+    <string name="task_operation_error">عملیات انجام نشد. دوباره تلاش کنید.</string>
+    <string name="choose_group_title">انتخاب گروه</string>
+    <string name="manage_groups_action">مدیریت گروه‌ها</string>
+    <string name="new_group_hint">نام گروه جدید</string>
+    <string name="no_group_label">بدون گروه</string>
+    <string name="add_group_action">افزودن گروه</string>
+    <string name="confirm_action">تأیید</string>
+    <string name="reminder_label">یادآور</string>
+    <string name="not_set_label">تنظیم نشده</string>
+    <string name="remove_reminder_action">حذف یادآور</string>
+    <string name="description_optional">توضیحات (اختیاری)</string>
+    <string name="task_title_hint">چه کاری باید انجام دهید؟</string>
+    <string name="delete_group_message">این گروه حذف شود؟ کارهای آن بدون گروه باقی می‌مانند.</string>
+    <string name="delete_action">حذف</string>
+    <string name="task_no_results">کاری با این فیلترها پیدا نشد</string>
+    <string name="task_complete_action">انجام شد</string>
+    <string name="task_reopen_action">انجام نشده</string>
+    <string name="search_tasks_action">جستجوی کارها</string>
+</resources>

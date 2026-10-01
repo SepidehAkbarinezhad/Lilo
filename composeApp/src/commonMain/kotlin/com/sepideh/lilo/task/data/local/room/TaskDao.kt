@@ -11,6 +11,9 @@ interface TaskDao {
     @Upsert
     suspend fun upsert(task: TaskEntity): Long
 
+    @Query("UPDATE TaskEntity SET category = 0 WHERE category = :id")
+    suspend fun clearGroup(id: Long)
+
     @Delete
     suspend fun delete(task: TaskEntity)
 

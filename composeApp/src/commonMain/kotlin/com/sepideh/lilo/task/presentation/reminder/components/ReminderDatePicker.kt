@@ -45,6 +45,7 @@ fun ReminderDatePicker(
         AppLanguage.FA -> {
             if (liloInfo.platformType.name == PlatformType.ANDROID.name)
                 LiloPersianDatePicker(selectedDay = reminderModel.reminderStartDate, onAction = onAction,)
+            else DefaultDatePicker(reminderModel, onAction)
         }
         AppLanguage.EN -> DefaultDatePicker(reminderModel = reminderModel, onAction = onAction)
     }
@@ -55,42 +56,14 @@ fun ReminderDatePicker(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultDatePicker(reminderModel: ReminderModel, onAction: (BaseAction) -> Unit) {
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = reminderModel.reminderStartDate ?: getCurrentDate(),
+    com.sepideh.lilo.core.presentation.components.picker.FeatureDatePicker(
+        selectedDateMillis = reminderModel.reminderStartDate ?: getCurrentDate(),
+        accent = LiloExtendedTheme.colors.taskColor,
+        onConfirm = { onAction(TaskDetailAction.OnReminderDateConfirm(ReminderModel(reminderStartDate = it))) },
+        onDismiss = { onAction(TaskDetailAction.OnDismissDatePickerButton) },
     )
-    DatePickerDialog(
-        onDismissRequest = {},
-        confirmButton = {
-            ConfirmBtn(
-                onAction = onAction,
-                selectedDate = datePickerState.selectedDateMillis
-            )
-        },
-        dismissButton = {
-            CancelBtn(onAction = onAction)
-        },
-        colors = DatePickerDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            selectedDayContentColor = Color.White,
-            selectedDayContainerColor = LiloExtendedTheme.colors.taskColor,
-            headlineContentColor = MaterialTheme.colorScheme.onSurface,
-        )
-    ) {
-        DatePicker(
-            state = datePickerState,
-            modifier = Modifier
-                .fillMaxWidth().statusBarsPadding(),
-            title = {
-                ReminderTitle(color =  LiloExtendedTheme.colors.taskColor)
-            },
-            colors = DatePickerDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            ),
-            showModeToggle = false // Hides the pen/calendar icon
-        )
-    }
-
 }
+
 
 
 @Composable

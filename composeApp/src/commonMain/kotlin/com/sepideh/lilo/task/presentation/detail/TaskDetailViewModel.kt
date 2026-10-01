@@ -1,377 +1,148 @@
 package com.sepideh.lilo.task.presentation.detail
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.category.domain.CategoryDomain
 import com.sepideh.lilo.category.domain.CategoryFactory
 import com.sepideh.lilo.category.domain.repository.CategoryRepository
-import com.sepideh.lilo.category.domain.toPresentation
-import com.sepideh.lilo.category.domain.toPresentationList
-import com.sepideh.lilo.core.domain.ValidateField
+import com.sepideh.lilo.category.presentation.toPresentationList
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
-import com.sepideh.lilo.core.service.PermissionManager
-import com.sepideh.lilo.core.utils.combineDateAndTime
+import com.sepideh.lilo.task.domain.reminder.ReminderPermissions
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
-import com.sepideh.lilo.task.data.Reminder
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.repository.TaskRepository
+import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.presentation.reminder.ReminderModel
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.error_empty_field_label
 
 class TaskDetailViewModel(
     private val categoryFactory: CategoryFactory,
     private val languageProvider: LanguageProvider,
     private val taskRepository: TaskRepository,
     private val categoryRepository: CategoryRepository,
-    private val reminderScheduler: ReminderScheduler,
-    private val permissionManager: PermissionManager
+    private val mutations: TaskMutations,
+    private val permissions: ReminderPermissions,
 ) : BaseViewModel() {
-
-    val currentLanguage = languageProvider.currentLanguage
-    val isXiaomi = permissionManager.isXiaomi()
-    private val _categories = categoryRepository.getAllCategories()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
-
-    private val state = MutableStateFlow(TaskDetailState())
-
-    /*
-  * `combine`:
-  * 1. Any update to any of the combined flows triggers the block to execute again.
-  *    To avoid unnecessary computations (e.g., Room queries, network requests),
-  *    the categories fetching is decoupled from Room.
-  * 2. Emits as soon as any flow emits, even if others haven't yet. Since _state starts with
-  *    TaskDetailState() (with an empty list) and _categories takes time to emit from Room,
-  *    calling `.first()` on an empty list could cause a crash.
-  *    Therefore, use `firstOrNull()` for safety.
-  */
-    val stateValue = combine(
-        state,
-        _categories,
-    ) { state, categories ->
-        // On Room update: Retain the selected category if it still exists; otherwise, select the first item in the list.
-        val validSelectedCategory =
-            if (categories.isEmpty()) { null } else { categories.find { it.id == state.selectedCategory?.id } ?: categories.first() }
-        state.copy(categories = categories.toPresentationList(currentLanguage),
-            selectedCategory = validSelectedCategory?.toPresentation(currentLanguage))
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), state.value)
-
-    var task: Task by mutableStateOf(Task())
-    private var reminderModel = state.value.reminderModel
-
+    val isXiaomi = permissions.needsBatteryGuidance
+    private val local = MutableStateFlow(TaskDetailState())
+    private var loadedTaskId: Long? = null
+    val stateValue = combine(local, categoryRepository.getAllCategories(), languageProvider.languageFlow) { state, groups, language ->
+        val items = groups.toPresentationList(language)
+        state.copy(categories = items, selectedCategory = items.find { it.id == state.task.category })
+    }.catch { local.update { it.copy(hasError = true) }; emit(local.value) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), local.value)
 
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
-            is TaskDetailAction.OnTitleChanged -> {
-                task = task.copy(title = action.title)
-            }
-
-            is TaskDetailAction.OnDescriptionChanged -> {
-                task = task.copy(description = action.description)
-            }
-
-            is TaskDetailAction.OnCategoryIcon -> {
-                state.update {
-                    it.copy(categoryDialogOpen = true)
-                }
-            }
-
-            is TaskDetailAction.OnDismissCategoryDialog -> {
-                state.update {
-                    it.copy(categoryDialogOpen = false)
-                }
-            }
-
-            is TaskDetailAction.OnPriorityIcon -> {
-                state.update {
-                    it.copy(priorityDialogOpen = true)
-                }
-            }
-
-            is TaskDetailAction.OnDismissPriorityDialog -> {
-                state.update {
-                    it.copy(priorityDialogOpen = false)
-                }
-            }
-
-            is TaskDetailAction.OnDateReminderIcon -> {
-                /*
-                * When the user taps the reminder icon, check both alarm and notification permissions.
-                * If both permissions are granted, open the reminder dialog.
-                * If either permission is missing, a dialog will be shown to inform the user and possibly redirect to settings.
-                * */
-                viewModelScope.launch {
-                    updatePermissionState(checkDeniedPermission = false).await()
-                    if (!state.value.shouldShowPermissionDialog) {
-                        setReminderDateDialogOpen(open = true)
-                    }
-                }
-            }
-
-            is TaskDetailAction.OnDismissDatePickerButton -> {
-                setReminderDateDialogOpen(open = false)
-            }
-
-            is TaskDetailAction.OnDismissTimePickerButton -> {
-                state.update {
-                    it.copy(reminderModel =ReminderModel())
-                }
-                setReminderTimeDialogOpen(open = false)
-            }
-
-            is TaskDetailAction.OnReminderDateConfirm -> {
-                with(action.reminderModel) { updateReminder( startDay = reminderStartDate, endDay = reminderEndDate) }
-                setReminderDateDialogOpen(open = false)
-                setReminderTimeDialogOpen(open = true)
-            }
-
-            is TaskDetailAction.OnReminderTimeConfirm -> {
-                with(action.reminderModel){
-                    updateReminder( hour = reminderHour,minute=reminderMinute)
-                }
-                setReminderTimeDialogOpen(open = false)
-            }
-
-            is TaskDetailAction.OnCategorySelected -> {
-                val selectedCategoryDomain = stateValue.value.categories.find { it == action.category }
-                    ?: CategoryDomain.categories[0].toPresentation(currentLanguage)
-                println("OnCategorySelected  $selectedCategoryDomain")
-                state.update { it.copy(selectedCategory = selectedCategoryDomain) }
-                onAction(TaskDetailAction.OnDismissCategoryDialog)
-            }
-
+            is TaskDetailAction.OnTitleChanged -> local.update { it.copy(task = it.task.copy(title = action.title), titleError = it.titleError.copy(isSuccessful = true, messageId = null)) }
+            is TaskDetailAction.OnDescriptionChanged -> local.update { it.copy(task = it.task.copy(description = action.description)) }
+            TaskDetailAction.OnCategoryIcon -> local.update { it.copy(categoryDialogOpen = true, draftCategoryId = it.task.category.takeIf { id -> id != 0L }) }
+            TaskDetailAction.OnDismissCategoryDialog -> local.update { it.copy(categoryDialogOpen = false) }
+            is TaskDetailAction.OnCategorySelected -> local.update { it.copy(draftCategoryId = action.category.id) }
+            is TaskDetailAction.OnGroupDraftSelected -> local.update { it.copy(draftCategoryId = action.id) }
+            TaskDetailAction.OnConfirmGroup -> local.update { it.copy(task = it.task.copy(category = it.draftCategoryId ?: 0), categoryDialogOpen = false) }
+            TaskDetailAction.OnPriorityIcon -> local.update { it.copy(priorityDialogOpen = true) }
+            TaskDetailAction.OnDismissPriorityDialog -> local.update { it.copy(priorityDialogOpen = false) }
             is TaskDetailAction.OnPrioritySelected -> {
-                val selectedPriority = Priority.getByTitle(action.title)
-                state.update { it.copy(selectedPriority = selectedPriority) }
-                onAction(TaskDetailAction.OnDismissPriorityDialog)
+                val priority = Priority.getByTitle(action.title)
+                local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id), priorityDialogOpen = false) }
             }
-
-            is TaskDetailAction.OnSelectReminderTime -> {
-                with(action.time) {
-                    updateReminder(hour = first, minute = second)
-                }
+            TaskDetailAction.OnDateReminderIcon -> launchOperation {
+                if (hasReminderPermission()) local.update { it.copy(reminderDraft = it.reminderModel, reminderDatePickerOpen = true) }
+                else local.update { it.copy(shouldShowPermissionDialog = true) }
             }
-
-            is TaskDetailAction.OnAddTaskButton -> {
-                viewModelScope.launch {
-                    val tempTask = with(state.value){
-                        task.copy(
-                            category = selectedCategory?.id
-                                ?: CategoryDomain.categories[0].id,
-                            priority =selectedPriority.id,
-                            reminderHour = reminderModel.reminderHour,
-                            reminderMinute = reminderModel.reminderMinute,
-                            reminderStartDate = reminderModel.reminderStartDate,
-                            reminderEndDate = reminderModel.reminderEndDate,
-                            id = task.id
-                        )
-                    }
-                    viewModelScope.launch {
-                        if (isFormValid(checkDeniedPermission = action.checkDeniedPermission)) {
-                            //Room's @Upsert returns:New ID if inserted and -1 if existing task was updated
-                            val resultId = taskRepository.upsertTask(tempTask)
-                            //Use the correct ID for scheduling a reminder:
-                            //If resultId == -1, it's an update, so use existing task.id ,Otherwise, it's a new insert, so use the returned ID
-                            val actualId = if (resultId == -1L) tempTask.id!! else resultId
-                            startReminder(actualId)
-                            onAction(BaseAction.OnNavigateTo(route = null))
-                        }
-                    }
-                }
+            TaskDetailAction.OnDismissDatePickerButton, TaskDetailAction.OnDismissTimePickerButton -> local.update {
+                it.copy(reminderDatePickerOpen = false, reminderTimePickerOpen = false, reminderDraft = it.reminderModel)
             }
-
-            is TaskDetailAction.OnAddNewCategory -> {
-                viewModelScope.launch {
-                    categoryRepository.addCategory(category = categoryFactory.create(action.categoryTitle))
-                }
-                //state.update { it.copy(selectedCategory) }
+            is TaskDetailAction.OnReminderDateConfirm -> local.update { it.copy(
+                reminderDraft = it.reminderDraft.copy(reminderStartDate = action.reminderModel.reminderStartDate, reminderEndDate = action.reminderModel.reminderEndDate),
+                reminderDatePickerOpen = false, reminderTimePickerOpen = true,
+            ) }
+            is TaskDetailAction.OnReminderTimeConfirm -> local.update {
+                val reminder = it.reminderDraft.copy(reminderHour = action.reminderModel.reminderHour, reminderMinute = action.reminderModel.reminderMinute)
+                it.copy(reminderModel = reminder, reminderDraft = reminder, reminderTimePickerOpen = false)
             }
-            is TaskDetailAction.OnDeleteCategory->{
-                viewModelScope.launch {categoryRepository.getCategoryById(action.categoryId) }
-            }
-
+            is TaskDetailAction.OnSelectReminderTime -> local.update { it.copy(reminderDraft = it.reminderDraft.copy(reminderHour = action.time.first, reminderMinute = action.time.second)) }
+            TaskDetailAction.OnClearReminder -> local.update { it.copy(reminderModel = ReminderModel(), reminderDraft = ReminderModel()) }
+            is TaskDetailAction.OnAddTaskButton -> save(action.checkDeniedPermission)
+            is TaskDetailAction.OnAddNewCategory -> addGroup(action.categoryTitle)
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
-                viewModelScope.launch {
-                    taskRepository.getTaskById(action.taskId)
-                        ?.let { selectedTask ->
-                            task = selectedTask
-                            updateSelectedCategory(selectedTask.category)
-                            updateSelectedPriority(selectedTask.priority)
-                              with(selectedTask){
-                                 updateReminder(  hour = reminderHour,
-                                    minute = reminderMinute,
-                                    startDay = reminderStartDate,
-                                    endDay = reminderEndDate)
-                            }
-
-                        }
+                if (loadedTaskId == action.taskId) return
+                loadedTaskId = action.taskId
+                local.update { it.copy(isLoading = true) }
+                launchOperation {
+                    val task = taskRepository.getTaskById(action.taskId) ?: error("Task not found")
+                    val reminder = ReminderModel(task.reminderHour, task.reminderMinute, task.reminderStartDate, task.reminderEndDate)
+                    local.update { it.copy(task = task, selectedPriority = Priority.getById(task.priority), reminderModel = reminder, reminderDraft = reminder, isLoading = false) }
                 }
             }
-
-            is TaskDetailAction.OnGrantPermissionButton -> {
-                closePermissionDialog()
-                viewModelScope.launch {
-                    with(permissionManager) {
-                        when (action.firstTime) {
-                            true -> requestNeededPermission()
-                            false -> requestDeniedPermission()
-                        }
-                    }
-                }
+            is TaskDetailAction.OnGrantPermissionButton -> launchOperation {
+                local.update { it.copy(shouldShowPermissionDialog = false, shouldShowPermissionDeniedDialog = false) }
+                permissions.requestAccess(action.firstTime)
             }
-
-            TaskDetailAction.OnCancelPermissionDialog -> {
-                closePermissionDialog()
+            TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(shouldShowPermissionDialog = false, shouldShowPermissionDeniedDialog = false) }
+            TaskDetailAction.OnManageGroups -> local.update { it.copy(categoryDialogOpen = false, groupManagementOpen = true) }
+            TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(categoryDialogOpen = true, groupManagementOpen = false) }
+            is TaskDetailAction.OnDeleteCategory -> launchOperation {
+                taskRepository.clearGroup(action.categoryId)
+                categoryRepository.deleteCategory(action.categoryId)
+                local.update { it.copy(
+                    task = if (it.task.category == action.categoryId) it.task.copy(category = 0) else it.task,
+                    draftCategoryId = it.draftCategoryId.takeUnless { id -> id == action.categoryId },
+                ) }
             }
         }
     }
 
-    private fun closePermissionDialog() {
+    private fun addGroup(title: String) {
+        if (title.isBlank() || local.value.isAddingGroup) return
+        local.update { it.copy(isAddingGroup = true, hasError = false) }
+        launchOperation {
+            val normalized = title.trim()
+            val existing = stateValue.value.categories.firstOrNull { it.title.equals(normalized, ignoreCase = true) }
+            val id = existing?.id ?: categoryRepository.addCategory(categoryFactory.create(normalized))
+            local.update { it.copy(draftCategoryId = id, isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
+        }
+    }
+
+    private fun save(checkPermission: Boolean) {
+        if (local.value.isSaving || local.value.isLoading) return
+        if (local.value.task.title.isBlank()) {
+            local.update { it.copy(titleError = it.titleError.copy(isSuccessful = false, messageId = Res.string.error_empty_field_label)) }
+            return
+        }
+        local.update { it.copy(isSaving = true, hasError = false) }
+        launchOperation {
+            val state = local.value
+            val allowed = hasReminderPermission()
+            if (checkPermission && state.reminderModel.reminderHour != null && !allowed) {
+                local.update { it.copy(isSaving = false, shouldShowPermissionDeniedDialog = true) }
+                return@launchOperation
+            }
+            val reminder = state.reminderModel
+            val task = state.task.copy(
+                category = state.task.category.takeIf { id -> stateValue.value.categories.any { it.id == id } } ?: 0,
+                reminderStartDate = reminder.reminderStartDate, reminderEndDate = reminder.reminderEndDate,
+                reminderHour = reminder.reminderHour, reminderMinute = reminder.reminderMinute,
+            )
+            val result = mutations.save(task, scheduleReminder = allowed)
+            local.update { it.copy(task = task.copy(id = result.id), isSaving = false, shouldShowPermissionDeniedDialog = false, hasError = result.reminderFailed) }
+            if (!result.reminderFailed) onAction(BaseAction.OnNavigateTo(null))
+        }
+    }
+
+    private suspend fun hasReminderPermission(): Boolean = permissions.hasAccess()
+
+    private fun launchOperation(block: suspend () -> Unit) {
         viewModelScope.launch {
-            state.update {
-                it.copy(
-                    shouldShowPermissionDialog = false,
-                    shouldShowPermissionDeniedDialog = false
-                )
-            }
+            try { block() } catch (e: CancellationException) { throw e }
+            catch (_: Exception) { local.update { it.copy(hasError = true, isSaving = false, isLoading = false, isAddingGroup = false) } }
         }
     }
-
-
-    private suspend fun updateSelectedCategory(categoryId: Long) {
-        categoryRepository.getCategoryById(id = categoryId)
-            ?.let { selectedCategory ->
-                state.update {
-                    it.copy(selectedCategory = selectedCategory.toPresentation(currentLanguage))
-                }
-            }
-    }
-
-    private fun updateSelectedPriority(priorityId: Int) {
-        state.update {
-            it.copy(selectedPriority = Priority.priorities[priorityId])
-        }
-    }
-
-    private fun updateReminder(hour: Int? = reminderModel.reminderHour, minute: Int? = reminderModel.reminderMinute, startDay: Long? = reminderModel.reminderStartDate, endDay: Long? = reminderModel.reminderEndDate) {
-           reminderModel = reminderModel.copy(reminderHour = hour, reminderMinute = minute, reminderStartDate = startDay, reminderEndDate = endDay)
-            state.update {
-                it.copy(reminderModel = reminderModel)
-            }
-
-
-    }
-
-    override fun onResetState() {
-
-    }
-
-    private fun updatePermissionState(checkDeniedPermission: Boolean): Deferred<Unit> {
-        val deferred = viewModelScope.async {
-            val hasAlarm = permissionManager.hasAlarmPermission()
-            val hasNotification = permissionManager.hasNotificationPermission()
-            val shouldShowPermissionDialog = when (checkDeniedPermission) {
-                true -> false
-                false -> if (isXiaomi) {
-                    !hasNotification
-                } else {
-                    !hasAlarm || !hasNotification
-                }
-            }
-
-            //in case of user deny to get permission even when
-            val shouldShowPermissionDeniedDialog = when (checkDeniedPermission) {
-                true -> {
-                    if (isXiaomi) {
-                        reminderModel.reminderHour != null && !hasNotification
-                    } else {
-                        reminderModel.reminderHour != null && (!hasNotification || !hasAlarm)
-                    }
-                }
-
-                else -> {
-                    false
-                }
-            }
-
-            state.update {
-                it.copy(
-                    shouldShowPermissionDialog = shouldShowPermissionDialog,
-                    shouldShowPermissionDeniedDialog = shouldShowPermissionDeniedDialog
-                )
-            }
-        }
-        return deferred
-    }
-
-    //todo set reminder in a way can add custom title description
-    private fun startReminder(taskId: Long) {
-        with(reminderModel) {
-            combineDateAndTime(dayMillis = reminderStartDate, hour = reminderHour, minute = reminderMinute)?.let {
-                reminderScheduler.scheduleReminder(
-                    reminder = Reminder(
-                        id = taskId.toInt(),
-                        title = task.title,
-                        content = "",
-                        startDate = it,
-                        endDate = combineDateAndTime(dayMillis = reminderEndDate, hour = reminderHour, minute = reminderMinute)
-                    )
-                )
-            }
-        }
-    }
-
-    private suspend fun isFormValid(checkDeniedPermission: Boolean): Boolean {
-        updatePermissionState(checkDeniedPermission = checkDeniedPermission).await()
-
-        /*
-        * Validate the title and description fields based on current input
-        * We store these locally to ensure we can use them immediately for logic,
-        *  because the state won't reflect updates right away.
-        * */
-        val newTitleError = ValidateField.validate(
-            validationStatus = stateValue.value.titleError.copy(
-                value = task.title
-            )
-        )
-        val newDescriptionError = ValidateField.validate(
-            validationStatus = stateValue.value.descriptionError.copy(
-                value = task.description
-            )
-        )
-
-        state.update {
-            it.copy(
-                titleError = newTitleError,
-                descriptionError = newDescriptionError,
-            )
-        }
-
-        return newTitleError.isSuccessful && newDescriptionError.isSuccessful && !state.value.shouldShowPermissionDeniedDialog
-    }
-
-    private fun setReminderDateDialogOpen(open: Boolean) {
-        state.update {
-            it.copy(reminderDatePickerOpen = open)
-        }
-    }
-
-    private fun setReminderTimeDialogOpen(open: Boolean) {
-        state.update {
-            it.copy(reminderTimePickerOpen = open)
-        }
-    }
-
+    override fun onResetState() = Unit
 }

@@ -4,12 +4,21 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao {
+    @Query("SELECT COUNT(*) FROM CategoryEntity")
+    suspend fun count(): Int
+
+    @Transaction
+    suspend fun seedIfEmpty(defaults: List<CategoryEntity>) {
+        if (count() == 0) defaults.forEach { upsert(it) }
+    }
+
     @Upsert
-    suspend fun upsert(category: CategoryEntity)
+    suspend fun upsert(category: CategoryEntity): Long
 
     @Delete
     suspend fun delete(category: CategoryEntity)
