@@ -58,8 +58,8 @@ class TaskListViewModel(
             is TaskListAction.OnSortOrderChanged -> local.update { it.copy(sortOrder = action.sortOrder) }
             is TaskListAction.OnCategorySelected -> local.update { it.copy(selectedCategory = action.id) }
             is TaskListAction.OnSearchQueryChange -> local.update { it.copy(searchQuery = action.query) }
-            is TaskListAction.OnSearchToggle -> local.update { it.copy(isSearchVisible = action.open, searchQuery = if (action.open) it.searchQuery else "") }
-            TaskListAction.OnFilterIcon -> local.update { it.copy(isFilterSheetOpen = true, tempFilterOption = it.taskFilterOption) }
+            is TaskListAction.OnSearchToggle -> local.update { it.copy(isSearchVisible = action.open) }
+            TaskListAction.OnFilterIcon -> local.update { it.copy(isSearchVisible = false, isFilterSheetOpen = true, tempFilterOption = it.taskFilterOption) }
             TaskListAction.OnCloseFilterIcon -> local.update { it.copy(isFilterSheetOpen = false, tempFilterOption = it.taskFilterOption) }
             TaskListAction.OnApplyFilter -> local.update { it.copy(isFilterSheetOpen = false, taskFilterOption = it.tempFilterOption) }
             TaskListAction.OnResetFilter -> local.update { it.copy(tempFilterOption = TaskFilterOption()) }

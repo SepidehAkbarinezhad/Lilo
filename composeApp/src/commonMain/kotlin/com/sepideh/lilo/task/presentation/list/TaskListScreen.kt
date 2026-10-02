@@ -13,6 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +46,8 @@ fun TaskListScreenRoot(viewModel: TaskListViewModel, onNavigateTo: (AppRoutes) -
 @Composable
 fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (BaseAction) -> Unit) {
     val accent = LiloExtendedTheme.colors.taskColor
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
     BaseListScreen(title = Res.string.tasks_list_title, accent = accent,
         searchVisible = state.isSearchVisible, query = state.searchQuery, searchHint = Res.string.search_tasks_action,
         filtersActive = state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty(),
@@ -52,7 +56,12 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
         onQueryChange = { onAction(TaskListAction.OnSearchQueryChange(it)) },
         onFilter = { onAction(TaskListAction.OnFilterIcon) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Tasks.Detail(null))) }, containerColor = accent, contentColor = Color.Black) {
+            FloatingActionButton(onClick = {
+                focusManager.clearFocus()
+                keyboard?.hide()
+                onAction(TaskListAction.OnSearchToggle(false))
+                onAction(BaseAction.OnNavigateTo(AppRoutes.Tasks.Detail(null)))
+            }, containerColor = accent, contentColor = Color.Black) {
                 Icon(Icons.Outlined.Add, stringResource(Res.string.add_task_label))
             }
         }) { padding ->

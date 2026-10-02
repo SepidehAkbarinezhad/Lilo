@@ -51,3 +51,18 @@ The follow-up keeps `BaseHeader` and introduces shared `BaseFormScreen` and `Bas
 The form uses Low/Medium/High chips with colored dots, a compact filled Save button, neutral outline icons, and right-aligned value badges. Group confirmation is filled; group rows have subtle dividers; Manage groups is outlined. Search animates into a rounded outlined input, focuses automatically, and puts Close at the opposite logical edge from the collapsed search action. RTL follows layout direction. Closing search clears its query through the existing ViewModel action.
 
 Photos remain unimplemented and are not represented by a nonfunctional button. Reminder clearing remains an explicit small action beside the value badge. No pixel-perfect or runtime verification is claimed while Gradle is unavailable. Shared text/header changes also affect screens consuming those components, though Notes source files remain unchanged.
+
+## Shared form components
+
+Based on user commit b401313. FormSelectionRow and group selection/management UI
+live in core/presentation/components and accept display values/callbacks only.
+Category persistence remains in the category feature; expenses can supply their
+own group data without depending on task state. TaskPrioritySelector stays in
+task/presentation/detail/components. Components have standalone AppPreviews.
+
+Filter and Add collapse search and dismiss the keyboard without clearing the
+query. Reopening search restores the query for editing. Priority and selection
+rows are disabled during task loading/saving. Notes sources are unchanged.
+
+Validation: dependency boundary and whitespace checks pass. Gradle compilation
+could not run because the wrapper distribution download is unreachable here.
