@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="repeat_label">Repeat</string>
+    <string name="repeat_once">Once</string>
+    <string name="repeat_daily">Daily</string>
+    <string name="repeat_weekly">Weekly</string>
+    <string name="repeat_every_weekday">Every %1$s</string>
+    <string name="reminder_future_error">Choose a future date and time.</string>
+    <string name="weekday_mon">Monday</string>
+    <string name="weekday_tue">Tuesday</string>
+    <string name="weekday_wed">Wednesday</string>
+    <string name="weekday_thu">Thursday</string>
+    <string name="weekday_fri">Friday</string>
+    <string name="weekday_sat">Saturday</string>
+    <string name="weekday_sun">Sunday</string>
+</resources>

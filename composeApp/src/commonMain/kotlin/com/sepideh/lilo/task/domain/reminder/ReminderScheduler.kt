@@ -1,11 +1,9 @@
 package com.sepideh.lilo.task.domain.reminder
 
-import com.sepideh.lilo.task.domain.reminder.Reminder
-
 interface ReminderScheduler {
-    fun scheduleReminder(reminder: Reminder)
-    fun cancelReminder(reminder: Reminder)
+    suspend fun scheduleReminder(reminder: Reminder)
+    suspend fun cancelReminder(taskId: Long)
+    suspend fun synchronize(reminders: List<Reminder>) {
+        reminders.forEach { scheduleReminder(it) }
+    }
 }
-
-
-

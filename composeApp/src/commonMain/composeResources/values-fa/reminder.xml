@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="repeat_label">تکرار</string>
+    <string name="repeat_once">یک‌بار</string>
+    <string name="repeat_daily">روزانه</string>
+    <string name="repeat_weekly">هفتگی</string>
+    <string name="repeat_every_weekday">هر %1$s</string>
+    <string name="reminder_future_error">تاریخ و ساعت آینده را انتخاب کنید.</string>
+    <string name="weekday_mon">دوشنبه</string>
+    <string name="weekday_tue">سه‌شنبه</string>
+    <string name="weekday_wed">چهارشنبه</string>
+    <string name="weekday_thu">پنجشنبه</string>
+    <string name="weekday_fri">جمعه</string>
+    <string name="weekday_sat">شنبه</string>
+    <string name="weekday_sun">یکشنبه</string>
+</resources>

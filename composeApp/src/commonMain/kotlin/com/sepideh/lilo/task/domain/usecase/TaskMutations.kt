@@ -1,18 +1,15 @@
 package com.sepideh.lilo.task.domain.usecase
 
 import com.sepideh.lilo.task.domain.model.Task
-import com.sepideh.lilo.task.domain.reminder.Reminder
+import com.sepideh.lilo.task.domain.reminder.asReminder
+import com.sepideh.lilo.task.domain.reminder.nextOccurrence
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.repository.TaskRepository
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 /** Serializes mutations and owns notification side effects independently of either screen. */
 @OptIn(ExperimentalTime::class)
@@ -24,12 +21,15 @@ class TaskMutations(
 
     suspend fun save(task: Task, scheduleReminder: Boolean = true): SaveTaskResult = mutex.withLock {
         require(task.title.isNotBlank())
+        if (task.reminderAt != null) TimeZone.of(requireNotNull(task.reminderTimeZoneId))
         val previous = task.id?.let { repository.getTaskById(it) }
         val result = repository.upsertTask(task)
         val id = if (result == -1L) requireNotNull(task.id) else result
         val reminderFailed = try {
-            previous?.let { scheduler.cancelReminder(it.asReminder()) }
-            syncReminder(task.copy(id = id), scheduleReminder)
+            previous?.id?.let { scheduler.cancelReminder(it) }
+            if (!scheduleReminder) {
+                scheduler.cancelReminder(id)
+            } else syncReminder(task.copy(id = id))
             false
         } catch (e: kotlinx.coroutines.CancellationException) { throw e }
         catch (_: Exception) { true }
@@ -47,31 +47,37 @@ class TaskMutations(
 
     suspend fun delete(id: Long) = mutex.withLock {
         repository.getTaskById(id)?.let { task ->
-            scheduler.cancelReminder(task.asReminder())
+            scheduler.cancelReminder(id)
             repository.deleteTask(id)
+            synchronizeAll()
         }
     }
 
-    private fun syncReminder(task: Task, schedule: Boolean = true) {
-        val reminder = task.asReminder()
-        scheduler.cancelReminder(reminder)
-        if (schedule && !task.done && reminder.startDate != null && reminder.startDate > Clock.System.now().toEpochMilliseconds()) {
+    /** Rebuild schedules after reboot, permission grant or foreground entry. */
+    suspend fun restoreReminders() = mutex.withLock { synchronizeAll() }
+
+    /** Android alarm delivery checks current persistence under the same mutation lock. */
+    suspend fun deliverReminder(id: Long, expectedAt: Long, notify: (Task) -> Unit) = mutex.withLock {
+        val task = repository.getTaskById(id) ?: return@withLock
+        val reminder = task.asReminder() ?: return@withLock
+        if (task.done || reminder.nextOccurrence(expectedAt - 1) != expectedAt) return@withLock
+        // Only a persisted current schedule may re-arm itself.
+        try {
             scheduler.scheduleReminder(reminder)
+        } finally {
+            // A failure to re-arm must not suppress the occurrence already due.
+            notify(task)
         }
     }
 
-    private fun Task.asReminder() = Reminder(
-        id = requireNotNull(id).toInt(), title = title, content = description,
-        startDate = combine(reminderStartDate, reminderHour, reminderMinute),
-        endDate = combine(reminderEndDate, reminderHour, reminderMinute),
-    )
+    private suspend fun syncReminder(task: Task) {
+        scheduler.cancelReminder(requireNotNull(task.id))
+        synchronizeAll()
+    }
 
-    private fun combine(day: Long?, hour: Int?, minute: Int?): Long? {
-        if (day == null || hour == null || minute == null) return null
-        if (hour !in 0..23 || minute !in 0..59) return null
-        val zone = TimeZone.currentSystemDefault()
-        val date = Instant.fromEpochMilliseconds(day).toLocalDateTime(zone).date
-        return LocalDateTime(date.year, date.month, date.dayOfMonth, hour, minute).toInstant(zone).toEpochMilliseconds()
+    private suspend fun synchronizeAll() {
+        val active = repository.getAllTasks().first().filter { !it.done }.mapNotNull { it.asReminder() }
+        scheduler.synchronize(active)
     }
 }
 

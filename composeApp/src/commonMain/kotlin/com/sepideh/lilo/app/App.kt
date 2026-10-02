@@ -12,6 +12,7 @@ fun App() {
 
     CompositionLocalProvider() {
         LiloTheme {
+            com.sepideh.lilo.task.presentation.reminder.ReminderLifecycleObserver()
             val navHostController = rememberNavController()
             NavigationGraph(navHostController = navHostController)
         }

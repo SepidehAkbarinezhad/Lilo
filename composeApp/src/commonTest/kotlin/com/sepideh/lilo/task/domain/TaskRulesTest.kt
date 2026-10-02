@@ -29,7 +29,7 @@ class TaskRulesTest {
     }
 
     @Test fun reminderSortPlacesMissingRemindersLast() {
-        val scheduled = open.copy(reminderStartDate = 100, reminderHour = 9, reminderMinute = 0)
+        val scheduled = open.copy(reminderAt = 100)
         assertEquals(listOf(scheduled, completed), listOf(completed, scheduled).matching(TaskQuery(sort = TaskSort.REMINDER_DATE)))
     }
 

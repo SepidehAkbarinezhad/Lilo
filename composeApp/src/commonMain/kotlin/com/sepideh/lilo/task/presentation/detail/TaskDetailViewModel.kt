@@ -12,7 +12,7 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.repository.TaskRepository
 import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import com.sepideh.lilo.task.presentation.model.Priority
-import com.sepideh.lilo.task.presentation.reminder.ReminderModel
+import com.sepideh.lilo.task.domain.reminder.RepeatRule
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -52,23 +52,14 @@ class TaskDetailViewModel(
                 val priority = Priority.getByTitle(action.title)
                 local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id), priorityDialogOpen = false) }
             }
-            TaskDetailAction.OnDateReminderIcon -> launchOperation {
-                if (hasReminderPermission()) local.update { it.copy(reminderDraft = it.reminderModel, reminderDatePickerOpen = true) }
-                else local.update { it.copy(shouldShowPermissionDialog = true) }
+            TaskDetailAction.OnDateReminderIcon -> local.update { it.copy(reminderEditorOpen = true) }
+            TaskDetailAction.OnDismissReminder -> local.update { it.copy(reminderEditorOpen = false) }
+            is TaskDetailAction.OnReminderConfirmed -> local.update {
+                it.copy(task = it.task.copy(reminderAt = action.at, repeatRule = action.repeat, reminderTimeZoneId = action.zoneId), reminderEditorOpen = false)
             }
-            TaskDetailAction.OnDismissDatePickerButton, TaskDetailAction.OnDismissTimePickerButton -> local.update {
-                it.copy(reminderDatePickerOpen = false, reminderTimePickerOpen = false, reminderDraft = it.reminderModel)
+            TaskDetailAction.OnClearReminder -> local.update {
+                it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null))
             }
-            is TaskDetailAction.OnReminderDateConfirm -> local.update { it.copy(
-                reminderDraft = it.reminderDraft.copy(reminderStartDate = action.reminderModel.reminderStartDate, reminderEndDate = action.reminderModel.reminderEndDate),
-                reminderDatePickerOpen = false, reminderTimePickerOpen = true,
-            ) }
-            is TaskDetailAction.OnReminderTimeConfirm -> local.update {
-                val reminder = it.reminderDraft.copy(reminderHour = action.reminderModel.reminderHour, reminderMinute = action.reminderModel.reminderMinute)
-                it.copy(reminderModel = reminder, reminderDraft = reminder, reminderTimePickerOpen = false)
-            }
-            is TaskDetailAction.OnSelectReminderTime -> local.update { it.copy(reminderDraft = it.reminderDraft.copy(reminderHour = action.time.first, reminderMinute = action.time.second)) }
-            TaskDetailAction.OnClearReminder -> local.update { it.copy(reminderModel = ReminderModel(), reminderDraft = ReminderModel()) }
             is TaskDetailAction.OnAddTaskButton -> save(action.checkDeniedPermission)
             is TaskDetailAction.OnAddNewCategory -> addGroup(action.categoryTitle)
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
@@ -77,8 +68,7 @@ class TaskDetailViewModel(
                 local.update { it.copy(isLoading = true) }
                 launchOperation {
                     val task = taskRepository.getTaskById(action.taskId) ?: error("Task not found")
-                    val reminder = ReminderModel(task.reminderHour, task.reminderMinute, task.reminderStartDate, task.reminderEndDate)
-                    local.update { it.copy(task = task, selectedPriority = Priority.getById(task.priority), reminderModel = reminder, reminderDraft = reminder, isLoading = false) }
+                    local.update { it.copy(task = task, selectedPriority = Priority.getById(task.priority), isLoading = false) }
                 }
             }
             is TaskDetailAction.OnGrantPermissionButton -> launchOperation {
@@ -120,15 +110,12 @@ class TaskDetailViewModel(
         launchOperation {
             val state = local.value
             val allowed = hasReminderPermission()
-            if (checkPermission && state.reminderModel.reminderHour != null && !allowed) {
+            if (checkPermission && state.task.reminderAt != null && !allowed) {
                 local.update { it.copy(isSaving = false, shouldShowPermissionDeniedDialog = true) }
                 return@launchOperation
             }
-            val reminder = state.reminderModel
             val task = state.task.copy(
                 category = state.task.category.takeIf { id -> stateValue.value.categories.any { it.id == id } } ?: 0,
-                reminderStartDate = reminder.reminderStartDate, reminderEndDate = reminder.reminderEndDate,
-                reminderHour = reminder.reminderHour, reminderMinute = reminder.reminderMinute,
             )
             val result = mutations.save(task, scheduleReminder = allowed)
             local.update { it.copy(task = task.copy(id = result.id), isSaving = false, shouldShowPermissionDeniedDialog = false, hasError = result.reminderFailed) }

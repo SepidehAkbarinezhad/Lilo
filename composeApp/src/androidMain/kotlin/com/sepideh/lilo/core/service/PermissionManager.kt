@@ -8,21 +8,17 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 
 actual class PermissionManager(private val context: Context) {
 
-    @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun hasAlarmPermission(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             // Below Android 12, no exact alarm permission is needed
             return true
         }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val canSchedule = alarmManager.canScheduleExactAlarms()
-        println("isXiaomi ${isXiaomi()} canSchedule $canSchedule")
-        return !isXiaomi() &&  canSchedule
+        return alarmManager.canScheduleExactAlarms()
     }
 
     actual suspend fun hasNotificationPermission(): Boolean {
@@ -37,7 +33,6 @@ actual class PermissionManager(private val context: Context) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun requestNeededPermission() {
         // the flag is required when starting an activity from a non-Activity context (like Application or Service).
         // We're launching the system settings screen from PermissionManager, which uses an application context — so NEW_TASK is necessary.
@@ -46,7 +41,7 @@ actual class PermissionManager(private val context: Context) {
         when {
             // Android 12 (S), show the Exact Alarm permissions screen
             // Notification permission is not needed on this version
-            Build.VERSION.SDK_INT == Build.VERSION_CODES.S -> {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !hasAlarmPermission() -> {
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                     data = Uri.parse("package:${context.packageName}")
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -68,7 +63,6 @@ actual class PermissionManager(private val context: Context) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     actual suspend fun requestDeniedPermission() {
         requestNeededPermission()
     }
