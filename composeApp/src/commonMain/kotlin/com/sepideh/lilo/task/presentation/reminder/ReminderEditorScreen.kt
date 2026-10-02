@@ -60,7 +60,7 @@ fun ReminderEditorScreen(
                 else onConfirm(at, selectedRepeat, zoneId)
             }
         }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
+        Column(Modifier.fillMaxSize().padding(padding).imePadding().padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
             ReminderCalendar(date, accent, onDateChange = { day = it.toString(); error = false })
             AppText(text = Res.string.reminder_time_title, textType = TextType.FieldLabel)

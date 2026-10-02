@@ -43,8 +43,6 @@ kotlin {
             implementation(libs.androidx.material)
             implementation(compose.material3)
             implementation(libs.accompanist.systemuicontroller)
-            implementation(libs.persian.date.picker)
-            implementation(libs.persian.date.time)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.messaging)
@@ -73,7 +71,8 @@ kotlin {
             implementation(libs.data.store)
             implementation(libs.material3.compose)
             implementation(libs.ui.tooling.preview)
-
+            implementation(libs.persian.date.picker)
+            implementation(libs.persian.date.time)
         }
     }
 }
