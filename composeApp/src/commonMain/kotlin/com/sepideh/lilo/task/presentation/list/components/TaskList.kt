@@ -15,7 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
+import com.sepideh.lilo.core.presentation.components.AppPreviews
+import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.task.domain.model.Task
+import com.sepideh.lilo.task.presentation.list.TaskListScreen
+import com.sepideh.lilo.task.presentation.list.TaskListState
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.no_group_label
 import org.jetbrains.compose.resources.stringResource
@@ -54,5 +58,19 @@ fun TaskList(
                 onAction = onAction
             )
         }
+    }
+}
+
+
+@AppPreviews
+@Composable
+private fun TaskListPreview() {
+    LiloPreviewWrapper {
+        val task = Task(title = "Practice violin", description = "play violin", priority = 1)
+        TaskList(
+            tasks = listOf(task),
+            clickable = true,
+            onAction = {},
+        )
     }
 }
