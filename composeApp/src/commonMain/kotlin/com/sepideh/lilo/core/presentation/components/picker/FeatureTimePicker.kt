@@ -36,7 +36,7 @@ fun FeatureTimePickerContent(hour: Int, minute: Int, accent: Color, onConfirm: (
     val selectedHour = hours.toIntOrNull()
     val selectedMinute = minutes.toIntOrNull()
     val valid = selectedHour != null && selectedHour in 0..23 && selectedMinute != null && selectedMinute in 0..59
-    Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.background) {
+    Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
             AppText(text = Res.string.reminder_time_title, textType = TextType.SectionTitle, color = accent)
             // Keep conventional HH MM order while the surrounding dialog follows app direction.
