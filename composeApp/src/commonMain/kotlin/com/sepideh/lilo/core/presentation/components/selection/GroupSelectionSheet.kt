@@ -1,6 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.selection
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
-data class GroupOption(val id: Long, val label: String)
-
 /** Only values and callbacks: usable by any feature and any repository. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,12 +39,12 @@ fun GroupSelectionSheet(
     ModalBottomSheet(onDismissRequest = { if (!isAdding) onDismiss() }, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 20.dp)) {
             SheetHeader(Res.string.choose_group_title, Res.string.confirm_action, accent, !adding && !isAdding, onConfirm)
-            LazyColumn(Modifier.fillMaxWidth().heightIn(min = 240.dp, max = 360.dp)) {
+            LazyColumn(Modifier.selectableGroup().fillMaxWidth().heightIn(min = 240.dp, max = 360.dp)) {
                 item {
-                    GroupRow(stringResource(Res.string.no_group_label), selectedId == null, accent) { onSelect(null) }
+                    GroupSelectionRow(stringResource(Res.string.no_group_label), selectedId == null, accent) { onSelect(null) }
                 }
                 items(groups, key = { it.id }) { group ->
-                    GroupRow(group.label, selectedId == group.id, accent) { onSelect(group.id) }
+                    GroupSelectionRow(group.label, selectedId == group.id, accent) { onSelect(group.id) }
                 }
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .5f))
@@ -77,13 +75,14 @@ fun GroupSelectionSheet(
     }
 }
 
+@com.sepideh.lilo.core.presentation.components.AppPreviews
 @Composable
-private fun GroupRow(label: String, selected: Boolean, accent: Color, onClick: () -> Unit) {
-    Column {
-        Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).clickable(onClick = onClick).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            AppText(text = label, modifier = Modifier.weight(1f).padding(start = 8.dp), textType = TextType.BodyLarge)
-            RadioButton(selected, onClick = null, modifier = Modifier.padding(12.dp), colors = RadioButtonDefaults.colors(selectedColor = accent))
-        }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f))
+private fun GroupSelectionSheetPreview() {
+    com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper {
+        GroupSelectionSheet(
+            groups = listOf(GroupOption(1, "Personal"), GroupOption(2, "Work")),
+            selectedId = 1, accent = Color(0xFFFFC107), isAdding = false, addedVersion = 0,
+            onSelect = {}, onCreate = {}, onManage = {}, onConfirm = {}, onDismiss = {},
+        )
     }
 }

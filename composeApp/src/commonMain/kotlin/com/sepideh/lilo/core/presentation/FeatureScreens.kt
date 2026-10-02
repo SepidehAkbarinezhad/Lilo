@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.AppText
@@ -62,6 +63,7 @@ private fun ListHeader(
     onSearchVisible: (Boolean) -> Unit, onQueryChange: (String) -> Unit, onFilter: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
     BaseHeader(title = title, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
         titleContent = {
             AnimatedContent(targetState = searchVisible, modifier = Modifier.weight(1f), label = "expand-search") { expanded ->
@@ -73,7 +75,7 @@ private fun ListHeader(
                         textStyle = MaterialTheme.typography.bodyLarge,
                         placeholder = { AppText(text = searchHint, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         // Search starts at the end when collapsed; close occupies the opposite edge when expanded.
-                        leadingIcon = { IconButton(onClick = { focusManager.clearFocus(); onSearchVisible(false) }) {
+                        leadingIcon = { IconButton(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false) }) {
                             Icon(Icons.Outlined.Close, stringResource(Res.string.close_search_action), Modifier.size(20.dp))
                         } },
                         colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent,
@@ -84,7 +86,7 @@ private fun ListHeader(
                 }
             }
         }, actions = {
-            IconButton(onClick = { focusManager.clearFocus(); onFilter() }) {
+            IconButton(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false); onFilter() }) {
                 Icon(Icons.Outlined.Tune, stringResource(Res.string.filter_label), Modifier.size(22.dp),
                     tint = if (filtersActive) accent else MaterialTheme.colorScheme.onSurface)
             }
