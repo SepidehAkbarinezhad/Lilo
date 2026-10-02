@@ -13,8 +13,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.gesture.SwipeToRevealDelete
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.list.TaskListAction
 import com.sepideh.lilo.task.presentation.model.Priority
@@ -32,8 +34,7 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
         }, shape = RoundedCornerShape(16.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f)),
             color = MaterialTheme.colorScheme.surface) {
-            Row(Modifier.fillMaxWidth().heightIn(min = 76.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.width(3.dp).height(32.dp).background(Priority.getById(task.priority).color))
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min).heightIn(min = 76.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = task.done, onCheckedChange = { onAction(TaskListAction.OnDoneChange(task.copy(done = it))) }, enabled = clickable,
                     modifier = Modifier.semantics { contentDescription = completionLabel },
                     colors = CheckboxDefaults.colors(checkedColor = LiloExtendedTheme.colors.taskColor, checkmarkColor = MaterialTheme.colorScheme.onSurface))
@@ -42,16 +43,32 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
                         textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (task.done) .5f else 1f))
                     if (task.description.isNotBlank()) AppText(text = task.description, textType = TextType.Caption, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (!groupLabel.isNullOrBlank()) {
-                        Surface(shape = RoundedCornerShape(6.dp),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = .06f)) {
-                            AppText(text = groupLabel, textType = TextType.Caption, maxLines = 1,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
+                }
+                if (!groupLabel.isNullOrBlank()) {
+                    Surface(shape = RoundedCornerShape(6.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = .06f)) {
+                        AppText(text = groupLabel, textType = TextType.Caption, maxLines = 1,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
+                Spacer(Modifier.width(8.dp))
+                Box(Modifier.width(3.dp).fillMaxHeight().background(Priority.getById(task.priority).color))
+
             }
         }
+    }
+}
+@AppPreviews
+@Composable
+private fun TaskListItemPreview() {
+    LiloPreviewWrapper {
+        val task = Task(title = "Practice violin", description = "play violin", priority = 1)
+        TaskListItem(
+            task = task,
+            clickable = true,
+            onAction = {},
+            groupLabel = "learning"
+        )
     }
 }

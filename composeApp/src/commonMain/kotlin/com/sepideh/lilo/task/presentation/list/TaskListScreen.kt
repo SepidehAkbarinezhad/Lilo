@@ -23,8 +23,13 @@ import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseListScreen
 import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.DeleteConfirmationDialog
+import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
+import com.sepideh.lilo.task.domain.model.Task
+import com.sepideh.lilo.task.presentation.detail.TaskDetailScreen
+import com.sepideh.lilo.task.presentation.detail.TaskDetailState
 import com.sepideh.lilo.task.presentation.list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.list.components.TaskList
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
@@ -82,4 +87,17 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
         }
     }
     TaskFilterSheet(state, onAction)
+}
+
+@AppPreviews
+@Composable
+private fun TaskListScreenPreview() {
+    LiloPreviewWrapper {
+        val task = Task(title = "Practice violin", priority = 1)
+        TaskListScreen(
+            state = TaskListState(tasksResult = listOf(task)),
+            isLoading = false,
+            onAction = {}
+        )
+    }
 }
