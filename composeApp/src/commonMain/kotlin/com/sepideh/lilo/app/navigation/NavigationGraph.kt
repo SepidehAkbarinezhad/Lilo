@@ -13,11 +13,11 @@ import com.sepideh.lilo.note.presentation.list.NoteListViewModel
 import com.sepideh.lilo.settings.presentation.SettingsScreenRoot
 import com.sepideh.lilo.settings.presentation.SettingsViewModel
 import com.sepideh.lilo.splash.SplashScreen
-import com.sepideh.lilo.task.presentation.note.note_detail.NoteDetailScreenRoot
 import com.sepideh.lilo.task.presentation.detail.TaskDetailScreenRoot
 import com.sepideh.lilo.task.presentation.detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.list.TaskListScreenRoot
 import com.sepideh.lilo.task.presentation.list.TaskListViewModel
+import com.sepideh.lilo.note.presentation.detail.NoteDetailScreenRoot
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -71,10 +71,7 @@ fun NavigationGraph(navHostController: NavHostController) {
             val args = it.toRoute<AppRoutes.Notes.Detail>()
             val viewModel = koinViewModel<NoteDetailViewModel>()
             NoteDetailScreenRoot(
-                noteId = args.noteId,
-                viewModel = viewModel,
-                onNavigateTo = onNavigate,
-                onBack = onBackPressed
+
             )
         }
 

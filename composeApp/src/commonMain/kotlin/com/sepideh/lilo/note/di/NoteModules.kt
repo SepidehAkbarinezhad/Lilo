@@ -35,12 +35,7 @@ val noteModule = module {
     }
     viewModel {
         NoteDetailViewModel(
-            categoryFactory = get(),
-            languageProvider = get(),
-            taskRepository = get(),
-            categoryRepository = get(),
-            reminderScheduler = get(),
-            permissionManager = get()
+
         )
     }
 }

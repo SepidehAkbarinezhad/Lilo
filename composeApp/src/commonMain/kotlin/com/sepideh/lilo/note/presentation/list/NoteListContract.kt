@@ -6,13 +6,7 @@ import com.sepideh.lilo.note.domain.model.Note
 import com.sepideh.lilo.note.presentation.list.model.NoteSortOrder
 
 sealed interface NoteListAction : BaseAction {
-    data class OnSortOrderChanged(val sortOrder: NoteSortOrder) : NoteListAction
-    data class OnCategorySelected(val id: Long?) : NoteListAction
-    data class OnSearchToggle(val open: Boolean) : NoteListAction
-    data class OnSearchQueryChange(val query: String) : NoteListAction
     data class OnDeleteNoteIcon(val note: Note?) : NoteListAction
-    data object OnDismissDeleteDialog : NoteListAction
-    data object OnDeleteNoteConfirm : NoteListAction
 }
 
 
