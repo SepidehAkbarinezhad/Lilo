@@ -66,3 +66,19 @@ rows are disabled during task loading/saving. Notes sources are unchanged.
 
 Validation: dependency boundary and whitespace checks pass. Gradle compilation
 could not run because the wrapper distribution download is unreachable here.
+
+## Preview, localization and delete follow-up
+
+The group package follows the user's rename from selection to group. Group
+previews now use direct Preview annotations and window-free content composables;
+this avoids relying on custom multi-preview discovery and dialog window rendering.
+Android Studio rendering still needs local verification. Added the missing
+Persian tasks_list_title resource.
+
+DeleteConfirmationDialog now lives physically in core/presentation/components,
+accepts feature accent/title/message/callbacks, and has no decorative image. Both
+task and group deletion use it. SwipeToRevealDelete reveals an explicit action
+in the logical end direction (mirrored for RTL); dragging never requests deletion.
+Verify partial swipe, reveal, reverse swipe, Delete, Cancel, Confirm and TalkBack
+on a device. XML, whitespace and architecture checks pass; Gradle remains blocked
+by the unavailable wrapper download in this environment.

@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.group
 
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,33 +23,42 @@ fun GroupManagementDialog(
     onDelete: (Long) -> Unit,
     onDismiss: () -> Unit,
     errorMessage: String? = null,
+    accent: androidx.compose.ui.graphics.Color,
 ) {
     var deleteId by remember { mutableStateOf<Long?>(null) }
     AlertDialog(onDismissRequest = onDismiss,
         title = { AppText(text = Res.string.manage_groups_action, textType = TextType.SectionTitle) },
         text = {
-            Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
-                if (errorMessage != null) Text(errorMessage, color = MaterialTheme.colorScheme.error)
-                groups.forEach { group ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(group.label, Modifier.weight(1f))
-                        if (group.isDeletable) IconButton(onClick = { deleteId = group.id }) { Icon(Icons.Outlined.Delete, stringResource(Res.string.delete_action), Modifier.size(20.dp)) }
-                    }
-                }
-            }
+            GroupManagementContent(groups, errorMessage, onDelete = { deleteId = it })
         }, confirmButton = { TextButton(onClick = onDismiss) { AppText(text = Res.string.confirm_action, textType = TextType.Action) } })
     deleteId?.let { id ->
-        AlertDialog(onDismissRequest = { deleteId = null }, text = { Text(deleteMessage) },
-            confirmButton = { TextButton(onClick = { onDelete(id); deleteId = null }) { AppText(text = Res.string.delete_action, textType = TextType.Action) } },
-            dismissButton = { TextButton(onClick = { deleteId = null }) { AppText(text = Res.string.cancel_button, textType = TextType.Action) } })
+        DeleteConfirmationDialog(
+            accent = accent, message = deleteMessage,
+            onConfirm = { onDelete(id); deleteId = null },
+            onDismiss = { deleteId = null },
+        )
     }
 }
 
-@AppPreviews
+@Composable
+fun GroupManagementContent(groups: List<GroupOption>, errorMessage: String? = null, onDelete: (Long) -> Unit) {
+    Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
+        if (errorMessage != null) Text(errorMessage, color = MaterialTheme.colorScheme.error)
+        groups.forEach { group ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(group.label, Modifier.weight(1f))
+                if (group.isDeletable) IconButton(onClick = { onDelete(group.id) }) { Icon(Icons.Outlined.Delete, stringResource(Res.string.delete_action), Modifier.size(20.dp)) }
+            }
+        }
+    }
+}
+
+@Preview(name = "Manage groups", showBackground = true, widthDp = 360)
 @Composable
 private fun GroupManagementPreview() {
     LiloPreviewWrapper {
-        GroupManagementDialog(listOf(GroupOption(1, "Personal"), GroupOption(2, "Work")),
-            "Remove this group? Items will be kept.", {}, {})
+        Surface {
+            GroupManagementContent(listOf(GroupOption(1, "Personal"), GroupOption(2, "Work")), onDelete = {})
+        }
     }
 }

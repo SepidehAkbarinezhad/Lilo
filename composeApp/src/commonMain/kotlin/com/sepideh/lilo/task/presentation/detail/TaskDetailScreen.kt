@@ -50,6 +50,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissCategoryDialog) },
             )
             if (state.groupManagementOpen) GroupManagementDialog(
+                accent = LiloExtendedTheme.colors.taskColor,
                 groups = state.categories.map { GroupOption(it.id, it.title, it.isDeletable) },
                 deleteMessage = stringResource(Res.string.delete_group_message),
                 errorMessage = if (state.hasError) stringResource(Res.string.task_operation_error) else null,

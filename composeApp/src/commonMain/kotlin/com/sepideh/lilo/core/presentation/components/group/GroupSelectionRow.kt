@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.group
 
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.*
@@ -22,7 +23,7 @@ fun GroupSelectionRow(label: String, selected: Boolean, accent: Color, onClick: 
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f))
     }
 }
-@AppPreviews
+@Preview(name = "Group rows", showBackground = true, widthDp = 360)
 @Composable
 private fun GroupSelectionRowPreview() {
     LiloPreviewWrapper {
