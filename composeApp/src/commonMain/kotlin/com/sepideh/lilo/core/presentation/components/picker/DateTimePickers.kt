@@ -18,13 +18,3 @@ fun FeatureDatePicker(selectedDateMillis: Long?, accent: Color, onConfirm: (Long
         DatePicker(state, showModeToggle = false, colors = DatePickerDefaults.colors(selectedDayContainerColor = accent, selectedDayContentColor = Color.Black, todayDateBorderColor = accent))
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FeatureTimePicker(hour: Int, minute: Int, accent: Color, onConfirm: (Int, Int) -> Unit, onDismiss: () -> Unit) {
-    val state = rememberTimePickerState(initialHour = hour, initialMinute = minute, is24Hour = true)
-    AlertDialog(onDismissRequest = onDismiss,
-        text = { TimeInput(state = state, colors = TimePickerDefaults.colors(timeSelectorSelectedContainerColor = accent.copy(alpha = .16f))) },
-        confirmButton = { TextButton(onClick = { onConfirm(state.hour, state.minute) }, colors = ButtonDefaults.textButtonColors(contentColor = accent)) { Text(stringResource(Res.string.confirm_action)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel_button)) } })
-}
