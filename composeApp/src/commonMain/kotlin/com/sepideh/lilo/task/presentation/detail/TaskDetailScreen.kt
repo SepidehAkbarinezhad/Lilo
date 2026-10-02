@@ -15,11 +15,11 @@ import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseFormScreen
 import com.sepideh.lilo.core.presentation.components.*
-import com.sepideh.lilo.core.presentation.components.selection.GroupOption
-import com.sepideh.lilo.core.presentation.components.selection.GroupSelectionSheet
+import com.sepideh.lilo.core.presentation.components.group.GroupOption
+import com.sepideh.lilo.core.presentation.components.group.GroupSelectionSheet
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.core.presentation.components.form.FormSelectionRow
-import com.sepideh.lilo.core.presentation.components.selection.GroupManagementDialog
+import com.sepideh.lilo.core.presentation.components.group.GroupManagementDialog
 import com.sepideh.lilo.task.presentation.detail.components.TaskPrioritySelector
 import com.sepideh.lilo.task.presentation.detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog

@@ -1,4 +1,4 @@
-package com.sepideh.lilo.core.presentation.components.selection
+package com.sepideh.lilo.core.presentation.components.group
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.*
-import com.sepideh.lilo.core.presentation.components.selection.GroupOption
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 

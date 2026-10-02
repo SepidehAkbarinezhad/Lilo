@@ -1,4 +1,4 @@
-package com.sepideh.lilo.core.presentation.components.selection
+package com.sepideh.lilo.core.presentation.components.group
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
