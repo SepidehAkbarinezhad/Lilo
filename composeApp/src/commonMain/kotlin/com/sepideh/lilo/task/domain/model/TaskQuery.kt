@@ -21,6 +21,6 @@ fun List<Task>.matching(query: TaskQuery): List<Task> {
     }
     return when (query.sort) {
         TaskSort.PRIORITY -> filtered.sortedWith(compareBy<Task> { TaskPriority.fromId(it.priority).rank }.thenByDescending { it.createdAt }.thenBy { it.id })
-        TaskSort.REMINDER_DATE -> filtered.sortedWith(compareBy<Task> { it.reminderStartDate ?: Long.MAX_VALUE }.thenBy { it.reminderHour ?: 0 }.thenBy { it.reminderMinute ?: 0 }.thenBy { it.id })
+        TaskSort.REMINDER_DATE -> filtered.sortedWith(compareBy<Task> { it.reminderAt ?: Long.MAX_VALUE }.thenBy { it.id })
     }
 }

@@ -34,11 +34,12 @@ fun FeatureActionButton(label: StringResource, accent: Color, enabled: Boolean =
 fun BaseFormScreen(
     title: StringResource, accent: Color, saveEnabled: Boolean,
     onBack: () -> Boolean, onSave: () -> Unit,
+    actionLabel: StringResource = Res.string.save_task_action,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
         BaseHeader(title = title, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
-            actions = { FeatureActionButton(Res.string.save_task_action, accent, saveEnabled, onSave) })
+            actions = { FeatureActionButton(actionLabel, accent, saveEnabled, onSave) })
     }, content = content)
 }
 

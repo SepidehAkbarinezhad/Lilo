@@ -10,6 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sepideh.lilo.task.presentation.reminder.ReminderEditorScreen
+import com.sepideh.lilo.task.presentation.reminder.label
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
@@ -23,8 +25,6 @@ import com.sepideh.lilo.core.presentation.components.group.GroupManagementDialog
 import com.sepideh.lilo.task.presentation.detail.components.TaskPrioritySelector
 import com.sepideh.lilo.task.presentation.detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
-import com.sepideh.lilo.task.presentation.reminder.components.ReminderDatePicker
-import com.sepideh.lilo.task.presentation.reminder.components.ReminderTimePicker
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -57,8 +57,6 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteCategory(it)) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
             )
-            if (state.reminderDatePickerOpen) ReminderDatePicker(state.reminderDraft, viewModel::onAction)
-            if (state.reminderTimePickerOpen) ReminderTimePicker(state.reminderDraft, viewModel::onAction)
             if (state.shouldShowPermissionDialog) PermissionAlertDialog(viewModel.isXiaomi, viewModel::onAction)
             if (state.shouldShowPermissionDeniedDialog) PermissionDeniedDialog(state, viewModel::onAction)
         })
@@ -67,6 +65,16 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
 @Composable
 fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) -> Unit, onBack: () -> Boolean) {
     val accent = LiloExtendedTheme.colors.taskColor
+    if (state.reminderEditorOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { onAction(TaskDetailAction.OnDismissReminder) },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            ReminderEditorScreen(task.reminderAt, task.repeatRule, task.reminderTimeZoneId, accent,
+                onConfirm = { at, repeat, zone -> onAction(TaskDetailAction.OnReminderConfirmed(at, repeat, zone)) },
+                onDismiss = { onAction(TaskDetailAction.OnDismissReminder) })
+        }
+    }
     BaseFormScreen(
         title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
         accent = accent, saveEnabled = !state.isSaving && !state.isLoading,
@@ -93,7 +101,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
                 onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },
                 clearContentDescription = stringResource(Res.string.remove_reminder_action),
                 enabled = !state.isSaving && !state.isLoading,
-                onClear = if (state.reminderModel.reminderStartDate != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
+                onClear = if (state.task.reminderAt != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
             FormSelectionRow(Icons.Outlined.FolderOpen, stringResource(Res.string.group_field_label),
                 state.selectedCategory?.title ?: stringResource(Res.string.no_group_label),
                 onClick = { onAction(TaskDetailAction.OnCategoryIcon) }, enabled = !state.isSaving && !state.isLoading)
@@ -104,10 +112,11 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
 @OptIn(ExperimentalTime::class)
 @Composable
 private fun reminderLabel(state: TaskDetailState): String {
-    val reminder = state.reminderModel
-    val day = reminder.reminderStartDate ?: return stringResource(Res.string.not_set_label)
-    val date = Instant.fromEpochMilliseconds(day).toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return "$date · ${reminder.reminderHour?.toString()?.padStart(2, '0') ?: "--"}:${reminder.reminderMinute?.toString()?.padStart(2, '0') ?: "--"}"
+    val reminder = state.task
+    val at = reminder.reminderAt ?: return stringResource(Res.string.not_set_label)
+    val zone = TimeZone.of(requireNotNull(reminder.reminderTimeZoneId))
+    val dateTime = Instant.fromEpochMilliseconds(at).toLocalDateTime(zone)
+    return "${dateTime.date} · ${dateTime.hour.toString().padStart(2, '0')}:${dateTime.minute.toString().padStart(2, '0')} · ${stringResource(reminder.repeatRule.label)}"
 }
 
 @AppPreviews

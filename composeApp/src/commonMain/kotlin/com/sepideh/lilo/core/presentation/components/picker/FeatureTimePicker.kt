@@ -60,7 +60,7 @@ fun FeatureTimePickerContent(hour: Int, minute: Int, accent: Color, onConfirm: (
 }
 
 @Composable
-private fun TimeNumberField(value: String, onChange: (String) -> Unit, label: String, maximum: Int, accent: Color) {
+fun TimeNumberField(value: String, onChange: (String) -> Unit, label: String, maximum: Int, accent: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         AppText(text = label, textType = TextType.FieldLabel)
         OutlinedTextField(value = value, onValueChange = { input ->
