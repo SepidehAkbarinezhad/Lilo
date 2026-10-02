@@ -1,5 +1,7 @@
 package com.sepideh.lilo.task.presentation.list.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -21,13 +23,15 @@ import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, onAction: (BaseAction) -> Unit) {
+fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, onAction: (BaseAction) -> Unit, groupLabel: String? = null) {
     val deleteLabel = stringResource(Res.string.delete_action)
     val completionLabel = stringResource(if (task.done) Res.string.task_reopen_action else Res.string.task_complete_action)
     SwipeToRevealDelete(enabled = clickable, onDelete = { onAction(TaskListAction.OnDeleteTaskIcon(task)) }) {
         Surface(modifier = modifier.semantics {
             customActions = if (!clickable) emptyList() else listOf(CustomAccessibilityAction(deleteLabel) { onAction(TaskListAction.OnDeleteTaskIcon(task)); true })
-        }, color = MaterialTheme.colorScheme.background) {
+        }, shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f)),
+            color = MaterialTheme.colorScheme.surface) {
             Row(Modifier.fillMaxWidth().heightIn(min = 76.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.width(3.dp).height(32.dp).background(Priority.getById(task.priority).color))
                 Checkbox(checked = task.done, onCheckedChange = { onAction(TaskListAction.OnDoneChange(task.copy(done = it))) }, enabled = clickable,
@@ -38,6 +42,14 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
                         textDecoration = if (task.done) TextDecoration.LineThrough else TextDecoration.None,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (task.done) .5f else 1f))
                     if (task.description.isNotBlank()) AppText(text = task.description, textType = TextType.Caption, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (!groupLabel.isNullOrBlank()) {
+                        Surface(shape = RoundedCornerShape(6.dp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = .06f)) {
+                            AppText(text = groupLabel, textType = TextType.Caption, maxLines = 1,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
                 }
             }
         }

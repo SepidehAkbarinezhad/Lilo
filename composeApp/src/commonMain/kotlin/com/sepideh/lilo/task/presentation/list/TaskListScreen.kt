@@ -77,7 +77,8 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             if (state.tasksResult.isEmpty() && !isLoading) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 AppText(text = Res.string.task_no_results, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            } else TaskList(state.tasksResult, !state.isFilterSheetOpen, onAction, Modifier.fillMaxSize())
+            } else TaskList(state.tasksResult, !state.isFilterSheetOpen, onAction, Modifier.fillMaxSize(),
+                groupLabels = state.categories.filter { it.id != 0L }.associate { it.id to it.title })
         }
     }
     TaskFilterSheet(state, onAction)

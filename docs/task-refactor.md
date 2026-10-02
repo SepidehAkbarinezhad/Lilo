@@ -82,3 +82,13 @@ in the logical end direction (mirrored for RTL); dragging never requests deletio
 Verify partial swipe, reveal, reverse swipe, Delete, Cancel, Confirm and TalkBack
 on a device. XML, whitespace and architecture checks pass; Gradle remains blocked
 by the unavailable wrapper download in this environment.
+
+## Task card and time input refinement
+
+Task rows now have a rounded surface, subtle outline, 10dp separation and a
+non-interactive group chip resolved by stable category ID. Ungrouped rows display
+the localized no-group label. The reusable time dialog uses neutral surfaces,
+feature-colored outlines and two numeric fields (24-hour, hour 0–23/minute 0–59).
+Persian digits are normalized; incomplete input cannot be confirmed. It includes
+direct English/Persian content previews. Build/rendering still requires local
+verification; dependency and whitespace checks passed.

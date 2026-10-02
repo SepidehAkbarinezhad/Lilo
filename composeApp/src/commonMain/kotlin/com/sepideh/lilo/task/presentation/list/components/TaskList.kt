@@ -16,6 +16,9 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.task.domain.model.Task
+import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.no_group_label
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TaskList(
@@ -23,14 +26,15 @@ fun TaskList(
     clickable: Boolean,
     onAction: (BaseAction) -> Unit,
     modifier: Modifier = Modifier,
+    groupLabels: Map<Long, String> = emptyMap(),
     scrollState: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
         modifier = modifier,
         state = scrollState,
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(top = 12.dp, bottom = 96.dp)
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 96.dp)
     ) {
         items(items = tasks, key = { it.id ?: 0 }) { task ->
             TaskListItem(
@@ -43,9 +47,10 @@ fun TaskList(
                         )
                     }
 
-                }.padding(horizontal = 12.dp),
+                },
                 clickable = clickable,
                 task = task,
+                groupLabel = groupLabels[task.category] ?: stringResource(Res.string.no_group_label),
                 onAction = onAction
             )
         }
