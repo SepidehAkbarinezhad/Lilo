@@ -2,8 +2,6 @@ package com.sepideh.lilo.task.presentation.list.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +11,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.gesture.SwipeToRevealDelete
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.list.TaskListAction
@@ -21,23 +20,13 @@ import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, onAction: (BaseAction) -> Unit) {
     val deleteLabel = stringResource(Res.string.delete_action)
     val completionLabel = stringResource(if (task.done) Res.string.task_reopen_action else Res.string.task_complete_action)
-    val dismiss = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
-        if (value == SwipeToDismissBoxValue.EndToStart && clickable) onAction(TaskListAction.OnDeleteTaskIcon(task))
-        false // The row remains until deletion is confirmed and persisted.
-    })
-    SwipeToDismissBox(state = dismiss, enableDismissFromStartToEnd = false, enableDismissFromEndToStart = clickable,
-        backgroundContent = {
-            Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer).padding(20.dp), contentAlignment = Alignment.CenterEnd) {
-                Icon(Icons.Outlined.Delete, deleteLabel, tint = MaterialTheme.colorScheme.onErrorContainer)
-            }
-        }) {
+    SwipeToRevealDelete(enabled = clickable, onDelete = { onAction(TaskListAction.OnDeleteTaskIcon(task)) }) {
         Surface(modifier = modifier.semantics {
-            customActions = listOf(CustomAccessibilityAction(deleteLabel) { onAction(TaskListAction.OnDeleteTaskIcon(task)); true })
+            customActions = if (!clickable) emptyList() else listOf(CustomAccessibilityAction(deleteLabel) { onAction(TaskListAction.OnDeleteTaskIcon(task)); true })
         }, color = MaterialTheme.colorScheme.background) {
             Row(Modifier.fillMaxWidth().heightIn(min = 76.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.width(3.dp).height(32.dp).background(Priority.getById(task.priority).color))
