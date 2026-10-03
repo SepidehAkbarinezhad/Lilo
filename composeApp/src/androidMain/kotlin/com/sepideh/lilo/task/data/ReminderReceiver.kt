@@ -6,6 +6,8 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -34,13 +36,25 @@ class ReminderReceiver : BroadcastReceiver() {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "task_reminders"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            manager.createNotificationChannel(NotificationChannel(channelId, "Task reminders", NotificationManager.IMPORTANCE_HIGH))
+            val channel = NotificationChannel(channelId, "Task reminders", NotificationManager.IMPORTANCE_HIGH).apply {
+                setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
+                    AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
+            }
+            // Existing channel/user sound choices are retained by Android.
+            manager.createNotificationChannel(channel)
+            manager.getNotificationChannel(channelId)?.let { saved ->
+                if (saved.sound == null || saved.importance < NotificationManager.IMPORTANCE_DEFAULT) {
+                    Log.w("LiloReminder", "Task reminder channel is silent or low importance; change its sound in notification settings")
+                }
+            }
         }
         val launch = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm).setContentTitle(task.title)
             .setContentText(task.description).setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
             .setAutoCancel(true).setContentIntent(launch).build()
         manager.notify("task:${task.id}", 0, notification)
     }

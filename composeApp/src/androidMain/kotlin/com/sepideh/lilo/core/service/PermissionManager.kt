@@ -22,7 +22,7 @@ actual class PermissionManager(private val context: Context) {
     }
 
     actual suspend fun hasNotificationPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        return androidx.core.app.NotificationManagerCompat.from(context).areNotificationsEnabled() && if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // For Android 13+ (API 33+), notification is a runtime permission
             ContextCompat.checkSelfPermission(
                 context,
@@ -65,6 +65,20 @@ actual class PermissionManager(private val context: Context) {
 
     actual suspend fun requestDeniedPermission() {
         requestNeededPermission()
+    }
+
+    actual suspend fun requestNotificationAccess() {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        } else Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))
+        context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
+
+    actual suspend fun requestAlarmAccess() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                Uri.parse("package:${context.packageName}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
     }
 
     actual fun isXiaomi(): Boolean {

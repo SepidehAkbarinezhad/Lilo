@@ -67,6 +67,29 @@ actual class PermissionManager {
         }
     }
 
+    actual suspend fun requestNotificationAccess() {
+        val firstRequest = suspendCancellableCoroutine<Boolean> { continuation ->
+            UNUserNotificationCenter.currentNotificationCenter().getNotificationSettingsWithCompletionHandler { settings ->
+                if (continuation.isActive) continuation.resumeWith(Result.success(
+                    settings?.authorizationStatus == platform.UserNotifications.UNAuthorizationStatusNotDetermined))
+            }
+        }
+        if (firstRequest) {
+            suspendCancellableCoroutine<Unit> { continuation ->
+                UNUserNotificationCenter.currentNotificationCenter().requestAuthorizationWithOptions(
+                    UNAuthorizationOptionAlert or UNAuthorizationOptionSound or UNAuthorizationOptionBadge
+                ) { _, error ->
+                    if (continuation.isActive) {
+                        if (error == null) continuation.resumeWith(Result.success(Unit))
+                        else continuation.resumeWith(Result.failure(IllegalStateException(error.localizedDescription)))
+                    }
+                }
+            }
+        } else requestDeniedPermission()
+    }
+
+    actual suspend fun requestAlarmAccess() = Unit
+
     actual fun isXiaomi(): Boolean {
         return false
     }

@@ -21,11 +21,14 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnDateReminderIcon : TaskDetailAction
     data class OnCategorySelected(val category: CategoryPresentation) : TaskDetailAction
     data class OnPrioritySelected(val title: StringResource) : TaskDetailAction
-    data class OnAddTaskButton(val checkDeniedPermission : Boolean = false) : TaskDetailAction
+    // Constructor retained for deferred note code; saving always validates reminder access.
+    data class OnAddTaskButton(val checkDeniedPermission: Boolean = true) : TaskDetailAction
     data class OnAddNewCategory(val categoryTitle: String) : TaskDetailAction
     data class OnDeleteCategory(val categoryId: Long) : TaskDetailAction
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailAction
-    data class OnGrantPermissionButton(val firstTime : Boolean) : TaskDetailAction
+    data class OnGrantPermissionButton(val firstTime: Boolean = false) : TaskDetailAction
+    data object OnSaveWithoutReminder : TaskDetailAction
+    data object OnPermissionReturn : TaskDetailAction
     data object OnCancelPermissionDialog : TaskDetailAction
 
 }

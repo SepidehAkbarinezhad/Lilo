@@ -58,3 +58,30 @@ anchors, DST changes and task sorting. Run `:composeApp:testDebugUnitTest` and
 `:composeApp:compileDebugKotlinAndroid` with an Android SDK installed. Build iOS on
 macOS. Also check permission denial/grant, reboot, edit/clear/complete/delete before
 an alarm, Back versus Confirm, Persian input, and iOS future-start queue replenishment.
+
+## Permission and time-control follow-up
+
+Permission explanations now share the minimal surface, typography and feature colour
+used by the confirmation dialogs. Save checks notifications first, then exact alarms.
+Only the missing permission is shown; returning from Settings rechecks and continues
+the pending save. Android opens notification settings or alarms-and-reminders access
+directly. iOS requests authorization initially, then uses its app settings fallback.
+Cancel preserves the draft. Save without reminder clears the timestamp, timezone and
+repeat rule before persisting and cancelling the existing task notification.
+
+Hour/minute selection uses reusable bounded snapping wheels. Time and Repeat use
+SectionTitle. The calendar is given finite height before enabling form scrolling, so
+its internal lazy layout is never measured with unbounded vertical constraints.
+The existing Persian picker implementations and dependencies are unchanged.
+
+New Android notification channels explicitly use the default notification sound.
+Existing channel settings are respected; a silent/low-importance channel logs a
+warning. On the device, open Lilo notification settings > Task reminders and check
+Sound/Alerting and notification volume. A channel setting cannot be reset by calling
+createNotificationChannel again.
+
+Validation for this follow-up: dependency boundary checks, resource XML parsing and
+git whitespace checks passed. Compilation was blocked at Gradle download in the
+current workspace; Android/iOS device execution remains unverified. Check each
+permission separately, return without granting, grant both, cancel the dialog, save
+without reminder on an existing task, and wheel values 00/23 and 00/59.

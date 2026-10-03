@@ -1,0 +1,8 @@
+<resources>
+    <string name="notification_permission_title">اجازه اعلان‌ها</string>
+    <string name="notification_permission_body">برای دریافت یادآوری کارها، اعلان‌های لیلو را فعال کنید.</string>
+    <string name="alarm_permission_title">اجازه یادآوری دقیق</string>
+    <string name="alarm_permission_body">مجوز زنگ‌ها و یادآوری‌ها را فعال کنید تا لیلو در زمان انتخاب‌شده به شما یادآوری کند.</string>
+    <string name="permission_continue">ادامه</string>
+    <string name="save_without_reminder">ذخیره بدون یادآوری</string>
+</resources>

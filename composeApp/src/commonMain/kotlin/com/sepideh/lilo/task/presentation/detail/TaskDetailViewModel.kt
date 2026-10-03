@@ -27,7 +27,6 @@ class TaskDetailViewModel(
     private val mutations: TaskMutations,
     private val permissions: ReminderPermissions,
 ) : BaseViewModel() {
-    val isXiaomi = permissions.needsBatteryGuidance
     private val local = MutableStateFlow(TaskDetailState())
     private var loadedTaskId: Long? = null
     val stateValue = combine(local, categoryRepository.getAllCategories(), languageProvider.languageFlow) { state, groups, language ->
@@ -60,7 +59,23 @@ class TaskDetailViewModel(
             TaskDetailAction.OnClearReminder -> local.update {
                 it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null))
             }
-            is TaskDetailAction.OnAddTaskButton -> save(action.checkDeniedPermission)
+            is TaskDetailAction.OnAddTaskButton -> save()
+            TaskDetailAction.OnSaveWithoutReminder -> {
+                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null), missingPermission = null, awaitingPermissionReturn = false) }
+                save()
+            }
+            is TaskDetailAction.OnGrantPermissionButton -> launchOperation {
+                val permission = local.value.missingPermission ?: return@launchOperation
+                local.update { it.copy(missingPermission = null, awaitingPermissionReturn = true) }
+                permissions.request(permission)
+                // iOS authorization can finish without another lifecycle resume.
+                if (local.value.awaitingPermissionReturn) {
+                    val missing = permissions.missingPermission()
+                    if (missing != permission) resumePermissionSave()
+                    else local.update { it.copy(missingPermission = missing) }
+                }
+            }
+            TaskDetailAction.OnPermissionReturn -> if (local.value.awaitingPermissionReturn) resumePermissionSave()
             is TaskDetailAction.OnAddNewCategory -> addGroup(action.categoryTitle)
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
                 if (loadedTaskId == action.taskId) return
@@ -72,7 +87,7 @@ class TaskDetailViewModel(
                 }
             }
 
-            TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(shouldShowPermissionDeniedDialog = false) }
+            TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(missingPermission = null, awaitingPermissionReturn = false) }
             TaskDetailAction.OnManageGroups -> local.update { it.copy(categoryDialogOpen = false, groupManagementOpen = true) }
             TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(categoryDialogOpen = true, groupManagementOpen = false) }
             is TaskDetailAction.OnDeleteCategory -> launchOperation {
@@ -97,7 +112,7 @@ class TaskDetailViewModel(
         }
     }
 
-    private fun save(checkPermission: Boolean) {
+    private fun save() {
         if (local.value.isSaving || local.value.isLoading) return
         if (local.value.task.title.isBlank()) {
             local.update { it.copy(titleError = it.titleError.copy(isSuccessful = false, messageId = Res.string.error_empty_field_label)) }
@@ -106,26 +121,30 @@ class TaskDetailViewModel(
         local.update { it.copy(isSaving = true, hasError = false) }
         launchOperation {
             val state = local.value
-            val allowed = hasReminderPermission()
-            if (checkPermission && state.task.reminderAt != null && !allowed) {
-                local.update { it.copy(isSaving = false, shouldShowPermissionDeniedDialog = true) }
+            val missing = permissions.missingPermission()
+            val allowed = missing == null
+            if (state.task.reminderAt != null && missing != null) {
+                local.update { it.copy(isSaving = false, missingPermission = missing) }
                 return@launchOperation
             }
             val task = state.task.copy(
                 category = state.task.category.takeIf { id -> stateValue.value.categories.any { it.id == id } } ?: 0,
             )
             val result = mutations.save(task, scheduleReminder = allowed)
-            local.update { it.copy(task = task.copy(id = result.id), isSaving = false, shouldShowPermissionDeniedDialog = false, hasError = result.reminderFailed) }
+            local.update { it.copy(task = task.copy(id = result.id), isSaving = false, missingPermission = null, hasError = result.reminderFailed) }
             if (!result.reminderFailed) onAction(BaseAction.OnNavigateTo(null))
         }
     }
 
-    private suspend fun hasReminderPermission(): Boolean = permissions.hasAccess()
+    private fun resumePermissionSave() {
+        local.update { it.copy(awaitingPermissionReturn = false) }
+        save()
+    }
 
     private fun launchOperation(block: suspend () -> Unit) {
         viewModelScope.launch {
             try { block() } catch (e: CancellationException) { throw e }
-            catch (_: Exception) { local.update { it.copy(hasError = true, isSaving = false, isLoading = false, isAddingGroup = false) } }
+            catch (_: Exception) { local.update { it.copy(hasError = true, isSaving = false, isLoading = false, isAddingGroup = false, awaitingPermissionReturn = false) } }
         }
     }
     override fun onResetState() = Unit
