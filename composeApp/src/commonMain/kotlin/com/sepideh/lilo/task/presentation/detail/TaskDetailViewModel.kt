@@ -60,8 +60,11 @@ class TaskDetailViewModel(
                 it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null))
             }
             is TaskDetailAction.OnAddTaskButton -> save()
+            TaskDetailAction.OnAskSaveWithoutReminder -> local.update {
+                it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = true)
+            }
             TaskDetailAction.OnSaveWithoutReminder -> {
-                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null), missingPermission = null, awaitingPermissionReturn = false) }
+                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null), missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
                 save()
             }
             is TaskDetailAction.OnGrantPermissionButton -> launchOperation {
@@ -87,7 +90,7 @@ class TaskDetailViewModel(
                 }
             }
 
-            TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(missingPermission = null, awaitingPermissionReturn = false) }
+            TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
             TaskDetailAction.OnManageGroups -> local.update { it.copy(categoryDialogOpen = false, groupManagementOpen = true) }
             TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(categoryDialogOpen = true, groupManagementOpen = false) }
             is TaskDetailAction.OnDeleteCategory -> launchOperation {

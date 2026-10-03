@@ -85,3 +85,12 @@ git whitespace checks passed. Compilation was blocked at Gradle download in the
 current workspace; Android/iOS device execution remains unverified. Check each
 permission separately, return without granting, grant both, cancel the dialog, save
 without reminder on an existing task, and wheel values 00/23 and 00/59.
+
+### Two-action dialog refinement
+
+New reminders initialize to the current device time (existing reminders keep their
+saved time); confirmation still requires a future time for a new reminder.
+Permission dialogs now use the same shared two-action content as deletion dialogs:
+Continue opens the permission flow; explicit Cancel opens a second confirmation.
+Only confirming Save without reminder clears and saves. Keep editing, Back and
+outside dismissal preserve the task draft and close the dialogs.

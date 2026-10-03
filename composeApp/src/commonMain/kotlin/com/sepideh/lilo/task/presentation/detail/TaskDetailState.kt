@@ -26,5 +26,6 @@ data class TaskDetailState(
     val titleError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.title_label)),
     val descriptionError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.description_label)),
     val missingPermission: com.sepideh.lilo.task.domain.reminder.ReminderPermission? = null,
+    val confirmSaveWithoutReminder: Boolean = false,
     val awaitingPermissionReturn: Boolean = false,
     )

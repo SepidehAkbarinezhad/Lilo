@@ -37,7 +37,7 @@ fun ReminderEditorScreen(
 ) {
     val zoneId = rememberSaveable { timeZoneId ?: TimeZone.currentSystemDefault().id }
     val zone = remember(zoneId) { TimeZone.of(zoneId) }
-    val initial = remember { Instant.fromEpochMilliseconds(reminderAt ?: (Clock.System.now().toEpochMilliseconds() + 3_600_000)).toLocalDateTime(zone) }
+    val initial = remember { Instant.fromEpochMilliseconds(reminderAt ?: Clock.System.now().toEpochMilliseconds()).toLocalDateTime(zone) }
     var day by rememberSaveable { mutableStateOf(initial.date.toString()) }
     var hours by rememberSaveable { mutableStateOf(initial.hour) }
     var minutes by rememberSaveable { mutableStateOf(initial.minute) }
