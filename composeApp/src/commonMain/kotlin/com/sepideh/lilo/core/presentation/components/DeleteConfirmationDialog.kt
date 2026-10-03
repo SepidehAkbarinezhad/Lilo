@@ -23,18 +23,21 @@ fun DeleteConfirmationDialog(
     message: String = stringResource(Res.string.delete_item_confirmation),
 ) {
     Dialog(onDismissRequest = onDismiss) {
-        DeleteConfirmationContent(accent, title, message, onConfirm, onDismiss)
+        FeatureConfirmationContent(accent, title, message, onConfirm, onDismiss)
     }
 }
 
 @Composable
-fun DeleteConfirmationContent(
+fun FeatureConfirmationContent(
     accent: Color,
     title: String,
     message: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    confirmLabel: String = stringResource(Res.string.delete_action),
+    cancelLabel: String = stringResource(Res.string.cancel_button),
+    onCancel: () -> Unit = onDismiss,
 ) {
     Surface(modifier = modifier.widthIn(max = 360.dp), shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surface) {
@@ -43,13 +46,13 @@ fun DeleteConfirmationContent(
             AppText(text = message, textType = TextType.Body,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.End)) {
-                TextButton(onClick = onDismiss) {
-                    AppText(text = Res.string.cancel_button, textType = TextType.Action,
+                TextButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
+                    AppText(text = cancelLabel, textType = TextType.Action,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Button(onClick = onConfirm, shape = RoundedCornerShape(10.dp),
+                Button(onClick = onConfirm, modifier = Modifier.weight(1f), shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = Color.Black)) {
-                    AppText(text = Res.string.delete_action, textType = TextType.Action)
+                    AppText(text = confirmLabel, textType = TextType.Action)
                 }
             }
         }
@@ -61,7 +64,7 @@ fun DeleteConfirmationContent(
 @Composable
 private fun DeleteConfirmationPreview() {
     LiloPreviewWrapper {
-        DeleteConfirmationContent(Color(0xFFFFC107), stringResource(Res.string.delete_confirmation_title),
+        FeatureConfirmationContent(Color(0xFFFFC107), stringResource(Res.string.delete_confirmation_title),
             stringResource(Res.string.delete_item_confirmation), {}, {})
     }
 }

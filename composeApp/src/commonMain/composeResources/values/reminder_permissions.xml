@@ -5,4 +5,7 @@
     <string name="alarm_permission_body">Allow alarms and reminders so Lilo can notify you at the time you choose.</string>
     <string name="permission_continue">Continue</string>
     <string name="save_without_reminder">Save without reminder</string>
+    <string name="save_without_reminder_title">Save task without a reminder?</string>
+    <string name="save_without_reminder_message">Your task will be saved, but its reminder will be removed.</string>
+    <string name="keep_editing">Keep editing</string>
 </resources>

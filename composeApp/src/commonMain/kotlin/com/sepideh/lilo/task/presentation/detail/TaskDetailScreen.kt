@@ -23,6 +23,7 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.core.presentation.components.form.FormSelectionRow
 import com.sepideh.lilo.core.presentation.components.group.GroupManagementDialog
 import com.sepideh.lilo.task.presentation.detail.components.TaskPrioritySelector
+import com.sepideh.lilo.task.presentation.detail.components.SaveWithoutReminderDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import kotlinx.datetime.TimeZone
@@ -60,6 +61,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
             )
             state.missingPermission?.let { PermissionDeniedDialog(it, viewModel::onAction) }
+            if (state.confirmSaveWithoutReminder) SaveWithoutReminderDialog(viewModel::onAction)
         })
 }
 

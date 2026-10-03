@@ -5,4 +5,7 @@
     <string name="alarm_permission_body">مجوز زنگ‌ها و یادآوری‌ها را فعال کنید تا لیلو در زمان انتخاب‌شده به شما یادآوری کند.</string>
     <string name="permission_continue">ادامه</string>
     <string name="save_without_reminder">ذخیره بدون یادآوری</string>
+    <string name="save_without_reminder_title">کار بدون یادآوری ذخیره شود؟</string>
+    <string name="save_without_reminder_message">کار ذخیره می‌شود، اما یادآوری آن حذف خواهد شد.</string>
+    <string name="keep_editing">ادامه ویرایش</string>
 </resources>

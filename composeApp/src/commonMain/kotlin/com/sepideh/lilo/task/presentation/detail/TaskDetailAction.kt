@@ -27,6 +27,7 @@ sealed interface TaskDetailAction : BaseAction {
     data class OnDeleteCategory(val categoryId: Long) : TaskDetailAction
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailAction
     data class OnGrantPermissionButton(val firstTime: Boolean = false) : TaskDetailAction
+    data object OnAskSaveWithoutReminder : TaskDetailAction
     data object OnSaveWithoutReminder : TaskDetailAction
     data object OnPermissionReturn : TaskDetailAction
     data object OnCancelPermissionDialog : TaskDetailAction
