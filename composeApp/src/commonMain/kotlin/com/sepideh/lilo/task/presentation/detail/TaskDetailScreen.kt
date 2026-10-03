@@ -57,7 +57,6 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteCategory(it)) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
             )
-            if (state.shouldShowPermissionDialog) PermissionAlertDialog(viewModel.isXiaomi, viewModel::onAction)
             if (state.shouldShowPermissionDeniedDialog) PermissionDeniedDialog(state, viewModel::onAction)
         })
 }

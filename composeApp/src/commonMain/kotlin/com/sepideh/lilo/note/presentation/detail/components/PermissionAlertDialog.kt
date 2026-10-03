@@ -1,3 +1,4 @@
+/*
 package com.sepideh.lilo.note.presentation.detail.components
 
 
@@ -55,3 +56,4 @@ fun PermissionAlertDialog(isXiaomi: Boolean, onAction: (BaseAction) -> Unit) {
     }, onDismissRequest = { onAction(TaskDetailAction.OnCancelPermissionDialog) }))
 }
 
+*/

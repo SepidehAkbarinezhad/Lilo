@@ -71,11 +71,8 @@ class TaskDetailViewModel(
                     local.update { it.copy(task = task, selectedPriority = Priority.getById(task.priority), isLoading = false) }
                 }
             }
-            is TaskDetailAction.OnGrantPermissionButton -> launchOperation {
-                local.update { it.copy(shouldShowPermissionDialog = false, shouldShowPermissionDeniedDialog = false) }
-                permissions.requestAccess(action.firstTime)
-            }
-            TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(shouldShowPermissionDialog = false, shouldShowPermissionDeniedDialog = false) }
+
+            TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(shouldShowPermissionDeniedDialog = false) }
             TaskDetailAction.OnManageGroups -> local.update { it.copy(categoryDialogOpen = false, groupManagementOpen = true) }
             TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(categoryDialogOpen = true, groupManagementOpen = false) }
             is TaskDetailAction.OnDeleteCategory -> launchOperation {
