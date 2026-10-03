@@ -43,7 +43,7 @@ fun FeatureConfirmationContent(
         color = MaterialTheme.colorScheme.surface) {
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppText(text = title, textType = TextType.SectionTitle)
-            AppText(text = message, textType = TextType.Body,
+            if (message.isNotBlank()) AppText(text = message, textType = TextType.Body,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.End)) {
                 TextButton(onClick = onCancel, modifier = Modifier.weight(1f)) {

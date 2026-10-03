@@ -16,9 +16,9 @@ fun SaveWithoutReminderDialog(onAction: (BaseAction) -> Unit) {
         FeatureConfirmationContent(
             accent = LiloExtendedTheme.colors.taskColor,
             title = stringResource(Res.string.save_without_reminder_title),
-            message = stringResource(Res.string.save_without_reminder_message),
-            confirmLabel = stringResource(Res.string.save_without_reminder),
-            cancelLabel = stringResource(Res.string.keep_editing),
+            message = "",
+            confirmLabel = stringResource(Res.string.confirm_action),
+            cancelLabel = stringResource(Res.string.cancel_button),
             onConfirm = { onAction(TaskDetailAction.OnSaveWithoutReminder) },
             onDismiss = dismiss,
         )
