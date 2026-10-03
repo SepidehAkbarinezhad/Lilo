@@ -1,0 +1,8 @@
+<resources>
+    <string name="notification_permission_title">Allow notifications</string>
+    <string name="notification_permission_body">Enable notifications so Lilo can show your task reminders.</string>
+    <string name="alarm_permission_title">Allow precise reminders</string>
+    <string name="alarm_permission_body">Allow alarms and reminders so Lilo can notify you at the time you choose.</string>
+    <string name="permission_continue">Continue</string>
+    <string name="save_without_reminder">Save without reminder</string>
+</resources>

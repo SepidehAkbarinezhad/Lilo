@@ -15,6 +15,8 @@ package com.sepideh.lilo.core.service
  * Actual implementations should handle platform-specific logic accordingly.
  */
 expect class PermissionManager {
+    suspend fun requestNotificationAccess()
+    suspend fun requestAlarmAccess()
     fun isXiaomi(): Boolean
     suspend fun hasAlarmPermission(): Boolean
     suspend fun hasNotificationPermission(): Boolean

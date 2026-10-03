@@ -23,7 +23,6 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.core.presentation.components.form.FormSelectionRow
 import com.sepideh.lilo.core.presentation.components.group.GroupManagementDialog
 import com.sepideh.lilo.task.presentation.detail.components.TaskPrioritySelector
-import com.sepideh.lilo.task.presentation.detail.components.PermissionAlertDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import kotlinx.datetime.TimeZone
@@ -36,6 +35,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNavigateTo: (AppRoutes) -> Unit, onBack: () -> Boolean) {
     val state by viewModel.stateValue.collectAsStateWithLifecycle()
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+        viewModel.onAction(TaskDetailAction.OnPermissionReturn)
+    }
     LaunchedEffect(taskId) { taskId?.let { viewModel.onAction(TaskDetailAction.OnGetSelectedTaskInfo(it)) } }
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack,
         bodyContainer = { TaskDetailScreen(state, state.task, viewModel::onAction, onBack) },
@@ -57,7 +59,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteCategory(it)) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
             )
-            if (state.shouldShowPermissionDeniedDialog) PermissionDeniedDialog(state, viewModel::onAction)
+            state.missingPermission?.let { PermissionDeniedDialog(it, viewModel::onAction) }
         })
 }
 
@@ -77,7 +79,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     BaseFormScreen(
         title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
         accent = accent, saveEnabled = !state.isSaving && !state.isLoading,
-        onBack = onBack, onSave = { onAction(TaskDetailAction.OnAddTaskButton(true)) },
+        onBack = onBack, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
             if (state.hasError) Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)

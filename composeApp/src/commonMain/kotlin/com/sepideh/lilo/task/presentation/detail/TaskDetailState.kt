@@ -25,5 +25,6 @@ data class TaskDetailState(
     val addCategoryOpen :Boolean = false,
     val titleError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.title_label)),
     val descriptionError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.description_label)),
-    val shouldShowPermissionDeniedDialog: Boolean = false,
+    val missingPermission: com.sepideh.lilo.task.domain.reminder.ReminderPermission? = null,
+    val awaitingPermissionReturn: Boolean = false,
     )

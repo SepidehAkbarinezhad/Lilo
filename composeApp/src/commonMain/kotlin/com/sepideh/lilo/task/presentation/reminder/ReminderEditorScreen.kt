@@ -6,17 +6,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseFormScreen
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.*
-import com.sepideh.lilo.core.presentation.components.picker.TimeNumberField
+import com.sepideh.lilo.core.presentation.components.picker.TimeWheelPicker
 import com.sepideh.lilo.core.presentation.components.picker.ReminderCalendar
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
 import kotlinx.datetime.*
@@ -42,36 +39,35 @@ fun ReminderEditorScreen(
     val zone = remember(zoneId) { TimeZone.of(zoneId) }
     val initial = remember { Instant.fromEpochMilliseconds(reminderAt ?: (Clock.System.now().toEpochMilliseconds() + 3_600_000)).toLocalDateTime(zone) }
     var day by rememberSaveable { mutableStateOf(initial.date.toString()) }
-    var hours by rememberSaveable { mutableStateOf(initial.hour.toString().padStart(2, '0')) }
-    var minutes by rememberSaveable { mutableStateOf(initial.minute.toString().padStart(2, '0')) }
+    var hours by rememberSaveable { mutableStateOf(initial.hour) }
+    var minutes by rememberSaveable { mutableStateOf(initial.minute) }
     var repeatCode by rememberSaveable { mutableStateOf(repeatRule.name) }
     var error by remember { mutableStateOf(false) }
     val selectedRepeat = RepeatRule.fromCode(repeatCode)
     val date = LocalDate.parse(day)
-    val hour = hours.toIntOrNull()
-    val minute = minutes.toIntOrNull()
-    val valid = hour != null && hour in 0..23 && minute != null && minute in 0..59
+    val hour = hours
+    val minute = minutes
+    val valid = hour in 0..23 && minute in 0..59
     BaseFormScreen(title = Res.string.reminder_label, accent = accent, saveEnabled = valid,
         actionLabel = Res.string.confirm_action, onBack = { onDismiss(); true }, onSave = {
             if (valid) {
-                val at = LocalDateTime(date, LocalTime(hour!!, minute!!)).toInstant(zone).toEpochMilliseconds()
+                val at = LocalDateTime(date, LocalTime(hour, minute)).toInstant(zone).toEpochMilliseconds()
                 // Existing repeats can retain their original anchor. New/edited starts must be future.
                 if (at <= Clock.System.now().toEpochMilliseconds() && !(at == reminderAt && selectedRepeat != RepeatRule.NONE)) error = true
                 else onConfirm(at, selectedRepeat, zoneId)
             }
         }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).imePadding().padding(horizontal = 20.dp),
+        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            ReminderCalendar(date, accent, onDateChange = { day = it.toString(); error = false })
-            AppText(text = Res.string.reminder_time_title, textType = TextType.FieldLabel)
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)) {
-                    TimeNumberField(hours, { hours = it; error = false }, stringResource(Res.string.hour_label), 23, accent)
-                    TimeNumberField(minutes, { minutes = it; error = false }, stringResource(Res.string.minute_label), 59, accent)
-                }
+            Box(Modifier.fillMaxWidth().height(440.dp * androidx.compose.ui.platform.LocalDensity.current.fontScale)) {
+                ReminderCalendar(date, accent, onDateChange = { day = it.toString(); error = false })
             }
+            AppText(text = Res.string.reminder_time_title, textType = TextType.SectionTitle)
+            TimeWheelPicker(hours, minutes, accent,
+                onHourChange = { hours = it; error = false },
+                onMinuteChange = { minutes = it; error = false })
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                AppText(text = Res.string.repeat_label, textType = TextType.FieldLabel)
+                AppText(text = Res.string.repeat_label, textType = TextType.SectionTitle)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     RepeatRule.entries.forEach { rule ->
                         FilterChip(selected = selectedRepeat == rule, onClick = { repeatCode = rule.name; error = false },
