@@ -5,6 +5,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sepideh.lilo.category.domain.CategoryDomain
 import com.sepideh.lilo.category.domain.toPresentation
 import com.sepideh.lilo.core.domain.model.AppLanguage
+import com.sepideh.lilo.note.presentation.detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.task.presentation.detail.TaskDetailState
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
 
