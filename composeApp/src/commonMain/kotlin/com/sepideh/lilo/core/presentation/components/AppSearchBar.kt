@@ -1,12 +1,11 @@
 package com.sepideh.lilo.core.presentation.components
 
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,25 +41,25 @@ fun AppSearchBar(
     OutlinedTextField(
         modifier = modifier.background(
             shape = RoundedCornerShape(100),
-            color = Color.White
+            color = MaterialTheme.colorScheme.surface
         ).focusRequester(focusRequester),
         shape = RoundedCornerShape(100),
         value = searchQuery,
         onValueChange = onSearchQueryChange,
-        textStyle = TextStyle(color = Color.Black),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
         colors = OutlinedTextFieldDefaults.colors(
-            cursorColor = MaterialTheme.colorScheme.primaryContainer,
-            focusedBorderColor = MaterialTheme.colorScheme.secondary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
         ),
         placeholder = {
             AppText(text = stringResource(Res.string.search_hint))
         },
         leadingIcon = {
             Icon(
-                imageVector = Icons.Default.Search,
+                imageVector = LiloIcons.Search,
                 contentDescription = "Search Icon",
-                tint = if (searchQuery.isNotBlank()) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
+                tint = if (searchQuery.isNotBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
             )
         },
         singleLine = true,
@@ -75,9 +74,9 @@ fun AppSearchBar(
                     onClose()
                 }) {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = LiloIcons.Close,
                         contentDescription = stringResource(Res.string.search_hint),
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
         },

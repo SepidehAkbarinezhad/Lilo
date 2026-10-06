@@ -15,4 +15,5 @@ data class Task(
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
     val completedAt: Long? = null,
+    val imageNames: List<String> = emptyList(),
 )

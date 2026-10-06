@@ -3,37 +3,39 @@ package com.sepideh.lilo.ui.theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Gray
 
-/**
- * Custom color palette holding additional domain-specific colors beyond Material3's ColorScheme.
- *
- * @Immutable tells the Compose compiler these properties never change at runtime, enabling recomposition skipping.
- * otherwise  any composable reading the class will be forced to recompose on every parent update
- */
+/** Semantic roles; components use these instead of choosing slightly different neutrals. */
 @Immutable
 data class LiloColors(
-    val taskColor: Color = Color.Unspecified,
-    val noteColor: Color = Color.Unspecified,
-    val expenseColor: Color = Color.Unspecified,
-    val passwordColor: Color = Color.Unspecified,
-
+    val taskColor: Color,
+    val noteColor: Color,
+    val expenseColor: Color,
+    val passwordColor: Color,
+    val title: Color,
+    val textPrimary: Color,
+    val textSecondary: Color,
+    val textSupporting: Color,
+    val textPlaceholder: Color,
+    val textDisabled: Color,
+    val onAccent: Color,
+    val onPrioritySelected: Color,
+    val taskAction: Color,
+    val priorityHigh: Color,
+    val priorityLow: Color,
 )
-
 
 val LiloColorsLight = LiloColors(
-    taskColor = Amber500,
-    noteColor = Green500,
-    expenseColor = Blue700,
-    passwordColor = Purple500,
+    taskColor = Amber500, noteColor = Green500, expenseColor = Blue700, passwordColor = Purple500,
+    title = Color(0xFF183B50), textPrimary = Color(0xFF46566C), textSecondary = Color(0xFF5F6F83),
+    textSupporting = Color(0xFF667488), textPlaceholder = Color(0xFF657487), textDisabled = Color(0xFF9BA5B2),
+    onAccent = Color(0xFF183B50), onPrioritySelected = White, taskAction = Color(0xFF956000),
+    priorityHigh = Color(0xFFF05262), priorityLow = Color(0xFF32BF99),
 )
-
 val LiloColorsDark = LiloColors(
-    taskColor = Amber300,
-    noteColor = Green300,
-    expenseColor = Blue300,
-    passwordColor = Purple200,
+    taskColor = Amber300, noteColor = Green300, expenseColor = Blue300, passwordColor = Purple200,
+    title = Color(0xFFE6ECF3), textPrimary = Color(0xFFD8E0EA), textSecondary = Color(0xFFBAC6D4),
+    textSupporting = Color(0xFFA6B3C4), textPlaceholder = Color(0xFF97A5B7), textDisabled = Color(0xFF748191),
+    onAccent = Color(0xFF183B50), onPrioritySelected = White, taskAction = Amber300,
+    priorityHigh = Color(0xFFFF8090), priorityLow = Color(0xFF72D5B5),
 )
-
-val LocalLiloColorsPalette = staticCompositionLocalOf { LiloColors() }
+val LocalLiloColorsPalette = staticCompositionLocalOf { LiloColorsLight }

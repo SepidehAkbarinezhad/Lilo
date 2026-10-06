@@ -22,7 +22,12 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: StringResource,
     textType: TextType = TextType.Body,
-    color: Color = LocalContentColor.current,
+    color: Color = when (textType) {
+        TextType.ScreenTitle, TextType.SectionTitle, TextType.Title -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.title
+        TextType.FieldLabel -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.textSecondary
+        TextType.Caption -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.textSupporting
+        else -> LocalContentColor.current
+    },
     textAlign: TextAlign = TextAlign.Start,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,
@@ -49,7 +54,12 @@ fun AppText(
     modifier: Modifier = Modifier,
     text: String,
     textType: TextType = TextType.Body,
-    color: Color = LocalContentColor.current,
+    color: Color = when (textType) {
+        TextType.ScreenTitle, TextType.SectionTitle, TextType.Title -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.title
+        TextType.FieldLabel -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.textSecondary
+        TextType.Caption -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.textSupporting
+        else -> LocalContentColor.current
+    },
     textAlign: TextAlign = TextAlign.Start,
     textDirection: TextDirection = TextDirection.Unspecified,
     textDecoration: TextDecoration = TextDecoration.None,

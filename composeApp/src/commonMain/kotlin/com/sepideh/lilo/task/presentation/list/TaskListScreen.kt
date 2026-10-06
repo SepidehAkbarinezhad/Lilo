@@ -1,14 +1,12 @@
 package com.sepideh.lilo.task.presentation.list
 
+import com.sepideh.lilo.ui.theme.*
+
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +23,7 @@ import com.sepideh.lilo.core.presentation.BaseListScreen
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.presentation.components.LiloSelectionChip
 import com.sepideh.lilo.core.presentation.components.DeleteConfirmationDialog
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.task.domain.model.Task
@@ -53,7 +52,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
     val accent = LiloExtendedTheme.colors.taskColor
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    BaseListScreen(title = Res.string.tasks_list_title, accent = accent,
+    BaseListScreen(title = Res.string.tasks_list_title, accent = accent, referenceStyle = true,
         searchVisible = state.isSearchVisible, query = state.searchQuery, searchHint = Res.string.search_tasks_action,
         filtersActive = state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty(),
         onBack = { onAction(BaseAction.OnNavigateTo(null)); true },
@@ -66,22 +65,27 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
                 keyboard?.hide()
                 onAction(TaskListAction.OnSearchToggle(false))
                 onAction(BaseAction.OnNavigateTo(AppRoutes.Tasks.Detail(null)))
-            }, containerColor = accent, contentColor = Color.Black) {
-                Icon(Icons.Outlined.Add, stringResource(Res.string.add_task_label))
+            }, modifier = Modifier.size(64.dp), shape = androidx.compose.foundation.shape.CircleShape, containerColor = accent, contentColor = MaterialTheme.colorScheme.onSurface) {
+                Icon(LiloIcons.Add, stringResource(Res.string.add_task_label), Modifier.size(36.dp))
             }
         }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (state.hasError) Text(stringResource(Res.string.task_operation_error), Modifier.padding(20.dp), color = MaterialTheme.colorScheme.error)
-            LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                 items(state.categories, key = { it.id }) { category ->
                     val id = category.id.takeIf { it != 0L }
-                    FilterChip(selected = state.selectedCategory == id, onClick = { onAction(TaskListAction.OnCategorySelected(id)) }, label = { AppText(text = category.title) },
-                        colors = FilterChipDefaults.filterChipColors(selectedContainerColor = accent.copy(alpha = .16f)))
+                    LiloSelectionChip(label = category.title, selected = state.selectedCategory == id, accent = accent,
+                        onClick = { onAction(TaskListAction.OnCategorySelected(id)) })
                 }
             }
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
-            if (state.tasksResult.isEmpty() && !isLoading) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AppText(text = Res.string.task_no_results, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (state.tasksResult.isEmpty() && !isLoading) Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Surface(shape = androidx.compose.foundation.shape.CircleShape, color = accent.copy(alpha = .08f)) {
+                        Box(Modifier.size(72.dp), contentAlignment = Alignment.Center) { Icon(LiloIcons.Empty, null, Modifier.size(36.dp), tint = LiloExtendedTheme.colors.textSupporting) }
+                    }
+                    AppText(text = Res.string.task_no_results, color = LiloExtendedTheme.colors.textSecondary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
             } else TaskList(state.tasksResult, !state.isFilterSheetOpen, onAction, Modifier.fillMaxSize(),
                 groupLabels = state.categories.filter { it.id != 0L }.associate { it.id to it.title })
         }
@@ -93,11 +97,11 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
 @Composable
 private fun TaskListScreenPreview() {
     LiloPreviewWrapper {
-        val task = Task(title = "Practice violin", priority = 1)
-        TaskListScreen(
-            state = TaskListState(tasksResult = listOf(task)),
-            isLoading = false,
-            onAction = {}
-        )
+        TaskListScreen(state = TaskListState(
+            tasksResult = listOf(Task(id = 1, title = "تمرین ساز", priority = 1, category = 3),
+                Task(id = 2, title = "ارسال رزومه", priority = 0, category = 2),
+                Task(id = 3, title = "خرید هفتگی", priority = 2, category = 4),
+                Task(id = 4, title = "مطالعه کتاب", priority = 0, done = true, category = 1)),
+        ), onAction = {})
     }
 }

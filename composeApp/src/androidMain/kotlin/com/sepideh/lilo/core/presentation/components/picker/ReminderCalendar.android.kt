@@ -59,7 +59,7 @@ actual fun ReminderCalendar(
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(
             primary = accent,
-            onPrimary = Color.Black,
+            onPrimary = com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.onAccent,
         )
     ) {
         PersianDatePicker(

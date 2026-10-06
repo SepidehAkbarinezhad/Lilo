@@ -20,7 +20,7 @@ val NoteCardIcon: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
+                stroke = SolidColor(com.sepideh.lilo.ui.theme.LiloColorsLight.textPrimary),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
@@ -41,7 +41,7 @@ val NoteCardIcon: ImageVector
                 verticalLineTo(20f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
+                stroke = SolidColor(com.sepideh.lilo.ui.theme.LiloColorsLight.textPrimary),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
@@ -50,7 +50,7 @@ val NoteCardIcon: ImageVector
                 horizontalLineTo(16f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
+                stroke = SolidColor(com.sepideh.lilo.ui.theme.LiloColorsLight.textPrimary),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round

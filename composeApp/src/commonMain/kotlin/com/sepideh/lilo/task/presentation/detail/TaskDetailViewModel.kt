@@ -26,6 +26,7 @@ class TaskDetailViewModel(
     private val categoryRepository: CategoryRepository,
     private val mutations: TaskMutations,
     private val permissions: ReminderPermissions,
+    private val imageStore: com.sepideh.lilo.core.domain.images.ImageStore,
 ) : BaseViewModel() {
     private val local = MutableStateFlow(TaskDetailState())
     private var loadedTaskId: Long? = null
@@ -38,6 +39,9 @@ class TaskDetailViewModel(
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
+            is TaskDetailAction.OnImagesSelected -> if (!local.value.isSaving) local.update { it.copy(selectedImages = action.sources) }
+            TaskDetailAction.OnClearImages -> if (!local.value.isSaving) local.update { it.copy(selectedImages = emptyList()) }
+            TaskDetailAction.OnImagePickerFailure -> local.update { it.copy(hasError = true) }
             is TaskDetailAction.OnTitleChanged -> local.update { it.copy(task = it.task.copy(title = action.title), titleError = it.titleError.copy(isSuccessful = true, messageId = null)) }
             is TaskDetailAction.OnDescriptionChanged -> local.update { it.copy(task = it.task.copy(description = action.description)) }
             TaskDetailAction.OnCategoryIcon -> local.update { it.copy(categoryDialogOpen = true, draftCategoryId = it.task.category.takeIf { id -> id != 0L }) }
@@ -47,6 +51,10 @@ class TaskDetailViewModel(
             TaskDetailAction.OnConfirmGroup -> local.update { it.copy(task = it.task.copy(category = it.draftCategoryId ?: 0), categoryDialogOpen = false) }
             TaskDetailAction.OnPriorityIcon -> local.update { it.copy(priorityDialogOpen = true) }
             TaskDetailAction.OnDismissPriorityDialog -> local.update { it.copy(priorityDialogOpen = false) }
+            is TaskDetailAction.OnPriorityIdSelected -> {
+                val priority = Priority.getById(action.id)
+                local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id), priorityDialogOpen = false) }
+            }
             is TaskDetailAction.OnPrioritySelected -> {
                 val priority = Priority.getByTitle(action.title)
                 local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id), priorityDialogOpen = false) }
@@ -130,11 +138,17 @@ class TaskDetailViewModel(
                 local.update { it.copy(isSaving = false, missingPermission = missing) }
                 return@launchOperation
             }
+            val imageNames = state.selectedImages?.let { imageStore.importImages(it) } ?: state.task.imageNames
             val task = state.task.copy(
+                imageNames = imageNames,
                 category = state.task.category.takeIf { id -> stateValue.value.categories.any { it.id == id } } ?: 0,
             )
             val result = mutations.save(task, scheduleReminder = allowed)
-            local.update { it.copy(task = task.copy(id = result.id), isSaving = false, missingPermission = null, hasError = result.reminderFailed) }
+            local.update { it.copy(task = task.copy(id = result.id), selectedImages = null, isSaving = false, missingPermission = null, hasError = result.reminderFailed) }
+            // The row has committed before old files can be removed. Cleanup does not block saving.
+            try { imageStore.removeImages(state.task.imageNames - imageNames.toSet()) }
+            catch (e: CancellationException) { throw e }
+            catch (_: Exception) { /* Retain inaccessible files rather than fail a committed save. */ }
             if (!result.reminderFailed) onAction(BaseAction.OnNavigateTo(null))
         }
     }

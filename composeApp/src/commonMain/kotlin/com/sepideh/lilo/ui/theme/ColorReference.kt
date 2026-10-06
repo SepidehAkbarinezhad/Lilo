@@ -35,7 +35,7 @@ val Gray900 = Color(0xFF212121)
 val BlueGray900 = Color(0xFF263238)
 
 // Light theme
-val LightBackground = Color(0xFFFAF7F2)
+val LightBackground = Color(0xFFFBF9F6)
 val LightOnBackground = Color(0xFF252A28)
 
 val LightSurfaceVariant = Color(0xFFF1EEE8)

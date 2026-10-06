@@ -16,7 +16,7 @@ expect fun taskPlatformModule(): Module
 
 val taskModule = module {
     single<com.sepideh.lilo.task.domain.reminder.ReminderPermissions> { com.sepideh.lilo.task.data.PlatformReminderPermissions(get()) }
-    single { com.sepideh.lilo.task.domain.usecase.TaskMutations(get(), get()) }
+    single { com.sepideh.lilo.task.domain.usecase.TaskMutations(get(), get(), get()) }
 
     single { get<TaskDatabase>(taskDatabaseQualifier).taskDao() }
 
@@ -41,7 +41,8 @@ val taskModule = module {
             taskRepository = get(),
             categoryRepository = get(),
             mutations = get(),
-            permissions = get()
+            permissions = get(),
+            imageStore = get()
         )
     }
 }

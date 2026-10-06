@@ -2,7 +2,6 @@ package com.sepideh.lilo.ui.theme
 
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.ui.graphics.Color.Companion.Black
 
 /*
  * Material color semantics in Lilo:
@@ -73,38 +72,41 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 
 val LightColorScheme = lightColorScheme(
     primary = Amber600,
-    onPrimary = Black,
+    onPrimary = LiloColorsLight.onAccent,
 
     background = LightBackground,
-    onBackground = LightOnBackground,
+    onBackground = LiloColorsLight.textPrimary,
 
     surface = White,
-    onSurface = LightOnBackground,
+    onSurface = LiloColorsLight.textPrimary,
 
     surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = Gray600,
+    onSurfaceVariant = LiloColorsLight.textSecondary,
 
     surfaceContainer = White,
     surfaceContainerLow = LightSurfaceContainerLow,
 
-    outline = Gray600,
-    outlineVariant = Gray400,
+    outline = LiloColorsLight.textSupporting,
+    outlineVariant = androidx.compose.ui.graphics.Color(0xFFDEE2E8),
 
+    scrim = LiloColorsLight.title,
+    onSecondary = LiloColorsLight.onAccent,
+    onTertiary = LiloColorsLight.onAccent,
     error = LightError,
 )
 
 val DarkColorScheme = darkColorScheme(
     primary = Amber300,
-    onPrimary = Black,
+    onPrimary = LiloColorsLight.onAccent,
 
     background = DarkBackground,
-    onBackground = DarkOnBackground,
+    onBackground = LiloColorsDark.textPrimary,
 
     surface = Gray900,
-    onSurface = DarkOnBackground,
+    onSurface = LiloColorsDark.textPrimary,
 
     surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = Gray400,
+    onSurfaceVariant = LiloColorsDark.textSecondary,
 
     surfaceContainer = BlueGray900,
     surfaceContainerLow = DarkSurfaceContainerLow,
@@ -112,5 +114,8 @@ val DarkColorScheme = darkColorScheme(
     outline = Gray400,
     outlineVariant = Gray800,
 
+    scrim = LiloColorsDark.onAccent,
+    onSecondary = LiloColorsDark.onAccent,
+    onTertiary = LiloColorsDark.onAccent,
     error = DarkError,
 )
