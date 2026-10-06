@@ -51,3 +51,18 @@ val DarkSurfaceVariant = Color(0xFF303331)
 val DarkSurfaceContainerLow = Color(0xFF1D201F)
 
 val DarkError = Color(0xFFFFB4AB)
+
+
+
+// Feature colors — Light
+val SageLight = Color(0xFFB9CC9D)
+val CoralLight = Color(0xFFE8B9A4)
+val BlueLight = Color(0xFFB4D6E0)
+val LavenderLight = Color(0xFFCBB7E2)
+val SageActionLight = Color(0xFF607447)
+
+// Feature colors — Dark
+val SageDark = Color(0xFFC0D2A4)
+val CoralDark = Color(0xFFE5BA9A)
+val BlueDark = Color(0xFFA4CED9)
+val LavenderDark = Color(0xFFD3C1E7)
