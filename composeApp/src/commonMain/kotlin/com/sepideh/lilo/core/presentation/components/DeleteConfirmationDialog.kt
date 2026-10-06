@@ -23,9 +23,10 @@ fun DeleteConfirmationDialog(
     onDismiss: () -> Unit,
     title: String = stringResource(Res.string.delete_confirmation_title),
     message: String = stringResource(Res.string.delete_item_confirmation),
+    confirmFirst: Boolean = false,
 ) {
     Dialog(onDismissRequest = onDismiss) {
-        FeatureConfirmationContent(accent, title, message, onConfirm, onDismiss)
+        FeatureConfirmationContent(accent, title, message, onConfirm, onDismiss, confirmFirst = confirmFirst)
     }
 }
 
@@ -40,6 +41,7 @@ fun FeatureConfirmationContent(
     confirmLabel: String = stringResource(Res.string.delete_action),
     cancelLabel: String = stringResource(Res.string.cancel_button),
     onCancel: () -> Unit = onDismiss,
+    confirmFirst: Boolean = false,
 ) {
     Surface(modifier = modifier.widthIn(max = 360.dp), shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
@@ -48,13 +50,19 @@ fun FeatureConfirmationContent(
             if (message.isNotBlank()) AppText(text = message, textType = TextType.Body,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.End)) {
-                TextButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
-                    AppText(text = cancelLabel, textType = TextType.Action,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Button(onClick = onConfirm, modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.onAccent)) {
-                    AppText(text = confirmLabel, textType = TextType.Action)
+                val actionOrder = if (confirmFirst) listOf(true, false) else listOf(false, true)
+                actionOrder.forEach { isConfirm ->
+                    if (isConfirm) {
+                        Button(onClick = onConfirm, modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = LiloExtendedTheme.colors.onAccent)) {
+                            AppText(text = confirmLabel, textType = TextType.Action)
+                        }
+                    } else {
+                        TextButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
+                            AppText(text = cancelLabel, textType = TextType.Action,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
                 }
             }
         }

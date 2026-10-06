@@ -58,7 +58,6 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewCategory(it)) },
                 accent = LiloExtendedTheme.colors.taskColor,
                 groups = state.categories.map { GroupOption(it.id, it.title, it.isDeletable) },
-                deleteMessage = stringResource(Res.string.delete_group_message),
                 errorMessage = if (state.hasError) stringResource(Res.string.task_operation_error) else null,
                 onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteCategory(it)) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },

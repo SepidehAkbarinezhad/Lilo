@@ -18,10 +18,9 @@ import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
-/** Uses the same sheet, rows and inline creation pattern as group selection. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupManagementDialog(groups: List<GroupOption>, deleteMessage: String, onDelete: (Long) -> Unit,
+fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
     onDismiss: () -> Unit, errorMessage: String? = null, accent: Color,
     selectedId: Long? = null, isAdding: Boolean = false, addedVersion: Int = 0, onCreate: ((String) -> Unit)? = null) {
     var editing by remember { mutableStateOf(false) }
@@ -35,7 +34,7 @@ fun GroupManagementDialog(groups: List<GroupOption>, deleteMessage: String, onDe
             if (onCreate != null) InlineGroupEditor(accent, isAdding, addedVersion, onCreate, onEditingChanged = { editing = it })
         }
     }
-    deleteId?.let { id -> DeleteConfirmationDialog(accent = accent, message = deleteMessage,
+    deleteId?.let { id -> DeleteConfirmationDialog(accent = accent, title = stringResource(Res.string.delete_group_title), message = stringResource(Res.string.delete_group_message), confirmFirst = true,
         onConfirm = { onDelete(id); deleteId = null }, onDismiss = { deleteId = null }) }
 }
 

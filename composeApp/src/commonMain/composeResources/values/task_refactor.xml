@@ -12,7 +12,8 @@
     <string name="remove_reminder_action">Remove reminder</string>
     <string name="description_optional">Description (optional)</string>
     <string name="task_title_hint">What do you need to do?</string>
-    <string name="delete_group_message">Delete this group? Its tasks will remain without a group.</string>
+    <string name="delete_group_title">Deleting group</string>
+    <string name="delete_group_message">Deleting this group will leave its tasks without a group.</string>
     <string name="delete_action">Delete</string>
     <string name="task_no_results">No matching tasks</string>
     <string name="task_complete_action">Mark complete</string>

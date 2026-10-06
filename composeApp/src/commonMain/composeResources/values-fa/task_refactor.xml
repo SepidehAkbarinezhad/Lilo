@@ -12,7 +12,8 @@
     <string name="remove_reminder_action">حذف یادآور</string>
     <string name="description_optional">توضیحات (اختیاری)</string>
     <string name="task_title_hint">چه فعالیتی باید انجام دهید؟</string>
-    <string name="delete_group_message">این گروه حذف شود؟ فعالیت‌های آن بدون گروه باقی می‌مانند.</string>
+    <string name="delete_group_title">حذف گروه</string>
+    <string name="delete_group_message">با حذف این گروه، فعالیت‌های آن بدون گروه باقی می‌مانند.</string>
     <string name="delete_action">حذف</string>
     <string name="task_no_results">فعالیتی با این فیلترها پیدا نشد</string>
     <string name="task_complete_action">انجام شد</string>
@@ -22,7 +23,7 @@
     <string name="close_search_action">بستن جستجو</string>
     <string name="task_description_hint">افزودن توضیحات (اختیاری)</string>
     <string name="group_field_label">گروه</string>
-    <string name="delete_confirmation_title">حذف مورد؟</string>
+    <string name="delete_confirmation_title">حذف مورد</string>
 <string name="task_images_label">تصاویر</string>
     <string name="task_images_count">%1$d تصویر</string>
     <string name="task_clear_images">حذف تصاویر</string>
