@@ -11,8 +11,8 @@ import org.koin.dsl.module
 
 val homeModule = module {
 
-    single { TaskFeatureCardImpl() } bind FeatureCard::class
-    single { NoteFeatureCardImpl() } bind FeatureCard::class
+    single { TaskFeatureCardImpl(get()) } bind FeatureCard::class
+    single { NoteFeatureCardImpl(get()) } bind FeatureCard::class
 
 
     single { FeatureCardFactory(getAll()) }

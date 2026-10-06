@@ -40,7 +40,7 @@ fun AppCircleButton(
 
 @AppPreviews
 @Composable
-private fun HomeScreenPreview() {
+private fun AppCircleButtonPreview() {
     val liloColor =
         LiloPreviewWrapper {
             AppCircleButton(
