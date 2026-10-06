@@ -49,15 +49,13 @@ class TaskDetailViewModel(
             is TaskDetailAction.OnCategorySelected -> local.update { it.copy(draftCategoryId = action.category.id) }
             is TaskDetailAction.OnGroupDraftSelected -> local.update { it.copy(draftCategoryId = action.id) }
             TaskDetailAction.OnConfirmGroup -> local.update { it.copy(task = it.task.copy(category = it.draftCategoryId ?: 0), categoryDialogOpen = false) }
-            TaskDetailAction.OnPriorityIcon -> local.update { it.copy(priorityDialogOpen = true) }
-            TaskDetailAction.OnDismissPriorityDialog -> local.update { it.copy(priorityDialogOpen = false) }
             is TaskDetailAction.OnPriorityIdSelected -> {
                 val priority = Priority.getById(action.id)
-                local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id), priorityDialogOpen = false) }
+                local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id),) }
             }
             is TaskDetailAction.OnPrioritySelected -> {
                 val priority = Priority.getByTitle(action.title)
-                local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id), priorityDialogOpen = false) }
+                local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id),) }
             }
             TaskDetailAction.OnDateReminderIcon -> local.update { it.copy(reminderEditorOpen = true) }
             TaskDetailAction.OnDismissReminder -> local.update { it.copy(reminderEditorOpen = false) }

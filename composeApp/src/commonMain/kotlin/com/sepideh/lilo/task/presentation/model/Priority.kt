@@ -17,7 +17,7 @@ data class Priority(
     val color: Color
         @androidx.compose.runtime.Composable get() = when (value) {
             TaskPriority.HIGH -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.priorityHigh
-            TaskPriority.MEDIUM -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.taskColor
+            TaskPriority.MEDIUM -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.priorityMedium
             TaskPriority.LOW -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.priorityLow
         }
     companion object {
