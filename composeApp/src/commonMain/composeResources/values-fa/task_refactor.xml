@@ -29,4 +29,5 @@
     <string name="task_clear_images">حذف تصاویر</string>
 <string name="task_today">امروز</string>
     <string name="task_tomorrow">فردا</string>
+    <string name="edit_group_action">ویرایش گروه</string>
 </resources>

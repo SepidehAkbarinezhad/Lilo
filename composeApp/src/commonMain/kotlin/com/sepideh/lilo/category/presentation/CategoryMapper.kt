@@ -27,6 +27,6 @@ fun CategoryDomain.toPresentation(language: AppLanguage): CategoryPresentation {
     // Determine effective title
     val effectiveTitle = titleInSelectedLang.ifBlank { fallbackTitle }
 
-    val isDeletable = this.titleEn != GENERAL_CATEGORY
+    val isDeletable = true
     return CategoryPresentation(id = this.id, title = effectiveTitle, isDeletable = isDeletable)
 }

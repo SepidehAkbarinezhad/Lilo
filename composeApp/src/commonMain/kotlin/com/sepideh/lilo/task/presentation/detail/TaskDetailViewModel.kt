@@ -88,6 +88,7 @@ class TaskDetailViewModel(
             }
             TaskDetailAction.OnPermissionReturn -> if (local.value.awaitingPermissionReturn) resumePermissionSave()
             is TaskDetailAction.OnAddNewCategory -> addGroup(action.categoryTitle)
+            is TaskDetailAction.OnRenameCategory -> renameGroup(action.categoryId, action.title)
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
                 if (loadedTaskId == action.taskId) return
                 loadedTaskId = action.taskId
@@ -120,6 +121,18 @@ class TaskDetailViewModel(
             val existing = stateValue.value.categories.firstOrNull { it.title.equals(normalized, ignoreCase = true) }
             val id = existing?.id ?: categoryRepository.addCategory(categoryFactory.create(normalized))
             local.update { it.copy(draftCategoryId = id, isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
+        }
+    }
+
+    private fun renameGroup(id: Long, title: String) {
+        val normalized = title.trim()
+        if (normalized.isEmpty() || local.value.isAddingGroup) return
+        local.update { it.copy(isAddingGroup = true, hasError = false) }
+        launchOperation {
+            val existing = categoryRepository.getCategoryById(id) ?: error("Group not found")
+            // Renaming updates the user-visible name in both locales while retaining its stable ID.
+            categoryRepository.addCategory(existing.copy(titleEn = normalized, titleFa = normalized))
+            local.update { it.copy(isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
         }
     }
 
