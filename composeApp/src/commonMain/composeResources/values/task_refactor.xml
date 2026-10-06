@@ -29,4 +29,5 @@
     <string name="task_clear_images">Remove images</string>
 <string name="task_today">Today</string>
     <string name="task_tomorrow">Tomorrow</string>
+    <string name="edit_group_action">Edit group</string>
 </resources>

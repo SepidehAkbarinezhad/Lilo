@@ -28,6 +28,7 @@ sealed interface TaskDetailAction : BaseAction {
     // Constructor retained for deferred note code; saving always validates reminder access.
     data class OnAddTaskButton(val checkDeniedPermission: Boolean = true) : TaskDetailAction
     data class OnAddNewCategory(val categoryTitle: String) : TaskDetailAction
+    data class OnRenameCategory(val categoryId: Long, val title: String) : TaskDetailAction
     data class OnDeleteCategory(val categoryId: Long) : TaskDetailAction
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailAction
     data class OnGrantPermissionButton(val firstTime: Boolean = false) : TaskDetailAction

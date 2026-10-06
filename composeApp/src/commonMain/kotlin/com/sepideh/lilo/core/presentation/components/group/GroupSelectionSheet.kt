@@ -20,28 +20,26 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupSelectionSheet(groups: List<GroupOption>, selectedId: Long?, accent: Color,
-    isAdding: Boolean, addedVersion: Int, onSelect: (Long?) -> Unit, onCreate: (String) -> Unit,
+    onSelect: (Long?) -> Unit,
     onManage: () -> Unit, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = { if (!isAdding) onDismiss() },
+    ModalBottomSheet(onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
-        GroupSelectionContent(groups, selectedId, accent, isAdding, addedVersion, onSelect, onCreate, onManage, onConfirm)
+        GroupSelectionContent(groups, selectedId, accent, onSelect, onManage, onConfirm)
     }
 }
 
 @Composable
 fun GroupSelectionContent(groups: List<GroupOption>, selectedId: Long?, accent: Color,
-    isAdding: Boolean, addedVersion: Int, onSelect: (Long?) -> Unit, onCreate: (String) -> Unit,
+    onSelect: (Long?) -> Unit,
     onManage: () -> Unit, onConfirm: () -> Unit) {
-    var editing by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen).padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
-        SheetHeader(Res.string.choose_group_title, Res.string.confirm_action, accent, !editing && !isAdding, onConfirm)
+        SheetHeader(Res.string.choose_group_title, Res.string.confirm_action, accent, true, onConfirm)
         LazyColumn(Modifier.weight(1f, fill = false).selectableGroup().fillMaxWidth().heightIn(max = 360.dp), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-            item { GroupSelectionRow(stringResource(Res.string.no_group_label), selectedId == null, accent, enabled = !isAdding, onClick = { onSelect(null) }) }
-            items(groups, key = { it.id }) { group -> GroupSelectionRow(group.label, selectedId == group.id, accent, enabled = !isAdding, onClick = { onSelect(group.id) }) }
+            item { GroupSelectionRow(stringResource(Res.string.no_group_label), selectedId == null, accent, onClick = { onSelect(null) }) }
+            items(groups, key = { it.id }) { group -> GroupSelectionRow(group.label, selectedId == group.id, accent, onClick = { onSelect(group.id) }) }
         }
-        InlineGroupEditor(accent, isAdding, addedVersion, onCreate, onEditingChanged = { editing = it })
-        if (!editing) OutlinedButton(onClick = onManage, modifier = Modifier.fillMaxWidth().heightIn(min = LiloSize.TouchTarget),
+        OutlinedButton(onClick = onManage, modifier = Modifier.fillMaxWidth().heightIn(min = LiloSize.TouchTarget),
             shape = MaterialTheme.shapes.medium, colors = ButtonDefaults.outlinedButtonColors(contentColor = LiloExtendedTheme.colors.textPrimary)) {
             Icon(LiloIcons.Groups, null, Modifier.size(LiloSize.SmallIcon))
             Spacer(Modifier.width(LiloSpacing.Small))
@@ -54,5 +52,5 @@ fun GroupSelectionContent(groups: List<GroupOption>, selectedId: Long?, accent: 
 @Composable
 private fun GroupSelectionPreview() {
     LiloPreviewWrapper { GroupSelectionContent(listOf(GroupOption(1, "Personal"), GroupOption(2, "Work")), 1,
-        LiloExtendedTheme.colors.taskColor, false, 0, {}, {}, {}, {}) }
+        LiloExtendedTheme.colors.taskColor, {}, {}, {}) }
 }

@@ -46,9 +46,8 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
         dialogContent = {
             if (state.categoryDialogOpen) GroupSelectionSheet(
                 groups = state.categories.map { GroupOption(it.id, it.title) }, selectedId = state.draftCategoryId,
-                accent = LiloExtendedTheme.colors.taskColor, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
+                accent = LiloExtendedTheme.colors.taskColor,
                 onSelect = { viewModel.onAction(TaskDetailAction.OnGroupDraftSelected(it)) },
-                onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewCategory(it)) },
                 onManage = { viewModel.onAction(TaskDetailAction.OnManageGroups) },
                 onConfirm = { viewModel.onAction(TaskDetailAction.OnConfirmGroup) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissCategoryDialog) },
@@ -60,6 +59,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 groups = state.categories.map { GroupOption(it.id, it.title, it.isDeletable) },
                 errorMessage = if (state.hasError) stringResource(Res.string.task_operation_error) else null,
                 onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteCategory(it)) },
+                onRename = { id, title -> viewModel.onAction(TaskDetailAction.OnRenameCategory(id, title)) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
             )
             state.missingPermission?.let { PermissionDeniedDialog(it, viewModel::onAction) }
