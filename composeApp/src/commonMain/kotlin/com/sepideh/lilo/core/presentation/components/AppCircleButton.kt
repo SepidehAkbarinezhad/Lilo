@@ -1,10 +1,10 @@
 package com.sepideh.lilo.core.presentation.components
 
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -19,7 +19,7 @@ import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 @Composable
 fun AppCircleButton(
     modifier: Modifier = Modifier,
-    imageVector: ImageVector = Icons.Default.Add,
+    imageVector: ImageVector = LiloIcons.Add,
     color: Color,
     onClick: () -> Unit
 ) {

@@ -11,6 +11,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 actual fun corePlatformModule() = module {
+    single<com.sepideh.lilo.core.domain.images.ImageStore> { com.sepideh.lilo.core.data.images.NativeImageStore(androidContext()) }
     single<LiloInfo> { AndroidLiloInfo(androidContext()) }
     single<ReminderScheduler> { ReminderSchedulerProvider(get()) }
     single<PermissionManager> { PermissionManager(get()) }

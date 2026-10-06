@@ -13,6 +13,7 @@ data class TaskDetailState(
     val groupManagementOpen: Boolean = false,
     val draftCategoryId: Long? = null,
     val isSaving: Boolean = false,
+    val selectedImages: List<com.sepideh.lilo.core.domain.images.ImageSource>? = null,
     val isLoading: Boolean = false,
     val isAddingGroup: Boolean = false,
     val groupAddedVersion: Int = 0,

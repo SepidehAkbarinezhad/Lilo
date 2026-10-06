@@ -11,6 +11,9 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnConfirmGroup : TaskDetailAction
     data object OnDismissReminder : TaskDetailAction
     data class OnReminderConfirmed(val at: Long, val repeat: com.sepideh.lilo.task.domain.reminder.RepeatRule, val zoneId: String) : TaskDetailAction
+    data class OnImagesSelected(val sources: List<com.sepideh.lilo.core.domain.images.ImageSource>) : TaskDetailAction
+    data object OnClearImages : TaskDetailAction
+    data object OnImagePickerFailure : TaskDetailAction
     data object OnClearReminder : TaskDetailAction
     data class OnTitleChanged(val title: String) : TaskDetailAction
     data class OnDescriptionChanged(val description: String) : TaskDetailAction
@@ -20,6 +23,7 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnDismissPriorityDialog : TaskDetailAction
     data object OnDateReminderIcon : TaskDetailAction
     data class OnCategorySelected(val category: CategoryPresentation) : TaskDetailAction
+    data class OnPriorityIdSelected(val id: Int) : TaskDetailAction
     data class OnPrioritySelected(val title: StringResource) : TaskDetailAction
     // Constructor retained for deferred note code; saving always validates reminder access.
     data class OnAddTaskButton(val checkDeniedPermission: Boolean = true) : TaskDetailAction

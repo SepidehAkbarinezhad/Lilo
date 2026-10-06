@@ -19,6 +19,6 @@ fun GregorianReminderCalendar(date: LocalDate, accent: Color, onDateChange: (Loc
     }
     DatePicker(state, title = null, headline = null, showModeToggle = false,
         colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.background,
-            selectedDayContainerColor = accent, selectedDayContentColor = Color.Black,
+            selectedDayContainerColor = accent, selectedDayContentColor = com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.onAccent,
             todayDateBorderColor = accent, todayContentColor = MaterialTheme.colorScheme.onSurface))
 }

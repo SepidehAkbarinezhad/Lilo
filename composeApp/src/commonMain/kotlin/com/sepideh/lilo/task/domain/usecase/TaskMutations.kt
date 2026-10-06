@@ -16,6 +16,7 @@ import kotlin.time.ExperimentalTime
 class TaskMutations(
     private val repository: TaskRepository,
     private val scheduler: ReminderScheduler,
+    private val imageStore: com.sepideh.lilo.core.domain.images.ImageStore? = null,
 ) {
     private val mutex = Mutex()
 
@@ -50,6 +51,7 @@ class TaskMutations(
             scheduler.cancelReminder(id)
             repository.deleteTask(id)
             synchronizeAll()
+            imageStore?.removeImages(task.imageNames)
         }
     }
 

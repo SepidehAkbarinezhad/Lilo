@@ -10,6 +10,7 @@ import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import org.koin.dsl.module
 
 actual fun corePlatformModule() = module {
+    single<com.sepideh.lilo.core.domain.images.ImageStore> { com.sepideh.lilo.core.data.images.NativeImageStore() }
     single<LiloInfo> { IosLiloInfo() }
     single<ReminderScheduler> { ReminderSchedulerProvider() }
     single<PermissionManager> { PermissionManager() }

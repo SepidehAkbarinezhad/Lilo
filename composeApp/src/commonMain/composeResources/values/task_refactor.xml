@@ -23,4 +23,9 @@
     <string name="task_description_hint">Add details (optional)</string>
     <string name="group_field_label">Group</string>
     <string name="delete_confirmation_title">Delete item?</string>
+<string name="task_images_label">Images</string>
+    <string name="task_images_count">%1$d images</string>
+    <string name="task_clear_images">Remove images</string>
+<string name="task_today">Today</string>
+    <string name="task_tomorrow">Tomorrow</string>
 </resources>

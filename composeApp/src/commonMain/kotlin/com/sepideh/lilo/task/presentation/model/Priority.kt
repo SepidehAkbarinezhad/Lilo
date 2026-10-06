@@ -11,14 +11,20 @@ import org.jetbrains.compose.resources.StringResource
 data class Priority(
     val id: Int,
     val title: StringResource,
-    val color: Color,
+
     val value: TaskPriority
 ) {
+    val color: Color
+        @androidx.compose.runtime.Composable get() = when (value) {
+            TaskPriority.HIGH -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.priorityHigh
+            TaskPriority.MEDIUM -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.taskColor
+            TaskPriority.LOW -> com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.priorityLow
+        }
     companion object {
         val priorities = listOf(
-            Priority(id = 0, title = Res.string.priority_high_label, color = Color(0xFFEA4545), value = TaskPriority.HIGH),
-            Priority(id = 1, title = Res.string.priority_middle_label, color = Color(0xFFFFC107), value = TaskPriority.MEDIUM),
-            Priority(id = 2, title = Res.string.priority_low_label, color = Color(0xFF2BB86A), value = TaskPriority.LOW),
+            Priority(id = 0, title = Res.string.priority_high_label, value = TaskPriority.HIGH),
+            Priority(id = 1, title = Res.string.priority_middle_label, value = TaskPriority.MEDIUM),
+            Priority(id = 2, title = Res.string.priority_low_label, value = TaskPriority.LOW),
         )
         fun getById(id: Int): Priority = priorities.find { it.id == id } ?: priorities.first { it.value == TaskPriority.MEDIUM }
 

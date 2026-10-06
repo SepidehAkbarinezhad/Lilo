@@ -1,13 +1,15 @@
 package com.sepideh.lilo.core.presentation.components.gesture
 
+import com.sepideh.lilo.ui.theme.*
+
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,12 +46,12 @@ fun SwipeToRevealDelete(
         if (offset < -1f) {
             FilledTonalIconButton(
                 onClick = { revealed = false; onDelete() }, enabled = enabled && revealed && !dragging,
-                modifier = Modifier.align(Alignment.CenterEnd).padding(horizontal = 12.dp).size(48.dp),
+                modifier = Modifier.align(Alignment.CenterEnd).padding(horizontal = LiloSpacing.Item).size(LiloSize.TouchTarget),
                 colors = IconButtonDefaults.filledTonalIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.onErrorContainer),
             ) {
-                Icon(Icons.Outlined.Delete, stringResource(Res.string.delete_action), Modifier.size(20.dp))
+                Icon(LiloIcons.Delete, stringResource(Res.string.delete_action), Modifier.size(LiloSize.SmallIcon))
             }
         }
         Box(Modifier.offset { IntOffset(offset.roundToInt(), 0) }

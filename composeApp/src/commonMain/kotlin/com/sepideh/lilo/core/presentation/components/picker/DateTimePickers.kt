@@ -15,6 +15,6 @@ fun FeatureDatePicker(selectedDateMillis: Long?, accent: Color, onConfirm: (Long
         confirmButton = { TextButton(onClick = { state.selectedDateMillis?.let(onConfirm) }, enabled = state.selectedDateMillis != null,
             colors = ButtonDefaults.textButtonColors(contentColor = accent)) { Text(stringResource(Res.string.confirm_action)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel_button)) } }) {
-        DatePicker(state, showModeToggle = false, colors = DatePickerDefaults.colors(selectedDayContainerColor = accent, selectedDayContentColor = Color.Black, todayDateBorderColor = accent))
+        DatePicker(state, showModeToggle = false, colors = DatePickerDefaults.colors(selectedDayContainerColor = accent, selectedDayContentColor = com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.onAccent, todayDateBorderColor = accent))
     }
 }

@@ -22,6 +22,7 @@ import kotlin.time.Instant
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import com.sepideh.lilo.ui.theme.*
 
 val RepeatRule.label: StringResource get() = when (this) {
     RepeatRule.NONE -> Res.string.repeat_once
@@ -49,7 +50,7 @@ fun ReminderEditorScreen(
     val minute = minutes
     val valid = hour in 0..23 && minute in 0..59
     BaseFormScreen(title = Res.string.reminder_label, accent = accent, saveEnabled = valid,
-        actionLabel = Res.string.confirm_action, onBack = { onDismiss(); true }, onSave = {
+        actionLabel = Res.string.confirm_action, textSaveAction = true, onBack = { onDismiss(); true }, onSave = {
             if (valid) {
                 val at = LocalDateTime(date, LocalTime(hour, minute)).toInstant(zone).toEpochMilliseconds()
                 // Existing repeats can retain their original anchor. New/edited starts must be future.
@@ -68,11 +69,10 @@ fun ReminderEditorScreen(
                 onMinuteChange = { minutes = it; error = false })
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 AppText(text = Res.string.repeat_label, textType = TextType.SectionTitle)
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                     RepeatRule.entries.forEach { rule ->
-                        FilterChip(selected = selectedRepeat == rule, onClick = { repeatCode = rule.name; error = false },
-                            modifier = Modifier.weight(1f), label = { AppText(text = rule.label) },
-                            colors = FilterChipDefaults.filterChipColors(selectedContainerColor = accent.copy(alpha = .16f)))
+                        LiloSelectionChip(stringResource(rule.label), selectedRepeat == rule, accent,
+                            { repeatCode = rule.name; error = false }, modifier = Modifier.weight(1f))
                     }
                 }
                 if (selectedRepeat == RepeatRule.WEEKLY) {

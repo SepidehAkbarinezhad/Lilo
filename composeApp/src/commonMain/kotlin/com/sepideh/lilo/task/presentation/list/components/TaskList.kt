@@ -1,5 +1,7 @@
 package com.sepideh.lilo.task.presentation.list.components
 
+import com.sepideh.lilo.ui.theme.*
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,13 +38,13 @@ fun TaskList(
     LazyColumn(
         modifier = modifier,
         state = scrollState,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 96.dp)
+        contentPadding = PaddingValues(start = LiloSpacing.Screen, end = LiloSpacing.Screen, top = LiloSpacing.Item, bottom = 96.dp)
     ) {
         items(items = tasks, key = { it.id ?: 0 }) { task ->
             TaskListItem(
-                modifier = Modifier.fillMaxWidth().clickable {
+                modifier = Modifier.fillMaxWidth().clickable(enabled = clickable) {
                     if (clickable) {
                         onAction(
                             BaseAction.OnNavigateTo(

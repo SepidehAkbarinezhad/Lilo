@@ -1,8 +1,10 @@
 package com.sepideh.lilo.core.presentation
 
+import com.sepideh.lilo.ui.theme.*
+
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
+
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -25,9 +27,9 @@ fun BaseHeader(
     actions: @Composable RowScope.() -> Unit = {},
     titleContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    Row(modifier.fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier.fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = LiloSpacing.Item), verticalAlignment = Alignment.CenterVertically) {
         if (!mainScreen) IconButton(onClick = { onBackPressed() }) {
-            Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(Res.string.back_action), Modifier.size(22.dp))
+            Icon(LiloIcons.Back, stringResource(Res.string.back_action), Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.title)
         }
         if (titleContent != null) titleContent()
         else AppText(text = title, modifier = Modifier.weight(1f).padding(horizontal = 8.dp), textType = TextType.ScreenTitle, maxLines = 1)

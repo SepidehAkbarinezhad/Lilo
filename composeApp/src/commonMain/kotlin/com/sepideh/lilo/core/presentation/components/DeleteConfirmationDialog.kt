@@ -1,5 +1,7 @@
 package com.sepideh.lilo.core.presentation.components
 
+import com.sepideh.lilo.ui.theme.*
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -39,8 +41,8 @@ fun FeatureConfirmationContent(
     cancelLabel: String = stringResource(Res.string.cancel_button),
     onCancel: () -> Unit = onDismiss,
 ) {
-    Surface(modifier = modifier.widthIn(max = 360.dp), shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surface) {
+    Surface(modifier = modifier.widthIn(max = 360.dp), shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppText(text = title, textType = TextType.SectionTitle)
             if (message.isNotBlank()) AppText(text = message, textType = TextType.Body,
@@ -50,8 +52,8 @@ fun FeatureConfirmationContent(
                     AppText(text = cancelLabel, textType = TextType.Action,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Button(onClick = onConfirm, modifier = Modifier.weight(1f), shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = Color.Black)) {
+                Button(onClick = onConfirm, modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = com.sepideh.lilo.ui.theme.LiloExtendedTheme.colors.onAccent)) {
                     AppText(text = confirmLabel, textType = TextType.Action)
                 }
             }

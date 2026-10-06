@@ -1,12 +1,13 @@
 package com.sepideh.lilo.task.presentation.detail
 
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.sepideh.lilo.core.presentation.format.localizedDigits
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,6 +54,8 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissCategoryDialog) },
             )
             if (state.groupManagementOpen) GroupManagementDialog(
+                selectedId = state.draftCategoryId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
+                onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewCategory(it)) },
                 accent = LiloExtendedTheme.colors.taskColor,
                 groups = state.categories.map { GroupOption(it.id, it.title, it.isDeletable) },
                 deleteMessage = stringResource(Res.string.delete_group_message),
@@ -68,6 +71,10 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
 @Composable
 fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) -> Unit, onBack: () -> Boolean) {
     val accent = LiloExtendedTheme.colors.taskColor
+    val pickImages = com.sepideh.lilo.core.presentation.components.picker.rememberImagePicker(
+        onSelected = { onAction(TaskDetailAction.OnImagesSelected(it)) },
+        onError = { onAction(TaskDetailAction.OnImagePickerFailure) })
+    val imageCount = state.selectedImages?.size ?: task.imageNames.size
     if (state.reminderEditorOpen) {
         androidx.compose.ui.window.Dialog(
             onDismissRequest = { onAction(TaskDetailAction.OnDismissReminder) },
@@ -80,53 +87,49 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     }
     BaseFormScreen(
         title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
-        accent = accent, saveEnabled = !state.isSaving && !state.isLoading,
+        accent = accent, textSaveAction = true, saveEnabled = !state.isSaving && !state.isLoading,
         onBack = onBack, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(com.sepideh.lilo.ui.theme.LiloSpacing.Screen), verticalArrangement = Arrangement.spacedBy(com.sepideh.lilo.ui.theme.LiloSpacing.Section)) {
             if (state.hasError) Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)
             if (state.isLoading || state.isSaving) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             AppOutlineTextField(accentColor = accent,
-                leadingIcon = { Icon(Icons.Outlined.Title, null, Modifier.size(20.dp)) },
+                leadingIcon = { Icon(LiloIcons.Edit, null, Modifier.size(com.sepideh.lilo.ui.theme.LiloSize.Icon)) },
                 textFieldRequired = TextFieldRequired(label = stringResource(Res.string.title_label), value = task.title,
-                    hint = stringResource(Res.string.task_title_hint), enabled = !state.isLoading && !state.isSaving,
+                    hint = "", enabled = !state.isLoading && !state.isSaving,
                     onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) }, validationStatus = state.titleError))
-            AppOutlineTextField(accentColor = accent, singleLine = false, maxLines = 8,
-                textFieldModifier = Modifier.heightIn(min = 144.dp),
-                leadingIcon = { Icon(Icons.Outlined.Notes, null, Modifier.size(20.dp)) },
-                textFieldRequired = TextFieldRequired(label = stringResource(Res.string.description_label), value = task.description, hint = stringResource(Res.string.task_description_hint),
+            AppOutlineTextField(accentColor = accent, singleLine = false, maxLines = 8, topAlignedIcon = true,
+                textFieldModifier = Modifier.heightIn(min = 84.dp),
+                leadingIcon = { Icon(LiloIcons.Description, null, Modifier.size(com.sepideh.lilo.ui.theme.LiloSize.Icon)) },
+                textFieldRequired = TextFieldRequired(label = stringResource(Res.string.description_label), value = task.description, hint = "",
                     enabled = !state.isLoading && !state.isSaving, onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) }))
             TaskPrioritySelector(task.priority, accent, enabled = !state.isSaving && !state.isLoading) {
-                onAction(TaskDetailAction.OnPrioritySelected(it.title))
+                onAction(TaskDetailAction.OnPriorityIdSelected(it.id))
             }
-            FormSelectionRow(Icons.Outlined.Notifications, stringResource(Res.string.reminder_label),
-                reminderLabel(state),
+            FormSelectionRow(accent = accent, icon = LiloIcons.Groups, title = stringResource(Res.string.group_field_label),
+                value = state.selectedCategory?.title ?: stringResource(Res.string.no_group_label),
+                onClick = { onAction(TaskDetailAction.OnCategoryIcon) }, enabled = !state.isSaving && !state.isLoading)
+            FormSelectionRow(icon = LiloIcons.Reminder, title = stringResource(Res.string.reminder_label), accent = accent,
+                value = com.sepideh.lilo.task.presentation.reminder.taskReminderLabel(task, includeRepeat = true),
                 onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },
                 clearContentDescription = stringResource(Res.string.remove_reminder_action),
                 enabled = !state.isSaving && !state.isLoading,
                 onClear = if (state.task.reminderAt != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
-            FormSelectionRow(Icons.Outlined.FolderOpen, stringResource(Res.string.group_field_label),
-                state.selectedCategory?.title ?: stringResource(Res.string.no_group_label),
-                onClick = { onAction(TaskDetailAction.OnCategoryIcon) }, enabled = !state.isSaving && !state.isLoading)
+            FormSelectionRow(icon = LiloIcons.Images, title = stringResource(Res.string.task_images_label), accent = accent,
+                value = stringResource(Res.string.task_images_count, imageCount).localizedDigits(androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl), onClick = pickImages,
+                enabled = !state.isLoading && !state.isSaving,
+                onClear = if (imageCount > 0) ({ onAction(TaskDetailAction.OnClearImages) }) else null,
+                clearContentDescription = stringResource(Res.string.task_clear_images))
         }
     }
 }
 
-@OptIn(ExperimentalTime::class)
-@Composable
-private fun reminderLabel(state: TaskDetailState): String {
-    val reminder = state.task
-    val at = reminder.reminderAt ?: return stringResource(Res.string.not_set_label)
-    val zone = TimeZone.of(requireNotNull(reminder.reminderTimeZoneId))
-    val dateTime = Instant.fromEpochMilliseconds(at).toLocalDateTime(zone)
-    return "${dateTime.date} · ${dateTime.hour.toString().padStart(2, '0')}:${dateTime.minute.toString().padStart(2, '0')} · ${stringResource(reminder.repeatRule.label)}"
-}
 
 @AppPreviews
 @Composable
 private fun TaskFormPreview() {
     LiloPreviewWrapper {
-        val task = Task(title = "Practice violin", priority = 1)
+        val task = Task(title = "تمرین ساز", priority = 1, imageNames = listOf("sample-a.jpg", "sample-b.jpg"))
         TaskDetailScreen(TaskDetailState(task = task), task, {}, { true })
     }
 }

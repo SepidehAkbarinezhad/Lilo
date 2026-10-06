@@ -21,14 +21,14 @@ sealed interface TextType {
 @Composable
 fun styleText(textType: TextType): TextStyle {
     return when (textType) {
-        TextType.ScreenTitle -> MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
-        TextType.SectionTitle -> MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-        TextType.Action -> MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
-        TextType.FieldLabel -> MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
+        TextType.ScreenTitle -> MaterialTheme.typography.titleLarge
+        TextType.SectionTitle -> MaterialTheme.typography.titleMedium
+        TextType.Action -> MaterialTheme.typography.labelLarge
+        TextType.FieldLabel -> MaterialTheme.typography.bodyMedium
         TextType.BodyLarge -> MaterialTheme.typography.bodyLarge
         TextType.Caption -> MaterialTheme.typography.bodySmall
-        is TextType.Title -> MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium)
-        is TextType.SubTitle -> MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Medium)
+        is TextType.Title -> MaterialTheme.typography.titleMedium
+        is TextType.SubTitle -> MaterialTheme.typography.titleSmall
         is TextType.Body -> MaterialTheme.typography.bodyMedium
         is TextType.FieldError -> MaterialTheme.typography.bodySmall
     }

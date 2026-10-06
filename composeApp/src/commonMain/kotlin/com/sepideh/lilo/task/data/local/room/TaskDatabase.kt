@@ -7,7 +7,7 @@ import androidx.room.RoomDatabaseConstructor
 
 @Database(
     entities = [TaskEntity::class],
-    version = 1
+    version = 2
 )
 @ConstructedBy(DbConstructor::class)
 abstract class TaskDatabase : RoomDatabase(){

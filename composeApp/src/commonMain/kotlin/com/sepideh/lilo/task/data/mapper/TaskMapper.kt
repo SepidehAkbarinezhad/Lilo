@@ -3,6 +3,8 @@ package com.sepideh.lilo.task.data.mapper
 import com.sepideh.lilo.task.data.local.room.TaskEntity
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 
 fun TaskEntity.toTask(): Task = Task(
     id = id,
@@ -17,6 +19,7 @@ fun TaskEntity.toTask(): Task = Task(
     createdAt = createdAt,
     updatedAt = updatedAt,
     completedAt = completedAt,
+    imageNames = Json.decodeFromString<List<String>>(imageNames),
 )
 
 fun List<TaskEntity>.toTaskList() = this.map { it.toTask() }
@@ -34,4 +37,5 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     createdAt = createdAt,
     updatedAt = updatedAt,
     completedAt = completedAt,
+    imageNames = Json.encodeToString(imageNames),
 )

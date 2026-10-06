@@ -51,7 +51,7 @@ fun AppBottomSheet(
         ) {
             //to make the below screen fade
             Spacer(
-                modifier = Modifier.fillMaxSize().background(Color.Black.copy(.5f)),
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim.copy(.5f)),
             )
 
             Column(

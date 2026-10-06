@@ -23,4 +23,9 @@
     <string name="task_description_hint">افزودن توضیحات (اختیاری)</string>
     <string name="group_field_label">گروه</string>
     <string name="delete_confirmation_title">حذف مورد؟</string>
+<string name="task_images_label">تصاویر</string>
+    <string name="task_images_count">%1$d تصویر</string>
+    <string name="task_clear_images">حذف تصاویر</string>
+<string name="task_today">امروز</string>
+    <string name="task_tomorrow">فردا</string>
 </resources>
