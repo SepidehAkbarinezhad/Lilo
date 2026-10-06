@@ -23,6 +23,7 @@
     <string name="close_search_action">Close search</string>
     <string name="task_description_hint">Add details (optional)</string>
     <string name="group_field_label">Group</string>
+    <string name="delete_task_confirmation_title">Delete task?</string>
     <string name="delete_confirmation_title">Delete item?</string>
 <string name="task_images_label">Images</string>
     <string name="task_images_count">%1$d images</string>

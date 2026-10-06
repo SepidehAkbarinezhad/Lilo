@@ -41,7 +41,7 @@ fun TaskListScreenRoot(viewModel: TaskListViewModel, onNavigateTo: (AppRoutes) -
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack,
         bodyContainer = { TaskListScreen(state, state.isLoading, viewModel::onAction) },
         dialogContent = {
-            if (state.isDeleteDialogOpen) DeleteConfirmationDialog(accent = LiloExtendedTheme.colors.taskColor,
+            if (state.isDeleteDialogOpen) DeleteConfirmationDialog(title =  stringResource(Res.string.delete_task_confirmation_title),accent = LiloExtendedTheme.colors.taskColor,
                 onConfirm = { viewModel.onAction(TaskListAction.OnDeleteTaskConfirm) },
                 onDismiss = { viewModel.onAction(TaskListAction.OnDismissDeleteDialog) })
         })
