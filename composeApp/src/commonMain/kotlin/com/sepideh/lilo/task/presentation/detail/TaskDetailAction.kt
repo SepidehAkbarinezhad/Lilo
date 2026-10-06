@@ -19,8 +19,6 @@ sealed interface TaskDetailAction : BaseAction {
     data class OnDescriptionChanged(val description: String) : TaskDetailAction
     data object OnCategoryIcon : TaskDetailAction
     data object OnDismissCategoryDialog : TaskDetailAction
-    data object OnPriorityIcon : TaskDetailAction
-    data object OnDismissPriorityDialog : TaskDetailAction
     data object OnDateReminderIcon : TaskDetailAction
     data class OnCategorySelected(val category: CategoryPresentation) : TaskDetailAction
     data class OnPriorityIdSelected(val id: Int) : TaskDetailAction

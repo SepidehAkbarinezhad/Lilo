@@ -22,7 +22,6 @@ data class TaskDetailState(
     val selectedCategory : CategoryPresentation?=null,
     val selectedPriority : Priority = Priority.getById(1),
     val categoryDialogOpen :Boolean = false,
-    val priorityDialogOpen :Boolean = false,
     val addCategoryOpen :Boolean = false,
     val titleError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.title_label)),
     val descriptionError : ValidationStatus = ValidationStatus(args = arrayOf(Res.string.description_label)),
