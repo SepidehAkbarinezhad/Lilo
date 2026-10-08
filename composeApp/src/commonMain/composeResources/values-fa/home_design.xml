@@ -1,0 +1,10 @@
+<resources>
+    <string name="home_settings_action">تنظیمات</string>
+    <string name="home_add_feature">افزودن %1$s</string>
+    <string name="home_recent">آخرین موارد</string>
+    <string name="home_tasks_remaining">%1$d فعالیت باقی‌مانده</string>
+    <string name="home_no_tasks">هنوز فعالیتی ندارید</string>
+    <string name="home_tasks_done">همه فعالیت‌ها انجام شده‌اند</string>
+    <string name="home_no_notes">هنوز یادداشتی ندارید</string>
+    <string name="home_open_list">نمایش فهرست %1$s</string>
+</resources>

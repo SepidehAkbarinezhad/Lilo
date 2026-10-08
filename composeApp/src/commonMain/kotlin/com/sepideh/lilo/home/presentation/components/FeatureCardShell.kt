@@ -23,6 +23,7 @@ import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import org.jetbrains.compose.resources.vectorResource
 
 /** Stacked cards grow independently as each feature becomes available. */
 @Composable
@@ -55,12 +56,16 @@ fun FeatureCardShell(
                 }
                 Spacer(Modifier.width(10.dp))
                 AppText(text = title, textType = TextType.SectionTitle, maxLines = 1, modifier = Modifier.weight(1f))
-                IconButton(onClick = onCardClick) {
-                    Icon(org.jetbrains.compose.resources.vectorResource(Res.drawable.home_list),
+                androidx.compose.runtime.CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 40.dp) {
+                Row(Modifier.offset(x = 8.dp)) {
+                IconButton(onClick = onCardClick, modifier = Modifier.width(40.dp).height(48.dp)) {
+                    Icon(vectorResource(Res.drawable.home_list),
                         stringResource(Res.string.home_open_list, title), Modifier.size(22.dp), tint = foreground)
                 }
-                IconButton(onClick = onAddClick) {
+                IconButton(onClick = onAddClick, modifier = Modifier.width(40.dp).height(48.dp)) {
                     Icon(LiloIcons.Add, stringResource(Res.string.home_add_feature, title), Modifier.size(24.dp), tint = foreground)
+                }
+                }
                 }
             }
             when (detail) {
