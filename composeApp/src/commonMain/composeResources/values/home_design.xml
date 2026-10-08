@@ -1,0 +1,10 @@
+<resources>
+    <string name="home_settings_action">Settings</string>
+    <string name="home_add_feature">Add %1$s</string>
+    <string name="home_recent">Recent</string>
+    <string name="home_tasks_remaining">%1$d remaining</string>
+    <string name="home_no_tasks">No activities yet</string>
+    <string name="home_tasks_done">All activities completed</string>
+    <string name="home_no_notes">No notes yet</string>
+    <string name="home_open_list">Open %1$s list</string>
+</resources>
