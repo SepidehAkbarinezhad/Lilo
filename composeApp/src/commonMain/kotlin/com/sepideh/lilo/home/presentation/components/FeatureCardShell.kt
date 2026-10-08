@@ -78,6 +78,10 @@ fun FeatureCardShell(
                                 label = stringResource(Res.string.task_complete_action), accent = accent,
                                 onCheckedChange = { detail.nextTaskId?.let(onCompleteTask) })
                             AppText(text = detail.nextTaskTitle, maxLines = 1, modifier = Modifier.weight(1f))
+                            detail.nextTaskTime?.let { time ->
+                                AppText(text = "\u2066${time.localizedDigits(persian)}\u2069", textType = TextType.Caption,
+                                    color = colors.textSecondary, maxLines = 1)
+                            }
                         }
                     }
                 }

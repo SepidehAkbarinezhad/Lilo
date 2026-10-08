@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.home.presentation.model.TaskReportDetail
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.delay
 
 class TaskFeatureCardImpl(private val repository: com.sepideh.lilo.task.domain.repository.TaskRepository) : FeatureCard<TaskReportDetail> {
     override val feature = LiloFeature.TASKS
@@ -12,9 +14,14 @@ class TaskFeatureCardImpl(private val repository: com.sepideh.lilo.task.domain.r
     override fun getReportDetailStrategy(): ReportDetailStrategy<TaskReportDetail> =
         object : ReportDetailStrategy<TaskReportDetail> {
             override fun observeReportDetail(): Flow<TaskReportDetail> {
-                return repository.getAllTasks().map { tasks ->
-                    taskHomeReport(tasks)
+                // Refresh while Home is observed so midnight and passed reminder times update the preview.
+                val clock = flow {
+                    while (true) {
+                        emit(kotlin.time.Clock.System.now().toEpochMilliseconds())
+                        delay(60_000)
+                    }
                 }
+                return combine(repository.getAllTasks(), clock) { tasks, now -> taskHomeReport(tasks, now) }
             }
 
         }
