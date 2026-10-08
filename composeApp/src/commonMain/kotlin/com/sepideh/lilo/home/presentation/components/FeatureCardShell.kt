@@ -31,7 +31,9 @@ fun FeatureCardShell(
     feature: LiloFeature,
     onAddClick: () -> Unit,
     onCardClick: () -> Unit,
-    detail: ReportDetail?
+    detail: ReportDetail?,
+    onCompleteTask: (Long) -> Unit = {},
+    completingTaskIds: Set<Long> = emptySet(),
 ) {
     val colors = LiloExtendedTheme.colors
     val accent = feature.accentColor(colors)
@@ -41,7 +43,7 @@ fun FeatureCardShell(
     val title = stringResource(feature.titleRes)
     val persian = LocalLayoutDirection.current == LayoutDirection.Rtl
 
-    Surface(onClick = onCardClick, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(22.dp),
+    Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(22.dp),
         color = cardColor, contentColor = colors.textPrimary) {
         Column(Modifier.padding(horizontal = 18.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -53,6 +55,10 @@ fun FeatureCardShell(
                 }
                 Spacer(Modifier.width(10.dp))
                 AppText(text = title, textType = TextType.SectionTitle, maxLines = 1, modifier = Modifier.weight(1f))
+                IconButton(onClick = onCardClick) {
+                    Icon(org.jetbrains.compose.resources.vectorResource(Res.drawable.home_list),
+                        stringResource(Res.string.home_open_list, title), Modifier.size(22.dp), tint = foreground)
+                }
                 IconButton(onClick = onAddClick) {
                     Icon(LiloIcons.Add, stringResource(Res.string.home_add_feature, title), Modifier.size(24.dp), tint = foreground)
                 }
@@ -68,8 +74,9 @@ fun FeatureCardShell(
                     } else {
                         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(11.dp)) {
-                            Surface(shape = RoundedCornerShape(7.dp), color = androidx.compose.ui.graphics.Color.Transparent,
-                                border = BorderStroke(1.4.dp, foreground)) { Spacer(Modifier.size(21.dp)) }
+                            LiloCheckbox(checked = false, enabled = detail.nextTaskId != null && detail.nextTaskId !in completingTaskIds,
+                                label = stringResource(Res.string.task_complete_action), accent = accent,
+                                onCheckedChange = { detail.nextTaskId?.let(onCompleteTask) })
                             AppText(text = detail.nextTaskTitle, maxLines = 1, modifier = Modifier.weight(1f))
                         }
                     }

@@ -71,7 +71,7 @@ import androidx.compose.material3.lightColorScheme
  */
 
 val LightColorScheme = lightColorScheme(
-    primary = Amber600,
+    primary = androidx.compose.ui.graphics.Color(0xFFFF5722),
     onPrimary = LiloColorsLight.onAccent,
 
     background = LightBackground,
@@ -96,7 +96,7 @@ val LightColorScheme = lightColorScheme(
 )
 
 val DarkColorScheme = darkColorScheme(
-    primary = Amber300,
+    primary = androidx.compose.ui.graphics.Color(0xFFFFAB91),
     onPrimary = LiloColorsLight.onAccent,
 
     background = DarkBackground,

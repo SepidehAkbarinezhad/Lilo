@@ -9,6 +9,7 @@ data class TaskReportDetail(
     val nextTaskTime: String?,
     val remainingCount: Int,
     override val subTitleReportCount: Int,
+    val nextTaskId: Long? = null,
 ) : ReportDetail
 
 data class NoteReportDetail(

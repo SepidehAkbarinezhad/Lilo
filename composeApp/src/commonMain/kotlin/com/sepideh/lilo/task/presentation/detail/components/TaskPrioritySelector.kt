@@ -9,7 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.border
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -29,17 +30,20 @@ import com.sepideh.lilo.task.domain.model.TaskPriority
 fun TaskPrioritySelector(selectedId: Int, accent: Color, enabled: Boolean = true, onSelect: (Priority) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
         AppText(text = Res.string.priority_label, textType = TextType.FieldLabel, color = LiloExtendedTheme.colors.textSecondary)
-        Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surface, shadowElevation = 1.dp) {
-            Row(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .6f))) {
+            Row(Modifier.fillMaxWidth().padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 listOf(TaskPriority.LOW, TaskPriority.MEDIUM, TaskPriority.HIGH).map { Priority.getByValue(it) }.forEach { priority ->
                     val selected = selectedId == priority.id
                     Row(Modifier.weight(1f).heightIn(min = 48.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(if (selected) priority.color.copy(alpha = .12f) else Color.Transparent)
+                        .then(if (selected) Modifier.border(BorderStroke(1.dp, priority.color), RoundedCornerShape(10.dp)) else Modifier)
                         .selectable(selected = selected, enabled = enabled, role = Role.RadioButton, onClick = { onSelect(priority) })
                         .padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center) {
-                        Box(Modifier.size(22.dp).background(if (selected) priority.color else priority.color.copy(alpha = .65f), CircleShape), contentAlignment = Alignment.Center) {
-                            if (selected) Icon(LiloIcons.Check, null, Modifier.size(16.dp), tint = LiloExtendedTheme.colors.onPrioritySelected)
-                        }
+                        Icon(org.jetbrains.compose.resources.vectorResource(Res.drawable.lilo_priority_flag), null,
+                            Modifier.size(18.dp), tint = if (enabled) priority.color else LiloExtendedTheme.colors.textDisabled)
                         Spacer(Modifier.width(LiloSpacing.Small))
                         AppText(text = priority.title, textType = TextType.Body,
                             color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
