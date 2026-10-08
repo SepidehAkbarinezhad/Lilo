@@ -45,7 +45,8 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
         bodyContainer = { TaskDetailScreen(state, state.task, viewModel::onAction, onBack) },
         dialogContent = {
             if (state.categoryDialogOpen) GroupSelectionSheet(
-                groups = state.categories.map { GroupOption(it.id, it.title) }, selectedId = state.draftCategoryId,
+                groups = state.categories.filter { it.isDeletable }.map { GroupOption(it.id, it.title) },
+                selectedId = state.draftCategoryId.takeUnless { id -> state.categories.any { it.id == id && !it.isDeletable } },
                 accent = LiloExtendedTheme.colors.taskColor,
                 onSelect = { viewModel.onAction(TaskDetailAction.OnGroupDraftSelected(it)) },
                 onManage = { viewModel.onAction(TaskDetailAction.OnManageGroups) },
@@ -56,7 +57,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 selectedId = state.draftCategoryId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
                 onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewCategory(it)) },
                 accent = LiloExtendedTheme.colors.taskColor,
-                groups = state.categories.map { GroupOption(it.id, it.title, it.isDeletable) },
+                groups = state.categories.filter { it.isDeletable }.map { GroupOption(it.id, it.title) },
                 errorMessage = if (state.hasError) stringResource(Res.string.task_operation_error) else null,
                 onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteCategory(it)) },
                 onRename = { id, title -> viewModel.onAction(TaskDetailAction.OnRenameCategory(id, title)) },
@@ -106,7 +107,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
                 onAction(TaskDetailAction.OnPriorityIdSelected(it.id))
             }
             FormSelectionRow(accent = accent, icon = LiloIcons.Groups, title = stringResource(Res.string.group_field_label),
-                value = state.selectedCategory?.title ?: stringResource(Res.string.no_group_label),
+                value = state.selectedCategory?.takeIf { it.isDeletable }?.title ?: stringResource(Res.string.no_group_label),
                 onClick = { onAction(TaskDetailAction.OnCategoryIcon) }, enabled = !state.isSaving && !state.isLoading)
             FormSelectionRow(icon = LiloIcons.Reminder, title = stringResource(Res.string.reminder_label), accent = accent,
                 value = com.sepideh.lilo.task.presentation.reminder.taskReminderLabel(task, includeRepeat = true),
