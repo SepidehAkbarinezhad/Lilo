@@ -1,6 +1,10 @@
 package com.sepideh.lilo.app.navigation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,11 +33,24 @@ fun NavigationGraph(navHostController: NavHostController) {
             { route ->
                 navHostController.navigate(route = route)
             }
-        composable<AppRoutes.SplashScreen> {
-            SplashScreen(onNavigateTo = onNavigate)
+        composable<AppRoutes.SplashScreen>(
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) {
+            SplashScreen(onNavigateTo = { route ->
+                navHostController.navigate(route) {
+                    popUpTo<AppRoutes.SplashScreen> { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
         }
 
-        composable<AppRoutes.Home> {
+        composable<AppRoutes.Home>(
+            enterTransition = {
+                if (initialState.destination.hasRoute<AppRoutes.SplashScreen>()) {
+                    fadeIn(animationSpec = tween(300))
+                } else null
+            }
+        ) {
             val viewModel = koinViewModel<HomeViewModel>()
             HomescreenRoot(viewModel = viewModel, onNavigateTo = onNavigate, onBack = onBackPressed)
         }

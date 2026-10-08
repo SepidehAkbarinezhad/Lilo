@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ requires a system launch screen; match the first frame of our Compose morph. -->
+    <style name="Theme.App.Starting" parent="Theme.Lilo">
+        <item name="android:windowBackground">@color/lilo_launch_background_color</item>
+        <item name="android:windowSplashScreenBackground">@color/lilo_launch_background_color</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/lilo_launch_logo_system</item>
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+    </style>
+</resources>

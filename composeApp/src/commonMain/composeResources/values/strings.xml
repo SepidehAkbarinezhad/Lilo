@@ -65,4 +65,6 @@
     <string name="sort_priority_label">priority</string>
     <string name="sort_date_label">date</string>
     <string name="add_note_title">Add note</string>
-    <string name="edit_note_title">Edit note</string></resources>
+    <string name="edit_note_title">Edit note</string>
+    <string name="home_brand_name">lilo</string>
+</resources>

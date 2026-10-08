@@ -11,6 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
+import com.sepideh.lilo.core.domain.model.AppLanguage
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
@@ -22,6 +24,8 @@ import com.sepideh.lilo.settings.domain.usecase.UserPreferencesManager
 import org.koin.mp.KoinPlatform.getKoin
 
 
+val LocalLiloAppLanguage = staticCompositionLocalOf { AppLanguage.EN }
+
 /*
 * Real app entry point:
 * reads live UserPreferences from Koin, run side effects,changeLanguage() updates platform process resources at runtime ...
@@ -32,7 +36,9 @@ internal fun LiloTheme(
     content: @Composable () -> Unit
 ) {
     val userPreferencesManager: UserPreferencesManager = remember { getKoin().get() }
-    val userPreferences by userPreferencesManager.userPreferences.collectAsState(UserPreferences())
+    val loadedPreferences by userPreferencesManager.userPreferences.collectAsState(initial = null)
+    // Keep the native first frame visible until the saved appearance is known.
+    val userPreferences = loadedPreferences ?: return
     val languageManager: LanguageManager = remember { getKoin().get() }
     //todo this should be changed
     val languageCode by produceState(initialValue = UserPreferences().language.code) {
@@ -62,6 +68,7 @@ internal fun LiloTheme(
         LiloTheme(
             darkTheme = darkTheme,
             layoutDirection = layoutDirection,
+            appLanguage = userPreferences.language,
             content = content
         )
 
@@ -73,6 +80,7 @@ internal fun LiloTheme(
 internal fun LiloTheme(
     darkTheme: Boolean,
     layoutDirection: LayoutDirection,
+    appLanguage: AppLanguage = if (layoutDirection == LayoutDirection.Rtl) AppLanguage.FA else AppLanguage.EN,
     content: @Composable () -> Unit
 ) {
 
@@ -83,6 +91,7 @@ internal fun LiloTheme(
     CompositionLocalProvider(
         LocalLiloColorsPalette provides liloColorsPalette,
         LocalLayoutDirection provides layoutDirection,
+        LocalLiloAppLanguage provides appLanguage,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

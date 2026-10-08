@@ -22,7 +22,6 @@ kotlin-serialization-json="1.9.0"
 koin="4.1.1"
 androidx-annotation="1.9.1"
 kotlinx-datetime="0.7.1"
-core-splashscreen="1.0.1"
 accompanist-systemuicontroller="0.34.0"
 persian-date-picker = "0.0.13-beta3"
 persian-date = "0.2.3"
@@ -68,7 +67,6 @@ data-store = { module = "androidx.datastore:datastore-preferences-core", version
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 material3-compose = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist-systemuicontroller" }
 persian-date-picker= { module = "io.github.faridsolgi:persian-date-picker", version.ref = "persian-date-picker" }
 persian-date-time= { module = "io.github.faridsolgi:persianDateTime", version.ref = "persian-date" }

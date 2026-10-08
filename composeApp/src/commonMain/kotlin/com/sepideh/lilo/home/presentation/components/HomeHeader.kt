@@ -9,9 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.app.navigation.AppRoutes
+import com.sepideh.lilo.core.domain.model.AppLanguage
 import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.*
+import com.sepideh.lilo.core.presentation.components.brand.LiloWordmark
 import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.*
@@ -21,9 +22,16 @@ fun HomeHeader(onAction: (BaseAction) -> Unit) {
     val brand = if (MaterialTheme.colorScheme.background.luminance() < .5f) HomeBrandDark else HomeBrandLight
     Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically) {
-        Icon(vectorResource(Res.drawable.home_lilo_logo), null, Modifier.size(38.dp), tint = brand)
-        Spacer(Modifier.width(8.dp))
-        Text("lilo", style = MaterialTheme.typography.headlineMedium, color = brand)
+        if (LocalLiloAppLanguage.current == AppLanguage.FA) {
+            Text(
+                text = stringResource(Res.string.home_brand_name),
+                style = MaterialTheme.typography.headlineLarge,
+                color = brand,
+                maxLines = 1
+            )
+        } else {
+            LiloWordmark(Modifier.size(width = 60.dp, height = 30.dp), color = brand)
+        }
         Spacer(Modifier.weight(1f))
         Surface(shape = RoundedCornerShape(15.dp), color = brand.copy(alpha = .09f)) {
             IconButton(onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Settings)) }) {
