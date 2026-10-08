@@ -34,6 +34,7 @@ kotlin {
     sourceSets {
         commonTest.dependencies { implementation(libs.kotlin.test) }
         androidMain.dependencies {
+            implementation(libs.persian.date.picker)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
@@ -71,7 +72,6 @@ kotlin {
             implementation(libs.data.store)
             implementation(libs.material3.compose)
             implementation(libs.ui.tooling.preview)
-            implementation(libs.persian.date.picker)
             implementation(libs.persian.date.time)
         }
     }
