@@ -30,16 +30,16 @@ val taskModule = module {
         TaskListViewModel(
             languageProvider = get(),
             taskRepository = get(),
-            categoryRepository = get(),
+            taskGroupRepository = get(),
             mutations = get()
         )
     }
     viewModel {
         TaskDetailViewModel(
-            categoryFactory = get(),
+            taskGroupFactory = get(),
             languageProvider = get(),
             taskRepository = get(),
-            categoryRepository = get(),
+            taskGroupRepository = get(),
             mutations = get(),
             permissions = get(),
             imageStore = get()

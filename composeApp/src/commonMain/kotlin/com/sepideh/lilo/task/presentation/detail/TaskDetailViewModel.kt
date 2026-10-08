@@ -1,9 +1,10 @@
 package com.sepideh.lilo.task.presentation.detail
 
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.category.domain.CategoryFactory
-import com.sepideh.lilo.category.domain.repository.CategoryRepository
-import com.sepideh.lilo.category.presentation.toPresentationList
+import com.sepideh.lilo.task.domain.TaskGroupFactory
+import com.sepideh.lilo.task.domain.repository.TaskGroupRepository
+import com.sepideh.lilo.task.presentation.toPresentationList
+import com.sepideh.lilo.core.domain.model.AppLanguage
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.task.domain.reminder.ReminderPermissions
@@ -20,19 +21,19 @@ import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.error_empty_field_label
 
 class TaskDetailViewModel(
-    private val categoryFactory: CategoryFactory,
+    private val taskGroupFactory: TaskGroupFactory,
     private val languageProvider: LanguageProvider,
     private val taskRepository: TaskRepository,
-    private val categoryRepository: CategoryRepository,
+    private val taskGroupRepository: TaskGroupRepository,
     private val mutations: TaskMutations,
     private val permissions: ReminderPermissions,
     private val imageStore: com.sepideh.lilo.core.domain.images.ImageStore,
 ) : BaseViewModel() {
     private val local = MutableStateFlow(TaskDetailState())
     private var loadedTaskId: Long? = null
-    val stateValue = combine(local, categoryRepository.getAllCategories(), languageProvider.languageFlow) { state, groups, language ->
+    val stateValue = combine(local, taskGroupRepository.getAllGroups(), languageProvider.languageFlow) { state, groups, language ->
         val items = groups.toPresentationList(language)
-        state.copy(categories = items, selectedCategory = items.find { it.id == state.task.category })
+        state.copy(groups = items, selectedGroup = items.find { it.id == state.task.groupId })
     }.catch { local.update { it.copy(hasError = true) }; emit(local.value) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), local.value)
 
@@ -44,11 +45,11 @@ class TaskDetailViewModel(
             TaskDetailAction.OnImagePickerFailure -> local.update { it.copy(hasError = true) }
             is TaskDetailAction.OnTitleChanged -> local.update { it.copy(task = it.task.copy(title = action.title), titleError = it.titleError.copy(isSuccessful = true, messageId = null)) }
             is TaskDetailAction.OnDescriptionChanged -> local.update { it.copy(task = it.task.copy(description = action.description)) }
-            TaskDetailAction.OnCategoryIcon -> local.update { it.copy(categoryDialogOpen = true, draftCategoryId = it.task.category.takeIf { id -> id != 0L }) }
-            TaskDetailAction.OnDismissCategoryDialog -> local.update { it.copy(categoryDialogOpen = false) }
-            is TaskDetailAction.OnCategorySelected -> local.update { it.copy(draftCategoryId = action.category.id) }
-            is TaskDetailAction.OnGroupDraftSelected -> local.update { it.copy(draftCategoryId = action.id) }
-            TaskDetailAction.OnConfirmGroup -> local.update { it.copy(task = it.task.copy(category = it.draftCategoryId ?: 0), categoryDialogOpen = false) }
+            TaskDetailAction.OnGroupIcon -> local.update { it.copy(groupDialogOpen = true, draftGroupId = it.task.groupId.takeIf { id -> id != 0L }) }
+            TaskDetailAction.OnDismissGroupDialog -> local.update { it.copy(groupDialogOpen = false) }
+            is TaskDetailAction.OnGroupSelected -> local.update { it.copy(draftGroupId = action.group.id) }
+            is TaskDetailAction.OnGroupDraftSelected -> local.update { it.copy(draftGroupId = action.id) }
+            TaskDetailAction.OnConfirmGroup -> local.update { it.copy(task = it.task.copy(groupId = it.draftGroupId ?: 0), groupDialogOpen = false) }
             is TaskDetailAction.OnPriorityIdSelected -> {
                 val priority = Priority.getById(action.id)
                 local.update { it.copy(selectedPriority = priority, task = it.task.copy(priority = priority.id),) }
@@ -85,8 +86,8 @@ class TaskDetailViewModel(
                 }
             }
             TaskDetailAction.OnPermissionReturn -> if (local.value.awaitingPermissionReturn) resumePermissionSave()
-            is TaskDetailAction.OnAddNewCategory -> addGroup(action.categoryTitle)
-            is TaskDetailAction.OnRenameCategory -> renameGroup(action.categoryId, action.title)
+            is TaskDetailAction.OnAddNewGroup -> addGroup(action.groupTitle)
+            is TaskDetailAction.OnRenameGroup -> renameGroup(action.groupId, action.title)
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
                 if (loadedTaskId == action.taskId) return
                 loadedTaskId = action.taskId
@@ -98,15 +99,15 @@ class TaskDetailViewModel(
             }
 
             TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
-            TaskDetailAction.OnManageGroups -> local.update { it.copy(categoryDialogOpen = false, groupManagementOpen = true) }
-            TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(categoryDialogOpen = true, groupManagementOpen = false) }
-            is TaskDetailAction.OnDeleteCategory -> launchOperation {
-                if (stateValue.value.categories.none { it.id == action.categoryId && it.isDeletable }) return@launchOperation
-                taskRepository.clearGroup(action.categoryId)
-                categoryRepository.deleteCategory(action.categoryId)
+            TaskDetailAction.OnManageGroups -> local.update { it.copy(groupManagementOpen = true) }
+            TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(groupManagementOpen = false) }
+            is TaskDetailAction.OnDeleteGroup -> launchOperation {
+                if (stateValue.value.groups.none { it.id == action.groupId && it.isDeletable }) return@launchOperation
+                taskRepository.clearGroup(action.groupId)
+                taskGroupRepository.deleteGroup(action.groupId)
                 local.update { it.copy(
-                    task = if (it.task.category == action.categoryId) it.task.copy(category = 0) else it.task,
-                    draftCategoryId = it.draftCategoryId.takeUnless { id -> id == action.categoryId },
+                    task = if (it.task.groupId == action.groupId) it.task.copy(groupId = 0) else it.task,
+                    draftGroupId = it.draftGroupId.takeUnless { id -> id == action.groupId },
                 ) }
             }
         }
@@ -117,21 +118,28 @@ class TaskDetailViewModel(
         local.update { it.copy(isAddingGroup = true, hasError = false) }
         launchOperation {
             val normalized = title.trim()
-            val existing = stateValue.value.categories.firstOrNull { it.title.equals(normalized, ignoreCase = true) }
-            val id = existing?.id ?: categoryRepository.addCategory(categoryFactory.create(normalized))
-            local.update { it.copy(draftCategoryId = id, isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
+            val existing = stateValue.value.groups.firstOrNull { it.title.equals(normalized, ignoreCase = true) }
+            val id = existing?.id ?: taskGroupRepository.addGroup(taskGroupFactory.create(normalized))
+            local.update { it.copy(draftGroupId = id, isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
         }
     }
 
     private fun renameGroup(id: Long, title: String) {
         val normalized = title.trim()
         if (normalized.isEmpty() || local.value.isAddingGroup) return
-        if (stateValue.value.categories.none { it.id == id && it.isDeletable }) return
+        if (stateValue.value.groups.none { it.id == id && it.isEditable }) return
         local.update { it.copy(isAddingGroup = true, hasError = false) }
         launchOperation {
-            val existing = categoryRepository.getCategoryById(id) ?: error("Group not found")
-            // Renaming updates the user-visible name in both locales while retaining its stable ID.
-            categoryRepository.addCategory(existing.copy(titleEn = normalized, titleFa = normalized))
+            val existing = taskGroupRepository.getGroupById(id) ?: error("Group not found")
+            if (existing.isDefault) {
+                local.update { it.copy(isAddingGroup = false) }
+                return@launchOperation
+            }
+            val renamed = when (languageProvider.currentLanguage) {
+                AppLanguage.FA -> existing.copy(titleFa = normalized)
+                AppLanguage.EN -> existing.copy(titleEn = normalized)
+            }
+            taskGroupRepository.addGroup(renamed)
             local.update { it.copy(isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
         }
     }
@@ -154,7 +162,7 @@ class TaskDetailViewModel(
             val imageNames = state.selectedImages?.let { imageStore.importImages(it) } ?: state.task.imageNames
             val task = state.task.copy(
                 imageNames = imageNames,
-                category = state.task.category.takeIf { id -> stateValue.value.categories.any { it.id == id } } ?: 0,
+                groupId = state.task.groupId.takeIf { id -> stateValue.value.groups.any { it.id == id } } ?: 0,
             )
             val result = mutations.save(task, scheduleReminder = allowed)
             local.update { it.copy(task = task.copy(id = result.id), selectedImages = null, isSaving = false, missingPermission = null, hasError = result.reminderFailed) }

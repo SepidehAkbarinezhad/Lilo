@@ -3,6 +3,7 @@ package com.sepideh.lilo.core.presentation.components.group
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,21 +22,28 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun GroupSelectionSheet(groups: List<GroupOption>, selectedId: Long?, accent: Color,
     onSelect: (Long?) -> Unit,
-    onManage: () -> Unit, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    onManage: () -> Unit, onConfirm: () -> Unit, onDismiss: () -> Unit, addedVersion: Int = 0) {
     ModalBottomSheet(onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
-        GroupSelectionContent(groups, selectedId, accent, onSelect, onManage, onConfirm)
+        GroupSelectionContent(groups, selectedId, accent, onSelect, onManage, onConfirm, addedVersion)
     }
 }
 
 @Composable
 fun GroupSelectionContent(groups: List<GroupOption>, selectedId: Long?, accent: Color,
     onSelect: (Long?) -> Unit,
-    onManage: () -> Unit, onConfirm: () -> Unit) {
+    onManage: () -> Unit, onConfirm: () -> Unit, addedVersion: Int = 0) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(addedVersion, groups.map { it.id }) {
+        if (addedVersion > 0) {
+            val index = groups.indexOfFirst { it.id == selectedId }
+            if (index >= 0) listState.animateScrollToItem(index + 1)
+        }
+    }
     Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen).padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
         SheetHeader(Res.string.choose_group_title, Res.string.confirm_action, accent, true, onConfirm)
-        LazyColumn(Modifier.weight(1f, fill = false).selectableGroup().fillMaxWidth().heightIn(max = 360.dp), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
+        LazyColumn(Modifier.weight(1f, fill = false).selectableGroup().fillMaxWidth().heightIn(max = 360.dp), state = listState, verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
             item { GroupSelectionRow(stringResource(Res.string.no_group_label), selectedId == null, accent, onClick = { onSelect(null) }) }
             items(groups, key = { it.id }) { group -> GroupSelectionRow(group.label, selectedId == group.id, accent, onClick = { onSelect(group.id) }) }
         }

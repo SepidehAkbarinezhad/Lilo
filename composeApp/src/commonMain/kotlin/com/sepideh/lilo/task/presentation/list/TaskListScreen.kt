@@ -72,10 +72,14 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (state.hasError) Text(stringResource(Res.string.task_operation_error), Modifier.padding(20.dp), color = MaterialTheme.colorScheme.error)
             LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-                items(state.categories, key = { it.id }) { category ->
-                    val id = category.id.takeIf { it != 0L }
-                    LiloSelectionChip(label = category.title, selected = state.selectedCategory == id, accent = accent,
-                        onClick = { onAction(TaskListAction.OnCategorySelected(id)) })
+                item(key = "all") {
+                    LiloSelectionChip(label = stringResource(Res.string.group_all), selected = state.selectedGroup == null,
+                        accent = accent, onClick = { onAction(TaskListAction.OnGroupSelected(null)) })
+                }
+                items(state.groups, key = { it.id }) { group ->
+                    val id = group.id.takeIf { it != 0L }
+                    LiloSelectionChip(label = group.title, selected = state.selectedGroup == id, accent = accent,
+                        onClick = { onAction(TaskListAction.OnGroupSelected(id)) })
                 }
             }
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
@@ -87,7 +91,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
                     AppText(text = Res.string.task_no_results, color = LiloExtendedTheme.colors.textSecondary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                 }
             } else TaskList(state.tasksResult, !state.isFilterSheetOpen, onAction, Modifier.fillMaxSize(),
-                groupLabels = state.categories.filter { it.id != 0L }.associate { it.id to it.title })
+                groupLabels = state.groups.filter { it.id != 0L }.associate { it.id to it.title })
         }
     }
     TaskFilterSheet(state, onAction)
@@ -98,10 +102,10 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
 private fun TaskListScreenPreview() {
     LiloPreviewWrapper {
         TaskListScreen(state = TaskListState(
-            tasksResult = listOf(Task(id = 1, title = "تمرین ساز", priority = 1, category = 3),
-                Task(id = 2, title = "ارسال رزومه", priority = 0, category = 2),
-                Task(id = 3, title = "خرید هفتگی", priority = 2, category = 4),
-                Task(id = 4, title = "مطالعه کتاب", priority = 0, done = true, category = 1)),
+            tasksResult = listOf(Task(id = 1, title = "تمرین ساز", priority = 1, groupId = 3),
+                Task(id = 2, title = "ارسال رزومه", priority = 0, groupId = 2),
+                Task(id = 3, title = "خرید هفتگی", priority = 2, groupId = 4),
+                Task(id = 4, title = "مطالعه کتاب", priority = 0, done = true, groupId = 1)),
         ), onAction = {})
     }
 }

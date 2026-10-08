@@ -7,7 +7,7 @@ data class Task(
     val title: String = "",
     val description: String = "",
     val done: Boolean = false,
-    val category: Long = 0,
+    val groupId: Long = 0,
     val priority: Int = 0,
     val reminderAt: Long? = null,
     val repeatRule: RepeatRule = RepeatRule.NONE,

@@ -44,23 +44,24 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack,
         bodyContainer = { TaskDetailScreen(state, state.task, viewModel::onAction, onBack) },
         dialogContent = {
-            if (state.categoryDialogOpen) GroupSelectionSheet(
-                groups = state.categories.filter { it.isDeletable }.map { GroupOption(it.id, it.title) },
-                selectedId = state.draftCategoryId.takeUnless { id -> state.categories.any { it.id == id && !it.isDeletable } },
+            if (state.groupDialogOpen) GroupSelectionSheet(
+                addedVersion = state.groupAddedVersion,
+                groups = state.groups.filter { it.isDeletable }.map { GroupOption(it.id, it.title) },
+                selectedId = state.draftGroupId.takeUnless { id -> state.groups.any { it.id == id && !it.isDeletable } },
                 accent = LiloExtendedTheme.colors.taskColor,
                 onSelect = { viewModel.onAction(TaskDetailAction.OnGroupDraftSelected(it)) },
                 onManage = { viewModel.onAction(TaskDetailAction.OnManageGroups) },
                 onConfirm = { viewModel.onAction(TaskDetailAction.OnConfirmGroup) },
-                onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissCategoryDialog) },
+                onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissGroupDialog) },
             )
             if (state.groupManagementOpen) GroupManagementDialog(
-                selectedId = state.draftCategoryId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
-                onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewCategory(it)) },
+                selectedId = state.draftGroupId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
+                onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewGroup(it)) },
                 accent = LiloExtendedTheme.colors.taskColor,
-                groups = state.categories.filter { it.isDeletable }.map { GroupOption(it.id, it.title) },
+                groups = state.groups.filter { it.isDeletable }.map { GroupOption(it.id, it.title, it.isDeletable, it.isEditable) },
                 errorMessage = if (state.hasError) stringResource(Res.string.task_operation_error) else null,
-                onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteCategory(it)) },
-                onRename = { id, title -> viewModel.onAction(TaskDetailAction.OnRenameCategory(id, title)) },
+                onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteGroup(it)) },
+                onRename = { id, title -> viewModel.onAction(TaskDetailAction.OnRenameGroup(id, title)) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
             )
             state.missingPermission?.let { PermissionDeniedDialog(it, viewModel::onAction) }
@@ -107,8 +108,8 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
                 onAction(TaskDetailAction.OnPriorityIdSelected(it.id))
             }
             FormSelectionRow(accent = accent, icon = LiloIcons.Groups, title = stringResource(Res.string.group_field_label),
-                value = state.selectedCategory?.takeIf { it.isDeletable }?.title ?: stringResource(Res.string.no_group_label),
-                onClick = { onAction(TaskDetailAction.OnCategoryIcon) }, enabled = !state.isSaving && !state.isLoading)
+                value = state.selectedGroup?.takeIf { it.isDeletable }?.title ?: stringResource(Res.string.no_group_label),
+                onClick = { onAction(TaskDetailAction.OnGroupIcon) }, enabled = !state.isSaving && !state.isLoading)
             FormSelectionRow(icon = LiloIcons.Reminder, title = stringResource(Res.string.reminder_label), accent = accent,
                 value = com.sepideh.lilo.task.presentation.reminder.taskReminderLabel(task, includeRepeat = true),
                 onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },

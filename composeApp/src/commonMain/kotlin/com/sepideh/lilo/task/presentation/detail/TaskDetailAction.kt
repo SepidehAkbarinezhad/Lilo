@@ -1,7 +1,7 @@
 package com.sepideh.lilo.task.presentation.detail
 
 import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.category.presentation.CategoryPresentation
+import com.sepideh.lilo.task.presentation.TaskGroupUi
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface TaskDetailAction : BaseAction {
@@ -17,17 +17,17 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnClearReminder : TaskDetailAction
     data class OnTitleChanged(val title: String) : TaskDetailAction
     data class OnDescriptionChanged(val description: String) : TaskDetailAction
-    data object OnCategoryIcon : TaskDetailAction
-    data object OnDismissCategoryDialog : TaskDetailAction
+    data object OnGroupIcon : TaskDetailAction
+    data object OnDismissGroupDialog : TaskDetailAction
     data object OnDateReminderIcon : TaskDetailAction
-    data class OnCategorySelected(val category: CategoryPresentation) : TaskDetailAction
+    data class OnGroupSelected(val group: TaskGroupUi) : TaskDetailAction
     data class OnPriorityIdSelected(val id: Int) : TaskDetailAction
     data class OnPrioritySelected(val title: StringResource) : TaskDetailAction
     // Constructor retained for deferred note code; saving always validates reminder access.
     data class OnAddTaskButton(val checkDeniedPermission: Boolean = true) : TaskDetailAction
-    data class OnAddNewCategory(val categoryTitle: String) : TaskDetailAction
-    data class OnRenameCategory(val categoryId: Long, val title: String) : TaskDetailAction
-    data class OnDeleteCategory(val categoryId: Long) : TaskDetailAction
+    data class OnAddNewGroup(val groupTitle: String) : TaskDetailAction
+    data class OnRenameGroup(val groupId: Long, val title: String) : TaskDetailAction
+    data class OnDeleteGroup(val groupId: Long) : TaskDetailAction
     data class OnGetSelectedTaskInfo(val taskId: Long) : TaskDetailAction
     data class OnGrantPermissionButton(val firstTime: Boolean = false) : TaskDetailAction
     data object OnAskSaveWithoutReminder : TaskDetailAction
