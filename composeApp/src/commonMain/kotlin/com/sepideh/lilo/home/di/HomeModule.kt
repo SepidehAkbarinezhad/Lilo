@@ -19,7 +19,8 @@ val homeModule = module {
 
     viewModel {
         HomeViewModel(
-            featureCardFactory = get()
+            featureCardFactory = get(),
+            taskMutations = get()
         )
     }
 

@@ -33,15 +33,16 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
     SwipeToRevealDelete(enabled = clickable, onDelete = { onAction(TaskListAction.OnDeleteTaskIcon(task)) }) {
         Surface(modifier = modifier.semantics {
             customActions = if (!clickable) emptyList() else listOf(CustomAccessibilityAction(deleteLabel) { onAction(TaskListAction.OnDeleteTaskIcon(task)); true })
-        }, shape = MaterialTheme.shapes.large,
+        }, shape = RoundedCornerShape(18.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .7f)),
             color = MaterialTheme.colorScheme.surface) {
-            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min).heightIn(min = 92.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().heightIn(min = 80.dp), verticalAlignment = Alignment.CenterVertically) {
                 com.sepideh.lilo.core.presentation.components.LiloCheckbox(checked = task.done, enabled = clickable,
                     label = completionLabel, accent = LiloExtendedTheme.colors.taskColor,
                     modifier = Modifier.padding(start = 8.dp),
                     onCheckedChange = { onAction(TaskListAction.OnDoneChange(task.copy(done = it))) })
-                AppText(text = task.title, textType = TextType.BodyLarge, maxLines = 2,
+                AppText(text = task.title, textType = TextType.BodyLarge, maxLines = 1,
+                    textDecoration = if (task.done) androidx.compose.ui.text.style.TextDecoration.LineThrough else androidx.compose.ui.text.style.TextDecoration.None,
                     modifier = Modifier.weight(1f).padding(end = 12.dp), color = LiloExtendedTheme.colors.textPrimary)
                 Column(Modifier.widthIn(max = 150.dp).padding(vertical = 14.dp, horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.End) {
                     if (!groupLabel.isNullOrBlank()) Surface(shape = RoundedCornerShape(6.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = .06f)) {
@@ -53,7 +54,9 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
                         Icon(LiloIcons.Bell, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                Box(Modifier.width(6.dp).fillMaxHeight().background(Priority.getById(task.priority).color))
+                val priority = Priority.getById(task.priority)
+                Icon(org.jetbrains.compose.resources.vectorResource(Res.drawable.lilo_priority_flag),
+                    stringResource(priority.title), Modifier.padding(end = 14.dp).size(16.dp), tint = priority.color)
             }
         }
     }

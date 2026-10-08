@@ -3,6 +3,7 @@ package com.sepideh.lilo.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import lilo.composeapp.generated.resources.task_operation_error
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -58,6 +59,10 @@ fun HomeScreenContent(
             HomeHeader(onAction = onAction)
         }
     ) {
+        if (state.completionFailed) com.sepideh.lilo.core.presentation.components.AppText(
+            text = lilo.composeapp.generated.resources.Res.string.task_operation_error,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
         LazyColumn(Modifier.fillMaxSize().navigationBarsPadding(), contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 26.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             items(LiloFeature.entries, key = { it.name }) { feature ->
 
@@ -77,6 +82,8 @@ fun HomeScreenContent(
                     onCardClick = {  onAction(
                         BaseAction.OnNavigateTo(feature.routeForList())
                     ) },
+                    onCompleteTask = { onAction(HomeAction.CompleteTask(it)) },
+                    completingTaskIds = state.completingTaskIds,
                     detail = state.reportDetails[feature]
                 )
             }
