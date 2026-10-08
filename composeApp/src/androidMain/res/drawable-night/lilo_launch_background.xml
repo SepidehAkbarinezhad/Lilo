@@ -1,0 +1,4 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item><shape><solid android:color="@color/lilo_launch_background_color"/></shape></item>
+    <item android:gravity="center" android:drawable="@drawable/lilo_launch_logo"/>
+</layer-list>
