@@ -101,6 +101,7 @@ class TaskDetailViewModel(
             TaskDetailAction.OnManageGroups -> local.update { it.copy(categoryDialogOpen = false, groupManagementOpen = true) }
             TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(categoryDialogOpen = true, groupManagementOpen = false) }
             is TaskDetailAction.OnDeleteCategory -> launchOperation {
+                if (stateValue.value.categories.none { it.id == action.categoryId && it.isDeletable }) return@launchOperation
                 taskRepository.clearGroup(action.categoryId)
                 categoryRepository.deleteCategory(action.categoryId)
                 local.update { it.copy(
@@ -125,6 +126,7 @@ class TaskDetailViewModel(
     private fun renameGroup(id: Long, title: String) {
         val normalized = title.trim()
         if (normalized.isEmpty() || local.value.isAddingGroup) return
+        if (stateValue.value.categories.none { it.id == id && it.isDeletable }) return
         local.update { it.copy(isAddingGroup = true, hasError = false) }
         launchOperation {
             val existing = categoryRepository.getCategoryById(id) ?: error("Group not found")

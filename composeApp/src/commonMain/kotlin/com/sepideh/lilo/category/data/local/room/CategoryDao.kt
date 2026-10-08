@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao {
-    @Query("SELECT COUNT(*) FROM CategoryEntity")
+    @Query("SELECT COUNT(*) FROM task_groups")
     suspend fun count(): Int
 
     @Transaction
@@ -23,12 +23,12 @@ interface CategoryDao {
     @Delete
     suspend fun delete(category: CategoryEntity)
 
-    @Query("DELETE FROM CategoryEntity WHERE id = :id")
+    @Query("DELETE FROM task_groups WHERE id = :id")
     suspend fun deleteById(id: Long)
 
-    @Query("SELECT * FROM CategoryEntity WHERE id = :categoryId")
+    @Query("SELECT * FROM task_groups WHERE id = :categoryId")
     suspend fun getCategoryById(categoryId: Long): CategoryEntity?
 
-    @Query("SELECT * FROM CategoryEntity")
+    @Query("SELECT * FROM task_groups")
     fun getAllCategories(): Flow<List<CategoryEntity>>
 }
