@@ -1,4 +1,4 @@
-package com.sepideh.lilo.category.data.local.room
+package com.sepideh.lilo.task.data.local.room
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -9,11 +9,11 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 
-fun getCategoryDatabaseBuilder(): RoomDatabase.Builder<CategoryDatabase> {
-    val dbFilePath = documentDirectory() + "/category.db"
-    return Room.databaseBuilder<CategoryDatabase>(
+fun getTaskGroupDatabaseBuilder(): RoomDatabase.Builder<TaskGroupDatabase> {
+    val dbFilePath = documentDirectory() + "/task_groups.db"
+    return Room.databaseBuilder<TaskGroupDatabase>(
         name = dbFilePath,
-    ).setDriver(BundledSQLiteDriver())
+    ).setDriver(BundledSQLiteDriver()).addCallback(TaskGroupDefaultsCallback)
 }
 
 @OptIn(ExperimentalForeignApi::class)

@@ -1,4 +1,10 @@
-package com.sepideh.lilo.core.presentation.components
+package com.sepideh.lilo.task.presentation.list.components
+
+import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.task.presentation.TaskGroupUi
+import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.group_all
+import org.jetbrains.compose.resources.stringResource
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,11 +29,12 @@ import com.sepideh.lilo.task.presentation.list.TaskListState
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 
 @Composable
-fun CategoryList(
+fun TaskGroupList(
     state: TaskListState,
     clickable: Boolean,
     onAction: (BaseAction) -> Unit
 ) {
+    val all = TaskGroupUi(id = 0, title = stringResource(Res.string.group_all), isEditable = false, isDeletable = false)
     val selectedColor = LiloExtendedTheme.colors.taskColor
     val unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
     val unselectedBorderColor = MaterialTheme.colorScheme.outlineVariant
@@ -39,15 +46,15 @@ fun CategoryList(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            items = state.categories,
+            items = listOf(all) + state.groups,
             key = { it.id }
-        ) { category ->
+        ) { group ->
 
             val isSelected =
-                category.id == state.selectedCategory ||
+                group.id == state.selectedGroup ||
                         (
-                                state.selectedCategory == null &&
-                                        category == state.categories.first()
+                                state.selectedGroup == null &&
+                                        group.id == 0L
                                 )
 
             val textColor = if (isSelected) {
@@ -78,14 +85,14 @@ fun CategoryList(
                         }
                     ) {
                         onAction(
-                            TaskListAction.OnCategorySelected(category.id)
+                            TaskListAction.OnGroupSelected(group.id.takeUnless { it == 0L })
                         )
                     }
                     .padding(
                         horizontal = 12.dp,
                         vertical = 6.dp
                     ),
-                text = category.title,
+                text = group.title,
                 textAlign = TextAlign.Center,
                 color = textColor,
                 textType = TextType.SubTitle

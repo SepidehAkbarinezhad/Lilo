@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.ui.theme.*
 
-/** Selection geometry shared by category tabs, filters and repeat options. */
+/** Selection geometry shared by group tabs, filters and repeat options. */
 @Composable
 fun LiloSelectionChip(label: String, selected: Boolean, accent: Color, onClick: () -> Unit,
     modifier: Modifier = Modifier, enabled: Boolean = true) {

@@ -1,6 +1,6 @@
 package com.sepideh.lilo.note.presentation.list
 
-import com.sepideh.lilo.category.presentation.CategoryPresentation
+import com.sepideh.lilo.core.presentation.components.group.GroupOption
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.note.domain.model.Note
 import com.sepideh.lilo.note.presentation.list.model.NoteSortOrder
@@ -15,7 +15,7 @@ data class NoteListState(
     val isSearchVisible: Boolean = false,
     val searchQuery: String = "",
     val notesResult: List<Note> = emptyList(),
-    val categories: List<CategoryPresentation> = emptyList(),
+    val groups: List<GroupOption> = emptyList(),
     val isDeleteDialogOpen: Boolean = false,
-    val selectedCategory: Long? = null,
+    val selectedGroup: Long? = null,
 )

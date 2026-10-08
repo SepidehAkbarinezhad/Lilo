@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "6b2df440f053186ae91a03574dce151c",
+    "identityHash": "2e0b9ab829301b0a8e0c25be63b369d9",
     "entities": [
       {
         "tableName": "TaskEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `done` INTEGER NOT NULL, `category` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `reminderAt` INTEGER, `repeatRule` TEXT NOT NULL, `reminderTimeZoneId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `completedAt` INTEGER, `imageNames` TEXT NOT NULL DEFAULT '[]')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `done` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `reminderAt` INTEGER, `repeatRule` TEXT NOT NULL, `reminderTimeZoneId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `completedAt` INTEGER, `imageNames` TEXT NOT NULL DEFAULT '[]')",
         "fields": [
           {
             "fieldPath": "id",
@@ -32,8 +32,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "category",
-            "columnName": "category",
+            "fieldPath": "groupId",
+            "columnName": "groupId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -94,7 +94,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6b2df440f053186ae91a03574dce151c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e0b9ab829301b0a8e0c25be63b369d9')"
     ]
   }
 }

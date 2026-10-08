@@ -1,9 +1,8 @@
 package com.sepideh.lilo.task.presentation.list
 
 import androidx.lifecycle.viewModelScope
-import com.sepideh.lilo.category.domain.CategoryDomain
-import com.sepideh.lilo.category.domain.repository.CategoryRepository
-import com.sepideh.lilo.category.presentation.toPresentationList
+import com.sepideh.lilo.task.domain.repository.TaskGroupRepository
+import com.sepideh.lilo.task.presentation.toPresentationList
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
@@ -24,7 +23,7 @@ import kotlinx.coroutines.launch
 class TaskListViewModel(
     languageProvider: LanguageProvider,
     taskRepository: TaskRepository,
-    categoryRepository: CategoryRepository,
+    taskGroupRepository: TaskGroupRepository,
     private val mutations: TaskMutations,
 ) : BaseViewModel() {
     private val local = MutableStateFlow(TaskListState(isLoading = true))
@@ -32,12 +31,12 @@ class TaskListViewModel(
     private val tasks = taskRepository.getAllTasks()
         .onEach { local.update { it.copy(isLoading = false) } }
         .catch { local.update { it.copy(isLoading = false, hasError = true) }; emit(emptyList()) }
-    private val categories = categoryRepository.getAllCategories()
+    private val groups = taskGroupRepository.getAllGroups()
         .catch { local.update { it.copy(hasError = true) }; emit(emptyList()) }
 
     // One collector combines every filter; Apply never launches another Room subscription.
-    val state = combine(local, tasks, categories, query, languageProvider.languageFlow) { ui, tasks, groups, text, language ->
-        val groupId = ui.selectedCategory?.takeIf { id -> groups.any { it.id == id } }
+    val state = combine(local, tasks, groups, query, languageProvider.languageFlow) { ui, tasks, groups, text, language ->
+        val groupId = ui.selectedGroup?.takeIf { id -> groups.any { it.id == id } }
         val filter = ui.taskFilterOption
         ui.copy(
             tasksResult = tasks.matching(TaskQuery(
@@ -47,8 +46,8 @@ class TaskListViewModel(
                 priorities = filter.priorityList.map { it.value }.toSet(),
                 sort = if (ui.sortOrder == SortOrder.Priority) TaskSort.PRIORITY else TaskSort.REMINDER_DATE,
             )),
-            categories = (listOf(CategoryDomain.categories.first()) + groups).toPresentationList(language),
-            selectedCategory = groupId,
+            groups = groups.toPresentationList(language),
+            selectedGroup = groupId,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TaskListState(isLoading = true))
 
@@ -56,7 +55,7 @@ class TaskListViewModel(
         super.onAction(action)
         when (action) {
             is TaskListAction.OnSortOrderChanged -> local.update { it.copy(sortOrder = action.sortOrder) }
-            is TaskListAction.OnCategorySelected -> local.update { it.copy(selectedCategory = action.id) }
+            is TaskListAction.OnGroupSelected -> local.update { it.copy(selectedGroup = action.id) }
             is TaskListAction.OnSearchQueryChange -> local.update { it.copy(searchQuery = action.query) }
             is TaskListAction.OnSearchToggle -> local.update { it.copy(isSearchVisible = action.open) }
             TaskListAction.OnFilterIcon -> local.update { it.copy(isSearchVisible = false, isFilterSheetOpen = true, tempFilterOption = it.taskFilterOption) }

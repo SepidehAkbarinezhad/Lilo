@@ -1,4 +1,4 @@
 package com.sepideh.lilo.core.presentation.components.group
 
 /** UI values supplied by the feature that owns the groups. */
-data class GroupOption(val id: Long, val label: String, val isDeletable: Boolean = true)
+data class GroupOption(val id: Long, val label: String, val isDeletable: Boolean = true, val isEditable: Boolean = true)

@@ -56,7 +56,7 @@ fun TaskList(
                 },
                 clickable = clickable,
                 task = task,
-                groupLabel = groupLabels[task.category] ?: stringResource(Res.string.no_group_label),
+                groupLabel = groupLabels[task.groupId] ?: stringResource(Res.string.no_group_label),
                 onAction = onAction
             )
         }

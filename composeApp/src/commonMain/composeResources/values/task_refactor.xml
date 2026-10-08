@@ -31,4 +31,5 @@
 <string name="task_today">Today</string>
     <string name="task_tomorrow">Tomorrow</string>
     <string name="edit_group_action">Edit group</string>
+    <string name="close_group_management_action">Close</string>
 </resources>

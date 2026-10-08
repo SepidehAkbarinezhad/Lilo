@@ -4,8 +4,8 @@ import com.sepideh.lilo.task.domain.model.*
 import kotlin.test.*
 
 class TaskRulesTest {
-    private val open = Task(id = 1, title = "Practice violin", category = 3, priority = 0)
-    private val completed = Task(id = 2, title = "Buy book", category = 4, priority = 2, done = true)
+    private val open = Task(id = 1, title = "Practice violin", groupId = 3, priority = 0)
+    private val completed = Task(id = 2, title = "Buy book", groupId = 4, priority = 2, done = true)
 
     @Test fun emptyAndBothStatusSelectionsIncludeEveryTask() {
         val tasks = listOf(open, completed)

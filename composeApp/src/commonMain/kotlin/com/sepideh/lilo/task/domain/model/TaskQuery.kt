@@ -14,7 +14,7 @@ data class TaskQuery(
 fun List<Task>.matching(query: TaskQuery): List<Task> {
     val text = query.text.trim()
     val filtered = filter { task ->
-        (query.groupId == null || task.category == query.groupId) &&
+        (query.groupId == null || task.groupId == query.groupId) &&
             (query.completed.isEmpty() || task.done in query.completed) &&
             (query.priorities.isEmpty() || TaskPriority.fromId(task.priority) in query.priorities) &&
             (text.isEmpty() || task.title.contains(text, true) || task.description.contains(text, true))

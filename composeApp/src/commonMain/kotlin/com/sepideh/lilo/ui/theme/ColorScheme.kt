@@ -32,7 +32,7 @@ import androidx.compose.material3.lightColorScheme
  *
  * surfaceVariant
  * → Alternative/subtle surface used to visually separate content.
- * → Example: filter/category containers and inactive UI areas.
+ * → Example: filter/group containers and inactive UI areas.
  *
  * onSurfaceVariant
  * → Secondary content displayed on surfaces.

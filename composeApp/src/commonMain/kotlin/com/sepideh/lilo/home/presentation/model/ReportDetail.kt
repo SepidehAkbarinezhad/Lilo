@@ -22,7 +22,7 @@ data class NoteReportDetail(
 
 data class ExpenseReportDetail(
     val totalThisMonth: Double,
-    val lastCategory: String,
+    val lastGroup: String,
     val lastAmount: Double,
     override val subTitleReportCount: Int
 ) : ReportDetail
