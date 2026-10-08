@@ -30,7 +30,6 @@ val noteModule = module {
         NoteListViewModel(
             languageProvider = get(),
             noteRepository = get(),
-            categoryRepository = get(),
         )
     }
     viewModel {

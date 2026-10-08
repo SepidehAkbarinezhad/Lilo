@@ -7,6 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
@@ -57,8 +59,10 @@ fun FeatureCardShell(
             }
             when (detail) {
                 is TaskReportDetail -> {
-                    AppText(text = stringResource(Res.string.home_tasks_remaining, detail.remainingCount).localizedDigits(persian),
-                        textType = TextType.Caption, color = colors.textSecondary)
+                    HomeReportHeader(
+                        text = stringResource(Res.string.home_tasks_remaining, detail.remainingCount).localizedDigits(persian),
+                        color = foreground,
+                    )
                     if (detail.nextTaskTitle.isNullOrBlank()) {
                         HomeEmptyPreview(if (detail.subTitleReportCount == 0) Res.string.home_no_tasks else Res.string.home_tasks_done)
                     } else {
@@ -71,7 +75,7 @@ fun FeatureCardShell(
                     }
                 }
                 is NoteReportDetail -> {
-                    AppText(text = Res.string.home_recent, textType = TextType.Caption, color = colors.textSecondary)
+                    HomeReportHeader(text = stringResource(Res.string.home_recent), color = foreground)
                     if (detail.totalCount == 0) HomeEmptyPreview(Res.string.home_no_notes)
                     else Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         AppText(text = detail.latestTitle, maxLines = 1)
@@ -83,6 +87,16 @@ fun FeatureCardShell(
                 else -> Unit
             }
         }
+    }
+}
+
+/** Separates the feature heading from its quieter report content. */
+@Composable
+private fun HomeReportHeader(text: String, color: Color) {
+    Column(Modifier.fillMaxWidth().padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        HorizontalDivider(color = color.copy(alpha = .16f))
+        Text(text = text, color = color,
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold))
     }
 }
 
