@@ -34,7 +34,7 @@ fun AppOutlineTextField(containerModifier: Modifier = Modifier, textFieldModifie
     val errorMessage = if (!field.validationStatus.isSuccessful) field.validationStatus.resolveMessage() else null
     LaunchedEffect(requestFocus) { if (requestFocus) focusRequester.requestFocus() }
     Column(containerModifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-        if (field.label.isNotEmpty()) AppText(text = field.label, textType = TextType.FieldLabel,
+        if (field.label.isNotEmpty()) AppText(text = if (field.isRequired) "${field.label} *" else field.label, textType = TextType.FieldLabel,
             color = if (errorMessage != null) MaterialTheme.colorScheme.error else if (!field.enabled) colors.textDisabled else colors.textSecondary)
         val fieldModifier = textFieldModifier.fillMaxWidth().heightIn(min = 60.dp)
             .semantics { contentDescription = field.label; if (errorMessage != null) error(errorMessage) }
@@ -71,4 +71,4 @@ fun AppOutlineTextField(containerModifier: Modifier = Modifier, textFieldModifie
 
 data class TextFieldRequired(val label: String = "", val value: String, val onValueChange: (String) -> Unit,
     val onDeletePressed: () -> Unit = {}, val onEnterPressed: () -> Unit = {}, val hint: String = "",
-    val enabled: Boolean = true, val readOnly: Boolean = false, val validationStatus: ValidationStatus = ValidationStatus())
+    val enabled: Boolean = true, val readOnly: Boolean = false, val validationStatus: ValidationStatus = ValidationStatus(), val isRequired: Boolean = false)

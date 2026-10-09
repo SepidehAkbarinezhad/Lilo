@@ -1,5 +1,6 @@
 package com.sepideh.lilo.note.data.local.room
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -10,5 +11,6 @@ data class NoteEntity(
     val content: String,
     val groupId: Long? = null,
     val createdAt: Long,
-    val updatedAt: Long
+    val updatedAt: Long,
+    @ColumnInfo(defaultValue = "'[]'") val imageNames: String = "[]",
 )

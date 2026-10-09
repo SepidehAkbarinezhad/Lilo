@@ -67,4 +67,22 @@
     <string name="add_note_title">Add note</string>
     <string name="edit_note_title">Edit note</string>
     <string name="home_brand_name">lilo</string>
+    <string name="note_search_hint">Search notes</string>
+    <string name="note_content_label">Content</string>
+    <string name="note_save_action">Save</string>
+    <string name="note_no_results">No notes found with this filter</string>
+    <string name="note_operation_error">Could not complete this action. Please try again.</string>
+    <string name="note_retry">Try again</string>
+    <string name="note_delete_title">Delete note</string>
+    <string name="note_delete_message">This note and its images will be deleted.</string>
+    <string name="note_delete_group_message">Deleting this group leaves its notes ungrouped.</string>
+    <string name="note_recent_sort">Recently edited</string>
+    <string name="note_title_sort">Title</string>
+    <string name="note_images_label">Images</string>
+    <string name="note_images_count">%1$d images</string>
+    <string name="note_clear_images">Remove images</string>
+    <string name="note_discard_title">Discard changes</string>
+    <string name="note_discard_message">Your changes have not been saved.</string>
+    <string name="note_discard_action">Discard</string>
+    <string name="note_keep_editing">Keep editing</string>
 </resources>

@@ -6,7 +6,7 @@ import org.koin.dsl.module
 
 actual fun notePlatformModule()= module {
     single(noteDatabaseQualifier) { getNoteDatabaseBuilder(ctx = get()).build()}
-    single { get<NoteDatabase>(noteDatabaseQualifier).noteDao() }
+
 
 }
 

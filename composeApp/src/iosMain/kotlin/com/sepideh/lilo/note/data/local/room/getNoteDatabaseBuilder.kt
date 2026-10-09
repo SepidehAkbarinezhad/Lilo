@@ -3,7 +3,7 @@ package com.sepideh.lilo.note.data.local.room
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.sepideh.lilo.task.data.local.room.TaskDatabase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -15,6 +15,9 @@ fun getNoteDatabaseBuilder(): RoomDatabase.Builder<NoteDatabase> {
     return Room.databaseBuilder<NoteDatabase>(
         name = dbFilePath,
     ).setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.Default)
+        .addMigrations(NoteFeatureMigration)
+        .addCallback(NoteDefaultsCallback)
 }
 
 @OptIn(ExperimentalForeignApi::class)
