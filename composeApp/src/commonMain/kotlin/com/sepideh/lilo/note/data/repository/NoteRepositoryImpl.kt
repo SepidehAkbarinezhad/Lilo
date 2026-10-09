@@ -1,4 +1,4 @@
-package com.sepideh.lilo.note.data.repoImpl
+package com.sepideh.lilo.note.data.repository
 
 import com.sepideh.lilo.note.data.local.room.NoteDao
 import com.sepideh.lilo.note.data.mapper.toDomain
@@ -8,7 +8,7 @@ import com.sepideh.lilo.note.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class NoteRepoImpl(
+class NoteRepositoryImpl(
     private val noteDao: NoteDao
 ) : NoteRepository {
 

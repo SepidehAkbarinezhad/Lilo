@@ -22,6 +22,7 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseListScreen
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppPreviews
+import com.sepideh.lilo.core.presentation.components.ListEmptyState
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.LiloSelectionChip
 import com.sepideh.lilo.core.presentation.components.DeleteConfirmationDialog
@@ -65,7 +66,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
                 keyboard?.hide()
                 onAction(TaskListAction.OnSearchToggle(false))
                 onAction(BaseAction.OnNavigateTo(AppRoutes.Tasks.Detail(null)))
-            }, modifier = Modifier.size(64.dp), shape = androidx.compose.foundation.shape.CircleShape, containerColor = accent, contentColor = MaterialTheme.colorScheme.onSurface) {
+            }, modifier = Modifier.size(64.dp), shape = androidx.compose.foundation.shape.CircleShape, containerColor = accent, contentColor = LiloExtendedTheme.colors.onAccent) {
                 Icon(LiloIcons.Add, stringResource(Res.string.add_task_label), Modifier.size(36.dp))
             }
         }) { padding ->
@@ -83,13 +84,10 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
                 }
             }
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
-            if (state.tasksResult.isEmpty() && !isLoading) Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Surface(shape = androidx.compose.foundation.shape.CircleShape, color = accent.copy(alpha = .08f)) {
-                        Box(Modifier.size(72.dp), contentAlignment = Alignment.Center) { Icon(LiloIcons.Empty, null, Modifier.size(36.dp), tint = LiloExtendedTheme.colors.textSupporting) }
-                    }
-                    AppText(text = Res.string.task_no_results, color = LiloExtendedTheme.colors.textSecondary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
-                }
+            if (state.tasksResult.isEmpty() && !isLoading) {
+                val filtered = state.selectedGroup != null || state.searchQuery.isNotBlank() ||
+                    state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty()
+                ListEmptyState(if (filtered) Res.string.task_no_results else Res.string.home_no_tasks, accent)
             } else TaskList(state.tasksResult, !state.isFilterSheetOpen, onAction, Modifier.fillMaxSize(),
                 groupLabels = state.groups.filter { it.id != 0L }.associate { it.id to it.title })
         }

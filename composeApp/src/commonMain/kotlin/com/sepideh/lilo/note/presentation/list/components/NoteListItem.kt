@@ -1,102 +1,39 @@
 package com.sepideh.lilo.note.presentation.list.components
-
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import com.sepideh.lilo.core.presentation.format.localizedDigits
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.core.presentation.TextType
-import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.note.domain.model.Note
-import com.sepideh.lilo.note.presentation.list.NoteListAction
-import com.sepideh.lilo.ui.theme.LiloExtendedTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
+import com.sepideh.lilo.core.presentation.TextType
+import com.sepideh.lilo.core.presentation.components.*
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
+import com.sepideh.lilo.ui.theme.*
+import lilo.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 @Composable
-fun NoteListItem(
-    modifier: Modifier = Modifier,
-    note: Note,
-    onAction: (BaseAction) -> Unit
-) {
-    Card(
-        modifier = modifier, shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-    ) {
-        with(note) {
-            Row(
-                Modifier.fillMaxWidth().height(IntrinsicSize.Max),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp, horizontal = 16.dp)
-                        .width(4.dp)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(50))
-                        .background(color = LiloExtendedTheme.colors.noteColor)
-                )
-                Column(
-                    Modifier.weight(.8f).padding(vertical = 12.dp, horizontal = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    AppText(
-                        text = title,
-                        textType = TextType.SubTitle,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    AppText(
-                        text = content,
-                        textType = TextType.Body,
-                        maxLines = 2,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.9f)
-                    )
-                }
-                IconButton(onClick = {
-                    onAction(NoteListAction.OnDeleteNoteIcon(note = note))
-                }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = "delete Icon",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                    )
-                }
-            }
-        }
+fun NoteListItem(note: Note, group: String?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+ Surface(onClick = onClick, modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp),
+  color = MaterialTheme.colorScheme.surface, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=.55f))) {
+  Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+   AppText(text=note.title, textType=TextType.BodyLarge, color=LiloExtendedTheme.colors.title, maxLines=1)
+   if (note.content.isNotBlank()) AppText(text=note.content, color=LiloExtendedTheme.colors.textSecondary, maxLines=2)
+   if (group != null || note.imageNames.isNotEmpty()) Row(verticalAlignment=Alignment.CenterVertically, horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+    if (group != null) Surface(shape=MaterialTheme.shapes.small, color=MaterialTheme.colorScheme.surfaceVariant) {
+     AppText(text=group, modifier=Modifier.padding(horizontal=10.dp, vertical=4.dp), maxLines=1)
     }
+    if (note.imageNames.isNotEmpty()) {
+     Icon(LiloIcons.Images, null, Modifier.size(16.dp), tint=LiloExtendedTheme.colors.textSupporting)
+     AppText(text=stringResource(Res.string.note_images_count,note.imageNames.size).localizedDigits(LocalLayoutDirection.current == LayoutDirection.Rtl), color=LiloExtendedTheme.colors.textSupporting)
+    }
+   }
+  }
+ }
 }
-
-@Preview
-@Composable
-fun NoteListItemPreview() {
-    NoteListItem(
-        note = Note(
-            id = 0,
-            title = "title",
-            content = "This is a preview of note content that might wrap onto a second line",
-            createdAt = 0L,
-            updatedAt = 0L
-        )
-    ) { }
-}
+@AppPreviews @Composable private fun NoteItemPreview() { LiloPreviewWrapper { NoteListItem(Note(title="A small idea",content="Make room for a little creativity every day."),"Personal",{}) } }

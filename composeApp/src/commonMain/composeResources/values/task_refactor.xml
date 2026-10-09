@@ -15,7 +15,7 @@
     <string name="delete_group_title">Deleting group</string>
     <string name="delete_group_message">Deleting this group will leave its tasks without a group.</string>
     <string name="delete_action">Delete</string>
-    <string name="task_no_results">No matching tasks</string>
+    <string name="task_no_results">No tasks found with this filter</string>
     <string name="task_complete_action">Mark complete</string>
     <string name="task_reopen_action">Mark incomplete</string>
     <string name="search_tasks_action">Search tasks</string>

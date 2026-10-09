@@ -96,7 +96,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
             if (state.isLoading || state.isSaving) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             AppOutlineTextField(accentColor = accent,
                 leadingIcon = { Icon(LiloIcons.Edit, null, Modifier.size(com.sepideh.lilo.ui.theme.LiloSize.Icon)) },
-                textFieldRequired = TextFieldRequired(label = stringResource(Res.string.title_label), value = task.title,
+                textFieldRequired = TextFieldRequired(label = stringResource(Res.string.title_label), isRequired = true, value = task.title,
                     hint = "", enabled = !state.isLoading && !state.isSaving,
                     onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) }, validationStatus = state.titleError))
             AppOutlineTextField(accentColor = accent, singleLine = false, maxLines = 8, topAlignedIcon = true,

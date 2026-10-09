@@ -87,9 +87,7 @@ fun NavigationGraph(navHostController: NavHostController) {
         composable<AppRoutes.Notes.Detail> {
             val args = it.toRoute<AppRoutes.Notes.Detail>()
             val viewModel = koinViewModel<NoteDetailViewModel>()
-            NoteDetailScreenRoot(
-
-            )
+            NoteDetailScreenRoot(noteId = args.noteId, viewModel = viewModel, onNavigateTo = onNavigate, onBack = onBackPressed)
         }
 
         composable<AppRoutes.Settings> {

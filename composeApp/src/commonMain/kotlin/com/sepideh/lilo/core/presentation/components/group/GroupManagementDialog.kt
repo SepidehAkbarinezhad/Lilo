@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
     onDismiss: () -> Unit, errorMessage: String? = null, accent: Color,
-    selectedId: Long? = null, isAdding: Boolean = false, addedVersion: Int = 0, onCreate: ((String) -> Unit)? = null, onRename: ((Long, String) -> Unit)? = null) {
+    selectedId: Long? = null, isAdding: Boolean = false, addedVersion: Int = 0, onCreate: ((String) -> Unit)? = null, onRename: ((Long, String) -> Unit)? = null,
+    deleteMessage: String = stringResource(Res.string.delete_group_message)) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     var editing by remember { mutableStateOf(false) }
@@ -74,7 +75,7 @@ fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
             if (onCreate != null && renameId == null) InlineGroupEditor(accent, isAdding, addedVersion, onCreate, onEditingChanged = { editing = it })
         }
     }
-    deleteId?.let { id -> DeleteConfirmationDialog(accent = accent, title = stringResource(Res.string.delete_group_title), message = stringResource(Res.string.delete_group_message), confirmFirst = true,
+    deleteId?.let { id -> DeleteConfirmationDialog(accent = accent, title = stringResource(Res.string.delete_group_title), message = deleteMessage, confirmFirst = true,
         onConfirm = { onDelete(id); deleteId = null }, onDismiss = { deleteId = null }) }
 }
 

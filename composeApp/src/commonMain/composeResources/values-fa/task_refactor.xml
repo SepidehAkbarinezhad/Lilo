@@ -15,7 +15,7 @@
     <string name="delete_group_title">حذف گروه</string>
     <string name="delete_group_message">با حذف این گروه، فعالیت‌های آن بدون گروه باقی می‌مانند.</string>
     <string name="delete_action">حذف</string>
-    <string name="task_no_results">فعالیتی با این فیلترها پیدا نشد</string>
+    <string name="task_no_results">فعالیتی با این فیلتر یافت نشد</string>
     <string name="task_complete_action">انجام شد</string>
     <string name="task_reopen_action">انجام نشده</string>
     <string name="search_tasks_action">جستجوی فعالیت‌ها</string>

@@ -43,7 +43,7 @@ fun BaseFormScreen(
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
         BaseHeader(title = title, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
-            actions = { if (textSaveAction) TextButton(onClick = onSave, enabled = saveEnabled, colors = ButtonDefaults.textButtonColors(contentColor = if (accent == LiloExtendedTheme.colors.taskColor) LiloExtendedTheme.colors.taskAction else accent)) { AppText(text = actionLabel, textType = TextType.Action) } else FeatureActionButton(actionLabel, accent, saveEnabled, onSave) })
+            actions = { if (textSaveAction) TextButton(onClick = onSave, enabled = saveEnabled, colors = ButtonDefaults.textButtonColors(contentColor = if (accent == LiloExtendedTheme.colors.taskColor) LiloExtendedTheme.colors.taskAction else accent)) { Text(text = stringResource(actionLabel), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) } else FeatureActionButton(actionLabel, accent, saveEnabled, onSave) })
     }, content = content)
 }
 
