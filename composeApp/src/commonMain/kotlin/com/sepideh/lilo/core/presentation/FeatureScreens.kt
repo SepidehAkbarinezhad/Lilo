@@ -39,11 +39,12 @@ fun BaseFormScreen(
     onBack: () -> Boolean, onSave: () -> Unit,
     actionLabel: StringResource = Res.string.save_task_action,
     textSaveAction: Boolean = false,
+    saveActionColor: Color = accent,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
         BaseHeader(title = title, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
-            actions = { if (textSaveAction) TextButton(onClick = onSave, enabled = saveEnabled, colors = ButtonDefaults.textButtonColors(contentColor = if (accent == LiloExtendedTheme.colors.taskColor) LiloExtendedTheme.colors.taskAction else accent)) { Text(text = stringResource(actionLabel), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) } else FeatureActionButton(actionLabel, accent, saveEnabled, onSave) })
+            actions = { if (textSaveAction) TextButton(onClick = onSave, enabled = saveEnabled, colors = ButtonDefaults.textButtonColors(contentColor = saveActionColor)) { Text(text = stringResource(actionLabel), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) } else FeatureActionButton(actionLabel, accent, saveEnabled, onSave) })
     }, content = content)
 }
 

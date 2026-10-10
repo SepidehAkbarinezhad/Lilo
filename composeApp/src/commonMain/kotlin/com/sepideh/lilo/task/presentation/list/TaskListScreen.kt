@@ -66,7 +66,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
                 keyboard?.hide()
                 onAction(TaskListAction.OnSearchToggle(false))
                 onAction(BaseAction.OnNavigateTo(AppRoutes.Tasks.Detail(null)))
-            }, modifier = Modifier.size(64.dp), shape = androidx.compose.foundation.shape.CircleShape, containerColor = accent, contentColor = LiloExtendedTheme.colors.onAccent) {
+            }, modifier = Modifier.size(64.dp), shape = androidx.compose.foundation.shape.CircleShape, containerColor = accent, contentColor = LiloExtendedTheme.colors.onTaskAccent) {
                 Icon(LiloIcons.Add, stringResource(Res.string.add_task_label), Modifier.size(36.dp))
             }
         }) { padding ->

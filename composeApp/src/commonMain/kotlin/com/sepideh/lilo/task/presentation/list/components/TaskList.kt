@@ -22,9 +22,6 @@ import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.presentation.list.TaskListScreen
 import com.sepideh.lilo.task.presentation.list.TaskListState
-import lilo.composeapp.generated.resources.Res
-import lilo.composeapp.generated.resources.no_group_label
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TaskList(
@@ -56,7 +53,7 @@ fun TaskList(
                 },
                 clickable = clickable,
                 task = task,
-                groupLabel = groupLabels[task.groupId] ?: stringResource(Res.string.no_group_label),
+                groupLabel = groupLabels[task.groupId],
                 onAction = onAction
             )
         }

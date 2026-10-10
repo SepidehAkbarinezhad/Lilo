@@ -27,7 +27,6 @@ class TaskDetailViewModel(
     private val taskGroupRepository: TaskGroupRepository,
     private val mutations: TaskMutations,
     private val permissions: ReminderPermissions,
-    private val imageStore: com.sepideh.lilo.core.domain.images.ImageStore,
 ) : BaseViewModel() {
     private val local = MutableStateFlow(TaskDetailState())
     private var loadedTaskId: Long? = null
@@ -40,8 +39,15 @@ class TaskDetailViewModel(
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
-            is TaskDetailAction.OnImagesSelected -> if (!local.value.isSaving) local.update { it.copy(selectedImages = action.sources) }
-            TaskDetailAction.OnClearImages -> if (!local.value.isSaving) local.update { it.copy(selectedImages = emptyList()) }
+            is TaskDetailAction.OnImagesSelected -> if (!local.value.isSaving) {
+                try { local.update { it.copy(selectedImages = com.sepideh.lilo.core.presentation.images.appendImageSelection(it.selectedImages, action.sources, it.task.imageNames.count { name -> name !in it.removedImageNames })) } }
+                catch (_: IllegalArgumentException) { local.update { it.copy(hasError = true) } }
+            }
+            is TaskDetailAction.OnRemoveImage -> if (!local.value.isSaving) local.update {
+                if (action.image.stored) it.copy(removedImageNames = it.removedImageNames + action.image.location)
+                else it.copy(selectedImages = it.selectedImages.orEmpty().filterNot { source -> source.location == action.image.location })
+            }
+            TaskDetailAction.OnClearImages -> if (!local.value.isSaving) local.update { it.copy(selectedImages = emptyList(), removedImageNames = it.task.imageNames.toSet()) }
             TaskDetailAction.OnImagePickerFailure -> local.update { it.copy(hasError = true) }
             is TaskDetailAction.OnTitleChanged -> local.update { it.copy(task = it.task.copy(title = action.title), titleError = it.titleError.copy(isSuccessful = true, messageId = null)) }
             is TaskDetailAction.OnDescriptionChanged -> local.update { it.copy(task = it.task.copy(description = action.description)) }
@@ -159,17 +165,14 @@ class TaskDetailViewModel(
                 local.update { it.copy(isSaving = false, missingPermission = missing) }
                 return@launchOperation
             }
-            val imageNames = state.selectedImages?.let { imageStore.importImages(it) } ?: state.task.imageNames
             val task = state.task.copy(
-                imageNames = imageNames,
+                imageNames = state.task.imageNames.filterNot { it in state.removedImageNames },
                 groupId = state.task.groupId.takeIf { id -> stateValue.value.groups.any { it.id == id } } ?: 0,
             )
-            val result = mutations.save(task, scheduleReminder = allowed)
-            local.update { it.copy(task = task.copy(id = result.id), selectedImages = null, isSaving = false, missingPermission = null, hasError = result.reminderFailed) }
-            // The row has committed before old files can be removed. Cleanup does not block saving.
-            try { imageStore.removeImages(state.task.imageNames - imageNames.toSet()) }
-            catch (e: CancellationException) { throw e }
-            catch (_: Exception) { /* Retain inaccessible files rather than fail a committed save. */ }
+            val result = mutations.save(task, scheduleReminder = allowed, selectedImages = state.selectedImages)
+            local.update { it.copy(task = task.copy(id = result.id, imageNames = result.imageNames),
+                selectedImages = null, removedImageNames = emptySet(), isSaving = false,
+                missingPermission = null, hasError = result.reminderFailed) }
             if (!result.reminderFailed) onAction(BaseAction.OnNavigateTo(null))
         }
     }

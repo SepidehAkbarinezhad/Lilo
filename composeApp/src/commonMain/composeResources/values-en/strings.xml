@@ -85,4 +85,13 @@
     <string name="note_discard_message">Your changes have not been saved.</string>
     <string name="note_discard_action">Discard</string>
     <string name="note_keep_editing">Keep editing</string>
+    <string name="attachment_images">Images</string>
+    <string name="attachment_count">%1$d images</string>
+    <string name="attachment_add">Add images</string>
+    <string name="attachment_open">Open image %1$d</string>
+    <string name="attachment_remove">Remove image %1$d</string>
+    <string name="attachment_close">Close image viewer</string>
+    <string name="attachment_position">%1$d of %2$d</string>
+    <string name="attachment_limit">You can attach up to 10 images.</string>
+    <string name="attachment_unavailable">Image unavailable</string>
 </resources>

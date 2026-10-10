@@ -27,7 +27,7 @@ class NoteRulesTest {
  @Test fun savePreservesCreationTimeAndIdOnRoomUpdate()=runBlocking {
   val repo=FakeRepo(Note(id=4,title="Old",createdAt=10,imageNames=listOf("old.jpg")))
   val images=FakeImages()
-  val result=NoteMutations(repo,images,{50}).save(repo.note!!.copy(title=" New "),listOf(ImageSource("source")))
+  val result=NoteMutations(repo,images,{50}).save(repo.note!!.copy(title=" New ",imageNames=emptyList()),listOf(ImageSource("source")))
   assertEquals(4L,result.id);assertEquals(10L,result.createdAt);assertEquals(50L,result.updatedAt)
   assertEquals("New",result.title);assertEquals(listOf("old.jpg"),images.removed)
  }
@@ -48,6 +48,15 @@ class NoteRulesTest {
   val repo=FakeRepo(Note(id=4,title="Old",imageNames=listOf("old.jpg")))
   val images=FakeImages();NoteMutations(repo,images).delete(4)
   assertNull(repo.note);assertEquals(listOf("old.jpg"),images.removed)
+ }
+ @Test fun appendKeepsSavedImagesAndRemovalCommitsOnlyOnSave()=runBlocking {
+  val repo=FakeRepo(Note(id=4,title="Old",imageNames=listOf("keep.jpg","remove.jpg")))
+  val images=FakeImages()
+  val draft=repo.note!!.copy(imageNames=listOf("keep.jpg"))
+  assertEquals(listOf("keep.jpg","remove.jpg"),repo.note!!.imageNames)
+  val saved=NoteMutations(repo,images,{50}).save(draft,listOf(ImageSource("source")))
+  assertEquals(listOf("keep.jpg","new.jpg"),saved.imageNames)
+  assertEquals(listOf("remove.jpg"),images.removed)
  }
  private class FakeRepo(var note:Note?=null,val fail:Boolean=false):NoteRepository {
   override fun getAllNotes()=flowOf(listOfNotNull(note))

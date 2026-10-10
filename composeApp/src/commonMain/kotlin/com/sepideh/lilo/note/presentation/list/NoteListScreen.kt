@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.stringResource
   searchVisible=state.isSearchVisible,query=state.searchQuery,searchHint=Res.string.note_search_hint,
   filtersActive=state.sortOrder!=NoteSortOrder.Date||state.selectedGroup!=null,
   onBack=onBack,onSearchVisible={action(NoteListAction.SearchVisible(it))},onQueryChange={action(NoteListAction.Search(it))},onFilter={action(NoteListAction.OpenFilters)},
-  floatingActionButton={FloatingActionButton(onClick={action(BaseAction.OnNavigateTo(AppRoutes.Notes.Detail(null)))},shape=CircleShape,containerColor=accent,modifier=Modifier.size(64.dp)) { Icon(LiloIcons.Add,stringResource(Res.string.add_note_title),Modifier.size(32.dp),tint=LiloExtendedTheme.colors.onAccent) }}) { padding ->
+  floatingActionButton={FloatingActionButton(onClick={action(BaseAction.OnNavigateTo(AppRoutes.Notes.Detail(null)))},shape=CircleShape,containerColor=accent,modifier=Modifier.size(64.dp)) { Icon(LiloIcons.Add,stringResource(Res.string.add_note_title),Modifier.size(32.dp),tint=LiloExtendedTheme.colors.onNoteAccent) }}) { padding ->
   Column(Modifier.fillMaxSize().padding(padding)) {
     val options=listOf(null to stringResource(Res.string.all),0L to stringResource(Res.string.no_group_label))+state.groups.map { it.id to it.label }
    LazyRow(contentPadding=PaddingValues(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {

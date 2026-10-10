@@ -9,4 +9,4 @@ import com.sepideh.lilo.core.domain.images.ImageSource
  * Remember at screen scope, outside transient dialogs and sheets.
  */
 @Composable
-expect fun rememberImagePicker(onSelected: (List<ImageSource>) -> Unit, onError: () -> Unit): () -> Unit
+expect fun rememberImagePicker(onSelected: (List<ImageSource>) -> Unit, onError: () -> Unit, maxSelection: Int = com.sepideh.lilo.core.domain.images.IMAGE_SELECTION_LIMIT): () -> Unit
