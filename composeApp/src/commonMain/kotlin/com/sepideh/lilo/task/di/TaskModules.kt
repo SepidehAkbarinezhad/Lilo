@@ -41,8 +41,7 @@ val taskModule = module {
             taskRepository = get(),
             taskGroupRepository = get(),
             mutations = get(),
-            permissions = get(),
-            imageStore = get()
+            permissions = get()
         )
     }
 }

@@ -74,8 +74,9 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     val accent = LiloExtendedTheme.colors.taskColor
     val pickImages = com.sepideh.lilo.core.presentation.components.picker.rememberImagePicker(
         onSelected = { onAction(TaskDetailAction.OnImagesSelected(it)) },
-        onError = { onAction(TaskDetailAction.OnImagePickerFailure) })
-    val imageCount = state.selectedImages?.size ?: task.imageNames.size
+        onError = { onAction(TaskDetailAction.OnImagePickerFailure) },
+        maxSelection = (com.sepideh.lilo.core.domain.images.IMAGE_SELECTION_LIMIT -
+            com.sepideh.lilo.core.presentation.images.attachmentPreviews(task.imageNames, state.removedImageNames, state.selectedImages).size).coerceAtLeast(1))
     if (state.reminderEditorOpen) {
         androidx.compose.ui.window.Dialog(
             onDismissRequest = { onAction(TaskDetailAction.OnDismissReminder) },
@@ -88,7 +89,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     }
     BaseFormScreen(
         title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
-        accent = accent, textSaveAction = true, saveEnabled = !state.isSaving && !state.isLoading,
+        accent = accent, textSaveAction = true, saveActionColor = LiloExtendedTheme.colors.taskAction, saveEnabled = !state.isSaving && !state.isLoading,
         onBack = onBack, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(com.sepideh.lilo.ui.theme.LiloSpacing.Screen), verticalArrangement = Arrangement.spacedBy(com.sepideh.lilo.ui.theme.LiloSpacing.Section)) {
@@ -116,11 +117,10 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
                 clearContentDescription = stringResource(Res.string.remove_reminder_action),
                 enabled = !state.isSaving && !state.isLoading,
                 onClear = if (state.task.reminderAt != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
-            FormSelectionRow(icon = LiloIcons.Images, title = stringResource(Res.string.task_images_label), accent = accent,
-                value = stringResource(Res.string.task_images_count, imageCount).localizedDigits(androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl), onClick = pickImages,
-                enabled = !state.isLoading && !state.isSaving,
-                onClear = if (imageCount > 0) ({ onAction(TaskDetailAction.OnClearImages) }) else null,
-                clearContentDescription = stringResource(Res.string.task_clear_images))
+            com.sepideh.lilo.core.presentation.components.images.ImageAttachments(
+                images = com.sepideh.lilo.core.presentation.images.attachmentPreviews(task.imageNames, state.removedImageNames, state.selectedImages),
+                accent = accent, enabled = !state.isLoading && !state.isSaving,
+                onAdd = pickImages, onRemove = { onAction(TaskDetailAction.OnRemoveImage(it)) })
         }
     }
 }

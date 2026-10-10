@@ -11,6 +11,7 @@ sealed interface NoteDetailAction : BaseAction {
     data class Title(val value: String) : NoteDetailAction
     data class Content(val value: String) : NoteDetailAction
     data class Images(val sources: List<ImageSource>) : NoteDetailAction
+    data class RemoveImage(val image: com.sepideh.lilo.core.presentation.images.AttachmentPreview) : NoteDetailAction
     data object ClearImages : NoteDetailAction
     data object ImageError : NoteDetailAction
     data object Save : NoteDetailAction
@@ -32,6 +33,7 @@ sealed interface NoteDetailAction : BaseAction {
 data class NoteDetailState(
     val note: Note = Note(),
     val groups: List<GroupOption> = emptyList(),
+    val removedImageNames: Set<String> = emptySet(),
     val selectedImages: List<ImageSource>? = null,
     val titleError: ValidationStatus = ValidationStatus(),
     val isLoading: Boolean = true,

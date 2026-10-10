@@ -66,3 +66,6 @@ val SageDark = Color(0xFFC0D2A4)
 val CoralDark = Color(0xFFE5BA9A)
 val BlueDark = Color(0xFFA4CED9)
 val LavenderDark = Color(0xFFD3C1E7)
+
+// Dark feature tones for icons on pastel feature buttons.
+val CoralActionLight = Color(0xFF8B4F37)

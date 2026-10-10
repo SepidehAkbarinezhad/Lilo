@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable fun NoteDetailScreen(state:NoteDetailState,action:(BaseAction)->Unit) {
  val accent=LiloExtendedTheme.colors.noteColor
  BaseFormScreen(title=if(state.note.id==0L) Res.string.add_note_title else Res.string.edit_note_title,
-  accent=accent,saveEnabled=state.fieldsEnabled,textSaveAction=true,actionLabel=Res.string.note_save_action,
+  accent=accent,saveEnabled=state.fieldsEnabled,textSaveAction=true,saveActionColor=LiloExtendedTheme.colors.noteAction,actionLabel=Res.string.note_save_action,
   onBack={action(NoteDetailAction.Back);true},onSave={action(NoteDetailAction.Save)}) { padding ->
   Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),verticalArrangement=Arrangement.spacedBy(LiloSpacing.Section)) {
    if(state.isLoading||state.isSaving) LinearProgressIndicator(Modifier.fillMaxWidth(),color=accent)

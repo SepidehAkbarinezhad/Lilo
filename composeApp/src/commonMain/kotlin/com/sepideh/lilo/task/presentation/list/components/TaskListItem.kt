@@ -17,6 +17,7 @@ import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.gesture.SwipeToRevealDelete
+import com.sepideh.lilo.core.presentation.components.ItemMetadata
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.task.domain.model.Task
@@ -28,6 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, onAction: (BaseAction) -> Unit, groupLabel: String? = null) {
+    val hasMetadata = !groupLabel.isNullOrBlank() || task.imageNames.isNotEmpty() || task.reminderAt != null
     val deleteLabel = stringResource(Res.string.delete_action)
     val completionLabel = stringResource(if (task.done) Res.string.task_reopen_action else Res.string.task_complete_action)
     SwipeToRevealDelete(enabled = clickable, onDelete = { onAction(TaskListAction.OnDeleteTaskIcon(task)) }) {
@@ -36,27 +38,31 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
         }, shape = RoundedCornerShape(18.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .7f)),
             color = MaterialTheme.colorScheme.surface) {
-            Row(Modifier.fillMaxWidth().heightIn(min = 80.dp), verticalAlignment = Alignment.CenterVertically) {
-                com.sepideh.lilo.core.presentation.components.LiloCheckbox(checked = task.done, enabled = clickable,
-                    label = completionLabel, accent = LiloExtendedTheme.colors.taskColor,
-                    modifier = Modifier.padding(start = 8.dp),
-                    onCheckedChange = { onAction(TaskListAction.OnDoneChange(task.copy(done = it))) })
-                AppText(text = task.title, textType = TextType.BodyLarge, maxLines = 1,
-                    textDecoration = if (task.done) androidx.compose.ui.text.style.TextDecoration.LineThrough else androidx.compose.ui.text.style.TextDecoration.None,
-                    modifier = Modifier.weight(1f).padding(end = 12.dp), color = LiloExtendedTheme.colors.textPrimary)
-                Column(Modifier.widthIn(max = 150.dp).padding(vertical = 14.dp, horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.End) {
-                    if (!groupLabel.isNullOrBlank()) Surface(shape = RoundedCornerShape(6.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = .06f)) {
-                        AppText(text = groupLabel, textType = TextType.Body, maxLines = 1,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    if (task.reminderAt != null) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        AppText(text = taskReminderLabel(task), textType = TextType.Caption, maxLines = 2, modifier = Modifier.weight(1f, fill = false), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Icon(LiloIcons.Bell, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
+            Column(Modifier.fillMaxWidth().heightIn(min = 80.dp).padding(vertical = 8.dp),
+                verticalArrangement = if (hasMetadata) Arrangement.spacedBy(4.dp) else Arrangement.Center) {
+                Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    com.sepideh.lilo.core.presentation.components.LiloCheckbox(checked = task.done, enabled = clickable,
+                        label = completionLabel, accent = LiloExtendedTheme.colors.taskColor,
+                        onCheckedChange = { onAction(TaskListAction.OnDoneChange(task.copy(done = it))) })
+                    AppText(text = task.title, textType = TextType.BodyLarge, maxLines = 1,
+                        textDecoration = if (task.done) androidx.compose.ui.text.style.TextDecoration.LineThrough else androidx.compose.ui.text.style.TextDecoration.None,
+                        modifier = Modifier.weight(1f).padding(end = 12.dp), color = LiloExtendedTheme.colors.textPrimary)
+                    val priority = Priority.getById(task.priority)
+                    Icon(org.jetbrains.compose.resources.vectorResource(Res.drawable.lilo_priority_flag),
+                        stringResource(priority.title), Modifier.size(16.dp), tint = priority.color)
                 }
-                val priority = Priority.getById(task.priority)
-                Icon(org.jetbrains.compose.resources.vectorResource(Res.drawable.lilo_priority_flag),
-                    stringResource(priority.title), Modifier.padding(end = 14.dp).size(16.dp), tint = priority.color)
+                if (hasMetadata) {
+                    ItemMetadata(groupLabel, task.imageNames.size,
+                        modifier = Modifier.padding(start = 56.dp, end = 14.dp, bottom = 4.dp),
+                        trailing = if (task.reminderAt != null) ({
+                            Row(Modifier.widthIn(max = 180.dp).padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Icon(LiloIcons.Bell, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                AppText(text = taskReminderLabel(task), textType = TextType.Caption, maxLines = 1,
+                                    modifier = Modifier.weight(1f, fill = false), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }) else null)
+                }
             }
         }
     }

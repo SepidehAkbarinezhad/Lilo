@@ -42,12 +42,19 @@ class NoteDetailViewModel(
             is NoteDetailAction.Load -> if (!initialized) { initialized = true; requestedId = action.id; load() }
             is NoteDetailAction.Title -> if (state.value.fieldsEnabled) local.update { it.copy(note = it.note.copy(title = action.value), titleError = ValidationStatus()) }
             is NoteDetailAction.Content -> if (state.value.fieldsEnabled) local.update { it.copy(note = it.note.copy(content = action.value)) }
-            is NoteDetailAction.Images -> if (state.value.fieldsEnabled) local.update { it.copy(selectedImages = action.sources) }
-            NoteDetailAction.ClearImages -> if (state.value.fieldsEnabled) local.update { it.copy(selectedImages = emptyList()) }
+            is NoteDetailAction.Images -> if (state.value.fieldsEnabled) {
+                try { local.update { it.copy(selectedImages = com.sepideh.lilo.core.presentation.images.appendImageSelection(it.selectedImages, action.sources, it.note.imageNames.count { name -> name !in it.removedImageNames })) } }
+                catch (_: IllegalArgumentException) { local.update { it.copy(hasError = true) } }
+            }
+            is NoteDetailAction.RemoveImage -> if (state.value.fieldsEnabled) local.update {
+                if (action.image.stored) it.copy(removedImageNames = it.removedImageNames + action.image.location)
+                else it.copy(selectedImages = it.selectedImages.orEmpty().filterNot { source -> source.location == action.image.location })
+            }
+            NoteDetailAction.ClearImages -> if (state.value.fieldsEnabled) local.update { it.copy(selectedImages = emptyList(), removedImageNames = it.note.imageNames.toSet()) }
             NoteDetailAction.ImageError -> local.update { it.copy(hasError = true) }
             NoteDetailAction.Save -> save()
             NoteDetailAction.Back -> if (!local.value.isSaving && !local.value.isGroupWorking) {
-                if (local.value.note != original || local.value.selectedImages != null) local.update { it.copy(confirmDiscard = true) }
+                if (local.value.note != original || local.value.selectedImages != null || local.value.removedImageNames.isNotEmpty()) local.update { it.copy(confirmDiscard = true) }
                 else super.onAction(BaseAction.OnNavigateTo(null))
             }
             NoteDetailAction.Discard -> super.onAction(BaseAction.OnNavigateTo(null))
@@ -84,9 +91,9 @@ class NoteDetailViewModel(
         operation {
             // Resolve a persisted ID, never an option's position; deleted groups become no group.
             val groupId = draft.note.groupId?.takeIf { groupRepository.getGroupById(it) != null }
-            val saved = mutations.save(draft.note.copy(groupId = groupId), draft.selectedImages)
+            val saved = mutations.save(draft.note.copy(groupId = groupId, imageNames = draft.note.imageNames.filterNot { it in draft.removedImageNames }), draft.selectedImages)
             original = saved
-            local.update { it.copy(note = saved, selectedImages = null, isSaving = false) }
+            local.update { it.copy(note = saved, selectedImages = null, removedImageNames = emptySet(), isSaving = false) }
             super.onAction(BaseAction.OnNavigateTo(null))
         }
     }

@@ -23,16 +23,8 @@ fun NoteListItem(note: Note, group: String?, onClick: () -> Unit, modifier: Modi
   color = MaterialTheme.colorScheme.surface, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=.55f))) {
   Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
    AppText(text=note.title, textType=TextType.BodyLarge, color=LiloExtendedTheme.colors.title, maxLines=1)
-   if (note.content.isNotBlank()) AppText(text=note.content, color=LiloExtendedTheme.colors.textSecondary, maxLines=2)
-   if (group != null || note.imageNames.isNotEmpty()) Row(verticalAlignment=Alignment.CenterVertically, horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-    if (group != null) Surface(shape=MaterialTheme.shapes.small, color=MaterialTheme.colorScheme.surfaceVariant) {
-     AppText(text=group, modifier=Modifier.padding(horizontal=10.dp, vertical=4.dp), maxLines=1)
-    }
-    if (note.imageNames.isNotEmpty()) {
-     Icon(LiloIcons.Images, null, Modifier.size(16.dp), tint=LiloExtendedTheme.colors.textSupporting)
-     AppText(text=stringResource(Res.string.note_images_count,note.imageNames.size).localizedDigits(LocalLayoutDirection.current == LayoutDirection.Rtl), color=LiloExtendedTheme.colors.textSupporting)
-    }
-   }
+   if (note.content.isNotBlank()) AppText(text=note.content, color=LiloExtendedTheme.colors.textSecondary, maxLines=1)
+   if (!group.isNullOrBlank() || note.imageNames.isNotEmpty()) ItemMetadata(group, note.imageNames.size)
   }
  }
 }

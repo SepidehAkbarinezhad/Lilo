@@ -17,14 +17,15 @@ import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun rememberImagePicker(onSelected: (List<ImageSource>) -> Unit, onError: () -> Unit): () -> Unit {
+actual fun rememberImagePicker(onSelected: (List<ImageSource>) -> Unit, onError: () -> Unit, maxSelection: Int): () -> Unit {
+    require(maxSelection in 1..IMAGE_SELECTION_LIMIT)
     val selected by rememberUpdatedState(onSelected)
     val error by rememberUpdatedState(onError)
     val host = LocalUIViewController.current
     val scope = rememberCoroutineScope()
     val session = remember(host, scope) { ImagePickerSession(host, scope, { selected(it) }, { error() }) }
     DisposableEffect(session) { onDispose { session.dispose() } }
-    return { session.launch() }
+    return { session.launch(maxSelection) }
 }
 
 /** Strongly owns the weak UIKit delegate and all temporary images for the lifetime of the form. */
@@ -40,12 +41,12 @@ private class ImagePickerSession(
     private var disposed = false
     private val stagedPaths = mutableListOf<String>()
 
-    fun launch() {
+    fun launch(maxSelection: Int) {
         if (disposed || controller != null || loading?.isActive == true) return
         try {
             val configuration = PHPickerConfiguration().apply {
                 filter = PHPickerFilter.imagesFilter()
-                selectionLimit = IMAGE_SELECTION_LIMIT.toLong()
+                selectionLimit = maxSelection.toLong()
             }
             val picker = PHPickerViewController(configuration)
             picker.delegate = this

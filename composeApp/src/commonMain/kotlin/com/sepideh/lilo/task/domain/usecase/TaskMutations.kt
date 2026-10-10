@@ -20,21 +20,34 @@ class TaskMutations(
 ) {
     private val mutex = Mutex()
 
-    suspend fun save(task: Task, scheduleReminder: Boolean = true): SaveTaskResult = mutex.withLock {
+    suspend fun save(task: Task, scheduleReminder: Boolean = true,
+        selectedImages: List<com.sepideh.lilo.core.domain.images.ImageSource>? = null): SaveTaskResult = mutex.withLock {
         require(task.title.isNotBlank())
         if (task.reminderAt != null) TimeZone.of(requireNotNull(task.reminderTimeZoneId))
         val previous = task.id?.let { repository.getTaskById(it) }
-        val result = repository.upsertTask(task)
+        val imported = selectedImages?.let { requireNotNull(imageStore).importImages(it) }.orEmpty()
+        val saved = task.copy(imageNames = task.imageNames + imported)
+        val result = try { repository.upsertTask(saved) }
+        catch (failure: Throwable) {
+            kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+                runCatching { imageStore?.removeImages(imported) }
+            }
+            throw failure
+        }
         val id = if (result == -1L) requireNotNull(task.id) else result
+        // Cleanup only follows a committed row, independently of reminder scheduling.
+        kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+            runCatching { imageStore?.removeImages(previous?.imageNames.orEmpty() - saved.imageNames.toSet()) }
+        }
         val reminderFailed = try {
             previous?.id?.let { scheduler.cancelReminder(it) }
             if (!scheduleReminder) {
                 scheduler.cancelReminder(id)
-            } else syncReminder(task.copy(id = id))
+            } else syncReminder(saved.copy(id = id))
             false
         } catch (e: kotlinx.coroutines.CancellationException) { throw e }
         catch (_: Exception) { true }
-        SaveTaskResult(id, reminderFailed)
+        SaveTaskResult(id, reminderFailed, saved.imageNames)
     }
 
     suspend fun setCompleted(id: Long, completed: Boolean) = mutex.withLock {
@@ -83,4 +96,4 @@ class TaskMutations(
     }
 }
 
-data class SaveTaskResult(val id: Long, val reminderFailed: Boolean)
+data class SaveTaskResult(val id: Long, val reminderFailed: Boolean, val imageNames: List<String> = emptyList())

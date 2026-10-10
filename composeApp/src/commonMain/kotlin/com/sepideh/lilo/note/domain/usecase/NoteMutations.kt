@@ -19,7 +19,7 @@ class NoteMutations(
         val original = if (note.id != 0L) requireNotNull(repository.getNoteById(note.id)) else null
         val timestamp = now()
         val imported = selectedImages?.let { imageStore.importImages(it) }
-        val updated = note.copy(title = note.title.trim(), imageNames = imported ?: note.imageNames,
+        val updated = note.copy(title = note.title.trim(), imageNames = note.imageNames + imported.orEmpty(),
             createdAt = original?.createdAt ?: timestamp, updatedAt = timestamp)
         val saved = try {
             val returnedId = repository.upsertNote(updated)

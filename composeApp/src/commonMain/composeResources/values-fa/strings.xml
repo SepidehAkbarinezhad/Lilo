@@ -85,4 +85,13 @@
     <string name="note_discard_message">تغییرات شما ذخیره نشده‌اند.</string>
     <string name="note_discard_action">کنار گذاشتن</string>
     <string name="note_keep_editing">ادامه ویرایش</string>
+    <string name="attachment_images">تصاویر</string>
+    <string name="attachment_count">%1$d تصویر</string>
+    <string name="attachment_add">افزودن تصاویر</string>
+    <string name="attachment_open">نمایش تصویر %1$d</string>
+    <string name="attachment_remove">حذف تصویر %1$d</string>
+    <string name="attachment_close">بستن نمایش تصاویر</string>
+    <string name="attachment_position">%1$d از %2$d</string>
+    <string name="attachment_limit">می‌توانید حداکثر ۱۰ تصویر اضافه کنید.</string>
+    <string name="attachment_unavailable">تصویر در دسترس نیست</string>
 </resources>
