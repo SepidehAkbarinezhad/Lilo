@@ -41,6 +41,9 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
         viewModel.onAction(TaskDetailAction.OnPermissionReturn)
     }
     LaunchedEffect(taskId) { taskId?.let { viewModel.onAction(TaskDetailAction.OnGetSelectedTaskInfo(it)) } }
+    AppBackHandler(enabled = !state.groupDialogOpen && !state.groupManagementOpen && !state.reminderEditorOpen) {
+        viewModel.onAction(TaskDetailAction.Back)
+    }
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack,
         bodyContainer = { TaskDetailScreen(state, state.task, viewModel::onAction, onBack) },
         dialogContent = {
@@ -66,6 +69,9 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
             )
             state.missingPermission?.let { PermissionDeniedDialog(it, viewModel::onAction) }
             if (state.confirmSaveWithoutReminder) SaveWithoutReminderDialog(viewModel::onAction)
+            if (state.confirmDiscard) EditCancellationDialog(LiloExtendedTheme.colors.taskColor,
+                onKeepEditing = { viewModel.onAction(TaskDetailAction.KeepEditing) },
+                onDiscard = { viewModel.onAction(TaskDetailAction.Discard) })
         })
 }
 
@@ -90,7 +96,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     BaseFormScreen(
         title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
         accent = accent, textSaveAction = true, saveActionColor = LiloExtendedTheme.colors.taskAction, saveEnabled = !state.isSaving && !state.isLoading,
-        onBack = onBack, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
+        onBack = { onAction(TaskDetailAction.Back); true }, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(com.sepideh.lilo.ui.theme.LiloSpacing.Screen), verticalArrangement = Arrangement.spacedBy(com.sepideh.lilo.ui.theme.LiloSpacing.Section)) {
             if (state.hasError) Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)

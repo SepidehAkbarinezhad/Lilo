@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.stringResource
  BaseRoot(viewModel=viewModel,navigateTo=onNavigateTo,onBack=onBack,bodyContainer={NoteListScreen(state,viewModel::onAction,onBack)},dialogContent={
   if(state.isFilterSheetOpen) NoteFilterSheet(state,viewModel::onAction)
   if(state.isDeleteDialogOpen) DeleteConfirmationDialog(accent=LiloExtendedTheme.colors.noteColor,
-   title=stringResource(Res.string.note_delete_title),message=stringResource(Res.string.note_delete_message),
+   title=stringResource(Res.string.note_delete_title),message=stringResource(Res.string.delete_item_confirmation),
    onConfirm={viewModel.onAction(NoteListAction.ConfirmDelete)},onDismiss={viewModel.onAction(NoteListAction.DismissDelete)})
  })
 }

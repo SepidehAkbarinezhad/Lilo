@@ -30,6 +30,7 @@ class TaskDetailViewModel(
 ) : BaseViewModel() {
     private val local = MutableStateFlow(TaskDetailState())
     private var loadedTaskId: Long? = null
+    private var original = local.value.task
     val stateValue = combine(local, taskGroupRepository.getAllGroups(), languageProvider.languageFlow) { state, groups, language ->
         val items = groups.toPresentationList(language)
         state.copy(groups = items, selectedGroup = items.find { it.id == state.task.groupId })
@@ -39,6 +40,17 @@ class TaskDetailViewModel(
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
+            TaskDetailAction.Back -> if (!local.value.isSaving && !local.value.isLoading && !local.value.isAddingGroup) {
+                val draft = local.value
+                if (draft.task != original || draft.selectedImages.orEmpty().isNotEmpty() || draft.removedImageNames.isNotEmpty()) {
+                    local.update { it.copy(confirmDiscard = true) }
+                } else super.onAction(BaseAction.OnNavigateTo(null))
+            }
+            TaskDetailAction.KeepEditing -> local.update { it.copy(confirmDiscard = false) }
+            TaskDetailAction.Discard -> if (!local.value.isSaving) {
+                local.update { it.copy(confirmDiscard = false) }
+                super.onAction(BaseAction.OnNavigateTo(null))
+            }
             is TaskDetailAction.OnImagesSelected -> if (!local.value.isSaving) {
                 try { local.update { it.copy(selectedImages = com.sepideh.lilo.core.presentation.images.appendImageSelection(it.selectedImages, action.sources, it.task.imageNames.count { name -> name !in it.removedImageNames })) } }
                 catch (_: IllegalArgumentException) { local.update { it.copy(hasError = true) } }
@@ -100,6 +112,7 @@ class TaskDetailViewModel(
                 local.update { it.copy(isLoading = true) }
                 launchOperation {
                     val task = taskRepository.getTaskById(action.taskId) ?: error("Task not found")
+                    original = task
                     local.update { it.copy(task = task, selectedPriority = Priority.getById(task.priority), isLoading = false) }
                 }
             }
@@ -170,7 +183,8 @@ class TaskDetailViewModel(
                 groupId = state.task.groupId.takeIf { id -> stateValue.value.groups.any { it.id == id } } ?: 0,
             )
             val result = mutations.save(task, scheduleReminder = allowed, selectedImages = state.selectedImages)
-            local.update { it.copy(task = task.copy(id = result.id, imageNames = result.imageNames),
+            original = task.copy(id = result.id, imageNames = result.imageNames)
+            local.update { it.copy(task = original,
                 selectedImages = null, removedImageNames = emptySet(), isSaving = false,
                 missingPermission = null, hasError = result.reminderFailed) }
             if (!result.reminderFailed) onAction(BaseAction.OnNavigateTo(null))

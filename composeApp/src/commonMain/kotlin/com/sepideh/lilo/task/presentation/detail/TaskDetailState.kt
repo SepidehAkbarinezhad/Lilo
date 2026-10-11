@@ -13,6 +13,7 @@ data class TaskDetailState(
     val groupManagementOpen: Boolean = false,
     val draftGroupId: Long? = null,
     val isSaving: Boolean = false,
+    val confirmDiscard: Boolean = false,
     val removedImageNames: Set<String> = emptySet(),
     val selectedImages: List<com.sepideh.lilo.core.domain.images.ImageSource>? = null,
     val isLoading: Boolean = false,

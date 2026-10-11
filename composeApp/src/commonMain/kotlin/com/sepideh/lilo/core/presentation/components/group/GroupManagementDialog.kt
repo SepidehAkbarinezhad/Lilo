@@ -64,12 +64,8 @@ fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
                         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
                         keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submitRename() }),
                         colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent))
-                    IconButton(onClick = { submitRename() }, enabled = !isAdding && renameTitle.isNotBlank()) {
-                        Icon(LiloIcons.Check, stringResource(Res.string.confirm_action))
-                    }
-                    IconButton(onClick = { renameId = null; renameTitle = "" }, enabled = !isAdding) {
-                        Icon(LiloIcons.Close, stringResource(Res.string.cancel_button))
-                    }
+                    InlineEditorActions(renameTitle, isAdding, onConfirm = { submitRename() },
+                        onCancel = { renameId = null; renameTitle = "" })
                 }
             }
             if (onCreate != null && renameId == null) InlineGroupEditor(accent, isAdding, addedVersion, onCreate, onEditingChanged = { editing = it })

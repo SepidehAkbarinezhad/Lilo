@@ -39,7 +39,7 @@
     <string name="priority_label">priority</string>
     <string name="hour_label">Hour</string>
     <string name="minute_label">Minute</string>
-    <string name="delete_item_confirmation">Are you sure you want to delete this?</string>
+    <string name="delete_item_confirmation">Are you sure you want to delete this item?</string>
     <string name="confirm_button">ok</string>
     <string name="cancel_button">cancel</string>
     <string name="empty_list_title">List is empty</string>
@@ -74,16 +74,13 @@
     <string name="note_operation_error">Could not complete this action. Please try again.</string>
     <string name="note_retry">Try again</string>
     <string name="note_delete_title">Delete note</string>
-    <string name="note_delete_message">This note and its images will be deleted.</string>
     <string name="note_delete_group_message">Deleting this group leaves its notes ungrouped.</string>
     <string name="note_recent_sort">Recently edited</string>
     <string name="note_title_sort">Title</string>
     <string name="note_images_label">Images</string>
     <string name="note_images_count">%1$d images</string>
     <string name="note_clear_images">Remove images</string>
-    <string name="note_discard_title">Discard changes</string>
     <string name="note_discard_message">Your changes have not been saved.</string>
-    <string name="note_discard_action">Discard</string>
     <string name="note_keep_editing">Keep editing</string>
     <string name="attachment_images">Images</string>
     <string name="attachment_count">%1$d images</string>
@@ -94,4 +91,7 @@
     <string name="attachment_position">%1$d of %2$d</string>
     <string name="attachment_limit">You can attach up to 10 images.</string>
     <string name="attachment_unavailable">Image unavailable</string>
+    <string name="created_on_date">Created %1$s</string>
+    <string name="edit_cancel_title">Edit</string>
+    <string name="edit_cancel_action">Cancel</string>
 </resources>

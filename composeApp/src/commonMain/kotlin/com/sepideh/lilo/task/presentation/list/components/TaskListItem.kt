@@ -49,11 +49,11 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
                         modifier = Modifier.weight(1f).padding(end = 12.dp), color = LiloExtendedTheme.colors.textPrimary)
                     val priority = Priority.getById(task.priority)
                     Icon(org.jetbrains.compose.resources.vectorResource(Res.drawable.lilo_priority_flag),
-                        stringResource(priority.title), Modifier.size(16.dp), tint = priority.color)
+                        stringResource(priority.title), Modifier.size(20.dp), tint = priority.color)
                 }
                 if (hasMetadata) {
                     ItemMetadata(groupLabel, task.imageNames.size,
-                        modifier = Modifier.padding(start = 56.dp, end = 14.dp, bottom = 4.dp),
+                        modifier = Modifier.padding(start = 20.dp, end = 14.dp, bottom = 4.dp),
                         trailing = if (task.reminderAt != null) ({
                             Row(Modifier.widthIn(max = 180.dp).padding(vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
