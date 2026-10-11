@@ -5,6 +5,9 @@ import com.sepideh.lilo.task.presentation.TaskGroupUi
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface TaskDetailAction : BaseAction {
+    data object Back : TaskDetailAction
+    data object Discard : TaskDetailAction
+    data object KeepEditing : TaskDetailAction
     data class OnGroupDraftSelected(val id: Long?) : TaskDetailAction
     data object OnManageGroups : TaskDetailAction
     data object OnCloseManageGroups : TaskDetailAction

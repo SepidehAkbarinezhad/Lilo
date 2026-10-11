@@ -48,17 +48,8 @@ fun FeatureConfirmationContent(
             AppText(text = title, textType = TextType.SectionTitle)
             if (message.isNotBlank()) AppText(text = message, textType = TextType.Body,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, androidx.compose.ui.Alignment.End)) {
-                        Button(onClick = onConfirm, modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.medium,
-                            colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = LiloExtendedTheme.colors.onAccent)) {
-                            AppText(text = confirmLabel, textType = TextType.Action)
-                        }
-                        TextButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
-                            AppText(text = cancelLabel, textType = TextType.Action,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-
-                }
+            DialogActions(accent, confirmLabel, cancelLabel, onConfirm, onCancel,
+                modifier = Modifier.padding(top = 8.dp))
             }
         }
 }

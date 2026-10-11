@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
+import com.sepideh.lilo.core.presentation.components.DialogActions
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -46,15 +47,9 @@ fun FeatureTimePickerContent(hour: Int, minute: Int, accent: Color, onConfirm: (
                     TimeNumberField(minutes, { minutes = it }, stringResource(Res.string.minute_label), 59, accent)
                 }
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = onDismiss) {
-                    AppText(text = Res.string.cancel_button, textType = TextType.Action, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                TextButton(onClick = { if (valid) onConfirm(selectedHour!!, selectedMinute!!) }, enabled = valid,
-                    colors = ButtonDefaults.textButtonColors(contentColor = accent)) {
-                    AppText(text = Res.string.confirm_action, textType = TextType.Action)
-                }
-            }
+            DialogActions(accent, stringResource(Res.string.confirm_action), stringResource(Res.string.cancel_button),
+                onConfirm = { if (valid) onConfirm(selectedHour!!, selectedMinute!!) },
+                onCancel = onDismiss, confirmEnabled = valid)
         }
     }
 }

@@ -46,11 +46,7 @@ fun InlineGroupEditor(accent: Color, busy: Boolean, addedVersion: Int, onCreate:
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { submit() }),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent,
                     focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface))
-            IconButton(onClick = { submit() }, enabled = name.isNotBlank() && !busy) {
-                if (busy) CircularProgressIndicator(Modifier.size(LiloSize.SmallIcon), color = accent)
-                else Icon(LiloIcons.Check, stringResource(Res.string.confirm_action), tint = if (name.isNotBlank()) LiloExtendedTheme.colors.title else LiloExtendedTheme.colors.textDisabled)
-            }
-            IconButton(onClick = { cancel() }, enabled = !busy) { Icon(LiloIcons.Close, stringResource(Res.string.cancel_button), tint = LiloExtendedTheme.colors.textSecondary) }
+            InlineEditorActions(name, busy, onConfirm = { submit() }, onCancel = { cancel() })
         }
     } else {
         TextButton(onClick = { editing = true }, enabled = !busy) {

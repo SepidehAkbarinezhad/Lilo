@@ -74,16 +74,13 @@
     <string name="note_operation_error">انجام این کار ممکن نشد. دوباره تلاش کنید.</string>
     <string name="note_retry">تلاش دوباره</string>
     <string name="note_delete_title">حذف یادداشت</string>
-    <string name="note_delete_message">این یادداشت و تصاویر آن حذف می‌شوند.</string>
     <string name="note_delete_group_message">با حذف این گروه، یادداشت‌های آن بدون گروه باقی می‌مانند.</string>
     <string name="note_recent_sort">آخرین ویرایش</string>
     <string name="note_title_sort">عنوان</string>
     <string name="note_images_label">تصاویر</string>
     <string name="note_images_count">%1$d تصویر</string>
     <string name="note_clear_images">حذف تصاویر</string>
-    <string name="note_discard_title">کنار گذاشتن تغییرات</string>
     <string name="note_discard_message">تغییرات شما ذخیره نشده‌اند.</string>
-    <string name="note_discard_action">کنار گذاشتن</string>
     <string name="note_keep_editing">ادامه ویرایش</string>
     <string name="attachment_images">تصاویر</string>
     <string name="attachment_count">%1$d تصویر</string>
@@ -94,4 +91,7 @@
     <string name="attachment_position">%1$d از %2$d</string>
     <string name="attachment_limit">می‌توانید حداکثر ۱۰ تصویر اضافه کنید.</string>
     <string name="attachment_unavailable">تصویر در دسترس نیست</string>
+    <string name="created_on_date">تاریخ ایجاد: %1$s</string>
+    <string name="edit_cancel_title">ویرایش</string>
+    <string name="edit_cancel_action">انصراف</string>
 </resources>
