@@ -27,7 +27,9 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             notePlatformModule(),
             taskGroupPlatformModule(),
             taskModule,
-            noteModule
+            noteModule,
+            com.sepideh.lilo.password.di.passwordModule,
+            com.sepideh.lilo.password.di.passwordPlatformModule()
         )
     }
 }

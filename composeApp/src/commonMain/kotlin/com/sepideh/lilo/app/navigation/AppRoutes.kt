@@ -35,4 +35,9 @@ sealed class AppRoutes {
 
 
 
+    @Serializable
+    sealed class Passwords : AppRoutes() {
+        @Serializable data object List : AppRoutes()
+        @Serializable data class Detail(val passwordId: String?) : AppRoutes()
+    }
 }

@@ -41,6 +41,7 @@ data class NoteDetailState(
     val isGroupWorking: Boolean = false,
     val groupAddedVersion: Int = 0,
     val hasError: Boolean = false,
+    val duplicateGroupName: Boolean = false,
     val noteMissing: Boolean = false,
     val groupDialogOpen: Boolean = false,
     val groupManagementOpen: Boolean = false,

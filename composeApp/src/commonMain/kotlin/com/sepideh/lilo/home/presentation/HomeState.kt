@@ -4,6 +4,7 @@ import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.home.presentation.model.ReportDetail
 
 data class HomeState(
+    val failedFeatures: Set<LiloFeature> = emptySet(),
     val completingTaskIds: Set<Long> = emptySet(),
     val completionFailed: Boolean = false,
     val reportDetails: Map<LiloFeature, ReportDetail?> =

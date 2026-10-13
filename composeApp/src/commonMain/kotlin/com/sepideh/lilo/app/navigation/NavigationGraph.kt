@@ -90,6 +90,13 @@ fun NavigationGraph(navHostController: NavHostController) {
             NoteDetailScreenRoot(noteId = args.noteId, viewModel = viewModel, onNavigateTo = onNavigate, onBack = onBackPressed)
         }
 
+        composable<AppRoutes.Passwords.List> {
+            com.sepideh.lilo.password.presentation.list.PasswordListScreenRoot(koinViewModel(), onNavigate, onBackPressed)
+        }
+        composable<AppRoutes.Passwords.Detail> {
+            val args = it.toRoute<AppRoutes.Passwords.Detail>()
+            com.sepideh.lilo.password.presentation.detail.PasswordDetailScreenRoot(args.passwordId, koinViewModel(), onNavigate, onBackPressed)
+        }
         composable<AppRoutes.Settings> {
             val viewModel = koinViewModel<SettingsViewModel>()
             SettingsScreenRoot(

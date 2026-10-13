@@ -20,6 +20,7 @@ data class TaskDetailState(
     val isAddingGroup: Boolean = false,
     val groupAddedVersion: Int = 0,
     val hasError: Boolean = false,
+    val duplicateGroupName: Boolean = false,
     val groups: List<TaskGroupUi> = emptyList(),
     val selectedGroup : TaskGroupUi?=null,
     val selectedPriority : Priority = Priority.getById(1),

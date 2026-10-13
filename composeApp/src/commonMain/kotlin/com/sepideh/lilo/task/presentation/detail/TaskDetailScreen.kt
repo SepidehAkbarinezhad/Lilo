@@ -58,11 +58,12 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissGroupDialog) },
             )
             if (state.groupManagementOpen) GroupManagementDialog(
+                closeActionColor = LiloExtendedTheme.colors.taskAction,
                 selectedId = state.draftGroupId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
                 onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewGroup(it)) },
                 accent = LiloExtendedTheme.colors.taskColor,
                 groups = state.groups.filter { it.isDeletable }.map { GroupOption(it.id, it.title, it.isDeletable, it.isEditable) },
-                errorMessage = if (state.hasError) stringResource(Res.string.task_operation_error) else null,
+                errorMessage = if (state.duplicateGroupName) stringResource(Res.string.group_name_exists) else if (state.hasError) stringResource(Res.string.task_operation_error) else null,
                 onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteGroup(it)) },
                 onRename = { id, title -> viewModel.onAction(TaskDetailAction.OnRenameGroup(id, title)) },
                 onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },

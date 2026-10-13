@@ -10,14 +10,20 @@ data class TaskReportDetail(
     val remainingCount: Int,
     override val subTitleReportCount: Int,
     val nextTaskId: Long? = null,
-) : ReportDetail
+    val nextTaskPriority: Int? = null,
+    val nextTaskDone: Boolean = false,
+    val nextTaskDescription: String = "",
+) : ReportDetail {
+    val completedCount: Int get() = (subTitleReportCount - remainingCount).coerceAtLeast(0)
+}
 
 data class NoteReportDetail(
     val latestTitle: String,
     val latestSnippet: String,
     val totalCount: Int,
     val thumbnailUrl: String?,
-    override val subTitleReportCount: Int
+    override val subTitleReportCount: Int,
+    val latestUpdatedAt: Long? = null,
 ) : ReportDetail
 
 data class ExpenseReportDetail(
@@ -30,6 +36,8 @@ data class ExpenseReportDetail(
 data class PasswordReportDetail(
     val totalAccounts: Int,
     val lastAddedService: String,
-    val lastAddedEmail: String,
-    override val subTitleReportCount: Int
+    val lastAddedIdentifier: String,
+    override val subTitleReportCount: Int,
+    val lastAddedServiceId: String? = null,
+    val lastAddedAt: Long? = null,
 ) : ReportDetail

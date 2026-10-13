@@ -32,7 +32,10 @@ kotlin {
     }
     //composeApp/build.gradle.kts
     sourceSets {
-        commonTest.dependencies { implementation(libs.kotlin.test) }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
         androidMain.dependencies {
             implementation(libs.persian.date.picker)
             implementation(compose.preview)

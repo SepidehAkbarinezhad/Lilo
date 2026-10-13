@@ -69,3 +69,5 @@ val LavenderDark = Color(0xFFD3C1E7)
 
 // Dark feature tones for icons on pastel feature buttons.
 val CoralActionLight = Color(0xFF8B4F37)
+
+val LavenderActionLight = Color(0xFF71518E)

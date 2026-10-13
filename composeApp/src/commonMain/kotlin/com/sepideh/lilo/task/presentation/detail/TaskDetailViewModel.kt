@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.presentation.detail
 
+import com.sepideh.lilo.core.domain.validation.DuplicateNameException
 import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.task.domain.TaskGroupFactory
 import com.sepideh.lilo.task.domain.repository.TaskGroupRepository
@@ -118,8 +119,8 @@ class TaskDetailViewModel(
             }
 
             TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
-            TaskDetailAction.OnManageGroups -> local.update { it.copy(groupManagementOpen = true) }
-            TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(groupManagementOpen = false) }
+            TaskDetailAction.OnManageGroups -> local.update { it.copy(groupManagementOpen = true, duplicateGroupName = false) }
+            TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(groupManagementOpen = false, duplicateGroupName = false) }
             is TaskDetailAction.OnDeleteGroup -> launchOperation {
                 if (stateValue.value.groups.none { it.id == action.groupId && it.isDeletable }) return@launchOperation
                 taskRepository.clearGroup(action.groupId)
@@ -134,11 +135,10 @@ class TaskDetailViewModel(
 
     private fun addGroup(title: String) {
         if (title.isBlank() || local.value.isAddingGroup) return
-        local.update { it.copy(isAddingGroup = true, hasError = false) }
+        local.update { it.copy(isAddingGroup = true, hasError = false, duplicateGroupName = false) }
         launchOperation {
             val normalized = title.trim()
-            val existing = stateValue.value.groups.firstOrNull { it.title.equals(normalized, ignoreCase = true) }
-            val id = existing?.id ?: taskGroupRepository.addGroup(taskGroupFactory.create(normalized))
+            val id = taskGroupRepository.addGroup(taskGroupFactory.create(normalized))
             local.update { it.copy(draftGroupId = id, isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
         }
     }
@@ -147,7 +147,7 @@ class TaskDetailViewModel(
         val normalized = title.trim()
         if (normalized.isEmpty() || local.value.isAddingGroup) return
         if (stateValue.value.groups.none { it.id == id && it.isEditable }) return
-        local.update { it.copy(isAddingGroup = true, hasError = false) }
+        local.update { it.copy(isAddingGroup = true, hasError = false, duplicateGroupName = false) }
         launchOperation {
             val existing = taskGroupRepository.getGroupById(id) ?: error("Group not found")
             if (existing.isDefault) {
@@ -169,7 +169,7 @@ class TaskDetailViewModel(
             local.update { it.copy(titleError = it.titleError.copy(isSuccessful = false, messageId = Res.string.error_empty_field_label)) }
             return
         }
-        local.update { it.copy(isSaving = true, hasError = false) }
+        local.update { it.copy(isSaving = true, hasError = false, duplicateGroupName = false) }
         launchOperation {
             val state = local.value
             val missing = permissions.missingPermission()
@@ -199,6 +199,7 @@ class TaskDetailViewModel(
     private fun launchOperation(block: suspend () -> Unit) {
         viewModelScope.launch {
             try { block() } catch (e: CancellationException) { throw e }
+            catch (_: DuplicateNameException) { local.update { it.copy(duplicateGroupName = true, isAddingGroup = false) } }
             catch (_: Exception) { local.update { it.copy(hasError = true, isSaving = false, isLoading = false, isAddingGroup = false, awaitingPermissionReturn = false) } }
         }
     }

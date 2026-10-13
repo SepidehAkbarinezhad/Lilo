@@ -24,9 +24,13 @@ fun DeleteConfirmationDialog(
     title: String = stringResource(Res.string.delete_confirmation_title),
     message: String = stringResource(Res.string.delete_item_confirmation),
     confirmFirst: Boolean = false,
+    confirmEnabled: Boolean = true,
+    cancelEnabled: Boolean = true,
+    content: (@Composable () -> Unit)? = null,
 ) {
-    Dialog(onDismissRequest = onDismiss) {
-        FeatureConfirmationContent(accent, title, message, onConfirm, onDismiss)
+    Dialog(onDismissRequest = { if (cancelEnabled) onDismiss() }) {
+        FeatureConfirmationContent(accent, title, message, onConfirm, onDismiss,
+            confirmEnabled = confirmEnabled, cancelEnabled = cancelEnabled, content = content)
     }
 }
 
@@ -41,6 +45,9 @@ fun FeatureConfirmationContent(
     confirmLabel: String = stringResource(Res.string.delete_action),
     cancelLabel: String = stringResource(Res.string.cancel_button),
     onCancel: () -> Unit = onDismiss,
+    confirmEnabled: Boolean = true,
+    cancelEnabled: Boolean = true,
+    content: (@Composable () -> Unit)? = null,
 ) {
     Surface(modifier = modifier.widthIn(max = 360.dp), shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
@@ -48,8 +55,10 @@ fun FeatureConfirmationContent(
             AppText(text = title, textType = TextType.SectionTitle)
             if (message.isNotBlank()) AppText(text = message, textType = TextType.Body,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
+            content?.invoke()
             DialogActions(accent, confirmLabel, cancelLabel, onConfirm, onCancel,
-                modifier = Modifier.padding(top = 8.dp))
+                modifier = Modifier.padding(top = 8.dp),
+                confirmEnabled = confirmEnabled, cancelEnabled = cancelEnabled)
             }
         }
 }

@@ -1,0 +1,118 @@
+package com.sepideh.lilo.password.data
+
+import com.sepideh.lilo.password.domain.SealedPassword
+import com.sepideh.lilo.password.domain.PasswordUnlockRequest
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import com.sepideh.lilo.password.domain.UnlockResult
+import com.sepideh.lilo.password.domain.VaultKeyUnavailableException
+import kotlinx.cinterop.*
+import kotlinx.coroutines.*
+import platform.CoreCrypto.*
+import platform.CoreFoundation.*
+import platform.Foundation.*
+import platform.LocalAuthentication.*
+import platform.Security.*
+import platform.UIKit.*
+
+@OptIn(ExperimentalForeignApi::class)
+internal fun cfObject(pointer: CFTypeRef?): Any = requireNotNull(CFBridgingRelease(CFRetain(pointer)))
+@OptIn(ExperimentalForeignApi::class)
+internal fun keyAttributes(): Map<Any?, Any?> = mapOf(
+    cfObject(kSecClass) to cfObject(kSecClassGenericPassword),
+    cfObject(kSecAttrService) to "com.sepideh.lilo.passwords.v1",
+    cfObject(kSecAttrAccount) to "vault-key",
+)
+@OptIn(ExperimentalForeignApi::class)
+internal fun <T> withDictionary(values: Map<Any?, Any?>, block: (CFDictionaryRef) -> T): T {
+    val dictionary: CFDictionaryRef = requireNotNull(CFBridgingRetain(values)).reinterpret()
+    return try { block(dictionary) } finally { CFRelease(dictionary) }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun passwordDirectory(): String {
+    val manager = NSFileManager.defaultManager
+    val root = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, true).first() as String
+    val path = "$root/LiloPasswords"
+    check(manager.createDirectoryAtPath(path, true, mapOf(NSFileProtectionKey to NSFileProtectionComplete), null))
+    val marker = "$path/install.marker"
+    if (!manager.fileExistsAtPath(marker)) {
+        // Keychain can outlive uninstall; a fresh local install must not reuse the old key.
+        withDictionary(keyAttributes()) { SecItemDelete(it) }
+        withDictionary(IosRecordKeys.query()) { SecItemDelete(it) }
+        check(manager.createFileAtPath(marker, NSData(), null))
+    }
+    check(NSURL.fileURLWithPath(path).setResourceValue(true, NSURLIsExcludedFromBackupKey, null))
+    return path
+}
+
+@OptIn(ExperimentalForeignApi::class)
+class IosVaultCrypto : SessionVaultCrypto() {
+    private val writes = Mutex()
+    private var authentication: LAContext? = null
+    private var attempt = 0
+    fun cancelUnlock() { attempt++; authentication?.invalidate(); authentication = null }
+
+    suspend fun unlock(reason: String, request: PasswordUnlockRequest): UnlockResult {
+        lock()
+        val context = LAContext()
+        if (!context.canEvaluatePolicy(LAPolicyDeviceOwnerAuthentication, null)) { context.invalidate(); return UnlockResult.UNAVAILABLE }
+        val token = ++attempt
+        authentication = context
+        var pendingKey: ByteArray? = null
+        return try {
+            passwordDirectory()
+            val key = withContext(Dispatchers.Default) {
+                val bytes = if (request.sealed.format == 4) {
+                    IosRecordKeys.unwrap(request.sealed.wrappedKey, context, reason)
+                } else {
+                    require(request.sealed.format == 2)
+                    memScoped {
+                        val result = alloc<CFTypeRefVar>(); result.value = null
+                        val status = withDictionary(keyAttributes() + mapOf(cfObject(kSecReturnData) to true,
+                            cfObject(kSecUseAuthenticationContext) to context, cfObject(kSecUseOperationPrompt) to reason)) {
+                            SecItemCopyMatching(it, result.ptr)
+                        }
+                        if (status == errSecItemNotFound) throw VaultKeyUnavailableException()
+                        if (status == errSecUserCanceled) null else {
+                            check(status == errSecSuccess)
+                            val data = CFBridgingRelease(result.value) as NSData
+                            data.bytes!!.reinterpret<ByteVar>().readBytes(data.length.toInt())
+                        }
+                    }
+                }
+                bytes?.also { pendingKey = it; require(it.size == 64) }
+            }
+            pendingKey = key
+            if (key == null) UnlockResult.CANCELLED
+            else withContext(Dispatchers.Main.immediate) {
+                if (token != attempt || UIApplication.sharedApplication.applicationState != UIApplicationState.UIApplicationStateActive) {
+                    key.fill(0); UnlockResult.CANCELLED
+                } else { acceptAuthenticatedKey(key, request.id); UnlockResult.SUCCESS }
+            }
+        } catch (e: CancellationException) { context.invalidate(); throw e }
+        catch (_: VaultKeyUnavailableException) { UnlockResult.KEY_UNAVAILABLE }
+        catch (_: Exception) { UnlockResult.FAILED }
+        finally { pendingKey?.fill(0); context.invalidate(); if (authentication === context) authentication = null }
+    }
+
+    override suspend fun seal(plaintext: ByteArray, recordId: String): SealedPassword = withContext(Dispatchers.Default) {
+        writes.withLock {
+            val key = randomBytes(64)
+            try {
+                val wrapped = IosRecordKeys.wrap(key)
+                IosPasswordCipher.encrypt(key, plaintext, "lilo-password-v1:$recordId".encodeToByteArray())
+                    .copy(format = 4, wrappedKey = wrapped)
+            } finally { key.fill(0) }
+        }
+    }
+
+    override suspend fun encrypt(key: ByteArray, plaintext: ByteArray, aad: ByteArray) = IosPasswordCipher.encrypt(key, plaintext, aad)
+    override suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray): ByteArray {
+        require(record.format == 2 || record.format == 4)
+        return IosPasswordCipher.decrypt(key, record.copy(format = 2), aad)
+    }
+    private fun randomBytes(size: Int): ByteArray = ByteArray(size).also { data ->
+        data.usePinned { check(SecRandomCopyBytes(kSecRandomDefault, size.toULong(), it.addressOf(0)) == errSecSuccess) }
+    }
+}

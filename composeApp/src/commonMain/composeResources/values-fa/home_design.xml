@@ -1,10 +1,18 @@
 <resources>
     <string name="home_settings_action">تنظیمات</string>
     <string name="home_add_feature">افزودن %1$s</string>
-    <string name="home_recent">آخرین موارد</string>
     <string name="home_tasks_remaining">%1$d فعالیت باقی‌مانده</string>
     <string name="home_no_tasks">هنوز فعالیتی اضافه نشده است</string>
     <string name="home_tasks_done">همه فعالیت‌ها انجام شده‌اند</string>
     <string name="home_no_notes">هنوز یادداشتی اضافه نشده است</string>
     <string name="home_open_list">نمایش فهرست %1$s</string>
+    <string name="home_task_slogan">لذت تیک زدن کارهات رو از دست نده</string>
+    <string name="home_note_slogan">بنویسش، خیالت رو راحت کن</string>
+    <string name="home_password_slogan">رمزش با تو، حفظش با لیلو</string>
+    <string name="home_total_tasks">فعالیت‌ها</string>
+    <string name="home_remaining_tasks">باقی‌مانده</string>
+    <string name="home_completed_tasks">انجام‌شده</string>
+    <string name="home_total_notes">یادداشت‌ها</string>
+    <string name="home_total_passwords">گذرواژه‌ها</string>
+    <string name="home_yesterday">دیروز</string>
 </resources>
