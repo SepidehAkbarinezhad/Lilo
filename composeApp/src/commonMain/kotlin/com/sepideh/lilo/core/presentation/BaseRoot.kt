@@ -8,6 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,16 +27,16 @@ fun BaseRoot(
     dialogContent: @Composable () -> Unit = {}
 ) {
 
-    val oneTimeEvents by viewModel.baseOneTimeEvents.collectAsStateWithLifecycle(
-        BaseOneTimeEvents()
-    )
     val baseUiState by viewModel.baseUiStateValue.collectAsStateWithLifecycle()
-
-    LaunchedEffect(oneTimeEvents) {
-        if(oneTimeEvents.navigateBack)
-            onBack()
-        oneTimeEvents.route?.let {
-            navigateTo(it)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val currentNavigateTo by rememberUpdatedState(navigateTo)
+    val currentOnBack by rememberUpdatedState(onBack)
+    LaunchedEffect(viewModel, lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.baseOneTimeEvents.collect { event ->
+                if (event.navigateBack) currentOnBack()
+                event.route?.let(currentNavigateTo)
+            }
         }
     }
     DisposableEffect(Unit) {

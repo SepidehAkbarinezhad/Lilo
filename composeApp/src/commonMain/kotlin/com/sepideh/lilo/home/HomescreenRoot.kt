@@ -16,15 +16,12 @@ import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseScreen
 import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
-import com.sepideh.lilo.home.domain.FeatureCardFactory
-import com.sepideh.lilo.home.domain.fakeFeatureCardFactory
 import com.sepideh.lilo.home.presentation.HomeAction
 import com.sepideh.lilo.home.presentation.HomeState
 import com.sepideh.lilo.home.presentation.HomeViewModel
 import com.sepideh.lilo.home.presentation.components.FeatureCardShell
 import com.sepideh.lilo.home.presentation.components.HomeHeader
 import com.sepideh.lilo.home.presentation.model.LiloFeature
-import org.koin.compose.koinInject
 import com.sepideh.lilo.app.navigation.routeForAdding
 import com.sepideh.lilo.app.navigation.routeForList
 
@@ -50,7 +47,6 @@ fun HomescreenRoot(
 
 @Composable
 fun HomeScreenContent(
-    featureCardFactory: FeatureCardFactory = koinInject(),
     state: HomeState,
     onAction: (BaseAction) -> Unit,
 ) {
@@ -72,7 +68,6 @@ fun HomeScreenContent(
                 }
 
                 FeatureCardShell(
-                    featureCardFactory = featureCardFactory,
                     feature = feature,
                     onAddClick = {
                         onAction(
@@ -84,7 +79,9 @@ fun HomeScreenContent(
                     ) },
                     onCompleteTask = { onAction(HomeAction.CompleteTask(it)) },
                     completingTaskIds = state.completingTaskIds,
-                    detail = state.reportDetails[feature]
+                    detail = state.reportDetails[feature],
+                    reportFailed = feature in state.failedFeatures,
+                    onRetryReport = { onAction(HomeAction.RetryFeature(feature)) },
                 )
             }
         }
@@ -97,7 +94,6 @@ fun HomeScreenContent(
 private fun HomePreview() {
     LiloPreviewWrapper {
         HomeScreenContent(
-            featureCardFactory = fakeFeatureCardFactory(),
             state = HomeState( ),
             onAction = {},
         )

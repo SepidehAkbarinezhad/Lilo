@@ -1,10 +1,18 @@
 <resources>
     <string name="home_settings_action">Settings</string>
     <string name="home_add_feature">Add %1$s</string>
-    <string name="home_recent">Recent</string>
     <string name="home_tasks_remaining">%1$d remaining</string>
     <string name="home_no_tasks">No tasks added yet</string>
     <string name="home_tasks_done">All activities completed</string>
     <string name="home_no_notes">No notes added yet</string>
     <string name="home_open_list">Open %1$s list</string>
+    <string name="home_task_slogan">Enjoy ticking off your to-dos</string>
+    <string name="home_note_slogan">Write it down. Put your mind at ease.</string>
+    <string name="home_password_slogan">You choose it. Lilo keeps it safe.</string>
+    <string name="home_total_tasks">Tasks</string>
+    <string name="home_remaining_tasks">Remaining</string>
+    <string name="home_completed_tasks">Completed</string>
+    <string name="home_total_notes">Notes</string>
+    <string name="home_total_passwords">Passwords</string>
+    <string name="home_yesterday">Yesterday</string>
 </resources>

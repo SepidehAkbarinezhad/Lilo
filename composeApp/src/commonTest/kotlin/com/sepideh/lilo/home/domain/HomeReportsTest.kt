@@ -7,19 +7,38 @@ import kotlin.test.*
 class HomeReportsTest {
     @Test fun taskPreviewSkipsCompletedActivitiesAndCountsActualRemaining() {
         val report = taskHomeReport(listOf(Task(title = "Old", createdAt = 1),
-            Task(title = "Completed", done = true, createdAt = 3), Task(id = 42, title = "Latest", createdAt = 2)))
+            Task(title = "Completed", done = true, createdAt = 3), Task(id = 42, title = "Latest", description = "First line\nSecond line", createdAt = 2)))
         assertEquals("Latest", report.nextTaskTitle)
+        assertEquals("First line\nSecond line", report.nextTaskDescription)
+        assertFalse(report.nextTaskDone)
         assertEquals(42L, report.nextTaskId)
         assertEquals(2, report.remainingCount)
+        assertEquals(1, report.completedCount)
+        assertEquals(0, report.nextTaskPriority)
         assertEquals(3, report.subTitleReportCount)
     }
-    @Test fun completedAndEmptyTaskListsRemainDistinguishable() {
-        assertEquals(0, taskHomeReport(emptyList()).subTitleReportCount)
-        val completed = taskHomeReport(listOf(Task(done = true)))
-        assertEquals(1, completed.subTitleReportCount)
-        assertEquals(0, completed.remainingCount)
-        assertNull(completed.nextTaskTitle)
-        assertNull(completed.nextTaskId)
+    @Test fun emptyTaskListHasNoPreview() {
+        val report = taskHomeReport(emptyList())
+        assertEquals(0, report.subTitleReportCount)
+        assertNull(report.nextTaskTitle)
+        assertNull(report.nextTaskId)
+        assertFalse(report.nextTaskDone)
+        assertEquals("", report.nextTaskDescription)
+    }
+    @Test fun allCompletedShowsNewestCreatedTaskEvenIfOlderTaskWasFinishedLater() {
+        val report = taskHomeReport(listOf(
+            Task(id = 1, title = "Old", done = true, createdAt = 1, updatedAt = 100, completedAt = 100),
+            Task(id = 2, title = "Newest", description = "Completed description", done = true, createdAt = 3, completedAt = 4, priority = 2),
+            Task(id = 3, title = "Middle", done = true, createdAt = 2, completedAt = 5),
+        ))
+        assertEquals("Newest", report.nextTaskTitle)
+        assertEquals(2L, report.nextTaskId)
+        assertTrue(report.nextTaskDone)
+        assertEquals("Completed description", report.nextTaskDescription)
+        assertEquals(2, report.nextTaskPriority)
+        assertNull(report.nextTaskTime)
+        assertEquals(0, report.remainingCount)
+        assertEquals(3, report.completedCount)
     }
     @Test fun notePreviewUsesLatestEditRegardlessOfInputOrder() {
         val report = noteHomeReport(listOf(Note(1, "Updated", "Content", createdAt = 1, updatedAt = 3),
@@ -27,6 +46,8 @@ class HomeReportsTest {
         assertEquals("Updated", report.latestTitle)
         assertEquals("Content", report.latestSnippet)
         assertEquals(2, report.totalCount)
+        assertEquals(3L, report.latestUpdatedAt)
+        assertNull(noteHomeReport(emptyList()).latestUpdatedAt)
         assertEquals(0, noteHomeReport(emptyList()).totalCount)
     }
 

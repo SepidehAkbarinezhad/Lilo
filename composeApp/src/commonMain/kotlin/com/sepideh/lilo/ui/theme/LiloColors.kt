@@ -21,6 +21,8 @@ data class LiloColors(
     val onPrioritySelected: Color,
     val taskAction: Color,
     val noteAction: Color,
+    val passwordAction: Color,
+    val onPasswordAccent: Color,
     val onTaskAccent: Color,
     val onNoteAccent: Color,
     val success: Color,
@@ -33,7 +35,7 @@ val LiloColorsLight = LiloColors(
     taskColor = SageLight, noteColor = CoralLight, expenseColor = BlueLight, passwordColor = LavenderLight,
     title = Color(0xFF183B50), textPrimary = Color(0xFF46566C), textSecondary = Color(0xFF5F6F83),
     textSupporting = Color(0xFF667488), textPlaceholder = Color(0xFF657487), textDisabled = Color(0xFF9BA5B2),
-    onAccent = Color(0xFF183B50), onPrioritySelected = White, taskAction = SageActionLight, noteAction = CoralActionLight,
+    onAccent = Color(0xFF183B50), onPrioritySelected = White, taskAction = SageActionLight, noteAction = CoralActionLight, passwordAction = LavenderActionLight, onPasswordAccent = LavenderActionLight,
     onTaskAccent = SageActionLight, onNoteAccent = CoralActionLight, success = Color(0xFF388456),
     priorityHigh = Color(0xFFF05262),priorityMedium = Color(0xFFFFC107) ,priorityLow = Color(0xFF32BF99),
 )
@@ -41,7 +43,7 @@ val LiloColorsDark = LiloColors(
     taskColor = SageDark, noteColor = CoralDark, expenseColor = BlueDark, passwordColor = LavenderDark,
     title = Color(0xFFE6ECF3), textPrimary = Color(0xFFD8E0EA), textSecondary = Color(0xFFBAC6D4),
     textSupporting = Color(0xFFA6B3C4), textPlaceholder = Color(0xFF97A5B7), textDisabled = Color(0xFF748191),
-    onAccent = Color(0xFF183B50), onPrioritySelected = White, taskAction = SageDark, noteAction = CoralDark,
+    onAccent = Color(0xFF183B50), onPrioritySelected = White, taskAction = SageDark, noteAction = CoralDark, passwordAction = LavenderDark, onPasswordAccent = LavenderActionLight,
     onTaskAccent = SageActionLight, onNoteAccent = CoralActionLight, success = Color(0xFF83CC9B),
     priorityHigh = Color(0xFFFF8090), priorityMedium = Color(0xFFF2C166),priorityLow = Color(0xFF72D5B5),
 )

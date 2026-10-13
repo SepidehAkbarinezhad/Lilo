@@ -1,5 +1,6 @@
 package com.sepideh.lilo.note.presentation.detail
 
+import com.sepideh.lilo.core.domain.validation.DuplicateNameException
 import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
@@ -63,17 +64,17 @@ class NoteDetailViewModel(
             NoteDetailAction.DismissGroups -> local.update { it.copy(groupDialogOpen = false, draftGroupId = null) }
             is NoteDetailAction.DraftGroup -> local.update { it.copy(draftGroupId = action.id) }
             NoteDetailAction.ConfirmGroup -> if (!local.value.isGroupWorking) local.update { it.copy(note = it.note.copy(groupId = it.draftGroupId), groupDialogOpen = false) }
-            NoteDetailAction.ManageGroups -> local.update { it.copy(groupManagementOpen = true) }
-            NoteDetailAction.CloseManagement -> if (!local.value.isGroupWorking) local.update { it.copy(groupManagementOpen = false) }
+            NoteDetailAction.ManageGroups -> local.update { it.copy(groupManagementOpen = true, duplicateGroupName = false) }
+            NoteDetailAction.CloseManagement -> if (!local.value.isGroupWorking) local.update { it.copy(groupManagementOpen = false, duplicateGroupName = false) }
             is NoteDetailAction.AddGroup -> addGroup(action.title)
             is NoteDetailAction.RenameGroup -> renameGroup(action.id, action.title)
             is NoteDetailAction.DeleteGroup -> deleteGroup(action.id)
-            NoteDetailAction.Retry -> { refresh.update { it + 1 }; if (local.value.noteMissing || local.value.isLoading) load() else local.update { it.copy(hasError = false) } }
+            NoteDetailAction.Retry -> { refresh.update { it + 1 }; if (local.value.noteMissing || local.value.isLoading) load() else local.update { it.copy(hasError = false, duplicateGroupName = false) } }
         }
     }
 
     private fun load() {
-        local.update { it.copy(isLoading = true, hasError = false, noteMissing = false) }
+        local.update { it.copy(isLoading = true, hasError = false, duplicateGroupName = false, noteMissing = false) }
         operation {
             val note = requestedId?.let { requireNotNull(noteRepository.getNoteById(it)) } ?: Note()
             original = note
@@ -87,7 +88,7 @@ class NoteDetailViewModel(
             local.update { it.copy(titleError = ValidationStatus(isSuccessful = false, messageId = Res.string.error_empty_field_label, args = arrayOf(Res.string.title_label))) }
             return
         }
-        local.update { it.copy(isSaving = true, hasError = false) }
+        local.update { it.copy(isSaving = true, hasError = false, duplicateGroupName = false) }
         operation {
             // Resolve a persisted ID, never an option's position; deleted groups become no group.
             val groupId = draft.note.groupId?.takeIf { groupRepository.getGroupById(it) != null }
@@ -99,17 +100,16 @@ class NoteDetailViewModel(
     }
     private fun addGroup(title: String) {
         if (title.isBlank() || local.value.isGroupWorking) return
-        local.update { it.copy(isGroupWorking = true, hasError = false) }
+        local.update { it.copy(isGroupWorking = true, hasError = false, duplicateGroupName = false) }
         operation {
             val normalized = title.trim()
-            val duplicate = state.value.groups.firstOrNull { it.label.equals(normalized, ignoreCase = true) }
-            val id = duplicate?.id ?: groupRepository.upsertGroup(NoteGroup.create(normalized, languageProvider.currentLanguage))
+            val id = groupRepository.upsertGroup(NoteGroup.create(normalized, languageProvider.currentLanguage))
             local.update { it.copy(draftGroupId = id, isGroupWorking = false, groupAddedVersion = it.groupAddedVersion + 1) }
         }
     }
     private fun renameGroup(id: Long, title: String) {
         if (title.isBlank() || local.value.isGroupWorking) return
-        local.update { it.copy(isGroupWorking = true, hasError = false) }
+        local.update { it.copy(isGroupWorking = true, hasError = false, duplicateGroupName = false) }
         operation {
             val group = requireNotNull(groupRepository.getGroupById(id))
             if (!group.isDefault) groupRepository.upsertGroup(group.renamed(title, languageProvider.currentLanguage))
@@ -118,7 +118,7 @@ class NoteDetailViewModel(
     }
     private fun deleteGroup(id: Long) {
         if (local.value.isGroupWorking) return
-        local.update { it.copy(isGroupWorking = true, hasError = false) }
+        local.update { it.copy(isGroupWorking = true, hasError = false, duplicateGroupName = false) }
         operation {
             groupRepository.deleteGroup(id)
             if (original.groupId == id) original = original.copy(groupId = null)
@@ -131,6 +131,7 @@ class NoteDetailViewModel(
         viewModelScope.launch {
             try { block() }
             catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: DuplicateNameException) { local.update { it.copy(duplicateGroupName = true, isGroupWorking = false) } }
             catch (_: Exception) { local.update { it.copy(hasError = true, noteMissing = it.isLoading && requestedId != null,
                 isSaving = false, isLoading = false, isGroupWorking = false) } }
         }

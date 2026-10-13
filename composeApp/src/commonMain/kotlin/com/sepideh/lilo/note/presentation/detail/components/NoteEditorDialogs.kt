@@ -11,9 +11,9 @@ import org.jetbrains.compose.resources.stringResource
  val accent=LiloExtendedTheme.colors.noteColor
  if(state.groupDialogOpen) GroupSelectionSheet(groups=state.groups,selectedId=state.draftGroupId,accent=accent,addedVersion=state.groupAddedVersion,
   onSelect={action(NoteDetailAction.DraftGroup(it))},onManage={action(NoteDetailAction.ManageGroups)},onConfirm={action(NoteDetailAction.ConfirmGroup)},onDismiss={action(NoteDetailAction.DismissGroups)})
- if(state.groupManagementOpen) GroupManagementDialog(groups=state.groups,accent=accent,selectedId=state.draftGroupId,isAdding=state.isGroupWorking,addedVersion=state.groupAddedVersion,
+ if(state.groupManagementOpen) GroupManagementDialog(groups=state.groups,accent=accent,closeActionColor=LiloExtendedTheme.colors.noteAction,selectedId=state.draftGroupId,isAdding=state.isGroupWorking,addedVersion=state.groupAddedVersion,
   onCreate={action(NoteDetailAction.AddGroup(it))},onRename={id,title->action(NoteDetailAction.RenameGroup(id,title))},onDelete={action(NoteDetailAction.DeleteGroup(it))},onDismiss={action(NoteDetailAction.CloseManagement)},
-  errorMessage=if(state.hasError) stringResource(Res.string.note_operation_error) else null,deleteMessage=stringResource(Res.string.note_delete_group_message))
+  errorMessage=if(state.duplicateGroupName) stringResource(Res.string.group_name_exists) else if(state.hasError) stringResource(Res.string.note_operation_error) else null,deleteMessage=stringResource(Res.string.note_delete_group_message))
  if(state.confirmDiscard) EditCancellationDialog(accent,
   onKeepEditing={action(NoteDetailAction.KeepEditing)},onDiscard={action(NoteDetailAction.Discard)})
 }

@@ -33,6 +33,7 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
         when (action) {
             is HomeAction.CompleteTask -> completeTask(action.id)
             is HomeAction.ObserveFeature -> observeFeature(action.feature)
+            is HomeAction.RetryFeature -> if (action.feature in _state.value.failedFeatures) observeFeature(action.feature)
         }
     }
 
@@ -50,6 +51,7 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
     private fun observeFeature(feature: LiloFeature) {
         if (!observedFeatures.add(feature)) return // already subscribed
 
+        _state.update { it.copy(failedFeatures = it.failedFeatures - feature) }
         featureCardFactory.cardFor(feature)
             .getReportDetailStrategy()
             .observeReportDetail()
@@ -58,13 +60,13 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
                     current.copy(reportDetails = current.reportDetails + (feature to detail))
                 }
             }
-            .catch { /* TODO: per-feature error state */ }
+            .catch {
+                observedFeatures.remove(feature)
+                _state.update { it.copy(failedFeatures = it.failedFeatures + feature) }
+            }
             .launchIn(viewModelScope)
     }
 
-    private fun handleAdd(feature: LiloFeature) { }
-    private fun handleMore(feature: LiloFeature) {  }
-    private fun handleCardClick(feature: LiloFeature) {  }
 
 
 }

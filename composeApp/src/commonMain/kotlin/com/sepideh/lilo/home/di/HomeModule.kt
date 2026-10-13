@@ -13,6 +13,7 @@ val homeModule = module {
 
     single { TaskFeatureCardImpl(get()) } bind FeatureCard::class
     single { NoteFeatureCardImpl(get()) } bind FeatureCard::class
+    single { com.sepideh.lilo.home.domain.PasswordFeatureCardImpl(get()) } bind FeatureCard::class
 
 
     single { FeatureCardFactory(getAll()) }

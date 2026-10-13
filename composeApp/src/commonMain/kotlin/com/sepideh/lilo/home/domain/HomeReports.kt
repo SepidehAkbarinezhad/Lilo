@@ -21,14 +21,15 @@ internal fun taskHomeReport(
             ?.let { task to it }
     }.minByOrNull { it.second }
     val selected = nextToday?.first ?: remaining.maxByOrNull { it.createdAt }
+        ?: tasks.maxByOrNull { it.createdAt }
     val time = nextToday?.second?.let {
         val local = kotlin.time.Instant.fromEpochMilliseconds(it).toLocalDateTime(zone)
         "${local.hour.toString().padStart(2, '0')}:${local.minute.toString().padStart(2, '0')}"
     }
-    return TaskReportDetail(selected?.title, time, remaining.size, tasks.size, selected?.id)
+    return TaskReportDetail(selected?.title, time, remaining.size, tasks.size, selected?.id, selected?.priority, selected?.done == true, selected?.description.orEmpty())
 }
 
 internal fun noteHomeReport(notes: List<Note>): NoteReportDetail {
     val latest = notes.maxByOrNull { it.updatedAt }
-    return NoteReportDetail(latest?.title.orEmpty(), latest?.content.orEmpty(), notes.size, null, notes.size)
+    return NoteReportDetail(latest?.title.orEmpty(), latest?.content.orEmpty(), notes.size, null, notes.size, latest?.updatedAt)
 }

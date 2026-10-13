@@ -1,140 +1,100 @@
 package com.sepideh.lilo.home.presentation.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
-import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.*
-import com.sepideh.lilo.core.presentation.icons.LiloIcons
-import com.sepideh.lilo.core.presentation.format.localizedDigits
-import com.sepideh.lilo.home.domain.FeatureCardFactory
 import com.sepideh.lilo.home.presentation.model.*
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
+import com.sepideh.lilo.password.presentation.list.components.PasswordServiceIcon
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
-import org.jetbrains.compose.resources.vectorResource
 
-/** Stacked cards grow independently as each feature becomes available. */
+/** Assembles the heading and report; each feature owns its report layout. */
 @Composable
 fun FeatureCardShell(
-    featureCardFactory: FeatureCardFactory,
     feature: LiloFeature,
     onAddClick: () -> Unit,
     onCardClick: () -> Unit,
     detail: ReportDetail?,
     onCompleteTask: (Long) -> Unit = {},
     completingTaskIds: Set<Long> = emptySet(),
+    reportFailed: Boolean = false,
+    onRetryReport: () -> Unit = {},
 ) {
     val colors = LiloExtendedTheme.colors
     val accent = feature.accentColor(colors)
     val dark = MaterialTheme.colorScheme.background.luminance() < .5f
-    val foreground = if (dark) accent else lerp(accent, colors.title, .55f)
-    val cardColor = lerp(MaterialTheme.colorScheme.background, accent, if (dark) .13f else .20f)
-    val title = stringResource(feature.titleRes)
-    val persian = LocalLayoutDirection.current == LayoutDirection.Rtl
-
-    Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(22.dp),
-        color = cardColor, contentColor = colors.textPrimary) {
-        Column(Modifier.padding(horizontal = 18.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Surface(shape = RoundedCornerShape(14.dp), color = accent.copy(alpha = if (dark) .15f else .30f)) {
-                    Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-                        Icon(if (feature == LiloFeature.NOTES) org.jetbrains.compose.resources.vectorResource(Res.drawable.home_note) else feature.iconRes,
-                            null, Modifier.size(22.dp), tint = foreground)
-                    }
+    val actionColor = when (feature) {
+        LiloFeature.TASKS -> colors.taskAction
+        LiloFeature.NOTES -> colors.noteAction
+        LiloFeature.PASSWORDS -> colors.passwordAction
+    }
+    val backgroundTint = when {
+        dark -> .16f
+        feature == LiloFeature.PASSWORDS -> .30f
+        else -> .24f
+    }
+    Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp),
+        color = lerp(MaterialTheme.colorScheme.background, accent, backgroundTint),
+        contentColor = colors.textPrimary) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            HomeFeatureHeading(feature, actionColor, onAddClick, onCardClick)
+            HorizontalDivider(color = actionColor.copy(alpha = .14f))
+            if (reportFailed) {
+                AppText(text = Res.string.home_report_error, color = colors.textSecondary)
+                TextButton(onClick = onRetryReport, colors = ButtonDefaults.textButtonColors(contentColor = actionColor)) {
+                    Text(stringResource(Res.string.note_retry))
                 }
-                Spacer(Modifier.width(10.dp))
-                AppText(text = title, textType = TextType.SectionTitle, maxLines = 1, modifier = Modifier.weight(1f))
-                androidx.compose.runtime.CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 40.dp) {
-                Row(Modifier.offset(x = 8.dp)) {
-                IconButton(onClick = onCardClick, modifier = Modifier.width(40.dp).height(48.dp)) {
-                    Icon(vectorResource(Res.drawable.home_list),
-                        stringResource(Res.string.home_open_list, title), Modifier.size(22.dp), tint = foreground)
-                }
-                IconButton(onClick = onAddClick, modifier = Modifier.width(40.dp).height(48.dp)) {
-                    Icon(LiloIcons.Add, stringResource(Res.string.home_add_feature, title), Modifier.size(24.dp), tint = foreground)
-                }
-                }
-                }
-            }
-            when (detail) {
-                is TaskReportDetail -> {
-                    HomeReportHeader(
-                        text = stringResource(Res.string.home_tasks_remaining, detail.remainingCount).localizedDigits(persian),
-                        color = foreground,
-                    )
-                    if (detail.nextTaskTitle.isNullOrBlank()) {
-                        HomeEmptyPreview(if (detail.subTitleReportCount == 0) Res.string.home_no_tasks else Res.string.home_tasks_done)
-                    } else {
-                        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(11.dp)) {
-                            LiloCheckbox(checked = false, enabled = detail.nextTaskId != null && detail.nextTaskId !in completingTaskIds,
-                                label = stringResource(Res.string.task_complete_action), accent = accent,
-                                onCheckedChange = { detail.nextTaskId?.let(onCompleteTask) })
-                            AppText(text = detail.nextTaskTitle, maxLines = 1, modifier = Modifier.weight(1f))
-                            detail.nextTaskTime?.let { time ->
-                                AppText(text = "\u2066${time.localizedDigits(persian)}\u2069", textType = TextType.Caption,
-                                    color = colors.textSecondary, maxLines = 1)
-                            }
-                        }
-                    }
-                }
-                is NoteReportDetail -> {
-                    HomeReportHeader(text = stringResource(Res.string.home_recent), color = foreground)
-                    if (detail.totalCount == 0) HomeEmptyPreview(Res.string.home_no_notes)
-                    else Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        AppText(text = detail.latestTitle, maxLines = 1)
-                        if (detail.latestSnippet.isNotBlank()) AppText(text = detail.latestSnippet.replace('\n', ' '),
-                            textType = TextType.Caption, color = colors.textSecondary, maxLines = 2)
-                    }
-                }
-                null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp), color = foreground, trackColor = accent.copy(alpha = .15f))
+            } else when (detail) {
+                is TaskReportDetail -> HomeTaskReport(detail, actionColor, completingTaskIds, onCompleteTask)
+                is NoteReportDetail -> HomeLatestSummary(detail.totalCount, Res.string.home_total_notes,
+                    detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_notes, onCardClick)
+                is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
+                    detail.lastAddedService, detail.lastAddedAt, Res.string.password_empty, onCardClick,
+                    leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) })
+                null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                    color = actionColor, trackColor = accent.copy(alpha = .15f))
                 else -> Unit
             }
         }
     }
 }
 
-/** Separates the feature heading from its quieter report content. */
-@Composable
-private fun HomeReportHeader(text: String, color: Color) {
-    Column(Modifier.fillMaxWidth().padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        HorizontalDivider(color = color.copy(alpha = .16f))
-        Text(text = text, color = color,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold))
-    }
-}
-
-@Composable
-private fun HomeEmptyPreview(message: org.jetbrains.compose.resources.StringResource) {
-    AppText(text = message, color = LiloExtendedTheme.colors.textSecondary, modifier = Modifier.padding(vertical = 12.dp))
-}
-
 @AppPreviews
 @Composable
-private fun PopulatedHomeCardPreview() {
+private fun PopulatedHomeCardsPreview() {
     LiloPreviewWrapper {
-        FeatureCardShell(com.sepideh.lilo.home.domain.fakeFeatureCardFactory(), LiloFeature.TASKS, {}, {},
-            TaskReportDetail("Pick up a parcel", null, 3, 3))
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            FeatureCardShell(LiloFeature.TASKS, {}, {}, TaskReportDetail("Buy a birthday gift", "15:00", 5, 12, 1, 0, nextTaskDescription = "Pick something from the bookshop"))
+            FeatureCardShell(LiloFeature.NOTES, {}, {}, NoteReportDetail("Weekend trip", "", 8, null, 8))
+            FeatureCardShell(LiloFeature.PASSWORDS, {}, {}, PasswordReportDetail(6, "GitHub", "", 6, "github"))
+        }
     }
 }
 
 @AppPreviews
 @Composable
-private fun EmptyHomeCardPreview() {
+private fun EmptyHomeCardsPreview() {
     LiloPreviewWrapper {
-        FeatureCardShell(com.sepideh.lilo.home.domain.fakeFeatureCardFactory(), LiloFeature.NOTES, {}, {},
-            NoteReportDetail("", "", 0, null, 0))
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            FeatureCardShell(LiloFeature.TASKS, {}, {}, TaskReportDetail(null, null, 0, 0))
+            FeatureCardShell(LiloFeature.NOTES, {}, {}, NoteReportDetail("", "", 0, null, 0))
+            FeatureCardShell(LiloFeature.PASSWORDS, {}, {}, PasswordReportDetail(0, "", "", 0))
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun CompletedHomeTaskPreview() {
+    LiloPreviewWrapper {
+        FeatureCardShell(LiloFeature.TASKS, {}, {},
+            TaskReportDetail("Buy a birthday gift", null, 0, 3, 42, 0, nextTaskDone = true, nextTaskDescription = "A book and a handwritten card"))
     }
 }

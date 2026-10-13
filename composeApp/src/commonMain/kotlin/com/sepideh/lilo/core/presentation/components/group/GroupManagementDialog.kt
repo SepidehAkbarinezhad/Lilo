@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
     onDismiss: () -> Unit, errorMessage: String? = null, accent: Color,
     selectedId: Long? = null, isAdding: Boolean = false, addedVersion: Int = 0, onCreate: ((String) -> Unit)? = null, onRename: ((Long, String) -> Unit)? = null,
-    deleteMessage: String = stringResource(Res.string.delete_group_message)) {
+    deleteMessage: String = stringResource(Res.string.delete_group_message),
+    closeActionColor: Color = accent) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     var editing by remember { mutableStateOf(false) }
@@ -46,7 +47,7 @@ fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
                         onDismiss()
                     }
                 }) {
-                    AppText(text = Res.string.close_group_management_action, textType = TextType.Action, color = accent)
+                    AppText(text = Res.string.close_group_management_action, textType = TextType.Action, color = closeActionColor)
                 }
             }
             GroupManagementContent(groups, errorMessage, { deleteId = it }, accent, selectedId,

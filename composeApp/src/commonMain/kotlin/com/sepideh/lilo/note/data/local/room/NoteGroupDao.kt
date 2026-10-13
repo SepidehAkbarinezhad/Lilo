@@ -1,5 +1,6 @@
 package com.sepideh.lilo.note.data.local.room
 
+import com.sepideh.lilo.core.domain.validation.requireUniqueName
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -18,5 +19,18 @@ interface NoteGroupDao {
     suspend fun deleteGroup(id: Long) {
         clearGroup(id)
         deleteById(id)
+    }
+
+    @Query("SELECT * FROM note_groups")
+    suspend fun getGroupSnapshot(): List<NoteGroupEntity>
+
+    @Transaction
+    suspend fun upsertUnique(group: NoteGroupEntity): Long {
+        val otherNames = getGroupSnapshot().filter { it.id != group.id }
+            .flatMap { listOf(it.titleEn, it.titleFa) }
+        listOf(group.titleEn, group.titleFa).filter { it.isNotBlank() }.forEach {
+            requireUniqueName(it, otherNames)
+        }
+        return upsert(group)
     }
 }

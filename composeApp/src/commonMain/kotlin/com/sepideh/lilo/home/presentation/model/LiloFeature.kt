@@ -10,6 +10,8 @@ import lilo.composeapp.generated.resources.note_feature_subTitle
 import lilo.composeapp.generated.resources.note_feature_title
 import lilo.composeapp.generated.resources.task_feature_subTitle
 import lilo.composeapp.generated.resources.task_feature_title
+import lilo.composeapp.generated.resources.password_feature_title
+import lilo.composeapp.generated.resources.password_feature_subTitle
 import org.jetbrains.compose.resources.StringResource
 
 enum class LiloFeature(
@@ -27,14 +29,10 @@ enum class LiloFeature(
         titleRes = Res.string.note_feature_title,
         subTitleRes = Res.string.note_feature_subTitle,
         iconRes = NoteCardIcon,
-        accentColor = { colors -> colors.noteColor })
-   /* EXPENSES(
-        titleRes = Res.string.expence_feature_title,
-        iconRes = ExpenseCardIcon,
-        accentColor = { colors -> colors.expenseColor }),
+        accentColor = { colors -> colors.noteColor }),
     PASSWORDS(
         titleRes = Res.string.password_feature_title,
-        iconRes = PasswordCardIcon,
-        accentColor = { colors -> colors.passwordColor }
-    )*/
+        subTitleRes = Res.string.password_feature_subTitle,
+        iconRes = com.sepideh.lilo.ui.icons.PasswordCardIcon,
+        accentColor = { colors -> colors.passwordColor })
 }

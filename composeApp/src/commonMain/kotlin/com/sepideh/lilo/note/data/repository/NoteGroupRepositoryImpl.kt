@@ -11,7 +11,7 @@ class NoteGroupRepositoryImpl(private val dao: NoteGroupDao) : NoteGroupReposito
     override fun getAllGroups() = dao.getAllGroups().map { groups -> groups.map { it.toDomain() } }
     override suspend fun getGroupById(id: Long) = dao.getGroupById(id)?.toDomain()
     override suspend fun upsertGroup(group: NoteGroup): Long {
-        val id = dao.upsert(group.toEntity())
+        val id = dao.upsertUnique(group.toEntity())
         return if (group.id == 0L) id else group.id
     }
     override suspend fun deleteGroup(id: Long) = dao.deleteGroup(id)

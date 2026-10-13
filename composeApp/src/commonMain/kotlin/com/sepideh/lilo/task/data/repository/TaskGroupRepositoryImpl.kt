@@ -17,7 +17,7 @@ class TaskGroupRepositoryImpl(
             .map { it.toDomainList() }
 
     override suspend fun addGroup(group: TaskGroup): Long {
-        return taskGroupDao.upsert(group.toEntity())
+        return taskGroupDao.upsertUnique(group.toEntity())
     }
 
     override suspend fun deleteGroup(id: Long) {
