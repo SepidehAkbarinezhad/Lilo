@@ -26,7 +26,8 @@ fun TaskFilterSheet(state: TaskListState, onAction: (BaseAction) -> Unit, modifi
         shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
         Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = LiloSpacing.Screen).padding(bottom = LiloSpacing.Section),
             verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
-            SheetHeader(Res.string.filter_label, Res.string.apply_label, accent, onConfirm = { onAction(TaskListAction.OnApplyFilter) })
+            SheetHeader(Res.string.filter_label, Res.string.apply_label, accent, onConfirm = { onAction(TaskListAction.OnApplyFilter) },
+                onReset = { onAction(TaskListAction.OnResetFilter) })
             AppText(text = Res.string.status_filter_label, textType = TextType.FieldLabel)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Tiny)) {
                 listOf(Enums.DONE, Enums.UNDONE).forEach { status ->
@@ -38,9 +39,6 @@ fun TaskFilterSheet(state: TaskListState, onAction: (BaseAction) -> Unit, modifi
                 Priority.priorities.forEach { priority ->
                     LiloSelectionChip(stringResource(priority.title), priority in state.tempFilterOption.priorityList, accent, { onAction(TaskListAction.OnPriorityFilterChanged(priority)) })
                 }
-            }
-            TextButton(onClick = { onAction(TaskListAction.OnResetFilter) }, colors = ButtonDefaults.textButtonColors(contentColor = LiloExtendedTheme.colors.textSecondary)) {
-                AppText(text = Res.string.reset_label, textType = TextType.Action)
             }
         }
     }

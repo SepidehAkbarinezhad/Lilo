@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -53,7 +55,7 @@ fun BaseListScreen(
     title: StringResource, accent: Color, searchVisible: Boolean, query: String,
     searchHint: StringResource, filtersActive: Boolean,
     onBack: () -> Boolean, onSearchVisible: (Boolean) -> Unit,
-    onQueryChange: (String) -> Unit, onFilter: () -> Unit,
+    onQueryChange: (String) -> Unit, onFilter: (() -> Unit)?,
     floatingActionButton: @Composable () -> Unit = {},
     referenceStyle: Boolean = false,
     content: @Composable (PaddingValues) -> Unit,
@@ -67,7 +69,7 @@ fun BaseListScreen(
 private fun ListHeader(
     title: StringResource, accent: Color, searchVisible: Boolean, query: String,
     searchHint: StringResource, filtersActive: Boolean, onBack: () -> Boolean,
-    onSearchVisible: (Boolean) -> Unit, onQueryChange: (String) -> Unit, onFilter: () -> Unit,
+    onSearchVisible: (Boolean) -> Unit, onQueryChange: (String) -> Unit, onFilter: (() -> Unit)?,
     referenceStyle: Boolean = false,
 ) {
     val focusManager = LocalFocusManager.current
@@ -91,7 +93,7 @@ private fun ListHeader(
                     Box(Modifier.size(LiloSize.TouchTarget), contentAlignment = Alignment.Center) { Icon(LiloIcons.Search, stringResource(searchHint), Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.title) }
                 }
             }
-            Surface(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false); onFilter() }, shape = CircleShape,
+            if (onFilter != null) Surface(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false); onFilter() }, shape = CircleShape,
                 border = BorderStroke(1.dp, accent), color = if (filtersActive) accent.copy(alpha = .16f) else MaterialTheme.colorScheme.background) {
                 Box(Modifier.size(LiloSize.TouchTarget), contentAlignment = Alignment.Center) { Icon(LiloIcons.Filter, stringResource(Res.string.filter_label), Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.title) }
             }
@@ -120,7 +122,7 @@ private fun ListHeader(
                 }
             }
         }, actions = {
-            IconButton(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false); onFilter() }) {
+            if (onFilter != null) IconButton(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false); onFilter() }) {
                 Icon(LiloIcons.Filter, stringResource(Res.string.filter_label), Modifier.size(22.dp),
                     tint = if (filtersActive) accent else MaterialTheme.colorScheme.onSurface)
             }
@@ -128,9 +130,16 @@ private fun ListHeader(
 }
 
 @Composable
-fun SheetHeader(title: StringResource, action: StringResource, accent: Color, enabled: Boolean = true, onConfirm: () -> Unit) {
+fun SheetHeader(title: StringResource, action: StringResource, accent: Color, enabled: Boolean = true, onConfirm: () -> Unit, onReset: (() -> Unit)? = null) {
     Row(Modifier.fillMaxWidth().padding(bottom = 16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
         AppText(text = title, textType = TextType.SectionTitle, modifier = Modifier.weight(1f).padding(end = 12.dp))
+        if (onReset != null) {
+            TextButton(onClick = onReset, colors = ButtonDefaults.textButtonColors(contentColor = accent)) {
+                Icon(Icons.Rounded.RestartAlt, null, Modifier.size(16.dp))
+                Spacer(Modifier.width(LiloSpacing.Tiny))
+                AppText(text = Res.string.reset_label, textType = TextType.Action)
+            }
+        }
         FeatureActionButton(action, accent, enabled, onConfirm)
     }
 }

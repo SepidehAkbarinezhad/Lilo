@@ -16,13 +16,17 @@ import com.sepideh.lilo.core.presentation.icons.LiloIcons
 import com.sepideh.lilo.ui.theme.*
 
 @Composable
-fun GroupSelectionRow(label: String, selected: Boolean, accent: Color, enabled: Boolean = true, onClick: () -> Unit) {
+fun GroupSelectionRow(label: String, selected: Boolean, accent: Color, enabled: Boolean = true, leadingIcon: (@Composable () -> Unit)? = null, compact: Boolean = false, onClick: () -> Unit) {
     Surface(shape = MaterialTheme.shapes.medium,
         color = if (selected) accent.copy(alpha = .08f) else MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, if (selected) accent.copy(alpha = .6f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = .55f))) {
-        Row(Modifier.fillMaxWidth().heightIn(min = LiloSize.SelectionRow)
+        Row(Modifier.fillMaxWidth().heightIn(min = if (compact) LiloSize.TouchTarget else LiloSize.SelectionRow)
             .selectable(selected = selected, enabled = enabled, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = LiloSpacing.Small), verticalAlignment = Alignment.CenterVertically) {
+            if (leadingIcon != null) {
+                leadingIcon()
+                Spacer(Modifier.width(LiloSpacing.Small))
+            }
             AppText(text = label, modifier = Modifier.weight(1f), textType = TextType.BodyLarge,
                 color = if (enabled) LiloExtendedTheme.colors.textPrimary else LiloExtendedTheme.colors.textDisabled)
             if (selected) Icon(LiloIcons.Check, null, Modifier.size(LiloSize.SmallIcon), tint = LiloExtendedTheme.colors.title)

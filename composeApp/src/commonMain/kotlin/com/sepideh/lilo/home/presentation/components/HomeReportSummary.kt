@@ -37,7 +37,7 @@ internal fun HomeSummaryDivider() {
 @Composable
 internal fun HomeLatestSummary(count: Int, countLabel: StringResource, latestTitle: String,
     timestamp: Long?, emptyLabel: StringResource, onClick: () -> Unit,
-    leadingIcon: (@Composable () -> Unit)? = null) {
+    leadingIcon: (@Composable () -> Unit)? = null, subtitle: String? = null) {
     val colors = LiloExtendedTheme.colors
     Surface(onClick = onClick, shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = .65f)) {
@@ -60,8 +60,8 @@ internal fun HomeLatestSummary(count: Int, countLabel: StringResource, latestTit
                                 lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.Both)),
                             color = colors.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
-                    homeDateLabel(timestamp)?.let {
-                        AppText(text = it, textType = TextType.Caption, color = colors.textSecondary)
+                    (subtitle ?: homeDateLabel(timestamp))?.let {
+                        AppText(text = it, textType = TextType.Caption, color = colors.textSecondary, maxLines = if (subtitle != null) 1 else Int.MAX_VALUE)
                     }
                 }
             }

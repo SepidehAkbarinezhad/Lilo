@@ -16,6 +16,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.sepideh.lilo.password.presentation.list.components.PasswordServiceIcon
 import com.sepideh.lilo.core.presentation.SheetHeader
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.*
@@ -36,15 +37,16 @@ fun PasswordServicePicker(state: PasswordServicesState, model: PasswordServicesV
             shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
             Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen)
                 .padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
-                SheetHeader(Res.string.password_service, Res.string.confirm_action, colors.passwordColor, true) {
+                SheetHeader(Res.string.password_service, Res.string.confirm_action, colors.passwordColor, true, onConfirm = {
                     state.draftId?.let(onConfirm)
                     model.confirmSelection()
-                }
+                })
                 LazyColumn(Modifier.weight(1f, fill = false).fillMaxWidth().heightIn(max = 360.dp),
                     verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                     items(state.services, key = { it.id }) { service ->
                         GroupSelectionRow(service.name, state.draftId == service.id, colors.passwordColor,
-                            enabled = !state.busy) { model.selectDraft(service.id) }
+                            enabled = !state.busy, compact = true,
+                            leadingIcon = { PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon)) }) { model.selectDraft(service.id) }
                     }
                 }
                 OutlinedButton(onClick = model::manage, enabled = !state.busy,
@@ -78,8 +80,10 @@ fun PasswordServicePicker(state: PasswordServicesState, model: PasswordServicesV
                     items(state.services, key = { it.id }) { service ->
                         Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surface,
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .55f))) {
-                            Row(Modifier.fillMaxWidth().heightIn(min = LiloSize.SelectionRow)
+                            Row(Modifier.fillMaxWidth().heightIn(min = LiloSize.TouchTarget)
                                 .padding(start = 16.dp, end = LiloSpacing.Small), verticalAlignment = Alignment.CenterVertically) {
+                                PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon))
+                                Spacer(Modifier.width(LiloSpacing.Small))
                                 AppText(text = service.name, textType = TextType.BodyLarge,
                                     modifier = Modifier.weight(1f).padding(vertical = LiloSpacing.Small), maxLines = 2)
                                 if (!service.isDefault) IconButton(onClick = { model.edit(service) }, enabled = !state.busy,

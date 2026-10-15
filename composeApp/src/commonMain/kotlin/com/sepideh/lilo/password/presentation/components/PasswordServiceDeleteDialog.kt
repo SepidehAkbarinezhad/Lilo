@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.components.group.GroupSelectionRow
+import com.sepideh.lilo.password.presentation.list.components.PasswordServiceIcon
 import com.sepideh.lilo.password.domain.PasswordService
 import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
@@ -43,7 +44,8 @@ internal fun PasswordServiceDeleteDialog(
         ) {
             items(state.services.filter { it.id != deleting.id }, key = { it.id }) { service ->
                 GroupSelectionRow(service.name, state.replacement == service.id, colors.passwordColor,
-                    enabled = !state.busy) { onReplacement(service.id) }
+                    enabled = !state.busy, compact = true,
+                    leadingIcon = { PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon)) }) { onReplacement(service.id) }
             }
         }
         if (state.error) AppText(text = Res.string.password_service_error, color = MaterialTheme.colorScheme.error)

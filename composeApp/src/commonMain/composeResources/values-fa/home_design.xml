@@ -8,7 +8,7 @@
     <string name="home_open_list">نمایش فهرست %1$s</string>
     <string name="home_task_slogan">لذت تیک زدن کارهات رو از دست نده</string>
     <string name="home_note_slogan">بنویسش، خیالت رو راحت کن</string>
-    <string name="home_password_slogan">رمزش با تو، حفظش با لیلو</string>
+    <string name="home_password_slogan">گذرواژه‌اش با تو، حفظش با لیلو</string>
     <string name="home_total_tasks">فعالیت‌ها</string>
     <string name="home_remaining_tasks">باقی‌مانده</string>
     <string name="home_completed_tasks">انجام‌شده</string>
