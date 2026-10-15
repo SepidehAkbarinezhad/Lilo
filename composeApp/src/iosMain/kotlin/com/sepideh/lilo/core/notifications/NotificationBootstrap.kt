@@ -14,6 +14,8 @@ import platform.UserNotifications.UNUserNotificationCenter
  *  otherwise, foreground notifications may be lost.
  */
 
+private val notificationDelegate = NotificationDelegate()
+
 fun initNotificationDelegate() {
-    UNUserNotificationCenter.currentNotificationCenter().delegate = NotificationDelegate()
+    UNUserNotificationCenter.currentNotificationCenter().delegate = notificationDelegate
 }

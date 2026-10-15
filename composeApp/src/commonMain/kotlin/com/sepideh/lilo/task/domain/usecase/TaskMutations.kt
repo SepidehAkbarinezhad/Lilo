@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.domain.usecase
 
+import com.sepideh.lilo.core.domain.images.ImageStore
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.asReminder
 import com.sepideh.lilo.task.domain.reminder.nextOccurrence
@@ -16,7 +17,8 @@ import kotlin.time.ExperimentalTime
 class TaskMutations(
     private val repository: TaskRepository,
     private val scheduler: ReminderScheduler,
-    private val imageStore: com.sepideh.lilo.core.domain.images.ImageStore? = null,
+    private val imageStore: ImageStore? = null,
+    private val notificationsEnabled: suspend () -> Boolean = { true },
 ) {
     private val mutex = Mutex()
 
@@ -79,10 +81,19 @@ class TaskMutations(
         // Only a persisted current schedule may re-arm itself.
         try {
             scheduler.scheduleReminder(reminder)
-        } finally {
-            // A failure to re-arm must not suppress the occurrence already due.
-            notify(task)
+        } catch (cancelled: kotlinx.coroutines.CancellationException) {
+            throw cancelled
+        } catch (failure: Exception) {
+            if (notificationsEnabled()) notify(task)
+            throw failure
         }
+        if (notificationsEnabled()) notify(task)
+    }
+
+    /** Preference changes cannot race with task edits or reminder delivery. */
+    suspend fun updateNotificationPreference(persist: suspend () -> Unit) = mutex.withLock {
+        persist()
+        scheduler.refreshNotificationPreference { activeReminders() }
     }
 
     private suspend fun syncReminder(task: Task) {
@@ -90,9 +101,11 @@ class TaskMutations(
         synchronizeAll()
     }
 
+    private suspend fun activeReminders() =
+        repository.getAllTasks().first().filter { !it.done }.mapNotNull { it.asReminder() }
+
     private suspend fun synchronizeAll() {
-        val active = repository.getAllTasks().first().filter { !it.done }.mapNotNull { it.asReminder() }
-        scheduler.synchronize(active)
+        scheduler.synchronize(activeReminders())
     }
 }
 

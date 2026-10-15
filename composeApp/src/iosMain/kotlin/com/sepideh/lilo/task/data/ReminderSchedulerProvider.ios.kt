@@ -5,6 +5,7 @@ import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
 import com.sepideh.lilo.task.domain.reminder.nextOccurrence
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -13,9 +14,15 @@ import kotlin.time.Instant
 import platform.Foundation.*
 import platform.UserNotifications.*
 
-class ReminderSchedulerProvider : ReminderScheduler {
+class ReminderSchedulerProvider(
+    private val preferences: com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository,
+) : ReminderScheduler {
     private val center get() = UNUserNotificationCenter.currentNotificationCenter()
     private val prefix = "task-reminder:"
+
+    override suspend fun refreshNotificationPreference(reminders: suspend () -> List<Reminder>) {
+        synchronize(if (preferences.userPreferences.first().notificationsEnabled) reminders() else emptyList())
+    }
 
     override suspend fun scheduleReminder(reminder: Reminder) {
         // Normal task mutations call synchronize with the complete list.
@@ -32,6 +39,11 @@ class ReminderSchedulerProvider : ReminderScheduler {
     override suspend fun synchronize(reminders: List<Reminder>) = synchronizeRequests(reminders, prefix)
 
     private suspend fun synchronizeRequests(reminders: List<Reminder>, scope: String) {
+        if (!preferences.userPreferences.first().notificationsEnabled) {
+            val ids = pending().map { it.identifier }.filter { it.startsWith(prefix) }
+            center.removePendingNotificationRequestsWithIdentifiers(ids)
+            return
+        }
         val pending = pending()
         val otherCount = pending.count { !it.identifier.startsWith(scope) }
         val slots = (60 - otherCount).coerceAtLeast(0)
