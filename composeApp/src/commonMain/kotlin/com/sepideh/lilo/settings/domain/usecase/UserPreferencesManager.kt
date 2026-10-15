@@ -27,10 +27,4 @@ class UserPreferencesManager(
         userPreferencesRepository.updateLanguage(language)
     }
 
-    suspend fun resetToDefaults() {
-        userPreferencesRepository.updateTheme(AppTheme.SYSTEM)
-        userPreferencesRepository.updateLanguage(AppLanguage.FA)
-        userPreferencesRepository.updateNotifications(true)
-    }
-
 }

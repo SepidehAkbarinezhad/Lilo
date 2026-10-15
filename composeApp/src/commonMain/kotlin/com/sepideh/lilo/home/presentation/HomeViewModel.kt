@@ -5,6 +5,7 @@ import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.home.domain.FeatureCardFactory
 import com.sepideh.lilo.home.presentation.model.LiloFeature
+import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
 class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
-    private val taskMutations: com.sepideh.lilo.task.domain.usecase.TaskMutations) : BaseViewModel() {
+    private val taskMutations: TaskMutations
+) : BaseViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state : StateFlow<HomeState> = _state

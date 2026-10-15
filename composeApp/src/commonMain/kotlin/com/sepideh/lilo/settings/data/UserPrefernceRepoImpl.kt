@@ -17,10 +17,10 @@ class UserPreferencesRepositoryImpl(
     override val userPreferences: Flow<UserPreferences> =
         dataStore.data.map { prefs ->
 
-            val theme = prefs[PreferencesKeys.THEME]?.let { AppTheme.valueOf(it) }
+            val theme = AppTheme.entries.firstOrNull { it.name == prefs[PreferencesKeys.THEME] }
                 ?: AppTheme.SYSTEM
 
-            val language = prefs[PreferencesKeys.LANGUAGE]?.let { AppLanguage.valueOf(it) }
+            val language = AppLanguage.entries.firstOrNull { it.name == prefs[PreferencesKeys.LANGUAGE] }
                 ?: AppLanguage.FA
 
             UserPreferences(

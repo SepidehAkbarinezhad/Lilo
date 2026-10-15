@@ -1,0 +1,9 @@
+<resources>
+    <string name="settings_reminders_title">Reminders</string>
+    <string name="settings_reminders_enabled">Reminder notifications</string>
+    <string name="settings_reminders_description">When off, Lilo won’t notify you about reminders. Your task reminders stay saved.</string>
+    <string name="settings_save_error">Couldn’t finish updating settings. Please try again.</string>
+    <string name="settings_retry">Try again</string>
+    <string name="settings_language_fa">فارسی</string>
+    <string name="settings_language_en">English</string>
+</resources>

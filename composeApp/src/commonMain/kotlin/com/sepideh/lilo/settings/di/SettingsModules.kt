@@ -17,7 +17,9 @@ val settingsModule = module {
     }
     single<LanguageProvider> { LanguageProvider(get()) }
 
+    single { com.sepideh.lilo.settings.domain.usecase.UpdateReminderNotifications(get(), get()) }
+
     viewModel {
-        SettingsViewModel(userPreferencesManager = get())
+        SettingsViewModel(userPreferencesManager = get(), updateNotifications = get())
     }
 }

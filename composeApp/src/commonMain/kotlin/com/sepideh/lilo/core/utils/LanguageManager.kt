@@ -3,9 +3,6 @@ package com.sepideh.lilo.core.utils
 import androidx.compose.ui.unit.LayoutDirection
 import com.sepideh.lilo.core.domain.model.AppLanguage
 
-expect class LanguageManager{
-    suspend fun applyLanguage(language: String)
-}
 
 
 object LanguageUtils {

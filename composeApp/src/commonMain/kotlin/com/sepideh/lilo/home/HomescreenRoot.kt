@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 import lilo.composeapp.generated.resources.task_operation_error
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +25,8 @@ import com.sepideh.lilo.home.presentation.components.HomeHeader
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.app.navigation.routeForAdding
 import com.sepideh.lilo.app.navigation.routeForList
+import com.sepideh.lilo.core.presentation.components.AppText
+import lilo.composeapp.generated.resources.Res
 
 @Composable
 fun HomescreenRoot(
@@ -55,9 +58,9 @@ fun HomeScreenContent(
             HomeHeader(onAction = onAction)
         }
     ) {
-        if (state.completionFailed) com.sepideh.lilo.core.presentation.components.AppText(
-            text = lilo.composeapp.generated.resources.Res.string.task_operation_error,
-            color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+        if (state.completionFailed) AppText(
+            text = Res.string.task_operation_error,
+            color = MaterialTheme.colorScheme.error,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
         LazyColumn(Modifier.fillMaxSize().navigationBarsPadding(), contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 26.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             items(LiloFeature.entries, key = { it.name }) { feature ->
