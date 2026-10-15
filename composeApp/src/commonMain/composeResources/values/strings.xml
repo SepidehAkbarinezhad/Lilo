@@ -100,7 +100,7 @@
     <string name="password_unlock_failed">Could not unlock. Try again.</string>
     <string name="password_lock_action">Lock</string>
     <string name="password_operation_error">Could not complete this action. Try again.</string>
-    <string name="password_search">Search passwords</string>
+    <string name="password_search">Search service, title or username</string>
     <string name="password_empty">No passwords added yet</string>
     <string name="password_no_results">No passwords found with this filter</string>
     <string name="password_add_title">Add password</string>

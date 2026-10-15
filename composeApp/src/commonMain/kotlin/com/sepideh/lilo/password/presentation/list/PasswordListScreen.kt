@@ -16,7 +16,6 @@ import com.sepideh.lilo.core.presentation.components.gesture.SwipeToRevealDelete
 import com.sepideh.lilo.core.presentation.icons.LiloIcons
 import com.sepideh.lilo.password.domain.matching
 import com.sepideh.lilo.password.presentation.components.PasswordServicesViewModel
-import com.sepideh.lilo.core.presentation.components.group.GroupSelectionRow
 import org.koin.compose.viewmodel.koinViewModel
 import com.sepideh.lilo.password.presentation.rememberPasswordUnlocker
 import com.sepideh.lilo.password.domain.UnlockResult
@@ -41,7 +40,7 @@ fun PasswordListScreenRoot(viewModel: PasswordListViewModel, onNavigateTo: (AppR
             BaseListScreen(title = Res.string.password_feature_title, accent = colors.passwordColor, referenceStyle = true,
                 searchVisible = state.searchVisible, query = state.query, searchHint = Res.string.password_search,
                 filtersActive = state.alphabetical || state.serviceId != null, onBack = onBack, onSearchVisible = viewModel::search,
-                onQueryChange = viewModel::query, onFilter = { viewModel.sortOpen(true) },
+                onQueryChange = viewModel::query, onFilter = null,
                 floatingActionButton = {
                     FloatingActionButton(onClick = { onNavigateTo(AppRoutes.Passwords.Detail(null)) }, modifier = Modifier.size(64.dp),
                         shape = CircleShape, containerColor = colors.passwordColor, contentColor = colors.onPasswordAccent) {
@@ -80,23 +79,5 @@ fun PasswordListScreenRoot(viewModel: PasswordListViewModel, onNavigateTo: (AppR
     }, dialogContent = {
         if (state.deleteId != null) DeleteConfirmationDialog(colors.passwordColor, viewModel::delete,
             { viewModel.selectDelete(null) }, title = stringResource(Res.string.password_delete_title), message = stringResource(Res.string.delete_item_confirmation))
-        if (state.sortOpen) ModalBottomSheet(onDismissRequest = { viewModel.sortOpen(false) }, containerColor = MaterialTheme.colorScheme.background) {
-            Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 24.dp)) {
-                SheetHeader(Res.string.password_filters, Res.string.confirm_button, colors.passwordColor, onConfirm = viewModel::applySort)
-                Text(stringResource(Res.string.password_service), style = MaterialTheme.typography.titleSmall)
-                LazyColumn(Modifier.heightIn(max = 240.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    item { GroupSelectionRow(stringResource(Res.string.password_services_all), state.draftServiceId == null, colors.passwordColor) { viewModel.service(null) } }
-                    items(services.services, key = { it.id }) { service ->
-                        GroupSelectionRow(service.name, state.draftServiceId == service.id, colors.passwordColor) { viewModel.service(service.id) }
-                    }
-                }
-                TextButton(onClick = viewModel::resetFilters) { Text(stringResource(Res.string.password_filters_reset), color = colors.passwordAction) }
-                Text(stringResource(Res.string.password_sort_title), style = MaterialTheme.typography.titleSmall)
-                listOf(false to Res.string.note_recent_sort, true to Res.string.title_label).forEach { (value, label) ->
-                    FilterChip(selected = state.draftAlphabetical == value, onClick = { viewModel.sort(value) }, label = { Text(stringResource(label)) },
-                        colors = FilterChipDefaults.filterChipColors(selectedContainerColor = colors.passwordColor.copy(alpha = .16f)))
-                }
-            }
-        }
     })
 }

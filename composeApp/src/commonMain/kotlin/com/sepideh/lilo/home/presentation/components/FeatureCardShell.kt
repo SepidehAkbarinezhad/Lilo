@@ -57,7 +57,8 @@ fun FeatureCardShell(
                     detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_notes, onCardClick)
                 is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
                     detail.lastAddedService, detail.lastAddedAt, Res.string.password_empty, onCardClick,
-                    leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) })
+                    leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) },
+                    subtitle = detail.lastAddedIdentifier)
                 null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp),
                     color = actionColor, trackColor = accent.copy(alpha = .15f))
                 else -> Unit
@@ -73,7 +74,7 @@ private fun PopulatedHomeCardsPreview() {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             FeatureCardShell(LiloFeature.TASKS, {}, {}, TaskReportDetail("Buy a birthday gift", "15:00", 5, 12, 1, 0, nextTaskDescription = "Pick something from the bookshop"))
             FeatureCardShell(LiloFeature.NOTES, {}, {}, NoteReportDetail("Weekend trip", "", 8, null, 8))
-            FeatureCardShell(LiloFeature.PASSWORDS, {}, {}, PasswordReportDetail(6, "GitHub", "", 6, "github"))
+            FeatureCardShell(LiloFeature.PASSWORDS, {}, {}, PasswordReportDetail(6, "GitHub", "sepideh", 6, "github"))
         }
     }
 }
