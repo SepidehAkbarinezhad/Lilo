@@ -15,7 +15,8 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
     // Browsing returns only the explicitly public metadata, never decrypted fields.
     override fun observePasswords() = combine(dao.observe(), services.observe()) { rows, services -> rows.map { row ->
         Password(id = row.id, title = row.title, username = row.username, website = row.website,
-            createdAt = row.createdAt, updatedAt = row.updatedAt, serviceId = row.serviceId, serviceName = services.find { it.id == row.serviceId }?.name.orEmpty())
+            createdAt = row.createdAt, updatedAt = row.updatedAt, serviceId = row.serviceId, serviceName = services.find { it.id == row.serviceId }?.name.orEmpty(),
+            serviceNameFa = services.find { it.id == row.serviceId }?.nameFa.orEmpty())
     } }
 
     override suspend fun unlockRequest(id: String): PasswordUnlockRequest {
@@ -34,9 +35,9 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
         // Preserve the old encrypted record while making its metadata browsable after first authorized access.
         if (row.createdAt == 0L) dao.updateMetadata(id, result.title, result.username, result.website, result.createdAt, result.updatedAt)
         if (crypto.session.value != session) throw VaultLockedException()
-        val serviceName = services.observe().first().find { it.id == row.serviceId }?.name.orEmpty()
+        val service = services.observe().first().find { it.id == row.serviceId }
         if (crypto.session.value != session) throw VaultLockedException()
-        return result.copy(serviceId = row.serviceId, serviceName = serviceName)
+        return result.copy(serviceId = row.serviceId, serviceName = service?.name.orEmpty(), serviceNameFa = service?.nameFa.orEmpty())
     }
 
     override suspend fun save(password: Password): Password {
@@ -49,7 +50,7 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
         }
         val now = Clock.System.now().toEpochMilliseconds()
         val saved = password.copy(id = previous?.id ?: Uuid.random().toString(), title = password.title.trim(),
-            username = password.username.trim(), website = website, serviceName = "",
+            username = password.username.trim(), website = website, serviceName = "", serviceNameFa = "",
             createdAt = previous?.createdAt?.takeIf { it != 0L } ?: password.createdAt.takeIf { it != 0L } ?: now, updatedAt = now)
         val bytes = Json.encodeToString(saved).encodeToByteArray()
         val sealed = try { crypto.seal(bytes, saved.id) } finally { bytes.fill(0) }

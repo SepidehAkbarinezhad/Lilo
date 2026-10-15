@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +33,13 @@ import org.jetbrains.compose.resources.stringResource
 fun PasswordServicePicker(state: PasswordServicesState, model: PasswordServicesViewModel, onConfirm: (String) -> Unit) {
     val colors = LiloExtendedTheme.colors
     if (state.open && !state.managing) {
+        val selectedIndex = state.services.indexOfFirst { it.id == state.draftId }
+        val listState = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex.coerceAtLeast(0))
+        // Also reveal the selection if services arrive after the sheet opens.
+        LaunchedEffect(state.services.map { it.id }) {
+            val index = state.services.indexOfFirst { it.id == state.draftId }
+            if (index >= 0) listState.scrollToItem(index)
+        }
         ModalBottomSheet(onDismissRequest = model::close,
             sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true),
             shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
@@ -42,9 +50,9 @@ fun PasswordServicePicker(state: PasswordServicesState, model: PasswordServicesV
                     model.confirmSelection()
                 })
                 LazyColumn(Modifier.weight(1f, fill = false).fillMaxWidth().heightIn(max = 360.dp),
-                    verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
+                    state = listState, verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                     items(state.services, key = { it.id }) { service ->
-                        GroupSelectionRow(service.name, state.draftId == service.id, colors.passwordColor,
+                        GroupSelectionRow(service.displayName(), state.draftId == service.id, colors.passwordColor,
                             enabled = !state.busy, compact = true,
                             leadingIcon = { PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon)) }) { model.selectDraft(service.id) }
                     }
@@ -84,7 +92,7 @@ fun PasswordServicePicker(state: PasswordServicesState, model: PasswordServicesV
                                 .padding(start = 16.dp, end = LiloSpacing.Small), verticalAlignment = Alignment.CenterVertically) {
                                 PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon))
                                 Spacer(Modifier.width(LiloSpacing.Small))
-                                AppText(text = service.name, textType = TextType.BodyLarge,
+                                AppText(text = service.displayName(), textType = TextType.BodyLarge,
                                     modifier = Modifier.weight(1f).padding(vertical = LiloSpacing.Small), maxLines = 2)
                                 if (!service.isDefault) IconButton(onClick = { model.edit(service) }, enabled = !state.busy,
                                     modifier = Modifier.width(40.dp).height(48.dp)) {

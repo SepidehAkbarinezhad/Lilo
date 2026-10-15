@@ -8,6 +8,7 @@ data class Password(
     val secret: String = "", val website: String = "", val notes: String = "",
     val createdAt: Long = 0, val updatedAt: Long = 0,
     val serviceId: String? = null, val serviceName: String = "",
+    val serviceNameFa: String = serviceName,
 ) {
     val hasIdentifier: Boolean get() = title.isNotBlank() || username.isNotBlank()
     val displayTitle: String get() = title.ifBlank { serviceName }

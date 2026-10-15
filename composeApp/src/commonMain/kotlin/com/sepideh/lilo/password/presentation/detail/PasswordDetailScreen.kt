@@ -1,5 +1,7 @@
 package com.sepideh.lilo.password.presentation.detail
 
+import com.sepideh.lilo.password.presentation.components.displayName
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -49,7 +51,7 @@ fun PasswordDetailScreenRoot(id: String?, viewModel: PasswordDetailViewModel, on
                         AppText(text = stringResource(Res.string.password_service) + " *", color = colors.textSecondary)
                         OutlinedButton(onClick = { servicesModel.open(state.record.serviceId) }, enabled = !state.loading && !state.saving && !state.loadFailed,
                             modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, contentPadding = PaddingValues(18.dp)) {
-                            Text(services.services.find { it.id == state.record.serviceId }?.name ?: stringResource(Res.string.password_service_select),
+                            Text(services.services.find { it.id == state.record.serviceId }?.displayName() ?: stringResource(Res.string.password_service_select),
                                 Modifier.weight(1f), color = colors.textPrimary)
                             Icon(com.sepideh.lilo.core.presentation.icons.LiloIcons.Chevron, null, tint = colors.textSecondary)
                         }

@@ -2,7 +2,7 @@ package com.sepideh.lilo.password.domain
 
 import kotlinx.coroutines.flow.Flow
 
-data class PasswordService(val id: String, val name: String, val isDefault: Boolean = false)
+data class PasswordService(val id: String, val name: String, val isDefault: Boolean = false, val nameFa: String = name)
 interface PasswordServiceRepository {
     fun observe(): Flow<List<PasswordService>>
     suspend fun create(name: String): PasswordService

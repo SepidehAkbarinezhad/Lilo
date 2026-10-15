@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
 class PasswordServiceRepositoryTest {
-    @Test fun builtInGoogleAppearsAsGmailWithoutChangingPasswordLinksOrCustomNames() = runBlocking<Unit> {
+    @Test fun builtInGmailHasBothNamesWithoutChangingPasswordLinksOrCustomNames() = runBlocking<Unit> {
         val dao = MemoryServices()
         val repo = PasswordServiceRepositoryImpl(dao)
         dao.assignments["password"] = "google"
@@ -15,9 +15,10 @@ class PasswordServiceRepositoryTest {
         val services = repo.observe().first()
         val gmail = services.single { it.id == "google" }
         assertEquals("Gmail", gmail.name)
+        assertEquals("جیمیل", gmail.nameFa)
         assertTrue(gmail.isDefault)
         assertEquals("google", dao.assignments["password"])
-        assertEquals("Google", dao.get("google")?.name)
+        assertEquals("Gmail", dao.get("google")?.name)
         assertEquals("Google workspace", services.single { it.id == custom.id }.name)
     }
 
@@ -26,14 +27,16 @@ class PasswordServiceRepositoryTest {
         val repo = PasswordServiceRepositoryImpl(dao)
         val custom = repo.create("  My bank  ")
         assertEquals("My bank", custom.name)
+        assertEquals(custom.name, custom.nameFa)
         assertFalse(custom.isDefault)
         dao.assignments["password"] = custom.id
         repo.rename(custom.id, "Bank")
         assertEquals("Bank", dao.get(custom.id)?.name)
+        assertEquals("Bank", dao.get(custom.id)?.nameFa)
         assertEquals(custom.id, dao.assignments["password"])
         assertFailsWith<IllegalArgumentException> { repo.rename("google", "Something else") }
-        assertFailsWith<IllegalArgumentException> { repo.create("GOOGLE") }
-        assertEquals("Google", dao.get("google")?.name)
+        assertFailsWith<IllegalArgumentException> { repo.create("GMAIL") }
+        assertEquals("Gmail", dao.get("google")?.name)
     }
     @Test fun deletingUsedCustomServiceRequiresExistingReplacementAndKeepsRecords() = runBlocking<Unit> {
         val dao = MemoryServices()
@@ -94,8 +97,30 @@ class PasswordServiceRepositoryTest {
         repo.rename(custom.id, " Work ")
         assertEquals(2, repo.observe().first().size)
     }
+    @Test fun duplicatesInEitherLanguageAreRejectedOnCreateAndRename() = runBlocking<Unit> {
+        val dao = MemoryServices()
+        val repo = PasswordServiceRepositoryImpl(dao)
+        val custom = repo.create("حساب شخصی")
+        assertEquals(custom.name, custom.nameFa)
+        for (name in listOf(" Gmail ", "GMAIL", " جیمیل ", "حساب شخصی")) {
+            assertFailsWith<DuplicateNameException> { repo.create(name) }
+        }
+        assertFailsWith<DuplicateNameException> { repo.rename(custom.id, "جیمیل") }
+        assertEquals("حساب شخصی", dao.get(custom.id)?.nameFa)
+        repo.rename(custom.id, "نام جدید")
+        assertEquals("نام جدید", dao.get(custom.id)?.name)
+        assertEquals("نام جدید", dao.get(custom.id)?.nameFa)
+    }
+
+    @Test fun insertionChecksPersianNameAgainstEnglishNamesToo() = runBlocking<Unit> {
+        val dao = MemoryServices()
+        assertFailsWith<DuplicateNameException> {
+            dao.insertUnique(PasswordServiceEntity("other", "Other", "other", false, "Gmail"))
+        }
+    }
+
     private class MemoryServices : PasswordServiceDao() {
-        private val rows = MutableStateFlow(listOf(PasswordServiceEntity("google", "Google", "google", true)))
+        private val rows = MutableStateFlow(listOf(initialServices.single { it.id == "google" }))
         val assignments = mutableMapOf<String, String>()
         override suspend fun getServiceSnapshot() = rows.value
         override fun observe() = rows
@@ -106,7 +131,7 @@ class PasswordServiceRepositoryTest {
         }
         override suspend fun rename(id: String, name: String, key: String) {
             require(rows.value.none { it.id != id && it.nameKey == key })
-            rows.value = rows.value.map { if (it.id == id && !it.isDefault) it.copy(name = name, nameKey = key) else it }
+            rows.value = rows.value.map { if (it.id == id && !it.isDefault) it.copy(name = name, nameFa = name, nameKey = key) else it }
         }
         override suspend fun usage(id: String) = assignments.values.count { it == id }
         override suspend fun move(id: String, replacement: String) {

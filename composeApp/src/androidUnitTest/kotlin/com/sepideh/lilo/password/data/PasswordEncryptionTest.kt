@@ -34,7 +34,7 @@ class PasswordEncryptionTest {
         val crypto = TestSession().apply { unlock(key.copyOf()) }
         val repo = PasswordRepositoryImpl(dao, crypto, TestServices())
         val initial = repo.save(Password(serviceId = "google", title = "Private bank", username = "private-user", secret = " private-secret ", website = "example.org", notes = "private-notes"))
-        assertEquals(initial.copy(serviceName = "Google"), repo.get(initial.id))
+        assertEquals(initial.copy(serviceName = "Google", serviceNameFa = "گوگل"), repo.get(initial.id))
         val row = dao.rows.getValue(initial.id)
         for (plain in listOf(initial.title, initial.username, initial.secret, initial.website, initial.notes)) {
             assertFalse(row.ciphertext.decodeToString().contains(plain))
@@ -49,6 +49,7 @@ class PasswordEncryptionTest {
         crypto.lock()
         assertFailsWith<VaultLockedException> { repo.get(initial.id) }
         assertEquals(edited.title, repo.observePasswords().first().single().title)
+        assertEquals("گوگل", repo.observePasswords().first().single().serviceNameFa)
         assertEquals("", repo.observePasswords().first().single().secret)
         assertEquals("", repo.observePasswords().first().single().notes)
         assertFailsWith<VaultLockedException> { repo.save(initial) }
@@ -101,7 +102,7 @@ class PasswordEncryptionTest {
         override suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray) = AndroidPasswordCipher.decrypt(key, record, aad)
     }
     private class TestServices : PasswordServiceRepository {
-        override fun observe() = flowOf(listOf(PasswordService("google", "Google", true)))
+        override fun observe() = flowOf(listOf(PasswordService("google", "Google", true, "گوگل")))
         override suspend fun create(name: String): PasswordService = error("unused")
         override suspend fun rename(id: String, name: String) = Unit
         override suspend fun usage(id: String) = 0

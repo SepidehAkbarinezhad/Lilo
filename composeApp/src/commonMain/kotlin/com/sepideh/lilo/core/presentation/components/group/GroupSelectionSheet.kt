@@ -34,11 +34,14 @@ fun GroupSelectionSheet(groups: List<GroupOption>, selectedId: Long?, accent: Co
 fun GroupSelectionContent(groups: List<GroupOption>, selectedId: Long?, accent: Color,
     onSelect: (Long?) -> Unit,
     onManage: () -> Unit, onConfirm: () -> Unit, addedVersion: Int = 0) {
-    val listState = rememberLazyListState()
+    val selectedIndex = groups.indexOfFirst { it.id == selectedId }
+    // The first row is the "No group" option.
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = (selectedIndex + 1).coerceAtLeast(0))
     LaunchedEffect(addedVersion, groups.map { it.id }) {
-        if (addedVersion > 0) {
-            val index = groups.indexOfFirst { it.id == selectedId }
-            if (index >= 0) listState.animateScrollToItem(index + 1)
+        val index = groups.indexOfFirst { it.id == selectedId }
+        if (index >= 0) {
+            if (addedVersion > 0) listState.animateScrollToItem(index + 1)
+            else listState.scrollToItem(index + 1)
         }
     }
     Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen).padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {

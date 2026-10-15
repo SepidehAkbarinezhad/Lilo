@@ -1,5 +1,7 @@
 package com.sepideh.lilo.home.presentation.components
 
+import com.sepideh.lilo.password.presentation.components.localizedServiceName
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -56,7 +58,7 @@ fun FeatureCardShell(
                 is NoteReportDetail -> HomeLatestSummary(detail.totalCount, Res.string.home_total_notes,
                     detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_notes, onCardClick)
                 is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
-                    detail.lastAddedService, detail.lastAddedAt, Res.string.password_empty, onCardClick,
+                    localizedServiceName(detail.lastAddedService, detail.lastAddedServiceFa), detail.lastAddedAt, Res.string.password_empty, onCardClick,
                     leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) },
                     subtitle = detail.lastAddedIdentifier)
                 null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp),
