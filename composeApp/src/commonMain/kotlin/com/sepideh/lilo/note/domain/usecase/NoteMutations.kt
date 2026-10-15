@@ -21,16 +21,19 @@ class NoteMutations(
         val imported = selectedImages?.let { imageStore.importImages(it) }
         val updated = note.copy(title = note.title.trim(), imageNames = note.imageNames + imported.orEmpty(),
             createdAt = original?.createdAt ?: timestamp, updatedAt = timestamp)
-        val saved = try {
-            val returnedId = repository.upsertNote(updated)
-            updated.copy(id = if (updated.id == 0L) returnedId else updated.id)
-        } catch (failure: Throwable) {
-            // New files must not be orphaned when the database write fails or is cancelled.
-            withContext(NonCancellable) { imported?.let { removeBestEffort(it) } }
-            throw failure
+        // Keep the database commit and attachment ownership transfer indivisible on cancellation.
+        return withContext(NonCancellable) {
+            val saved = try {
+                val returnedId = repository.upsertNote(updated)
+                updated.copy(id = if (updated.id == 0L) returnedId else updated.id)
+            } catch (failure: Throwable) {
+                // New files must not be orphaned when the database write fails or is cancelled.
+                imported?.let { removeBestEffort(it) }
+                throw failure
+            }
+            removeBestEffort(original?.imageNames.orEmpty() - saved.imageNames.toSet())
+            saved
         }
-        removeBestEffort(original?.imageNames.orEmpty() - saved.imageNames.toSet())
-        return saved
     }
 
     suspend fun delete(id: Long) {

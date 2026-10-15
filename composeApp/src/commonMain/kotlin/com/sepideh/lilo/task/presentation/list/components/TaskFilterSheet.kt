@@ -27,7 +27,7 @@ fun TaskFilterSheet(state: TaskListState, onAction: (BaseAction) -> Unit, modifi
         Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = LiloSpacing.Screen).padding(bottom = LiloSpacing.Section),
             verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
             SheetHeader(Res.string.filter_label, Res.string.apply_label, accent, onConfirm = { onAction(TaskListAction.OnApplyFilter) },
-                onReset = { onAction(TaskListAction.OnResetFilter) })
+                onReset = { onAction(TaskListAction.OnResetFilter) }, resetActionColor = LiloExtendedTheme.colors.taskAction)
             AppText(text = Res.string.status_filter_label, textType = TextType.FieldLabel)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Tiny)) {
                 listOf(Enums.DONE, Enums.UNDONE).forEach { status ->

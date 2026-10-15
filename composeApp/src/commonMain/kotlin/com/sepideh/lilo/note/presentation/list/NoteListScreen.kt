@@ -37,7 +37,10 @@ import org.jetbrains.compose.resources.stringResource
   Column(Modifier.fillMaxSize().padding(padding)) {
     val options=listOf(null to stringResource(Res.string.all),0L to stringResource(Res.string.no_group_label))+state.groups.map { it.id to it.label }
    LazyRow(contentPadding=PaddingValues(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-    items(options,key={it.first?:-1L}) { (id,label) -> FilterChip(selected=state.selectedGroup==id,onClick={action(NoteListAction.SelectGroup(id))},label={Text(label)},colors=FilterChipDefaults.filterChipColors(selectedContainerColor=accent.copy(alpha=.16f))) }
+    items(options,key={it.first?:-1L}) { (id,label) ->
+     LiloSelectionChip(label=label, selected=state.selectedGroup==id, accent=accent,
+      onClick={action(NoteListAction.SelectGroup(id))})
+    }
    }
    if(state.isLoading||state.isDeleting) LinearProgressIndicator(Modifier.fillMaxWidth(),color=accent)
    if(state.hasError) Column(Modifier.padding(horizontal=20.dp)) {

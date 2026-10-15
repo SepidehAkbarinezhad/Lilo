@@ -6,6 +6,8 @@ import com.sepideh.lilo.task.domain.reminder.asReminder
 import com.sepideh.lilo.task.domain.reminder.nextOccurrence
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.repository.TaskRepository
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -28,28 +30,28 @@ class TaskMutations(
         if (task.reminderAt != null) TimeZone.of(requireNotNull(task.reminderTimeZoneId))
         val previous = task.id?.let { repository.getTaskById(it) }
         val imported = selectedImages?.let { requireNotNull(imageStore).importImages(it) }.orEmpty()
-        val saved = task.copy(imageNames = task.imageNames + imported)
-        val result = try { repository.upsertTask(saved) }
-        catch (failure: Throwable) {
-            kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+        // Once persistence starts, finish the commit and its side effects even if the form closes.
+        // Cancellation at the database return boundary must not delete committed attachments.
+        withContext(NonCancellable) {
+            val saved = task.copy(imageNames = task.imageNames + imported)
+            val result = try { repository.upsertTask(saved) }
+            catch (failure: Throwable) {
                 runCatching { imageStore?.removeImages(imported) }
+                throw failure
             }
-            throw failure
-        }
-        val id = if (result == -1L) requireNotNull(task.id) else result
-        // Cleanup only follows a committed row, independently of reminder scheduling.
-        kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+            val id = if (result == -1L) requireNotNull(task.id) else result
+            // Cleanup only follows a committed row, independently of reminder scheduling.
             runCatching { imageStore?.removeImages(previous?.imageNames.orEmpty() - saved.imageNames.toSet()) }
+            val reminderFailed = try {
+                previous?.id?.let { scheduler.cancelReminder(it) }
+                if (!scheduleReminder) {
+                    scheduler.cancelReminder(id)
+                } else syncReminder(saved.copy(id = id))
+                false
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e }
+            catch (_: Exception) { true }
+            SaveTaskResult(id, reminderFailed, saved.imageNames)
         }
-        val reminderFailed = try {
-            previous?.id?.let { scheduler.cancelReminder(it) }
-            if (!scheduleReminder) {
-                scheduler.cancelReminder(id)
-            } else syncReminder(saved.copy(id = id))
-            false
-        } catch (e: kotlinx.coroutines.CancellationException) { throw e }
-        catch (_: Exception) { true }
-        SaveTaskResult(id, reminderFailed, saved.imageNames)
     }
 
     suspend fun setCompleted(id: Long, completed: Boolean) = mutex.withLock {
