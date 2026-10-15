@@ -8,8 +8,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class PasswordServiceRepositoryImpl(private val dao: PasswordServiceDao) : PasswordServiceRepository {
-    // Keep the persisted built-in ID/name so existing password links and uniqueness keys stay intact.
-    override fun observe() = dao.observe().map { rows -> rows.map { PasswordService(it.id, if (it.isDefault && it.id == "google") "Gmail" else it.name, it.isDefault) } }
+    override fun observe() = dao.observe().map { rows -> rows.map { PasswordService(it.id, it.name, it.isDefault, it.nameFa) } }
     override suspend fun create(name: String): PasswordService {
         val clean = name.trim(); require(clean.isNotEmpty())
         val row = PasswordServiceEntity(Uuid.random().toString(), clean, clean.lowercase(), false)

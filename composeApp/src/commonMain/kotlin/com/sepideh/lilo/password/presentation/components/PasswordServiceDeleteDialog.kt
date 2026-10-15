@@ -43,7 +43,7 @@ internal fun PasswordServiceDeleteDialog(
             verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small),
         ) {
             items(state.services.filter { it.id != deleting.id }, key = { it.id }) { service ->
-                GroupSelectionRow(service.name, state.replacement == service.id, colors.passwordColor,
+                GroupSelectionRow(service.displayName(), state.replacement == service.id, colors.passwordColor,
                     enabled = !state.busy, compact = true,
                     leadingIcon = { PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon)) }) { onReplacement(service.id) }
             }

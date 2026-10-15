@@ -40,4 +40,5 @@ data class PasswordReportDetail(
     override val subTitleReportCount: Int,
     val lastAddedServiceId: String? = null,
     val lastAddedAt: Long? = null,
+    val lastAddedServiceFa: String = lastAddedService,
 ) : ReportDetail

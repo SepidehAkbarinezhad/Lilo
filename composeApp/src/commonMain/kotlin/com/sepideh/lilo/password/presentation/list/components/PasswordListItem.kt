@@ -1,5 +1,7 @@
 package com.sepideh.lilo.password.presentation.list.components
 
+import com.sepideh.lilo.password.presentation.components.localizedServiceName
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -40,7 +42,7 @@ fun PasswordListItem(record: Password, revealed: String? = null, busy: Boolean =
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 PasswordServiceIcon(record.serviceId, colors.textSecondary, Modifier.size(18.dp))
-                Text(record.serviceName.ifBlank { stringResource(Res.string.not_set_label) },
+                Text(localizedServiceName(record.serviceName, record.serviceNameFa).ifBlank { stringResource(Res.string.not_set_label) },
                     color = colors.textSecondary, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
