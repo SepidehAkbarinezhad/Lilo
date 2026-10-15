@@ -18,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -42,7 +45,14 @@ fun SwipeToRevealDelete(
     val target = if (dragging) dragOffset else if (revealed) -widthPx else 0f
     val offset by animateFloatAsState(target, tween(if (dragging) 0 else 180), label = "reveal-delete")
     LaunchedEffect(enabled) { if (!enabled) revealed = false }
-    Box(modifier.clipToBounds()) {
+    val deleteLabel = stringResource(Res.string.delete_action)
+    Box(modifier.clipToBounds().semantics {
+        customActions = if (enabled) listOf(CustomAccessibilityAction(deleteLabel) {
+            revealed = false
+            onDelete()
+            true
+        }) else emptyList()
+    }) {
         if (offset < -1f) {
             FilledTonalIconButton(
                 onClick = { revealed = false; onDelete() }, enabled = enabled && revealed && !dragging,

@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.*
 import com.sepideh.lilo.task.presentation.reminder.taskReminderLabel
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseAction
@@ -30,12 +29,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, onAction: (BaseAction) -> Unit, groupLabel: String? = null) {
     val hasMetadata = !groupLabel.isNullOrBlank() || task.imageNames.isNotEmpty() || task.reminderAt != null
-    val deleteLabel = stringResource(Res.string.delete_action)
     val completionLabel = stringResource(if (task.done) Res.string.task_reopen_action else Res.string.task_complete_action)
     SwipeToRevealDelete(enabled = clickable, onDelete = { onAction(TaskListAction.OnDeleteTaskIcon(task)) }) {
-        Surface(modifier = modifier.semantics {
-            customActions = if (!clickable) emptyList() else listOf(CustomAccessibilityAction(deleteLabel) { onAction(TaskListAction.OnDeleteTaskIcon(task)); true })
-        }, shape = RoundedCornerShape(18.dp),
+        Surface(modifier = modifier, shape = RoundedCornerShape(18.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .7f)),
             color = MaterialTheme.colorScheme.surface) {
             Column(Modifier.fillMaxWidth().heightIn(min = 80.dp).padding(vertical = 8.dp),
