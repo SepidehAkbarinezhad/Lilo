@@ -1,7 +1,7 @@
-package com.sepideh.lilo.core.presentation.format
+package com.sepideh.lilo.core.domain.format
 
 /** Case-insensitive English ordering and Persian letter order, including پ، چ، ژ، گ. */
-fun groupAlphabeticalKey(title: String): String {
+fun alphabeticalKey(title: String): String {
     val alphabet = "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی"
     return buildString {
         title.trim().lowercase().forEach { raw ->

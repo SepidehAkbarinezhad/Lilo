@@ -71,7 +71,23 @@ class TaskDiscardTest {
         assertTrue(model.stateValue.value.confirmDiscard)
     }
 
-    private fun model(): TaskDetailViewModel {
+    @Test fun unavailableTaskCannotBeSavedAsANewTask() = runTest {
+        var writes = 0
+        val model = model(missing = true, onSave = { writes++ })
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.stateValue.collect() }
+        model.onAction(TaskDetailAction.OnGetSelectedTaskInfo(99))
+        runCurrent()
+        assertTrue(model.stateValue.value.loadFailed)
+        assertTrue(model.stateValue.value.hasError)
+        model.onAction(TaskDetailAction.OnTitleChanged("Replacement"))
+        model.onAction(TaskDetailAction.OnAddTaskButton())
+        runCurrent()
+        assertFalse(model.stateValue.value.isSaving)
+        assertEquals(0, writes)
+        assertTrue(model.stateValue.value.loadFailed)
+    }
+
+    private fun model(missing: Boolean = false, onSave: () -> Unit = { error("Discard must not save") }): TaskDetailViewModel {
         val language = LanguageProvider(UserPreferencesManager(object : UserPreferencesRepository {
             override val userPreferences = flowOf(UserPreferences())
             override suspend fun updateTheme(theme: AppTheme) {}
@@ -83,8 +99,8 @@ class TaskDiscardTest {
             override fun getTasksByFilter(done: Boolean?, priority: List<Int>) = getAllTasks()
             override suspend fun clearGroup(id: Long) {}
             override suspend fun deleteTask(id: Long) {}
-            override suspend fun upsertTask(task: Task): Long = error("Discard must not save")
-            override suspend fun getTaskById(id: Long) = Task(id = id, title = "Original", priority = 1)
+            override suspend fun upsertTask(task: Task): Long { onSave(); return 1 }
+            override suspend fun getTaskById(id: Long) = if (missing) null else Task(id = id, title = "Original", priority = 1)
         }
         val groups = object : TaskGroupRepository {
             override fun getAllGroups() = flowOf(emptyList<TaskGroup>())

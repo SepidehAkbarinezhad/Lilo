@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
@@ -58,10 +59,12 @@ fun BaseListScreen(
     onQueryChange: (String) -> Unit, onFilter: (() -> Unit)?,
     floatingActionButton: @Composable () -> Unit = {},
     referenceStyle: Boolean = false,
+    filterIcon: ImageVector = LiloIcons.Filter,
+    filterLabel: StringResource = Res.string.filter_label,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.background,
-        topBar = { ListHeader(title, accent, searchVisible, query, searchHint, filtersActive, onBack, onSearchVisible, onQueryChange, onFilter, referenceStyle) },
+        topBar = { ListHeader(title, accent, searchVisible, query, searchHint, filtersActive, onBack, onSearchVisible, onQueryChange, onFilter, referenceStyle, filterIcon, filterLabel) },
         floatingActionButton = floatingActionButton, content = content)
 }
 
@@ -71,6 +74,8 @@ private fun ListHeader(
     searchHint: StringResource, filtersActive: Boolean, onBack: () -> Boolean,
     onSearchVisible: (Boolean) -> Unit, onQueryChange: (String) -> Unit, onFilter: (() -> Unit)?,
     referenceStyle: Boolean = false,
+    filterIcon: ImageVector,
+    filterLabel: StringResource,
 ) {
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
@@ -95,7 +100,7 @@ private fun ListHeader(
             }
             if (onFilter != null) Surface(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false); onFilter() }, shape = CircleShape,
                 border = BorderStroke(1.dp, accent), color = if (filtersActive) accent.copy(alpha = .16f) else MaterialTheme.colorScheme.background) {
-                Box(Modifier.size(LiloSize.TouchTarget), contentAlignment = Alignment.Center) { Icon(LiloIcons.Filter, stringResource(Res.string.filter_label), Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.title) }
+                Box(Modifier.size(LiloSize.TouchTarget), contentAlignment = Alignment.Center) { Icon(filterIcon, stringResource(filterLabel), Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.title) }
             }
         }
         return
@@ -123,7 +128,7 @@ private fun ListHeader(
             }
         }, actions = {
             if (onFilter != null) IconButton(onClick = { focusManager.clearFocus(); keyboard?.hide(); onSearchVisible(false); onFilter() }) {
-                Icon(LiloIcons.Filter, stringResource(Res.string.filter_label), Modifier.size(22.dp),
+                Icon(filterIcon, stringResource(filterLabel), Modifier.size(22.dp),
                     tint = if (filtersActive) accent else MaterialTheme.colorScheme.onSurface)
             }
         })

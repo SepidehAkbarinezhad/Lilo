@@ -187,6 +187,48 @@ class PasswordViewModelTest {
         assertNull(model.state.value.request)
     }
 
+    @Test fun directDetailSurvivesAuthenticationStartAndCanRetryAfterCancellation() = runTest {
+        val repository = FakeRepository()
+        val crypto = FakeCrypto()
+        val model = tracked(PasswordDetailViewModel(repository, crypto))
+        val exits = mutableListOf<Boolean>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            model.baseOneTimeEvents.collect { exits += it.navigateBack }
+        }
+        model.initialize("one")
+        runCurrent()
+        repeat(2) {
+            crypto.lock() // Platform unlockers invalidate the previous session before prompting.
+            runCurrent()
+            assertTrue(model.state.value.locked)
+            assertEquals("one", model.state.value.request?.id)
+            assertFalse(model.state.value.loading)
+            assertEquals(0, repository.reads)
+            assertTrue(exits.isEmpty())
+        }
+        crypto.unlock("one")
+        runCurrent()
+        assertFalse(model.state.value.locked)
+        assertEquals("one", model.state.value.record.id)
+        assertEquals("private", model.state.value.record.secret)
+        assertEquals(1, repository.reads)
+    }
+
+    @Test fun unavailableDirectPasswordRemainsLockedAndCannotSave() = runTest {
+        val repository = FakeRepository()
+        val model = tracked(PasswordDetailViewModel(repository, FakeCrypto()))
+        model.initialize("deleted")
+        runCurrent()
+        assertTrue(model.state.value.loadFailed)
+        assertTrue(model.state.value.locked)
+        model.edit { it.copy(title = "Replacement", serviceId = "google", secret = "secret") }
+        model.save()
+        runCurrent()
+        assertEquals(0, repository.reads)
+        assertEquals(0, repository.writes)
+        assertEquals("", model.state.value.record.secret)
+    }
+
     private class FakeCrypto : VaultCrypto {
         override val session = MutableStateFlow(VaultSession())
         fun unlock(id: String) { session.value = VaultSession(generation + 1, true, id) }

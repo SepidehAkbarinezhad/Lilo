@@ -47,11 +47,10 @@ class NoteListViewModel(
             is NoteListAction.Search -> local.update { it.copy(searchQuery = action.query) }
             is NoteListAction.SearchVisible -> local.update { it.copy(isSearchVisible = action.visible) }
             is NoteListAction.SelectGroup -> local.update { it.copy(selectedGroup = action.id) }
-            NoteListAction.OpenFilters -> local.update { it.copy(isFilterSheetOpen = true, draftSort = it.sortOrder) }
-            NoteListAction.DismissFilters -> local.update { it.copy(isFilterSheetOpen = false, draftSort = it.sortOrder) }
+            NoteListAction.OpenSort -> local.update { it.copy(isSortSheetOpen = true, draftSort = it.sortOrder) }
+            NoteListAction.DismissSort -> local.update { it.copy(isSortSheetOpen = false, draftSort = it.sortOrder) }
             is NoteListAction.DraftSort -> local.update { it.copy(draftSort = action.order) }
-            NoteListAction.ApplyFilters -> local.update { it.copy(isFilterSheetOpen = false, sortOrder = it.draftSort) }
-            NoteListAction.ResetFilters -> local.update { it.copy(draftSort = NoteSortOrder.Date, selectedGroup = null, searchQuery = "") }
+            NoteListAction.ApplySort -> local.update { it.copy(isSortSheetOpen = false, sortOrder = it.draftSort) }
             is NoteListAction.OnDeleteNoteIcon -> if (!local.value.isDeleting) local.update { it.copy(selectedNote = action.note, isDeleteDialogOpen = true) }
             NoteListAction.DismissDelete -> if (!local.value.isDeleting) local.update { it.copy(isDeleteDialogOpen = false, selectedNote = null) }
             NoteListAction.ConfirmDelete -> deleteSelected()

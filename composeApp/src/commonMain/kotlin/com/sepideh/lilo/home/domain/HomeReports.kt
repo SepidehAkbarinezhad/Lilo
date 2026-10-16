@@ -31,5 +31,5 @@ internal fun taskHomeReport(
 
 internal fun noteHomeReport(notes: List<Note>): NoteReportDetail {
     val latest = notes.maxByOrNull { it.updatedAt }
-    return NoteReportDetail(latest?.title.orEmpty(), latest?.content.orEmpty(), notes.size, null, notes.size, latest?.updatedAt)
+    return NoteReportDetail(latest?.title.orEmpty(), latest?.content.orEmpty(), notes.size, null, notes.size, latest?.updatedAt, latest?.id)
 }

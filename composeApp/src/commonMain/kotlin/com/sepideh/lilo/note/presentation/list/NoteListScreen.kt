@@ -21,7 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable fun NoteListScreenRoot(viewModel:NoteListViewModel,onNavigateTo:(AppRoutes)->Unit,onBack:()->Boolean) {
  val state by viewModel.state.collectAsStateWithLifecycle()
  BaseRoot(viewModel=viewModel,navigateTo=onNavigateTo,onBack=onBack,bodyContainer={NoteListScreen(state,viewModel::onAction,onBack)},dialogContent={
-  if(state.isFilterSheetOpen) NoteFilterSheet(state,viewModel::onAction)
+  if(state.isSortSheetOpen) NoteSortSheet(state,viewModel::onAction)
   if(state.isDeleteDialogOpen) DeleteConfirmationDialog(accent=LiloExtendedTheme.colors.noteColor,
    title=stringResource(Res.string.note_delete_title),message=stringResource(Res.string.delete_item_confirmation),
    onConfirm={viewModel.onAction(NoteListAction.ConfirmDelete)},onDismiss={viewModel.onAction(NoteListAction.DismissDelete)})
@@ -31,8 +31,9 @@ import org.jetbrains.compose.resources.stringResource
  val accent=LiloExtendedTheme.colors.noteColor
  BaseListScreen(title=Res.string.note_feature_title,accent=accent,referenceStyle=true,
   searchVisible=state.isSearchVisible,query=state.searchQuery,searchHint=Res.string.note_search_hint,
-  filtersActive=state.sortOrder!=NoteSortOrder.Date||state.selectedGroup!=null,
-  onBack=onBack,onSearchVisible={action(NoteListAction.SearchVisible(it))},onQueryChange={action(NoteListAction.Search(it))},onFilter={action(NoteListAction.OpenFilters)},
+  filtersActive=state.sortOrder!=NoteSortOrder.Date,
+  filterIcon=LiloIcons.Sort,filterLabel=Res.string.note_sort_title,
+  onBack=onBack,onSearchVisible={action(NoteListAction.SearchVisible(it))},onQueryChange={action(NoteListAction.Search(it))},onFilter={action(NoteListAction.OpenSort)},
   floatingActionButton={FloatingActionButton(onClick={action(BaseAction.OnNavigateTo(AppRoutes.Notes.Detail(null)))},shape=CircleShape,containerColor=accent,modifier=Modifier.size(64.dp)) { Icon(LiloIcons.Add,stringResource(Res.string.add_note_title),Modifier.size(32.dp),tint=LiloExtendedTheme.colors.onNoteAccent) }}) { padding ->
   Column(Modifier.fillMaxSize().padding(padding)) {
     val options=listOf(null to stringResource(Res.string.all),0L to stringResource(Res.string.no_group_label))+state.groups.map { it.id to it.label }

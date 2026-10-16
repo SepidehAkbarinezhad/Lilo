@@ -75,6 +75,7 @@
     <string name="note_retry">Try again</string>
     <string name="note_delete_title">Delete note</string>
     <string name="note_delete_group_message">Deleting this group leaves its notes ungrouped.</string>
+    <string name="note_sort_title">Sort</string>
     <string name="note_recent_sort">Recently edited</string>
     <string name="note_title_sort">Title</string>
     <string name="note_images_label">Images</string>
@@ -141,4 +142,6 @@
     <string name="password_updated_date">Last updated: %1$s</string>
     <string name="group_name_exists">A group with this name already exists.</string>
     <string name="service_name_exists">A service with this name already exists.</string>
+    <string name="note_recent_sort_description">Newest to oldest</string>
+    <string name="note_title_sort_description">Alphabetically (A to Z)</string>
 </resources>

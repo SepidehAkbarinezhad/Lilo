@@ -35,7 +35,7 @@ fun PasswordDetailScreenRoot(id: String?, viewModel: PasswordDetailViewModel, on
     LaunchedEffect(id) { viewModel.initialize(id) }
     AppBackHandler { viewModel.back() }
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack, bodyContainer = {
-        PasswordGate(state.request, id != null && state.locked, { viewModel.back(); true }) {
+        PasswordGate(state.request, id != null && state.locked && !state.loadFailed, { viewModel.back(); true }) {
             BaseFormScreen(title = if (id == null) Res.string.password_add_title else Res.string.password_edit_title,
                 accent = colors.passwordColor, saveActionColor = colors.passwordAction, textSaveAction = true,
                 actionLabel = Res.string.note_save_action, saveEnabled = !state.loading && !state.saving && !state.loadFailed,

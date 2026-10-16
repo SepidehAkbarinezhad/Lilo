@@ -10,6 +10,7 @@ class PasswordHomeReportTest {
             Password(id = "latest", serviceId = "github", serviceName = "GitHub", title = "Personal", username = "sepideh", createdAt = 2)))
         assertEquals("GitHub", report.lastAddedService)
         assertEquals("github", report.lastAddedServiceId)
+        assertEquals("latest", report.lastAddedPasswordId)
         assertEquals("sepideh", report.lastAddedIdentifier)
         assertEquals(2, report.totalAccounts)
         assertEquals(2L, report.lastAddedAt)
@@ -24,6 +25,7 @@ class PasswordHomeReportTest {
         val report = passwordHomeReport(emptyList())
         assertEquals(0, report.totalAccounts)
         assertNull(report.lastAddedAt)
+        assertNull(report.lastAddedPasswordId)
         assertEquals("", report.lastAddedService)
         assertEquals("", report.lastAddedIdentifier)
     }

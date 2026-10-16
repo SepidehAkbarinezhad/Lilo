@@ -25,6 +25,7 @@ import com.sepideh.lilo.home.presentation.components.HomeHeader
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.app.navigation.routeForAdding
 import com.sepideh.lilo.app.navigation.routeForList
+import com.sepideh.lilo.app.navigation.detailRoute
 import com.sepideh.lilo.core.presentation.components.AppText
 import lilo.composeapp.generated.resources.Res
 
@@ -80,6 +81,9 @@ fun HomeScreenContent(
                     onCardClick = {  onAction(
                         BaseAction.OnNavigateTo(feature.routeForList())
                     ) },
+                    onLatestClick = state.reportDetails[feature]?.detailRoute()?.let { route ->
+                        { onAction(BaseAction.OnNavigateTo(route)) }
+                    },
                     onCompleteTask = { onAction(HomeAction.CompleteTask(it)) },
                     completingTaskIds = state.completingTaskIds,
                     detail = state.reportDetails[feature],
