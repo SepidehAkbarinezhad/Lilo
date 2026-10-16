@@ -27,7 +27,9 @@ import com.sepideh.lilo.app.navigation.routeForAdding
 import com.sepideh.lilo.app.navigation.routeForList
 import com.sepideh.lilo.app.navigation.detailRoute
 import com.sepideh.lilo.core.presentation.components.AppText
-import lilo.composeapp.generated.resources.Res
+import lilo.composeapp.generated.resources.*
+import com.sepideh.lilo.password.presentation.rememberPasswordUnlocker
+import com.sepideh.lilo.password.domain.UnlockResult
 
 @Composable
 fun HomescreenRoot(
@@ -36,6 +38,8 @@ fun HomescreenRoot(
     onBack: () -> Boolean
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val unlock = rememberPasswordUnlocker(viewModel::passwordAuthenticated)
+    LaunchedEffect(state.passwordRequest) { state.passwordRequest?.let(unlock) }
     BaseRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
@@ -63,6 +67,14 @@ fun HomeScreenContent(
             text = Res.string.task_operation_error,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
+        val passwordError = if (state.passwordOpenFailed) Res.string.password_operation_error else when (state.passwordAuthError) {
+            UnlockResult.UNAVAILABLE -> Res.string.password_auth_unavailable
+            UnlockResult.KEY_UNAVAILABLE -> Res.string.password_key_unavailable
+            null, UnlockResult.CANCELLED, UnlockResult.SUCCESS -> null
+            else -> Res.string.password_unlock_failed
+        }
+        passwordError?.let { AppText(text = it, color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) }
         LazyColumn(Modifier.fillMaxSize().navigationBarsPadding(), contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 26.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             items(LiloFeature.entries, key = { it.name }) { feature ->
 
@@ -82,7 +94,11 @@ fun HomeScreenContent(
                         BaseAction.OnNavigateTo(feature.routeForList())
                     ) },
                     onLatestClick = state.reportDetails[feature]?.detailRoute()?.let { route ->
-                        { onAction(BaseAction.OnNavigateTo(route)) }
+                        {
+                            if (route is AppRoutes.Passwords.Detail && route.passwordId != null)
+                                onAction(HomeAction.OpenPassword(route.passwordId))
+                            else onAction(BaseAction.OnNavigateTo(route))
+                        }
                     },
                     onCompleteTask = { onAction(HomeAction.CompleteTask(it)) },
                     completingTaskIds = state.completingTaskIds,

@@ -57,7 +57,7 @@ private fun NoteSortOption(title: StringResource, description: StringResource, s
         .padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         RadioButton(selected = selected, onClick = null,
-            colors = RadioButtonDefaults.colors(selectedColor = colors.noteAction, unselectedColor = colors.textSecondary))
+            colors = RadioButtonDefaults.colors(selectedColor = colors.noteAction.copy(alpha = .75f), unselectedColor = colors.textSecondary))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             AppText(text = title, textType = TextType.SectionTitle)
             AppText(text = description, textType = TextType.Body, color = colors.textSecondary)

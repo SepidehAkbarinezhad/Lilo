@@ -8,4 +8,6 @@ data class Note(
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
     val imageNames: List<String> = emptyList(),
-)
+) {
+    val lastModifiedAt: Long get() = updatedAt.takeIf { it > 0 } ?: createdAt
+}
