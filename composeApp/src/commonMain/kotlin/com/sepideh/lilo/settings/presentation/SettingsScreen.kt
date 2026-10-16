@@ -52,7 +52,6 @@ fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onB
             SettingsSection(
                 title = stringResource(Res.string.theme_label),
                 icon = vectorResource(Res.drawable.lilo_appearance),
-                compact = true,
             ) {
                 SettingsChoices(listOf(AppTheme.SYSTEM, AppTheme.LIGHT, AppTheme.DARK), state.userPreferences.theme, enabled,
                     label = { stringResource(it.labelRes) },

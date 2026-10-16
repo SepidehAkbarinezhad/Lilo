@@ -17,13 +17,13 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
+import com.sepideh.lilo.ui.theme.LiloSpacing
 
 @Composable
 fun SettingsSection(
     title: String,
     icon: ImageVector,
     headerModifier: Modifier = Modifier,
-    compact: Boolean = false,
     trailingContent: @Composable () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -33,10 +33,10 @@ fun SettingsSection(
         color = MaterialTheme.colorScheme.surface,
     ) {
         Column(
-            Modifier.padding(if (compact) 16.dp else 20.dp),
-            verticalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 20.dp),
+            Modifier.padding(LiloSpacing.Screen),
+            verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item),
         ) {
-            SettingsSectionHeader(title, icon, headerModifier, compact, trailingContent)
+            SettingsSectionHeader(title, icon, headerModifier, trailingContent)
             content()
         }
     }
@@ -47,17 +47,16 @@ private fun SettingsSectionHeader(
     title: String,
     icon: ImageVector,
     modifier: Modifier,
-    compact: Boolean,
     trailingContent: @Composable () -> Unit,
 ) {
     val colors = LiloExtendedTheme.colors
     Row(
-        modifier.fillMaxWidth().heightIn(min = if (compact) 40.dp else 48.dp),
+        modifier.fillMaxWidth().heightIn(min = 48.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Box(
-            Modifier.size(if (compact) 36.dp else 40.dp).background(colors.brand.copy(alpha = .07f), CircleShape),
+            Modifier.size(40.dp).background(colors.brand.copy(alpha = .07f), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(icon, contentDescription = null, modifier = Modifier.size(23.dp), tint = colors.brand)

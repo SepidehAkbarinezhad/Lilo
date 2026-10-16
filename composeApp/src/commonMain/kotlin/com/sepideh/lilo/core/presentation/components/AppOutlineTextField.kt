@@ -26,7 +26,7 @@ fun AppOutlineTextField(containerModifier: Modifier = Modifier, textFieldModifie
     trailingIcon: @Composable (() -> Unit)? = null, visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default, singleLine: Boolean = true, requestFocus: Boolean = false,
     accentColor: Color = MaterialTheme.colorScheme.primary, textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    topAlignedIcon: Boolean = false, maxLines: Int = 1) {
+    topAlignedIcon: Boolean = false, maxLines: Int = 1, minLines: Int = 1) {
     val focusRequester = remember { FocusRequester() }
     var focused by remember { mutableStateOf(false) }
     val colors = LiloExtendedTheme.colors
@@ -47,7 +47,7 @@ fun AppOutlineTextField(containerModifier: Modifier = Modifier, textFieldModifie
                         modifier = Modifier.weight(1f).focusRequester(focusRequester).onFocusChanged { focused = it.isFocused },
                         textStyle = textStyle.copy(color = if (field.enabled) colors.textPrimary else colors.textDisabled),
                         keyboardOptions = keyboardOptions, visualTransformation = visualTransformation,
-                        cursorBrush = SolidColor(accentColor), singleLine = singleLine, maxLines = maxLines,
+                        cursorBrush = SolidColor(accentColor), singleLine = singleLine, maxLines = maxLines, minLines = minLines,
                         decorationBox = { inner -> Box { if (field.value.isEmpty() && field.hint.isNotEmpty()) AppText(text = field.hint, color = colors.textPlaceholder); inner() } })
                     if (trailingIcon != null) trailingIcon()
                 }
@@ -55,7 +55,7 @@ fun AppOutlineTextField(containerModifier: Modifier = Modifier, textFieldModifie
         } else {
             OutlinedTextField(value = field.value, onValueChange = field.onValueChange, enabled = field.enabled, readOnly = field.readOnly,
                 modifier = fieldModifier.focusRequester(focusRequester).onFocusChanged { focused = it.isFocused },
-                textStyle = textStyle, shape = MaterialTheme.shapes.large, singleLine = singleLine, maxLines = maxLines,
+                textStyle = textStyle, shape = MaterialTheme.shapes.large, singleLine = singleLine, maxLines = maxLines, minLines = minLines,
                 isError = errorMessage != null, leadingIcon = leadingIcon, trailingIcon = trailingIcon,
                 visualTransformation = visualTransformation, keyboardOptions = keyboardOptions,
                 placeholder = { if (field.hint.isNotEmpty()) AppText(text = field.hint, color = colors.textPlaceholder) },

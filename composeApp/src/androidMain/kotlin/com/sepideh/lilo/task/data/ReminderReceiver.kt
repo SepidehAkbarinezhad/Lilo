@@ -7,6 +7,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.net.Uri
+import com.sepideh.lilo.task.presentation.reminder.COMPLETE_TASK_ACTION
+import com.sepideh.lilo.task.presentation.reminder.markDoneNotificationLabel
+import com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository
+import kotlinx.coroutines.flow.first
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
@@ -25,14 +30,15 @@ class ReminderReceiver : BroadcastReceiver() {
         val pending = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
-                getKoin().get<TaskMutations>().deliverReminder(taskId, triggerAt) { showNotification(context, it) }
+                val label = markDoneNotificationLabel(getKoin().get<UserPreferencesRepository>().userPreferences.first().language)
+                getKoin().get<TaskMutations>().deliverReminder(taskId, triggerAt) { showNotification(context, it, label) }
             } catch (e: Exception) {
                 Log.e("LiloReminder", "Reminder delivery failed", e)
             } finally { pending.finish() }
         }
     }
 
-    private fun showNotification(context: Context, task: Task) {
+    private fun showNotification(context: Context, task: Task, completeLabel: String) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "task_reminders"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -51,10 +57,17 @@ class ReminderReceiver : BroadcastReceiver() {
         }
         val launch = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val complete = PendingIntent.getBroadcast(context, 0,
+            Intent(context, ReminderCompletionReceiver::class.java).apply {
+                action = COMPLETE_TASK_ACTION
+                data = Uri.parse("lilo://complete-task/${requireNotNull(task.id)}")
+                putExtra("taskId", requireNotNull(task.id))
+            }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm).setContentTitle(task.title)
             .setContentText(task.description).setPriority(NotificationCompat.PRIORITY_HIGH)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .addAction(android.R.drawable.checkbox_on_background, completeLabel, complete)
             .setAutoCancel(true).setContentIntent(launch).build()
         manager.notify("task:${task.id}", 0, notification)
     }

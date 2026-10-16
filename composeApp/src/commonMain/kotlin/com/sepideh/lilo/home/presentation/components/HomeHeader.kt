@@ -22,9 +22,12 @@ fun HomeHeader(onAction: (BaseAction) -> Unit) {
     val brand = if (MaterialTheme.colorScheme.background.luminance() < .5f) HomeBrandDark else HomeBrandLight
     Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically) {
-        Icon(vectorResource(Res.drawable.home_lilo_logo), contentDescription = null,
-            modifier = Modifier.size(48.dp), tint = brand)
-        Spacer(Modifier.width(4.dp))
+        // The asset includes transparent margins; keep its drawing size in a tighter layout box.
+        Box(Modifier.size(width = 32.dp, height = 48.dp), contentAlignment = Alignment.Center) {
+            Icon(vectorResource(Res.drawable.home_lilo_logo), contentDescription = null,
+                modifier = Modifier.requiredSize(48.dp), tint = brand)
+        }
+        Spacer(Modifier.width(2.dp))
         if (LocalLiloAppLanguage.current == AppLanguage.FA) {
             Text(
                 text = stringResource(Res.string.home_brand_name),

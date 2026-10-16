@@ -1,4 +1,5 @@
 import SwiftUI
+import ComposeApp
 import FirebaseCore
 import FirebaseCrashlytics
 import FirebaseCore
@@ -11,6 +12,7 @@ struct iOSApp: App {
     
     init() {
             FirebaseApp.configure()
+            MainViewControllerKt.initializeLilo()
         // Force immediate Analytics verification
         Analytics.logEvent("debug_connection_test", parameters: [
             "test_id": "ios_\(UUID().uuidString)",

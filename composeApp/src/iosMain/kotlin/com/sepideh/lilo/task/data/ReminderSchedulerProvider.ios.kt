@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.data
 
 import com.sepideh.lilo.task.domain.reminder.Reminder
+import com.sepideh.lilo.task.presentation.reminder.TASK_NOTIFICATION_CATEGORY
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
 import com.sepideh.lilo.task.domain.reminder.nextOccurrence
@@ -65,6 +66,8 @@ class ReminderSchedulerProvider(
             val trigger = if (canRepeat) repeatTrigger!! else oneShotTrigger(at, reminder.timeZoneId)
             val content = UNMutableNotificationContent().apply {
                 setTitle(reminder.title); setBody(reminder.content); setSound(UNNotificationSound.defaultSound())
+                setCategoryIdentifier(TASK_NOTIFICATION_CATEGORY)
+                setUserInfo(mapOf("taskId" to reminder.id.toString()))
             }
             requests += UNNotificationRequest.requestWithIdentifier("$prefix${reminder.id}:${if (canRepeat) "repeat" else at.toString()}", content, trigger)
             if (!canRepeat) reminder.nextOccurrence(at)?.let { candidates += reminder to it }

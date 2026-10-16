@@ -18,4 +18,5 @@ private val notificationDelegate = NotificationDelegate()
 
 fun initNotificationDelegate() {
     UNUserNotificationCenter.currentNotificationCenter().delegate = notificationDelegate
+    notificationDelegate.registerActions()
 }
