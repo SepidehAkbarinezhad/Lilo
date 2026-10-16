@@ -1,7 +1,7 @@
 package com.sepideh.lilo.task.presentation
 
 import com.sepideh.lilo.task.domain.TaskGroup
-import com.sepideh.lilo.core.presentation.format.groupAlphabeticalKey
+import com.sepideh.lilo.core.domain.format.alphabeticalKey
 
 import com.sepideh.lilo.task.presentation.TaskGroupUi
 import com.sepideh.lilo.core.domain.model.AppLanguage
@@ -9,7 +9,7 @@ import com.sepideh.lilo.core.domain.model.AppLanguage
 fun List<TaskGroup>.toPresentationList(language: AppLanguage): List<TaskGroupUi> {
     return map { it.toPresentation(language) }
         .filter { it.title.isNotBlank() }
-        .sortedWith(compareBy<TaskGroupUi> { groupAlphabeticalKey(it.title) }.thenBy { it.id })
+        .sortedWith(compareBy<TaskGroupUi> { alphabeticalKey(it.title) }.thenBy { it.id })
 }
 
 fun TaskGroup.toPresentation(language: AppLanguage): TaskGroupUi {

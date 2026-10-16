@@ -164,7 +164,7 @@ class TaskDetailViewModel(
     }
 
     private fun save() {
-        if (local.value.isSaving || local.value.isLoading) return
+        if (local.value.isSaving || local.value.isLoading || local.value.loadFailed) return
         if (local.value.task.title.isBlank()) {
             local.update { it.copy(titleError = it.titleError.copy(isSuccessful = false, messageId = Res.string.error_empty_field_label)) }
             return
@@ -200,7 +200,7 @@ class TaskDetailViewModel(
         viewModelScope.launch {
             try { block() } catch (e: CancellationException) { throw e }
             catch (_: DuplicateNameException) { local.update { it.copy(duplicateGroupName = true, isAddingGroup = false) } }
-            catch (_: Exception) { local.update { it.copy(hasError = true, isSaving = false, isLoading = false, isAddingGroup = false, awaitingPermissionReturn = false) } }
+            catch (_: Exception) { local.update { it.copy(hasError = true, loadFailed = it.loadFailed || it.isLoading, isSaving = false, isLoading = false, isAddingGroup = false, awaitingPermissionReturn = false) } }
         }
     }
     override fun onResetState() = Unit

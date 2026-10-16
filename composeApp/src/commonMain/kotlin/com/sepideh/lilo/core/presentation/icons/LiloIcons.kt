@@ -9,6 +9,7 @@ import org.jetbrains.compose.resources.vectorResource
 object LiloIcons {
     val Back: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_back)
     val Search: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_search)
+    val Sort: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_sort)
     val Filter: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_filter)
     val Close: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_close)
     val Add: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_add)

@@ -2,7 +2,7 @@ package com.sepideh.lilo.note.presentation
 
 import com.sepideh.lilo.core.domain.model.AppLanguage
 import com.sepideh.lilo.core.presentation.components.group.GroupOption
-import com.sepideh.lilo.core.presentation.format.groupAlphabeticalKey
+import com.sepideh.lilo.core.domain.format.alphabeticalKey
 import com.sepideh.lilo.note.domain.model.NoteGroup
 
 fun List<NoteGroup>.toGroupOptions(language: AppLanguage): List<GroupOption> = map { group ->
@@ -11,4 +11,4 @@ fun List<NoteGroup>.toGroupOptions(language: AppLanguage): List<GroupOption> = m
         AppLanguage.EN -> group.titleEn.ifBlank { group.titleFa }
     }
     GroupOption(group.id, label, isDeletable = true, isEditable = !group.isDefault)
-}.filter { it.label.isNotBlank() }.sortedWith(compareBy<GroupOption> { groupAlphabeticalKey(it.label) }.thenBy { it.id })
+}.filter { it.label.isNotBlank() }.sortedWith(compareBy<GroupOption> { alphabeticalKey(it.label) }.thenBy { it.id })

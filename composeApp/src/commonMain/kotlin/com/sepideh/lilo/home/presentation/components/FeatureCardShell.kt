@@ -28,6 +28,7 @@ fun FeatureCardShell(
     completingTaskIds: Set<Long> = emptySet(),
     reportFailed: Boolean = false,
     onRetryReport: () -> Unit = {},
+    onLatestClick: (() -> Unit)? = null,
 ) {
     val colors = LiloExtendedTheme.colors
     val accent = feature.accentColor(colors)
@@ -54,11 +55,11 @@ fun FeatureCardShell(
                     Text(stringResource(Res.string.note_retry))
                 }
             } else when (detail) {
-                is TaskReportDetail -> HomeTaskReport(detail, actionColor, completingTaskIds, onCompleteTask)
+                is TaskReportDetail -> HomeTaskReport(detail, actionColor, completingTaskIds, onCompleteTask, onCardClick, onLatestClick)
                 is NoteReportDetail -> HomeLatestSummary(detail.totalCount, Res.string.home_total_notes,
-                    detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_notes, onCardClick)
+                    detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_notes, onCardClick, onLatestClick)
                 is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
-                    localizedServiceName(detail.lastAddedService, detail.lastAddedServiceFa), detail.lastAddedAt, Res.string.password_empty, onCardClick,
+                    localizedServiceName(detail.lastAddedService, detail.lastAddedServiceFa), detail.lastAddedAt, Res.string.password_empty, onCardClick, onLatestClick,
                     leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) },
                     subtitle = detail.lastAddedIdentifier)
                 null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp),

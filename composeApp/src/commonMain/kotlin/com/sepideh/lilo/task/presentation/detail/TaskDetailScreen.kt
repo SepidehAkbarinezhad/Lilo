@@ -96,7 +96,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     }
     BaseFormScreen(
         title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
-        accent = accent, textSaveAction = true, saveActionColor = LiloExtendedTheme.colors.taskAction, saveEnabled = !state.isSaving && !state.isLoading,
+        accent = accent, textSaveAction = true, saveActionColor = LiloExtendedTheme.colors.taskAction, saveEnabled = !state.isSaving && !state.isLoading && !state.loadFailed,
         onBack = { onAction(TaskDetailAction.Back); true }, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(com.sepideh.lilo.ui.theme.LiloSpacing.Screen), verticalArrangement = Arrangement.spacedBy(com.sepideh.lilo.ui.theme.LiloSpacing.Section)) {
@@ -105,28 +105,28 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
             AppOutlineTextField(accentColor = accent,
                 leadingIcon = { Icon(LiloIcons.Edit, null, Modifier.size(com.sepideh.lilo.ui.theme.LiloSize.Icon)) },
                 textFieldRequired = TextFieldRequired(label = stringResource(Res.string.title_label), isRequired = true, value = task.title,
-                    hint = "", enabled = !state.isLoading && !state.isSaving,
+                    hint = "", enabled = !state.isLoading && !state.isSaving && !state.loadFailed,
                     onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) }, validationStatus = state.titleError))
             AppOutlineTextField(accentColor = accent, singleLine = false, maxLines = 8, topAlignedIcon = true,
                 textFieldModifier = Modifier.heightIn(min = 84.dp),
                 leadingIcon = { Icon(LiloIcons.Description, null, Modifier.size(com.sepideh.lilo.ui.theme.LiloSize.Icon)) },
                 textFieldRequired = TextFieldRequired(label = stringResource(Res.string.description_label), value = task.description, hint = "",
-                    enabled = !state.isLoading && !state.isSaving, onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) }))
-            TaskPrioritySelector(task.priority, accent, enabled = !state.isSaving && !state.isLoading) {
+                    enabled = !state.isLoading && !state.isSaving && !state.loadFailed, onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) }))
+            TaskPrioritySelector(task.priority, accent, enabled = !state.isSaving && !state.isLoading && !state.loadFailed) {
                 onAction(TaskDetailAction.OnPriorityIdSelected(it.id))
             }
             FormSelectionRow(accent = accent, icon = LiloIcons.Groups, title = stringResource(Res.string.group_field_label),
                 value = state.selectedGroup?.takeIf { it.isDeletable }?.title ?: stringResource(Res.string.no_group_label),
-                onClick = { onAction(TaskDetailAction.OnGroupIcon) }, enabled = !state.isSaving && !state.isLoading)
+                onClick = { onAction(TaskDetailAction.OnGroupIcon) }, enabled = !state.isSaving && !state.isLoading && !state.loadFailed)
             FormSelectionRow(icon = LiloIcons.Reminder, title = stringResource(Res.string.reminder_label), accent = accent,
                 value = com.sepideh.lilo.task.presentation.reminder.taskReminderLabel(task, includeRepeat = true),
                 onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },
                 clearContentDescription = stringResource(Res.string.remove_reminder_action),
-                enabled = !state.isSaving && !state.isLoading,
+                enabled = !state.isSaving && !state.isLoading && !state.loadFailed,
                 onClear = if (state.task.reminderAt != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
             com.sepideh.lilo.core.presentation.components.images.ImageAttachments(
                 images = com.sepideh.lilo.core.presentation.images.attachmentPreviews(task.imageNames, state.removedImageNames, state.selectedImages),
-                accent = accent, enabled = !state.isLoading && !state.isSaving,
+                accent = accent, enabled = !state.isLoading && !state.isSaving && !state.loadFailed,
                 onAdd = pickImages, onRemove = { onAction(TaskDetailAction.OnRemoveImage(it)) })
         }
     }

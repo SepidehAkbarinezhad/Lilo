@@ -17,6 +17,7 @@ data class TaskDetailState(
     val removedImageNames: Set<String> = emptySet(),
     val selectedImages: List<com.sepideh.lilo.core.domain.images.ImageSource>? = null,
     val isLoading: Boolean = false,
+    val loadFailed: Boolean = false,
     val isAddingGroup: Boolean = false,
     val groupAddedVersion: Int = 0,
     val hasError: Boolean = false,

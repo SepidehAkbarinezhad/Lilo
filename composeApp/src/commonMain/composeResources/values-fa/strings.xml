@@ -75,6 +75,7 @@
     <string name="note_retry">تلاش دوباره</string>
     <string name="note_delete_title">حذف یادداشت</string>
     <string name="note_delete_group_message">با حذف این گروه، یادداشت‌های آن بدون گروه باقی می‌مانند.</string>
+    <string name="note_sort_title">مرتب‌سازی</string>
     <string name="note_recent_sort">آخرین ویرایش</string>
     <string name="note_title_sort">عنوان</string>
     <string name="note_images_label">تصاویر</string>
@@ -141,4 +142,6 @@
     <string name="password_updated_date">آخرین ویرایش: %1$s</string>
     <string name="group_name_exists">گروهی با این نام وجود دارد.</string>
     <string name="service_name_exists">سرویسی با این نام وجود دارد.</string>
+    <string name="note_recent_sort_description">جدیدترین به قدیمی‌ترین</string>
+    <string name="note_title_sort_description">به ترتیب حروف الفبا (آ تا ی)</string>
 </resources>

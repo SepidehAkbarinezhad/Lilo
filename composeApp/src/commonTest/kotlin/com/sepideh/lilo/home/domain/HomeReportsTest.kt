@@ -44,6 +44,8 @@ class HomeReportsTest {
         val report = noteHomeReport(listOf(Note(1, "Updated", "Content", createdAt = 1, updatedAt = 3),
             Note(2, "New", "Other", createdAt = 2, updatedAt = 2)))
         assertEquals("Updated", report.latestTitle)
+        assertEquals(1L, report.latestNoteId)
+        assertNull(noteHomeReport(emptyList()).latestNoteId)
         assertEquals("Content", report.latestSnippet)
         assertEquals(2, report.totalCount)
         assertEquals(3L, report.latestUpdatedAt)

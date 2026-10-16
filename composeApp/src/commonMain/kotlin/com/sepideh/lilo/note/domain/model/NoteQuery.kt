@@ -1,5 +1,7 @@
 package com.sepideh.lilo.note.domain.model
 
+import com.sepideh.lilo.core.domain.format.alphabeticalKey
+
 enum class NoteSort { UPDATED, TITLE }
 
 /** null means all groups; zero means notes with no effective group. */
@@ -15,6 +17,6 @@ fun List<Note>.matching(query: NoteQuery): List<Note> {
     }
     return when (query.sort) {
         NoteSort.UPDATED -> filtered.sortedWith(compareByDescending<Note> { it.updatedAt }.thenByDescending { it.id })
-        NoteSort.TITLE -> filtered.sortedWith(compareBy<Note> { normalized(it.title) }.thenBy { it.id })
+        NoteSort.TITLE -> filtered.sortedWith(compareBy<Note> { alphabeticalKey(it.title) }.thenBy { it.id })
     }
 }

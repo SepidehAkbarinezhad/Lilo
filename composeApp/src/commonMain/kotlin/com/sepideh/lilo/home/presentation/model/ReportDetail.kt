@@ -24,6 +24,7 @@ data class NoteReportDetail(
     val thumbnailUrl: String?,
     override val subTitleReportCount: Int,
     val latestUpdatedAt: Long? = null,
+    val latestNoteId: Long? = null,
 ) : ReportDetail
 
 data class ExpenseReportDetail(
@@ -41,4 +42,5 @@ data class PasswordReportDetail(
     val lastAddedServiceId: String? = null,
     val lastAddedAt: Long? = null,
     val lastAddedServiceFa: String = lastAddedService,
+    val lastAddedPasswordId: String? = null,
 ) : ReportDetail

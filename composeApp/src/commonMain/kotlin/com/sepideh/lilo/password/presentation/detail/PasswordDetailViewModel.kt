@@ -35,9 +35,11 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
                     if (!session.unlocked) local.update { it.copy(record = it.record.copy(secret = "", notes = ""),
                         saving = false, visible = true, discardOpen = false) }
                 } else if (!session.unlocked) {
-                    original = Password()
-                    local.value = PasswordDetailState()
-                    onAction(BaseAction.OnNavigateTo(null))
+                    if (!local.value.locked) {
+                        original = Password()
+                        local.value = PasswordDetailState()
+                        onAction(BaseAction.OnNavigateTo(null))
+                    } else load()
                 } else load()
             }
         } }

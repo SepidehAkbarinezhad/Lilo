@@ -18,6 +18,12 @@ class NoteRulesTest {
   assertEquals(listOf(3L,1L),notes.matching(NoteQuery(groupId=0,sort=NoteSort.TITLE)).map { it.id })
   assertEquals(listOf(2L),notes.matching(NoteQuery(groupId=7)).map { it.id })
  }
+ @Test fun titleSortingUsesPersianAlphabetWhileKeepingSearchAndCategory() {
+  val titles=listOf("یادداشت", "گل", "ژاله", "چای", "توت", "پدر", "باران", "آب")
+  val notes=titles.mapIndexed { index,title -> Note(id=index.toLong()+1,title=title,content="كتاب",groupId=7) } +
+   listOf(Note(id=90,title="آغاز",content="کتاب",groupId=8),Note(id=91,title="آرزو",content="Other",groupId=7))
+  assertEquals(titles.reversed(),notes.matching(NoteQuery(text="کتاب",groupId=7,sort=NoteSort.TITLE)).map { it.title })
+ }
  @Test fun userGroupEditsOnlySelectedLanguageAndDefaultsCannotBeRenamed() {
   val group=NoteGroup(titleEn="Work",titleFa="کار")
   assertEquals("Work",group.renamed("خرید",AppLanguage.FA).titleEn)
