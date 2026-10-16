@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -36,6 +37,8 @@ fun SwipeToRevealDelete(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    val colors = MaterialTheme.colorScheme
+    val deleteIconColor = if (colors.background.luminance() > .5f) colors.error else colors.onErrorContainer
     val actionWidth = 80.dp
     val widthPx = with(LocalDensity.current) { actionWidth.toPx() }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
@@ -58,8 +61,8 @@ fun SwipeToRevealDelete(
                 onClick = { revealed = false; onDelete() }, enabled = enabled && revealed && !dragging,
                 modifier = Modifier.align(Alignment.CenterEnd).padding(horizontal = LiloSpacing.Item).size(LiloSize.TouchTarget),
                 colors = IconButtonDefaults.filledTonalIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer),
+                    containerColor = colors.errorContainer,
+                    contentColor = deleteIconColor),
             ) {
                 Icon(LiloIcons.Delete, stringResource(Res.string.delete_action), Modifier.size(LiloSize.SmallIcon))
             }

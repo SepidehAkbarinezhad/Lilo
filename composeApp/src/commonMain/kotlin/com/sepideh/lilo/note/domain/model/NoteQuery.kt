@@ -16,7 +16,7 @@ fun List<Note>.matching(query: NoteQuery): List<Note> {
             (needle.isEmpty() || normalized(note.title).contains(needle) || normalized(note.content).contains(needle))
     }
     return when (query.sort) {
-        NoteSort.UPDATED -> filtered.sortedWith(compareByDescending<Note> { it.updatedAt }.thenByDescending { it.id })
+        NoteSort.UPDATED -> filtered.sortedWith(compareByDescending<Note> { it.lastModifiedAt }.thenByDescending { it.id })
         NoteSort.TITLE -> filtered.sortedWith(compareBy<Note> { alphabeticalKey(it.title) }.thenBy { it.id })
     }
 }

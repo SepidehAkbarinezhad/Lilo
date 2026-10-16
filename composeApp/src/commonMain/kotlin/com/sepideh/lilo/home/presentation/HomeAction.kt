@@ -4,6 +4,7 @@ import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 
 sealed interface HomeAction : BaseAction {
+    data class OpenPassword(val id: String) : HomeAction
     data class CompleteTask(val id: Long) : HomeAction
     data class RetryFeature(val feature: LiloFeature) : HomeAction
     data class ObserveFeature(val feature: LiloFeature) : HomeAction

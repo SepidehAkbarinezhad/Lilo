@@ -11,9 +11,9 @@ import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CreationDateCaption(timestamp: Long, modifier: Modifier = Modifier) {
+fun CreationDateCaption(timestamp: Long, modifier: Modifier = Modifier, showLabel: Boolean = true) {
     val date = creationDateLabel(timestamp, LocalLayoutDirection.current == LayoutDirection.Rtl) ?: return
-    AppText(text = stringResource(Res.string.created_on_date, date), textType = TextType.Caption,
+    AppText(text = if (showLabel) stringResource(Res.string.created_on_date, date) else date, textType = TextType.Caption,
         color = LiloExtendedTheme.colors.textSupporting, modifier = modifier)
 }
 

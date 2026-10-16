@@ -1,6 +1,9 @@
 package com.sepideh.lilo.home.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.sepideh.lilo.app.navigation.AppRoutes
+import com.sepideh.lilo.password.domain.*
+import kotlinx.coroutines.Job
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
 import com.sepideh.lilo.home.domain.FeatureCardFactory
@@ -16,7 +19,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
 class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
-    private val taskMutations: TaskMutations
+    private val taskMutations: TaskMutations,
+    private val passwordRepository: PasswordRepository,
+    private val crypto: VaultCrypto
 ) : BaseViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -24,8 +29,13 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
     private val observedFeatures = mutableSetOf<LiloFeature>()
 
 
-    override fun onResetState() {
+    private var passwordOpening: Job? = null
 
+    override fun onResetState() {
+        passwordOpening?.cancel()
+        if (_state.value.openingPasswordId != null) crypto.lock()
+        _state.update { it.copy(openingPasswordId = null, passwordRequest = null,
+            passwordAuthError = null, passwordOpenFailed = false) }
     }
 
     override fun onAction(action: BaseAction) {
@@ -33,10 +43,41 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
         if (action !is HomeAction) return
 
         when (action) {
+            is HomeAction.OpenPassword -> openPassword(action.id)
             is HomeAction.CompleteTask -> completeTask(action.id)
             is HomeAction.ObserveFeature -> observeFeature(action.feature)
             is HomeAction.RetryFeature -> if (action.feature in _state.value.failedFeatures) observeFeature(action.feature)
         }
+    }
+
+    private fun openPassword(id: String) {
+        if (id.isBlank() || _state.value.openingPasswordId != null) return
+        crypto.lock()
+        _state.update { it.copy(openingPasswordId = id, passwordAuthError = null, passwordOpenFailed = false) }
+        passwordOpening = viewModelScope.launch {
+            try {
+                val request = passwordRepository.unlockRequest(id)
+                if (_state.value.openingPasswordId == id) _state.update { it.copy(passwordRequest = request) }
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) {
+                _state.update { it.copy(openingPasswordId = null, passwordOpenFailed = true) }
+            }
+        }
+    }
+
+    fun passwordAuthenticated(result: UnlockResult) {
+        val id = _state.value.openingPasswordId ?: return
+        val session = crypto.session.value
+        val authenticated = result == UnlockResult.SUCCESS && _state.value.passwordRequest?.id == id &&
+            session.unlocked && session.recordId == id
+        if (!authenticated) crypto.lock()
+        _state.update { it.copy(openingPasswordId = null, passwordRequest = null,
+            passwordAuthError = when {
+                authenticated || result == UnlockResult.CANCELLED -> null
+                result == UnlockResult.SUCCESS -> UnlockResult.FAILED
+                else -> result
+            }) }
+        if (authenticated) onAction(BaseAction.OnNavigateTo(AppRoutes.Passwords.Detail(id)))
     }
 
     private fun completeTask(id: Long) {

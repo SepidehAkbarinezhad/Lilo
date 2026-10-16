@@ -22,6 +22,9 @@ fun HomeHeader(onAction: (BaseAction) -> Unit) {
     val brand = if (MaterialTheme.colorScheme.background.luminance() < .5f) HomeBrandDark else HomeBrandLight
     Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically) {
+        Icon(vectorResource(Res.drawable.home_lilo_logo), contentDescription = null,
+            modifier = Modifier.size(48.dp), tint = brand)
+        Spacer(Modifier.width(4.dp))
         if (LocalLiloAppLanguage.current == AppLanguage.FA) {
             Text(
                 text = stringResource(Res.string.home_brand_name),

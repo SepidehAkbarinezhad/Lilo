@@ -21,7 +21,9 @@ val homeModule = module {
     viewModel {
         HomeViewModel(
             featureCardFactory = get(),
-            taskMutations = get()
+            taskMutations = get(),
+            passwordRepository = get(),
+            crypto = get()
         )
     }
 

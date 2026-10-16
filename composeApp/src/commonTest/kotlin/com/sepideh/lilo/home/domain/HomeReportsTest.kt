@@ -53,6 +53,12 @@ class HomeReportsTest {
         assertEquals(0, noteHomeReport(emptyList()).totalCount)
     }
 
+    @Test fun notePreviewFallsBackToCreationWhenEditDateIsMissing() {
+        val report = noteHomeReport(listOf(Note(id = 1, createdAt = 20), Note(id = 2, createdAt = 1, updatedAt = 10)))
+        assertEquals(1L, report.latestNoteId)
+        assertEquals(20L, report.latestUpdatedAt)
+    }
+
     @Test fun earliestUpcomingTodayWinsOverLatestTaskAndTomorrow() {
         val now = 1_000L
         val report = taskHomeReport(listOf(Task(id = 1, title = "Latest", createdAt = 100),

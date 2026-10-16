@@ -8,6 +8,14 @@ import com.sepideh.lilo.note.domain.usecase.NoteMutations
 import com.sepideh.lilo.core.domain.images.*
 import com.sepideh.lilo.core.domain.model.AppLanguage
 class NoteRulesTest {
+ @Test fun latestEditDateFallsBackToCreationAndOrdersUneditedNotesCorrectly() {
+  val created=Note(id=1,title="New",createdAt=20)
+  val edited=Note(id=2,title="Edited",createdAt=5,updatedAt=30)
+  assertEquals(20L,created.lastModifiedAt)
+  assertEquals(30L,edited.lastModifiedAt)
+  assertEquals(listOf(2L,1L),listOf(created,edited).matching(NoteQuery()).map { it.id })
+  assertEquals(0L,Note().lastModifiedAt)
+ }
  @Test fun searchIncludesContentAndNormalizesPersianLetters() {
   val notes=listOf(Note(id=1,title="One",content="كتاب"),Note(id=2,title="Other"))
   assertEquals(listOf(1L),notes.matching(NoteQuery(text="کتاب")).map { it.id })
