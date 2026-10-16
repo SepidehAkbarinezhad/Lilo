@@ -56,11 +56,13 @@ fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onB
                 SettingsChoices(listOf(AppTheme.SYSTEM, AppTheme.LIGHT, AppTheme.DARK), state.userPreferences.theme, enabled,
                     label = { stringResource(it.labelRes) },
                     icon = { vectorResource(it.iconRes) },
+                    selectionFailed = state.failedAction is SettingsAction.SelectTheme,
                     onSelect = { onAction(SettingsAction.SelectTheme(it)) })
             }
             SettingsSection(stringResource(Res.string.language_label), vectorResource(Res.drawable.lilo_language)) {
                 SettingsChoices(listOf(AppLanguage.FA, AppLanguage.EN), state.userPreferences.language, enabled,
                     label = { stringResource(if (it == AppLanguage.FA) Res.string.settings_language_fa else Res.string.settings_language_en) },
+                    selectionFailed = state.failedAction is SettingsAction.SelectLanguage,
                     onSelect = { onAction(SettingsAction.SelectLanguage(it)) })
             }
             ReminderSetting(state.userPreferences.notificationsEnabled, enabled) {
