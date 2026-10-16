@@ -131,3 +131,9 @@ room {
 }
 
 
+
+// IDE resource indexing can replace these files with stubs that omit resource collectors.
+// Recreate the complete accessors before compilation instead of reusing those stubs.
+tasks.matching { it.name == "generateResourceAccessorsForCommonMain" }.configureEach {
+    outputs.upToDateWhen { false }
+}
