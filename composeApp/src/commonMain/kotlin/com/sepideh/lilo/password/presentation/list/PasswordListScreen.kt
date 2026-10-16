@@ -68,7 +68,8 @@ fun PasswordListScreenRoot(viewModel: PasswordListViewModel, onNavigateTo: (AppR
                         items(records, key = { it.id }) { record ->
                             SwipeToRevealDelete(enabled = true, onDelete = { viewModel.selectDelete(record.id) }) {
                                 PasswordListItem(record, revealed = state.revealedSecret.takeIf { state.revealedId == record.id },
-                                    busy = state.busyId == record.id,
+                                    busy = state.busyId == record.id, copied = state.copiedId == record.id,
+                                    onCopy = { viewModel.copy(record.id) },
                                     onReveal = { viewModel.open(record.id) }, onClick = { viewModel.open(record.id, edit = true) })
                             }
                         }

@@ -16,20 +16,27 @@ data class PasswordListState(
     val deleteId: String? = null, val error: Boolean = false,
     val request: PasswordUnlockRequest? = null, val busyId: String? = null,
     val revealedId: String? = null, val revealedSecret: String = "",
-    val authError: UnlockResult? = null,
+    val authError: UnlockResult? = null, val copiedId: String? = null,
 )
 
-class PasswordListViewModel(private val repository: PasswordRepository, private val crypto: VaultCrypto) : BaseViewModel() {
+class PasswordListViewModel(private val repository: PasswordRepository, private val crypto: VaultCrypto,
+    private val clipboard: PasswordClipboard) : BaseViewModel() {
     private val local = MutableStateFlow(PasswordListState())
     val state = local.asStateFlow()
     private var observing: Job? = null
     private var opening: Job? = null
-    private var editAfterUnlock = false
+    private enum class OpenAction { REVEAL, EDIT, COPY }
+    private var openAction = OpenAction.REVEAL
+    private var revealedSession: VaultSession? = null
+    private var copyFeedback: Job? = null
 
     init {
         observe()
         viewModelScope.launch { crypto.session.collect { session ->
-            if (!session.unlocked) local.update { it.copy(revealedId = null, revealedSecret = "") }
+            if (!session.unlocked || session != revealedSession) {
+                revealedSession = null
+                local.update { it.copy(revealedId = null, revealedSecret = "") }
+            }
         } }
     }
 
@@ -45,9 +52,21 @@ class PasswordListViewModel(private val repository: PasswordRepository, private 
     fun open(id: String, edit: Boolean = false) {
         if (local.value.busyId != null) return
         if (!edit && local.value.revealedId == id) { hide(); return }
+        beginUnlock(id, if (edit) OpenAction.EDIT else OpenAction.REVEAL)
+    }
+
+    fun copy(id: String) {
+        if (local.value.busyId != null) return
+        val session = crypto.session.value
+        if (local.value.revealedId == id && session == revealedSession && session.unlocked && session.recordId == id) {
+            copySecret(id, local.value.revealedSecret, session)
+        } else beginUnlock(id, OpenAction.COPY)
+    }
+
+    private fun beginUnlock(id: String, action: OpenAction) {
         hide()
-        editAfterUnlock = edit
-        local.update { it.copy(busyId = id, authError = null) }
+        openAction = action
+        local.update { it.copy(busyId = id, authError = null, error = false, copiedId = null) }
         opening = viewModelScope.launch {
             try { val request = repository.unlockRequest(id); local.update { it.copy(request = request) } }
             catch (cancelled: CancellationException) { throw cancelled }
@@ -59,28 +78,50 @@ class PasswordListViewModel(private val repository: PasswordRepository, private 
         val id = local.value.busyId ?: return
         local.update { it.copy(request = null) }
         if (result != UnlockResult.SUCCESS) {
+            crypto.lock()
             local.update { it.copy(busyId = null, authError = result.takeUnless { it == UnlockResult.CANCELLED }) }
             return
         }
         val session = crypto.session.value
         if (!session.unlocked || session.recordId != id) {
+            crypto.lock()
             local.update { it.copy(busyId = null, authError = UnlockResult.FAILED) }; return
         }
         opening = viewModelScope.launch {
             try {
                 val record = requireNotNull(repository.get(id))
                 if (crypto.session.value != session) return@launch
-                local.update { it.copy(busyId = null, authError = null,
-                    revealedId = if (editAfterUnlock) null else id,
-                    revealedSecret = if (editAfterUnlock) "" else record.secret) }
-                if (editAfterUnlock) onAction(BaseAction.OnNavigateTo(AppRoutes.Passwords.Detail(id)))
+                currentCoroutineContext().ensureActive()
+                local.update { it.copy(busyId = null, authError = null) }
+                when (openAction) {
+                    OpenAction.REVEAL -> {
+                        revealedSession = session
+                        local.update { it.copy(revealedId = id, revealedSecret = record.secret) }
+                    }
+                    OpenAction.EDIT -> onAction(BaseAction.OnNavigateTo(AppRoutes.Passwords.Detail(id)))
+                    OpenAction.COPY -> try { copySecret(id, record.secret, session) } finally { crypto.lock() }
+                }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { local.update { it.copy(busyId = null, authError = UnlockResult.FAILED) } }
             finally { local.update { it.copy(busyId = null) } }
         }
     }
 
+    private fun copySecret(id: String, secret: String, session: VaultSession) {
+        if (!session.unlocked || session.recordId != id || crypto.session.value != session) return
+        try {
+            clipboard.copyPassword(secret)
+            copyFeedback?.cancel()
+            local.update { it.copy(copiedId = id, error = false) }
+            copyFeedback = viewModelScope.launch {
+                delay(2_000)
+                local.update { it.copy(copiedId = null) }
+            }
+        } catch (_: Exception) { local.update { it.copy(error = true, copiedId = null) } }
+    }
+
     fun hide() {
+        revealedSession = null
         local.update { it.copy(revealedId = null, revealedSecret = "") }
         crypto.lock()
     }
@@ -105,7 +146,11 @@ class PasswordListViewModel(private val repository: PasswordRepository, private 
         }
     }
     override fun onResetState() {
-        // Navigating to the authenticated editor must retain its record key.
-        local.update { it.copy(revealedId = null, revealedSecret = "") }
+        opening?.cancel()
+        copyFeedback?.cancel()
+        // An authenticated editor navigation has already cleared busy/revealed state; retain its key.
+        if (local.value.busyId != null || local.value.revealedId != null) crypto.lock()
+        revealedSession = null
+        local.update { it.copy(revealedId = null, revealedSecret = "", copiedId = null, request = null, busyId = null) }
     }
 }

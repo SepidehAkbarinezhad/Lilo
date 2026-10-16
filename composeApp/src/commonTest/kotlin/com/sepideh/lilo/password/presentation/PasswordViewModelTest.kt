@@ -38,7 +38,7 @@ class PasswordViewModelTest {
     @Test fun listBrowsesWhileLockedAndRevealRequiresAuthenticationEachTime() = runTest {
         val repository = FakeRepository()
         val crypto = FakeCrypto()
-        val model = tracked(PasswordListViewModel(repository, crypto))
+        val model = tracked(PasswordListViewModel(repository, crypto, FakeClipboard()))
         runCurrent()
         assertEquals("Mail", model.state.value.records.single().title)
         assertEquals("", model.state.value.records.single().secret)
@@ -62,7 +62,7 @@ class PasswordViewModelTest {
 
     @Test fun cancellingAuthenticationLeavesListUsableAndNothingRevealed() = runTest {
         val repository = FakeRepository()
-        val model = tracked(PasswordListViewModel(repository, FakeCrypto()))
+        val model = tracked(PasswordListViewModel(repository, FakeCrypto(), FakeClipboard()))
         runCurrent()
         model.open("one")
         runCurrent()
@@ -78,7 +78,7 @@ class PasswordViewModelTest {
     @Test fun backgroundHidesRevealedPasswordButKeepsListMetadata() = runTest {
         val repository = FakeRepository()
         val crypto = FakeCrypto()
-        val model = tracked(PasswordListViewModel(repository, crypto))
+        val model = tracked(PasswordListViewModel(repository, crypto, FakeClipboard()))
         runCurrent()
         model.open("one")
         runCurrent()
@@ -229,6 +229,170 @@ class PasswordViewModelTest {
         assertEquals("", model.state.value.record.secret)
     }
 
+    @Test fun hiddenCopyAuthenticatesWithoutRevealingAndShowsTemporaryConfirmation() = runTest {
+        val repository = FakeRepository()
+        val crypto = FakeCrypto()
+        val clipboard = FakeClipboard()
+        val model = tracked(PasswordListViewModel(repository, crypto, clipboard))
+        runCurrent()
+        model.copy("one")
+        runCurrent()
+        assertNotNull(model.state.value.request)
+        assertTrue(clipboard.values.isEmpty())
+        assertEquals(0, repository.reads)
+        crypto.unlock("one")
+        model.authenticated(UnlockResult.SUCCESS)
+        runCurrent()
+        assertEquals(listOf("private"), clipboard.values)
+        assertNull(model.state.value.revealedId)
+        assertEquals("", model.state.value.revealedSecret)
+        assertFalse(crypto.unlocked)
+        assertEquals("one", model.state.value.copiedId)
+        advanceTimeBy(2_001)
+        runCurrent()
+        assertNull(model.state.value.copiedId)
+    }
+
+    @Test fun visiblePasswordCopiesExactValueWithoutAnotherAuthenticationOrRead() = runTest {
+        val repository = FakeRepository().apply { records.value = records.value.map { it.copy(secret = " private ") } }
+        val crypto = FakeCrypto()
+        val clipboard = FakeClipboard()
+        val model = tracked(PasswordListViewModel(repository, crypto, clipboard))
+        runCurrent()
+        model.open("one")
+        runCurrent()
+        crypto.unlock("one")
+        model.authenticated(UnlockResult.SUCCESS)
+        runCurrent()
+        val session = crypto.session.value
+        model.copy("one")
+        runCurrent()
+        assertEquals(listOf(" private "), clipboard.values)
+        assertNull(model.state.value.request)
+        assertEquals(1, repository.reads)
+        assertEquals(session, crypto.session.value)
+        assertEquals(" private ", model.state.value.revealedSecret)
+        model.hide()
+        model.copy("one")
+        runCurrent()
+        assertNotNull(model.state.value.request)
+        assertEquals(1, clipboard.values.size)
+    }
+
+    @Test fun failedCancelledAndWrongRecordAuthenticationNeverCopy() = runTest {
+        for (result in listOf(UnlockResult.CANCELLED, UnlockResult.FAILED, UnlockResult.SUCCESS)) {
+            val crypto = FakeCrypto()
+            val clipboard = FakeClipboard()
+            val model = tracked(PasswordListViewModel(FakeRepository(), crypto, clipboard))
+            runCurrent()
+            model.copy("one")
+            runCurrent()
+            if (result == UnlockResult.SUCCESS) crypto.unlock("another")
+            model.authenticated(result)
+            runCurrent()
+            assertTrue(clipboard.values.isEmpty())
+            assertNull(model.state.value.busyId)
+            assertEquals("", model.state.value.revealedSecret)
+            assertFalse(crypto.unlocked)
+        }
+    }
+
+    @Test fun visibleCopyCannotReuseAnExpiredOrReplacedSessionEvenBeforeCollectorRuns() = runTest {
+        for (replaceWithUnlockedSession in listOf(false, true)) {
+            val crypto = FakeCrypto()
+            val clipboard = FakeClipboard()
+            val model = tracked(PasswordListViewModel(FakeRepository(), crypto, clipboard))
+            runCurrent()
+            model.open("one")
+            runCurrent()
+            crypto.unlock("one")
+            model.authenticated(UnlockResult.SUCCESS)
+            runCurrent()
+            if (replaceWithUnlockedSession) crypto.unlock("one") else crypto.lock()
+            model.copy("one") // Do not give the session collector time to clear the visible value first.
+            runCurrent()
+            assertTrue(clipboard.values.isEmpty())
+            assertNotNull(model.state.value.request)
+            assertEquals("", model.state.value.revealedSecret)
+        }
+    }
+
+    @Test fun lockingWhilePasswordReadIsInFlightPreventsClipboardWrite() = runTest {
+        val release = CompletableDeferred<Unit>()
+        val repository = FakeRepository().apply { beforeRead = { release.await() } }
+        val crypto = FakeCrypto()
+        val clipboard = FakeClipboard()
+        val model = tracked(PasswordListViewModel(repository, crypto, clipboard))
+        runCurrent()
+        model.copy("one")
+        runCurrent()
+        crypto.unlock("one")
+        model.authenticated(UnlockResult.SUCCESS)
+        runCurrent()
+        crypto.lock()
+        release.complete(Unit)
+        runCurrent()
+        assertTrue(clipboard.values.isEmpty())
+        assertNull(model.state.value.busyId)
+        assertEquals("", model.state.value.revealedSecret)
+    }
+
+    @Test fun deletedPasswordAndLeavingScreenCannotCopy() = runTest {
+        val repository = FakeRepository()
+        val crypto = FakeCrypto()
+        val clipboard = FakeClipboard()
+        val model = tracked(PasswordListViewModel(repository, crypto, clipboard))
+        runCurrent()
+        model.copy("deleted")
+        runCurrent()
+        assertTrue(model.state.value.error)
+        assertTrue(clipboard.values.isEmpty())
+        model.copy("one")
+        runCurrent()
+        model.onResetState()
+        crypto.unlock("one")
+        model.authenticated(UnlockResult.SUCCESS)
+        runCurrent()
+        assertTrue(clipboard.values.isEmpty())
+        assertNull(model.state.value.request)
+    }
+
+    @Test fun clipboardFailureDoesNotClaimSuccessOrRevealHiddenSecret() = runTest {
+        val crypto = FakeCrypto()
+        val clipboard = FakeClipboard().apply { fail = true }
+        val model = tracked(PasswordListViewModel(FakeRepository(), crypto, clipboard))
+        runCurrent()
+        model.copy("one")
+        runCurrent()
+        crypto.unlock("one")
+        model.authenticated(UnlockResult.SUCCESS)
+        runCurrent()
+        assertTrue(model.state.value.error)
+        assertNull(model.state.value.copiedId)
+        assertEquals("", model.state.value.revealedSecret)
+        assertFalse(crypto.unlocked)
+    }
+
+    @Test fun navigatingToAuthenticatedEditorStillRetainsItsRecordSession() = runTest {
+        val crypto = FakeCrypto()
+        val model = tracked(PasswordListViewModel(FakeRepository(), crypto, FakeClipboard()))
+        runCurrent()
+        model.open("one", edit = true)
+        runCurrent()
+        crypto.unlock("one")
+        model.authenticated(UnlockResult.SUCCESS)
+        runCurrent()
+        model.onResetState()
+        assertTrue(crypto.unlocked)
+        assertEquals("one", crypto.session.value.recordId)
+        assertEquals("", model.state.value.revealedSecret)
+    }
+
+    private class FakeClipboard : PasswordClipboard {
+        val values = mutableListOf<String>()
+        var fail = false
+        override fun copyPassword(value: String) { check(!fail); values += value }
+    }
     private class FakeCrypto : VaultCrypto {
         override val session = MutableStateFlow(VaultSession())
         fun unlock(id: String) { session.value = VaultSession(generation + 1, true, id) }
@@ -241,12 +405,13 @@ class PasswordViewModelTest {
         var reads = 0
         var writes = 0
         var failSave = false
+        var beforeRead: suspend () -> Unit = {}
         override fun observePasswords(): Flow<List<Password>> = records.map { rows -> rows.map { it.copy(secret = "", notes = "") } }
         override suspend fun unlockRequest(id: String): PasswordUnlockRequest {
             require(records.value.any { it.id == id })
             return PasswordUnlockRequest(id, SealedPassword(3, byteArrayOf(), byteArrayOf()))
         }
-        override suspend fun get(id: String): Password? { reads++; return records.value.find { it.id == id } }
+        override suspend fun get(id: String): Password? { reads++; beforeRead(); return records.value.find { it.id == id } }
         override suspend fun save(password: Password): Password {
             writes++
             if (failSave) error("Storage unavailable")
