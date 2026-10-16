@@ -33,7 +33,10 @@ fun FormSelectionRow(icon: ImageVector, title: String, value: String, onClick: (
                         Icon(icon, null, Modifier.size(LiloSize.Icon), tint = if (enabled) colors.title else colors.textDisabled)
                     }
                 }
-                if (stacked) Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Tiny)) {
+                if (value.isBlank()) {
+                    AppText(text = title, modifier = Modifier.weight(1f), textType = TextType.BodyLarge,
+                        color = if (enabled) colors.textPrimary else colors.textDisabled, maxLines = 2)
+                } else if (stacked) Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Tiny)) {
                     AppText(text = title, textType = TextType.BodyLarge, color = if (enabled) colors.textSecondary else colors.textDisabled)
                     AppText(text = value, textType = TextType.Body, color = if (enabled) colors.textPrimary else colors.textDisabled, maxLines = 2)
                 } else {

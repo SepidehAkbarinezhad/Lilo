@@ -1,5 +1,7 @@
 package com.sepideh.lilo.core.presentation.components.group
 
+import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
+import com.sepideh.lilo.core.domain.validation.SHORT_NAME_MAX_LENGTH
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,10 +59,12 @@ fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
             if (renameId != null && onRename != null) {
                 val focus = remember { androidx.compose.ui.focus.FocusRequester() }
                 LaunchedEffect(renameId) { focus.requestFocus() }
-                fun submitRename() { if (!isAdding && renameTitle.isNotBlank()) onRename(renameId!!, renameTitle.trim()) }
+                fun submitRename() { if (!isAdding && renameTitle.isNotBlank() && !isShortNameTooLong(renameTitle)) onRename(renameId!!, renameTitle.trim()) }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(value = renameTitle, onValueChange = { renameTitle = it }, singleLine = true,
                         enabled = !isAdding, modifier = Modifier.weight(1f).focusRequester(focus),
+                        isError = isShortNameTooLong(renameTitle),
+                        supportingText = if (isShortNameTooLong(renameTitle)) ({ AppText(text = stringResource(Res.string.short_name_too_long, SHORT_NAME_MAX_LENGTH), textType = TextType.FieldError) }) else null,
                         label = { AppText(text = Res.string.edit_group_action) }, shape = MaterialTheme.shapes.medium,
                         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
                         keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submitRename() }),

@@ -72,7 +72,7 @@ fun ReminderEditorScreen(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                     RepeatRule.entries.forEach { rule ->
                         LiloSelectionChip(stringResource(rule.label), selectedRepeat == rule, accent,
-                            { repeatCode = rule.name; error = false }, modifier = Modifier.weight(1f))
+                            { repeatCode = rule.name; error = false }, modifier = Modifier.weight(1f), centerLabel = true)
                     }
                 }
                 if (selectedRepeat == RepeatRule.WEEKLY) {

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.icons.LiloIcons
 import com.sepideh.lilo.core.presentation.validation.ValidationStatus
-import com.sepideh.lilo.password.domain.Password
+import com.sepideh.lilo.password.domain.*
 import com.sepideh.lilo.password.presentation.detail.PasswordDetailState
 import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
@@ -29,7 +29,9 @@ fun PasswordFields(state: PasswordDetailState, edit: ((Password) -> Password) ->
         if (invalid) ValidationStatus(isSuccessful = false, messageId = Res.string.error_empty_field_label, args = arrayOf(label)) else ValidationStatus()
     AppOutlineTextField(accentColor = accent, leadingIcon = { Icon(LiloIcons.Edit, null, Modifier.size(LiloSize.Icon)) },
         textFieldRequired = TextFieldRequired(label = stringResource(Res.string.title_label), value = state.record.title,
-            enabled = enabled, onValueChange = { value -> edit { it.copy(title = value) } }))
+            enabled = enabled, onValueChange = { value -> edit { it.copy(title = value) } },
+            validationStatus = if (state.record.titleTooLong) ValidationStatus(isSuccessful = false,
+                value = stringResource(Res.string.field_max_length, PASSWORD_TITLE_MAX_LENGTH)) else ValidationStatus()))
     AppOutlineTextField(accentColor = accent, textStyle = ltr, keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
         textFieldRequired = TextFieldRequired(label = stringResource(Res.string.password_username), value = state.record.username,
             enabled = enabled, onValueChange = { value -> edit { it.copy(username = value) } }))
@@ -41,7 +43,8 @@ fun PasswordFields(state: PasswordDetailState, edit: ((Password) -> Password) ->
             Icon(vectorResource(if (state.visible) Res.drawable.lilo_eye_off else Res.drawable.lilo_eye),
                 stringResource(if (state.visible) Res.string.password_hide else Res.string.password_reveal), Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.textSecondary)
         } }, textFieldRequired = TextFieldRequired(label = stringResource(Res.string.password_secret), value = state.record.secret,
-            isRequired = true, enabled = enabled, onValueChange = { value -> edit { it.copy(secret = value) } }, validationStatus = validation(state.secretInvalid, Res.string.password_secret)))
+            isRequired = true, enabled = enabled, onValueChange = { value -> edit { it.copy(secret = value) } }, validationStatus = if (state.record.secretTooLong) ValidationStatus(isSuccessful = false,
+                value = stringResource(Res.string.field_max_length, PASSWORD_SECRET_MAX_LENGTH)) else validation(state.secretInvalid, Res.string.password_secret)))
     AppOutlineTextField(accentColor = accent, textStyle = ltr, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, autoCorrectEnabled = false),
         textFieldRequired = TextFieldRequired(label = stringResource(Res.string.password_website), value = state.record.website,
             hint = "example.com", enabled = enabled, onValueChange = { value -> edit { it.copy(website = value) } }, validationStatus = if (state.websiteInvalid) ValidationStatus(isSuccessful = false, messageId = Res.string.password_website_invalid) else ValidationStatus()))

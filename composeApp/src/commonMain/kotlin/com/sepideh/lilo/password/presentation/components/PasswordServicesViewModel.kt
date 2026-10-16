@@ -1,5 +1,6 @@
 package com.sepideh.lilo.password.presentation.components
 
+import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
 import com.sepideh.lilo.core.domain.validation.DuplicateNameException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -52,7 +53,7 @@ class PasswordServicesViewModel(private val repository: PasswordServiceRepositor
     }
     fun save() {
         val ui = local.value
-        if (ui.name.isBlank()) return
+        if (ui.name.isBlank() || isShortNameTooLong(ui.name)) return
         operation {
             if (ui.editingId == null) {
                 val created = repository.create(ui.name)

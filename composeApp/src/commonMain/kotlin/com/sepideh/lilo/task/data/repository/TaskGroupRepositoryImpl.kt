@@ -6,6 +6,7 @@ import com.sepideh.lilo.task.data.local.room.toDomainList
 import com.sepideh.lilo.task.data.local.room.toEntity
 import com.sepideh.lilo.task.domain.TaskGroup
 import com.sepideh.lilo.task.domain.repository.TaskGroupRepository
+import com.sepideh.lilo.core.domain.validation.requireShortNameLength
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -17,6 +18,9 @@ class TaskGroupRepositoryImpl(
             .map { it.toDomainList() }
 
     override suspend fun addGroup(group: TaskGroup): Long {
+        val previous = if (group.id != 0L) taskGroupDao.getGroupById(group.id) else null
+        requireShortNameLength(group.titleEn, previous?.titleEn)
+        requireShortNameLength(group.titleFa, previous?.titleFa)
         return taskGroupDao.upsertUnique(group.toEntity())
     }
 

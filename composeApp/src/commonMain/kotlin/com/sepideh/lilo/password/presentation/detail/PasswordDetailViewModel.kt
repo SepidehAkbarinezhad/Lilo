@@ -86,7 +86,7 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
         val session = crypto.session.value
         if (ui.locked || ui.loading || ui.saving || ui.loadFailed) return
         if (id != null && (!session.unlocked || session.recordId != id)) return
-        if (!ui.record.hasIdentifier || ui.record.serviceId.isNullOrBlank() || ui.record.secret.isEmpty() || normalizePasswordWebsite(ui.record.website) == null) {
+        if (!ui.record.hasIdentifier || ui.record.serviceId.isNullOrBlank() || ui.record.secret.isEmpty() || ui.record.titleTooLong || ui.record.secretTooLong || normalizePasswordWebsite(ui.record.website) == null) {
             local.update { it.copy(identifierInvalid = !ui.record.hasIdentifier, serviceInvalid = ui.record.serviceId.isNullOrBlank(), websiteInvalid = normalizePasswordWebsite(ui.record.website) == null, secretInvalid = ui.record.secret.isEmpty()) }
             return
         }

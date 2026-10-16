@@ -3,6 +3,7 @@ package com.sepideh.lilo.app
 import android.app.UiModeManager
 import android.os.Build
 import android.os.Bundle
+import com.sepideh.lilo.R
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,8 @@ import androidx.annotation.RequiresApi
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
+        // The launch logo belongs only to startup, never behind screen transitions.
+        setTheme(R.style.Theme_Lilo)
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val preferences = getKoin().get<UserPreferencesManager>()

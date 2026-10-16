@@ -19,6 +19,26 @@ class PasswordViewModelTest {
         stores += ViewModelStore().apply { put("test", model) }; return model
     }
 
+    @Test fun oversizedFieldsDoNotSaveAndValidBoundaryCanBeRetried() = runTest {
+        val repository = FakeRepository()
+        val model = tracked(PasswordDetailViewModel(repository, FakeCrypto()))
+        model.initialize(null)
+        model.edit { it.copy(serviceId = "google", title = "a".repeat(61), secret = "valid") }
+        model.save()
+        runCurrent()
+        assertEquals(0, repository.writes)
+        model.edit { it.copy(title = "a".repeat(60), secret = "x".repeat(257)) }
+        model.save()
+        runCurrent()
+        assertEquals(0, repository.writes)
+        assertEquals(257, model.state.value.record.secret.length)
+        model.edit { it.copy(secret = " " + "x".repeat(254) + " ") }
+        model.save()
+        runCurrent()
+        assertEquals(1, repository.writes)
+        assertEquals(" " + "x".repeat(254) + " ", model.state.value.record.secret)
+    }
+
     @Test fun addOpensAndSavesWithoutUnlocking() = runTest {
         val repository = FakeRepository()
         val crypto = FakeCrypto()

@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.group
 
+import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,7 +15,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun InlineEditorActions(name: String, busy: Boolean, onConfirm: () -> Unit, onCancel: () -> Unit) {
     val colors = LiloExtendedTheme.colors
-    val canConfirm = name.isNotBlank() && !busy
+    val canConfirm = name.isNotBlank() && !isShortNameTooLong(name) && !busy
     IconButton(onClick = onConfirm, enabled = canConfirm) {
         if (busy) CircularProgressIndicator(Modifier.size(LiloSize.SmallIcon), color = colors.success)
         else Icon(LiloIcons.Check, stringResource(Res.string.confirm_action),
