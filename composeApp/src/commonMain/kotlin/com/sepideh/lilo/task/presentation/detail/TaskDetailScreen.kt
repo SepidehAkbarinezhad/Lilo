@@ -107,9 +107,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
                 textFieldRequired = TextFieldRequired(label = stringResource(Res.string.title_label), isRequired = true, value = task.title,
                     hint = "", enabled = !state.isLoading && !state.isSaving && !state.loadFailed,
                     onValueChange = { onAction(TaskDetailAction.OnTitleChanged(it)) }, validationStatus = state.titleError))
-            AppOutlineTextField(accentColor = accent, singleLine = false, maxLines = 8, topAlignedIcon = true,
-                textFieldModifier = Modifier.heightIn(min = 84.dp),
-                leadingIcon = { Icon(LiloIcons.Description, null, Modifier.size(com.sepideh.lilo.ui.theme.LiloSize.Icon)) },
+            AppDescriptionTextField(accentColor = accent,
                 textFieldRequired = TextFieldRequired(label = stringResource(Res.string.description_label), value = task.description, hint = "",
                     enabled = !state.isLoading && !state.isSaving && !state.loadFailed, onValueChange = { onAction(TaskDetailAction.OnDescriptionChanged(it)) }))
             TaskPrioritySelector(task.priority, accent, enabled = !state.isSaving && !state.isLoading && !state.loadFailed) {

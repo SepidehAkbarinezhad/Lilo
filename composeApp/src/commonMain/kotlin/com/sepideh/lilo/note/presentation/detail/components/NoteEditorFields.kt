@@ -22,8 +22,7 @@ import org.jetbrains.compose.resources.stringResource
   maxSelection=(com.sepideh.lilo.core.domain.images.IMAGE_SELECTION_LIMIT-com.sepideh.lilo.core.presentation.images.attachmentPreviews(state.note.imageNames,state.removedImageNames,state.selectedImages).size).coerceAtLeast(1))
  AppOutlineTextField(accentColor=accent,leadingIcon={Icon(LiloIcons.Edit,null,Modifier.size(LiloSize.Icon))},
   textFieldRequired=TextFieldRequired(label=stringResource(Res.string.title_label),isRequired=true,value=state.note.title,onValueChange={action(NoteDetailAction.Title(it))},enabled=state.fieldsEnabled,validationStatus=state.titleError))
- AppOutlineTextField(accentColor=accent,singleLine=false,maxLines=Int.MAX_VALUE,topAlignedIcon=true,textFieldModifier=Modifier.heightIn(min=180.dp),
-  leadingIcon={Icon(LiloIcons.Description,null,Modifier.size(LiloSize.Icon))},
+ AppDescriptionTextField(accentColor=accent,
   textFieldRequired=TextFieldRequired(label=stringResource(Res.string.note_content_label),value=state.note.content,onValueChange={action(NoteDetailAction.Content(it))},enabled=state.fieldsEnabled))
  FormSelectionRow(LiloIcons.Groups,stringResource(Res.string.group_field_label),state.selectedGroup?.label?:stringResource(Res.string.no_group_label),{action(NoteDetailAction.OpenGroups)},enabled=state.fieldsEnabled,accent=accent)
  com.sepideh.lilo.core.presentation.components.images.ImageAttachments(

@@ -1,0 +1,5 @@
+<resources>
+    <!-- Explicit locale keys allow background notification handlers to honor the saved app language. -->
+    <string name="notification_mark_done_en">Mark done</string>
+    <string name="notification_mark_done_fa">انجام شد</string>
+</resources>

@@ -65,6 +65,58 @@ class ReminderNotificationsTest {
         mutations.deliverReminder(1, at + 1000) { delivered = true }
         assertFalse(delivered)
     }
+    @Test fun completionCancelsRecurringReminderAndPreservesLatestTaskFields() = runTest {
+        val current = task().copy(title = "Edited after notification", description = "Keep", groupId = 7,
+            imageNames = listOf("keep.jpg"))
+        val repo = Tasks(current)
+        val scheduler = Scheduler()
+        val mutations = TaskMutations(repo, scheduler)
+        mutations.setCompleted(1, true)
+        assertEquals(current.copy(done = true), repo.task)
+        assertEquals(listOf(1L), scheduler.cancelled)
+        assertTrue(scheduler.synchronized.isEmpty())
+        var delivered = false
+        mutations.deliverReminder(1, at) { delivered = true }
+        assertFalse(delivered)
+        mutations.setCompleted(1, true) // Repeated action must never toggle completion back off.
+        assertTrue(repo.task!!.done)
+    }
+
+    @Test fun completionOfDeletedTaskIsHarmlessAndDoesNotCreateARow() = runTest {
+        val repo = Tasks()
+        val scheduler = Scheduler()
+        TaskMutations(repo, scheduler).setCompleted(1, true)
+        assertNull(repo.task)
+        assertTrue(scheduler.cancelled.isEmpty())
+    }
+
+    @Test fun completionKeepsOtherTasksRemindersScheduled() = runTest {
+        val repo = object : TaskRepository {
+            val tasks = mutableMapOf(1L to task(), 2L to task().copy(id = 2, title = "Other"))
+            override fun getAllTasks() = flowOf(tasks.values.toList())
+            override fun getTasksByFilter(done: Boolean?, priority: List<Int>) = getAllTasks()
+            override suspend fun getTaskById(id: Long) = tasks[id]
+            override suspend fun upsertTask(task: Task): Long { tasks[task.id!!] = task; return task.id }
+            override suspend fun deleteTask(id: Long) { tasks.remove(id) }
+            override suspend fun clearGroup(id: Long) = Unit
+        }
+        val scheduler = Scheduler()
+        TaskMutations(repo, scheduler).setCompleted(1, true)
+        assertEquals(listOf(2L), scheduler.synchronized.map { it.id })
+        assertFalse(repo.tasks.getValue(2).done)
+    }
+
+    @Test fun failedCompletionDoesNotCancelReminderOrPretendTaskWasSaved() = runTest {
+        val original = task()
+        val repo = object : TaskRepository by Tasks(original) {
+            override suspend fun upsertTask(task: Task): Long = error("Disk unavailable")
+        }
+        val scheduler = Scheduler()
+        assertFailsWith<IllegalStateException> { TaskMutations(repo, scheduler).setCompleted(1, true) }
+        assertEquals(original, repo.getTaskById(1))
+        assertTrue(scheduler.cancelled.isEmpty())
+    }
+
     private fun task() = Task(id = 1, title = "Remember", reminderAt = at, reminderTimeZoneId = "UTC", repeatRule = RepeatRule.DAILY)
 }
 
@@ -94,6 +146,7 @@ internal class Tasks(var task: Task? = null) : TaskRepository {
 }
 internal class Scheduler(private val failure: Exception? = null) : ReminderScheduler {
     val scheduled = mutableListOf<Reminder>()
+    val cancelled = mutableListOf<Long>()
     var synchronized = emptyList<Reminder>()
     override suspend fun scheduleReminder(reminder: Reminder) {
         failure?.let { throw it }
@@ -101,5 +154,5 @@ internal class Scheduler(private val failure: Exception? = null) : ReminderSched
     }
     override suspend fun synchronize(reminders: List<Reminder>) { synchronized = reminders }
     override suspend fun refreshNotificationPreference(reminders: suspend () -> List<Reminder>) { synchronize(reminders()) }
-    override suspend fun cancelReminder(taskId: Long) = Unit
+    override suspend fun cancelReminder(taskId: Long) { cancelled += taskId }
 }

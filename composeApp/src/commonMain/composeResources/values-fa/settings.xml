@@ -1,7 +1,7 @@
 <resources>
     <string name="settings_reminders_title">یادآوری‌ها</string>
     <string name="settings_reminders_enabled">اعلان یادآوری‌ها</string>
-    <string name="settings_reminders_description">اگر خاموش باشد، لیلو یادآوری‌ها را اعلام نمی‌کند. یادآوری‌های فعالیت‌هایت ذخیره می‌مانند.</string>
+    <string name="settings_reminders_description">با خاموش کردن این گزینه، اعلان یادآوری‌ها متوقف می‌شود؛ اما یادآوری‌های ثبت‌شده حفظ می‌شوند.</string>
     <string name="settings_save_error">تغییر تنظیمات کامل نشد. دوباره تلاش کن.</string>
     <string name="settings_retry">تلاش دوباره</string>
     <string name="settings_language_fa">فارسی</string>
