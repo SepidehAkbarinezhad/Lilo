@@ -1,5 +1,7 @@
 package com.sepideh.lilo.core.presentation.components.group
 
+import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
+import com.sepideh.lilo.core.domain.validation.SHORT_NAME_MAX_LENGTH
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,12 +38,14 @@ fun InlineGroupEditor(accent: Color, busy: Boolean, addedVersion: Int, onCreate:
         if (addedVersion > 0) { editing = false; name = ""; focusManager.clearFocus(); keyboard?.hide() }
     }
     fun cancel() { editing = false; name = ""; focusManager.clearFocus(); keyboard?.hide() }
-    fun submit() { if (name.isNotBlank() && !busy) onCreate(name.trim()) }
+    fun submit() { if (name.isNotBlank() && !isShortNameTooLong(name) && !busy) onCreate(name.trim()) }
     if (editing) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(value = name, onValueChange = { name = it }, enabled = !busy, singleLine = true,
                 modifier = Modifier.weight(1f).focusRequester(focus), shape = MaterialTheme.shapes.medium,
                 textStyle = MaterialTheme.typography.bodyMedium,
+                isError = isShortNameTooLong(name),
+                supportingText = if (isShortNameTooLong(name)) ({ AppText(text = stringResource(Res.string.short_name_too_long, SHORT_NAME_MAX_LENGTH), textType = TextType.FieldError) }) else null,
                 placeholder = { AppText(text = Res.string.new_group_hint, color = LiloExtendedTheme.colors.textPlaceholder) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { submit() }),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent,

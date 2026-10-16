@@ -17,6 +17,7 @@ import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.password.presentation.components.*
 import org.koin.compose.viewmodel.koinViewModel
 import com.sepideh.lilo.password.presentation.detail.components.PasswordFields
+import com.sepideh.lilo.password.presentation.detail.components.PasswordServiceSelector
 import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -47,16 +48,12 @@ fun PasswordDetailScreenRoot(id: String?, viewModel: PasswordDetailViewModel, on
                         AppText(text = if (state.setupRequired) Res.string.password_auth_unavailable else Res.string.password_operation_error, color = MaterialTheme.colorScheme.error)
                         if (state.loadFailed) TextButton(onClick = viewModel::load) { Text(stringResource(Res.string.note_retry)) }
                     }
-                    Column(verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-                        AppText(text = stringResource(Res.string.password_service) + " *", color = colors.textSecondary)
-                        OutlinedButton(onClick = { servicesModel.open(state.record.serviceId) }, enabled = !state.loading && !state.saving && !state.loadFailed,
-                            modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, contentPadding = PaddingValues(18.dp)) {
-                            Text(services.services.find { it.id == state.record.serviceId }?.displayName() ?: stringResource(Res.string.password_service_select),
-                                Modifier.weight(1f), color = colors.textPrimary)
-                            Icon(com.sepideh.lilo.core.presentation.icons.LiloIcons.Chevron, null, tint = colors.textSecondary)
-                        }
-                        if (state.serviceInvalid) AppText(text = Res.string.password_service_required, color = MaterialTheme.colorScheme.error)
-                    }
+                    PasswordServiceSelector(
+                        selectedName = services.services.find { it.id == state.record.serviceId }?.displayName(),
+                        enabled = !state.loading && !state.saving && !state.loadFailed,
+                        isError = state.serviceInvalid,
+                        onClick = { servicesModel.open(state.record.serviceId) },
+                    )
                     PasswordFields(state, viewModel::edit, viewModel::visibility)
                 }
             }

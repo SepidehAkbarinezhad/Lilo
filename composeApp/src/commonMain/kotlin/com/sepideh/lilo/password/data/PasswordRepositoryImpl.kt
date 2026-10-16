@@ -41,6 +41,7 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
     }
 
     override suspend fun save(password: Password): Password {
+        requirePasswordFieldLengths(password)
         require(password.hasIdentifier && !password.serviceId.isNullOrBlank() && password.secret.isNotEmpty())
         val website = requireNotNull(normalizePasswordWebsite(password.website))
         val session = crypto.session.value

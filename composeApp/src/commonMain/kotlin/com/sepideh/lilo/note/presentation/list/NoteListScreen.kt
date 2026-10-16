@@ -18,6 +18,7 @@ import com.sepideh.lilo.note.presentation.list.model.NoteSortOrder
 import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 @Composable fun NoteListScreenRoot(viewModel:NoteListViewModel,onNavigateTo:(AppRoutes)->Unit,onBack:()->Boolean) {
  val state by viewModel.state.collectAsStateWithLifecycle()
  BaseRoot(viewModel=viewModel,navigateTo=onNavigateTo,onBack=onBack,bodyContainer={NoteListScreen(state,viewModel::onAction,onBack)},dialogContent={
@@ -50,7 +51,7 @@ import org.jetbrains.compose.resources.stringResource
    }
    if (!state.isLoading && state.notesResult.isEmpty()) {
     val filtered = state.searchQuery.isNotBlank() || state.selectedGroup != null
-    ListEmptyState(if (filtered) Res.string.note_no_results else Res.string.home_no_notes, accent)
+    ListEmptyState(if (filtered) Res.string.note_no_results else Res.string.home_no_notes, accent, icon = vectorResource(Res.drawable.home_note))
    } else NoteList(state,action,Modifier.weight(1f))
   }
  }

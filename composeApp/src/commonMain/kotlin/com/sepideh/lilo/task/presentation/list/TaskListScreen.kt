@@ -87,7 +87,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
             if (state.tasksResult.isEmpty() && !isLoading) {
                 val filtered = state.selectedGroup != null || state.searchQuery.isNotBlank() ||
                     state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty()
-                ListEmptyState(if (filtered) Res.string.task_no_results else Res.string.home_no_tasks, accent)
+                ListEmptyState(if (filtered) Res.string.task_no_results else Res.string.home_no_tasks, accent, icon = com.sepideh.lilo.ui.icons.TaskCardIcon)
             } else TaskList(state.tasksResult, !state.isFilterSheetOpen, onAction, Modifier.fillMaxSize(),
                 groupLabels = state.groups.filter { it.id != 0L }.associate { it.id to it.title })
         }

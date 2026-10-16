@@ -1,5 +1,9 @@
 package com.sepideh.lilo.app
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.navigation.compose.rememberNavController
@@ -17,8 +21,10 @@ fun App() {
     LiloTheme {
         PasswordSessionEffect()
         ReminderLifecycleObserver()
-        savedState.SaveableStateProvider("localized-app") {
-            NavigationGraph(navHostController = navHostController)
+        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            savedState.SaveableStateProvider("localized-app") {
+                NavigationGraph(navHostController = navHostController)
+            }
         }
     }
 }

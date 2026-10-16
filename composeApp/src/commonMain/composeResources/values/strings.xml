@@ -146,4 +146,6 @@
     <string name="note_title_sort_description">Alphabetically (A to Z)</string>
     <string name="password_copy">Copy password</string>
     <string name="password_copied">Password copied</string>
+    <string name="short_name_too_long">Use at most %1$d characters.</string>
+    <string name="field_max_length">Use at most %1$d characters.</string>
 </resources>

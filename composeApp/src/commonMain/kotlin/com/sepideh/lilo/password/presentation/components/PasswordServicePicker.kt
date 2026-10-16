@@ -1,5 +1,7 @@
 package com.sepideh.lilo.password.presentation.components
 
+import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
+import com.sepideh.lilo.core.domain.validation.SHORT_NAME_MAX_LENGTH
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -112,6 +114,8 @@ fun PasswordServicePicker(state: PasswordServicesState, model: PasswordServicesV
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         OutlinedTextField(value = state.name, onValueChange = model::name, singleLine = true,
                             enabled = !state.busy, modifier = Modifier.weight(1f).focusRequester(focus),
+                            isError = isShortNameTooLong(state.name),
+                            supportingText = if (isShortNameTooLong(state.name)) ({ AppText(text = stringResource(Res.string.short_name_too_long, SHORT_NAME_MAX_LENGTH), textType = TextType.FieldError) }) else null,
                             label = { AppText(text = stringResource(if (state.editingId == null) Res.string.password_service_add else Res.string.password_service_edit), color = colors.textSecondary) },
                             shape = MaterialTheme.shapes.medium,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

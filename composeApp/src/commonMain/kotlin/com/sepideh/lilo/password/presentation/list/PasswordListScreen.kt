@@ -62,7 +62,7 @@ fun PasswordListScreenRoot(viewModel: PasswordListViewModel, onNavigateTo: (AppR
                         TextButton(onClick = viewModel::observe) { Text(stringResource(Res.string.note_retry)) }
                     }
                     if (!state.loading && !state.error && records.isEmpty()) ListEmptyState(
-                        if (state.query.isBlank() && state.serviceId == null) Res.string.password_empty else Res.string.password_no_results, colors.passwordColor)
+                        if (state.query.isBlank() && state.serviceId == null) Res.string.password_empty else Res.string.password_no_results, colors.passwordColor, icon = com.sepideh.lilo.ui.icons.PasswordCardIcon)
                     else LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 96.dp),
                         verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         items(records, key = { it.id }) { record ->
