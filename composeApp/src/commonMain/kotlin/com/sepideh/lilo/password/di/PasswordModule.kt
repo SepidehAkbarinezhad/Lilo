@@ -16,6 +16,6 @@ val passwordModule = module {
     single<com.sepideh.lilo.password.domain.PasswordServiceRepository> { com.sepideh.lilo.password.data.PasswordServiceRepositoryImpl(get()) }
     single<PasswordRepository> { PasswordRepositoryImpl(get(), get(), get()) }
     viewModel { com.sepideh.lilo.password.presentation.components.PasswordServicesViewModel(get()) }
-    viewModel { PasswordListViewModel(get(), get()) }
+    viewModel { PasswordListViewModel(get(), get(), get()) }
     viewModel { PasswordDetailViewModel(get(), get()) }
 }

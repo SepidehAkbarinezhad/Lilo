@@ -13,6 +13,7 @@ object LiloIcons {
     val Filter: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_filter)
     val Close: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_close)
     val Add: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_add)
+    val Copy: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_copy)
     val Check: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_check)
     val Edit: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_edit)
     val Description: ImageVector @Composable get() = vectorResource(Res.drawable.lilo_description)

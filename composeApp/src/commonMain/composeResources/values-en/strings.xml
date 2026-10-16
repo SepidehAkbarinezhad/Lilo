@@ -144,4 +144,6 @@
     <string name="service_name_exists">A service with this name already exists.</string>
     <string name="note_recent_sort_description">Newest to oldest</string>
     <string name="note_title_sort_description">Alphabetically (A to Z)</string>
+    <string name="password_copy">Copy password</string>
+    <string name="password_copied">Password copied</string>
 </resources>
