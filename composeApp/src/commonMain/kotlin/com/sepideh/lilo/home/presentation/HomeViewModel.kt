@@ -51,6 +51,7 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
     }
 
     private fun openPassword(id: String) {
+        viewModelScope
         if (id.isBlank() || _state.value.openingPasswordId != null) return
         crypto.lock()
         _state.update { it.copy(openingPasswordId = id, passwordAuthError = null, passwordOpenFailed = false) }
