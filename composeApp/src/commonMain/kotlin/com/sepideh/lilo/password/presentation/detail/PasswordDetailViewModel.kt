@@ -36,9 +36,7 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
                         saving = false, visible = true, discardOpen = false) }
                 } else if (!session.unlocked) {
                     if (!local.value.locked) {
-                        original = Password()
-                        local.value = PasswordDetailState()
-                        onAction(BaseAction.OnNavigateTo(null))
+                        leaveLockedEditor()
                     } else load()
                 } else load()
             }
@@ -68,10 +66,17 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
                         original = record
                         local.update { it.copy(record = record, request = request, locked = false, loading = false, visible = true) }
                     }
-                } else local.update { it.copy(request = request, locked = true, loading = false) }
+                } else leaveLockedEditor()
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { if (crypto.session.value == session) local.update { it.copy(error = true, loadFailed = true, loading = false) } }
         }
+    }
+
+    private fun leaveLockedEditor() {
+        original = Password()
+        local.value = PasswordDetailState()
+        initialized = false
+        onAction(BaseAction.OnNavigateTo(null))
     }
 
     fun edit(transform: (Password) -> Password) {

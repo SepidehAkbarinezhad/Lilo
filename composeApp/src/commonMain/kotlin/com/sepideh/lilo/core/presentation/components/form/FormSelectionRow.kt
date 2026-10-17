@@ -28,7 +28,7 @@ fun FormSelectionRow(icon: ImageVector, title: String, value: String, onClick: (
             val stacked = maxWidth < 330.dp || LocalDensity.current.fontScale > 1.2f
             Row(Modifier.fillMaxWidth().heightIn(min = 72.dp).padding(start = 16.dp, end = LiloSpacing.Small, top = LiloSpacing.Item, bottom = LiloSpacing.Item),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
-                Surface(shape = CircleShape, color = (accent ?: MaterialTheme.colorScheme.primary).copy(alpha = .07f)) {
+                Surface(shape = CircleShape, color = (accent ?: MaterialTheme.colorScheme.primary).copy(alpha = .14f)) {
                     Box(Modifier.size(LiloSize.IconBadge), contentAlignment = Alignment.Center) {
                         Icon(icon, null, Modifier.size(LiloSize.Icon), tint = if (enabled) colors.title else colors.textDisabled)
                     }

@@ -45,7 +45,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
         viewModel.onAction(TaskDetailAction.Back)
     }
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack,
-        bodyContainer = { TaskDetailScreen(state, state.task, viewModel::onAction, onBack) },
+        bodyContainer = { TaskDetailScreen(state, state.task, viewModel::onAction, onBack, isEditing = taskId != null) },
         dialogContent = {
             if (state.groupDialogOpen) GroupSelectionSheet(
                 addedVersion = state.groupAddedVersion,
@@ -77,7 +77,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
 }
 
 @Composable
-fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) -> Unit, onBack: () -> Boolean) {
+fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) -> Unit, onBack: () -> Boolean, isEditing: Boolean) {
     val accent = LiloExtendedTheme.colors.taskColor
     val pickImages = com.sepideh.lilo.core.presentation.components.picker.rememberImagePicker(
         onSelected = { onAction(TaskDetailAction.OnImagesSelected(it)) },
@@ -95,7 +95,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
         }
     }
     BaseFormScreen(
-        title = if (task.id == null) Res.string.add_task_title else Res.string.edit_task_title,
+        title = if (isEditing) Res.string.edit_task_title else Res.string.add_task_title,
         accent = accent, textSaveAction = true, saveActionColor = LiloExtendedTheme.colors.taskAction, saveEnabled = !state.isSaving && !state.isLoading && !state.loadFailed,
         onBack = { onAction(TaskDetailAction.Back); true }, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
@@ -136,6 +136,6 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
 private fun TaskFormPreview() {
     LiloPreviewWrapper {
         val task = Task(title = "تمرین ساز", priority = 1, imageNames = listOf("sample-a.jpg", "sample-b.jpg"))
-        TaskDetailScreen(TaskDetailState(task = task), task, {}, { true })
+        TaskDetailScreen(TaskDetailState(task = task), task, {}, { true }, isEditing = false)
     }
 }
