@@ -9,11 +9,17 @@ import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 internal fun PasswordServiceIcon(id: String?, tint: Color, modifier: Modifier = Modifier) {
+    Icon(passwordServiceImageVector(id), null, modifier, tint = tint)
+}
+
+@Composable
+internal fun passwordServiceImageVector(id: String?): ImageVector {
     val resource = when (id) {
         "google", "gmail" -> Res.drawable.lilo_service_gmail
         "yahoo" -> Res.drawable.lilo_service_yahoo
@@ -24,7 +30,7 @@ internal fun PasswordServiceIcon(id: String?, tint: Color, modifier: Modifier = 
         "apple" -> Res.drawable.lilo_service_apple
         else -> Res.drawable.lilo_service_generic
     }
-    Icon(vectorResource(resource), null, modifier, tint = tint)
+    return vectorResource(resource)
 }
 
 @AppPreviews

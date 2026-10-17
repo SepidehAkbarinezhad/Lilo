@@ -15,10 +15,10 @@ import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import com.sepideh.lilo.ui.theme.LiloSpacing
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.vectorResource
+import com.sepideh.lilo.password.presentation.list.components.passwordServiceImageVector
 
 @Composable
-internal fun PasswordServiceSelector(selectedName: String?, enabled: Boolean = true,
+internal fun PasswordServiceSelector(selectedName: String?, selectedId: String? = null, enabled: Boolean = true,
     isError: Boolean = false, onClick: () -> Unit) {
     val colors = LiloExtendedTheme.colors
     val label = stringResource(Res.string.password_service) + " *"
@@ -27,7 +27,7 @@ internal fun PasswordServiceSelector(selectedName: String?, enabled: Boolean = t
         if (selectedName != null) AppText(text = label, textType = TextType.FieldLabel,
             color = if (isError) MaterialTheme.colorScheme.error else if (enabled) colors.textSecondary else colors.textDisabled)
         FormSelectionRow(
-            icon = vectorResource(Res.drawable.lilo_service_generic),
+            icon = passwordServiceImageVector(selectedId),
             title = selectedName ?: label, value = "", onClick = onClick,
             enabled = enabled, accent = colors.passwordColor,
             modifier = Modifier.semantics {
@@ -46,7 +46,7 @@ private fun PasswordServiceSelectorPreview() {
     LiloPreviewWrapper {
         Column(verticalArrangement = Arrangement.spacedBy(LiloSpacing.Section)) {
             PasswordServiceSelector(null, onClick = {})
-            PasswordServiceSelector("GitHub", onClick = {})
+            PasswordServiceSelector("GitHub", selectedId = "github", onClick = {})
             PasswordServiceSelector(null, isError = true, onClick = {})
         }
     }

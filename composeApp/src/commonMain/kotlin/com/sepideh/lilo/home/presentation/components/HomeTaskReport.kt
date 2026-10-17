@@ -32,7 +32,7 @@ internal fun HomeTaskReport(detail: TaskReportDetail, actionColor: Color,
         }
     }
     if (detail.nextTaskTitle.isNullOrBlank()) {
-        AppText(text = Res.string.home_no_tasks,
+        AppText(text = Res.string.home_no_items,
             color = LiloExtendedTheme.colors.textSecondary, modifier = Modifier.padding(vertical = 8.dp))
     } else HomeNextTask(detail, actionColor, !detail.nextTaskDone && detail.nextTaskId != null && detail.nextTaskId !in completingIds, onLatestClick) {
         detail.nextTaskId?.let(onComplete)

@@ -28,7 +28,8 @@ class NoteSortStateTest {
                 Note(id = 1, title = "Zebra", content = "match", groupId = 7, updatedAt = 30),
                 Note(id = 2, title = "Apple", content = "match", groupId = 7, updatedAt = 20),
                 Note(id = 3, title = "Other group", content = "match", groupId = 8, updatedAt = 40),
-                Note(id = 4, title = "Other search", groupId = 7, updatedAt = 50)))
+                Note(id = 4, title = "Other search", groupId = 7, updatedAt = 50),
+                Note(id = 5, title = "یادداشت", content = "match", groupId = 7, updatedAt = 10)))
             override suspend fun getNoteById(id: Long): Note? = error("Unexpected read")
             override suspend fun upsertNote(note: Note): Long = error("Unexpected write")
             override suspend fun deleteNote(id: Long) = error("Unexpected delete")
@@ -43,8 +44,9 @@ class NoteSortStateTest {
             override suspend fun importImages(sources: List<ImageSource>): List<String> = error("Unexpected import")
             override suspend fun removeImages(names: List<String>) = error("Unexpected removal")
         }
+        val preferences = MutableStateFlow(UserPreferences(language = AppLanguage.FA))
         val language = LanguageProvider(UserPreferencesManager(object : UserPreferencesRepository {
-            override val userPreferences = flowOf(UserPreferences())
+            override val userPreferences = preferences
             override suspend fun updateTheme(theme: AppTheme) {}
             override suspend fun updateLanguage(language: AppLanguage) {}
             override suspend fun updateNotifications(enabled: Boolean) {}
@@ -57,12 +59,12 @@ class NoteSortStateTest {
         advanceTimeBy(251)
         runCurrent()
         assertEquals(NoteSortOrder.Date, model.state.value.sortOrder)
-        assertEquals(listOf(1L, 2L), model.state.value.notesResult.map { it.id })
+        assertEquals(listOf(1L, 2L, 5L), model.state.value.notesResult.map { it.id })
 
         model.onAction(NoteListAction.OpenSort)
         model.onAction(NoteListAction.DraftSort(NoteSortOrder.Title))
         runCurrent()
-        assertEquals(listOf(1L, 2L), model.state.value.notesResult.map { it.id })
+        assertEquals(listOf(1L, 2L, 5L), model.state.value.notesResult.map { it.id })
         model.onAction(NoteListAction.DismissSort)
         runCurrent()
         assertEquals(NoteSortOrder.Date, model.state.value.draftSort)
@@ -72,9 +74,24 @@ class NoteSortStateTest {
         model.onAction(NoteListAction.DraftSort(NoteSortOrder.Title))
         model.onAction(NoteListAction.ApplySort)
         runCurrent()
-        assertEquals(listOf(2L, 1L), model.state.value.notesResult.map { it.id })
+        assertEquals(listOf(5L, 2L, 1L), model.state.value.notesResult.map { it.id })
         assertEquals("match", model.state.value.searchQuery)
         assertEquals(7L, model.state.value.selectedGroup)
         assertFalse(model.state.value.isSortSheetOpen)
+        preferences.value = preferences.value.copy(language = AppLanguage.EN)
+        withContext(Dispatchers.Default) { language.languageFlow.first { it == AppLanguage.EN } }
+        runCurrent()
+        assertEquals(listOf(2L, 1L, 5L), model.state.value.notesResult.map { it.id })
+        assertEquals("match", model.state.value.searchQuery)
+        assertEquals(7L, model.state.value.selectedGroup)
+        model.onAction(NoteListAction.OpenSort)
+        model.onAction(NoteListAction.DraftSort(NoteSortOrder.Date))
+        model.onAction(NoteListAction.ApplySort)
+        runCurrent()
+        assertEquals(listOf(1L, 2L, 5L), model.state.value.notesResult.map { it.id })
+        preferences.value = preferences.value.copy(language = AppLanguage.FA)
+        withContext(Dispatchers.Default) { language.languageFlow.first { it == AppLanguage.FA } }
+        runCurrent()
+        assertEquals(listOf(1L, 2L, 5L), model.state.value.notesResult.map { it.id })
     }
 }

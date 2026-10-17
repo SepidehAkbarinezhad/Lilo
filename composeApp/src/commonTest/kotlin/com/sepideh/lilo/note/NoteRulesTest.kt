@@ -32,6 +32,17 @@ class NoteRulesTest {
    listOf(Note(id=90,title="آغاز",content="کتاب",groupId=8),Note(id=91,title="آرزو",content="Other",groupId=7))
   assertEquals(titles.reversed(),notes.matching(NoteQuery(text="کتاب",groupId=7,sort=NoteSort.TITLE)).map { it.title })
  }
+ @Test fun titleSortingPrioritizesCurrentLanguageThenUsesExistingAlphabetAndStableIds() {
+  val notes=listOf(Note(id=1,title=" Zebra"),Note(id=2,title="یادداشت"),Note(id=3,title="apple"),
+   Note(id=4,title="آب"),Note(id=5,title="Apple"),Note(id=6,title="چای"))
+  assertEquals(listOf(4L,6L,2L,3L,5L,1L),notes.matching(NoteQuery(sort=NoteSort.TITLE,language=AppLanguage.FA)).map { it.id })
+  assertEquals(listOf(3L,5L,1L,4L,6L,2L),notes.matching(NoteQuery(sort=NoteSort.TITLE,language=AppLanguage.EN)).map { it.id })
+ }
+ @Test fun titleScriptIgnoresLeadingSymbolsAndKeepsOtherTitles() {
+  val notes=listOf(Note(id=1,title="123 Apple"),Note(id=2,title="(کار)"),Note(id=3,title="123"),Note(id=4,title="東京"))
+  assertEquals(listOf(2L,1L,3L,4L),notes.matching(NoteQuery(sort=NoteSort.TITLE,language=AppLanguage.FA)).map { it.id })
+  assertEquals(listOf(1L,2L,3L,4L),notes.matching(NoteQuery(sort=NoteSort.TITLE,language=AppLanguage.EN)).map { it.id })
+ }
  @Test fun userGroupEditsOnlySelectedLanguageAndDefaultsCannotBeRenamed() {
   val group=NoteGroup(titleEn="Work",titleFa="کار")
   assertEquals("Work",group.renamed("خرید",AppLanguage.FA).titleEn)

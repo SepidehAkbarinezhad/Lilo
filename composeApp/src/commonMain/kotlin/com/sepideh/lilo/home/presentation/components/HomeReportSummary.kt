@@ -10,8 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.TextType
@@ -52,15 +50,13 @@ internal fun HomeLatestSummary(count: Int, countLabel: StringResource, latestTit
                 if (count == 0) AppText(text = emptyLabel, textType = TextType.Caption, color = colors.textSecondary)
                 else {
                     if (leadingIcon == null) {
-                        AppText(text = latestTitle, textType = TextType.SectionTitle, maxLines = 2)
+                        AppText(text = latestTitle, textType = TextType.BodyLarge, color = colors.title, maxLines = 2)
                     } else Row(Modifier.fillMaxWidth().heightIn(min = 28.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.Start)) {
                         leadingIcon()
-                        Text(text = latestTitle, modifier = Modifier.weight(1f, fill = false),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.Both)),
-                            color = colors.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        AppText(text = latestTitle, modifier = Modifier.weight(1f, fill = false),
+                            textType = TextType.BodyLarge, color = colors.title, maxLines = 2)
                     }
                     (subtitle ?: homeDateLabel(timestamp))?.let {
                         AppText(text = it, textType = TextType.Caption, color = colors.textSecondary, maxLines = if (subtitle != null) 1 else Int.MAX_VALUE)

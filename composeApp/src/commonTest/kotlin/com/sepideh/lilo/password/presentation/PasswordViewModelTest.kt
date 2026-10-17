@@ -121,6 +121,9 @@ class PasswordViewModelTest {
         assertEquals(0, repository.reads)
         crypto.unlock("one")
         runCurrent()
+        assertTrue(model.state.value.locked) // A new session cannot reopen a dismissed editor.
+        model.initialize("one")
+        runCurrent()
         assertFalse(model.state.value.locked)
         assertEquals("private", model.state.value.record.secret)
     }
@@ -207,7 +210,7 @@ class PasswordViewModelTest {
         assertNull(model.state.value.request)
     }
 
-    @Test fun directDetailSurvivesAuthenticationStartAndCanRetryAfterCancellation() = runTest {
+    @Test fun unauthenticatedDetailReturnsWithoutAnUnlockScreenOrReadingSecrets() = runTest {
         val repository = FakeRepository()
         val crypto = FakeCrypto()
         val model = tracked(PasswordDetailViewModel(repository, crypto))
@@ -217,21 +220,20 @@ class PasswordViewModelTest {
         }
         model.initialize("one")
         runCurrent()
-        repeat(2) {
-            crypto.lock() // Platform unlockers invalidate the previous session before prompting.
-            runCurrent()
-            assertTrue(model.state.value.locked)
-            assertEquals("one", model.state.value.request?.id)
-            assertFalse(model.state.value.loading)
-            assertEquals(0, repository.reads)
-            assertTrue(exits.isEmpty())
-        }
+        assertEquals(listOf(true), exits)
+        assertTrue(model.state.value.locked)
+        assertNull(model.state.value.request)
+        assertFalse(model.state.value.loading)
+        assertEquals(0, repository.reads)
+        model.edit { it.copy(secret = "must not be saved") }
+        model.save()
+        runCurrent()
+        assertEquals(0, repository.writes)
         crypto.unlock("one")
         runCurrent()
-        assertFalse(model.state.value.locked)
-        assertEquals("one", model.state.value.record.id)
-        assertEquals("private", model.state.value.record.secret)
-        assertEquals(1, repository.reads)
+        assertTrue(model.state.value.locked)
+        assertEquals("", model.state.value.record.secret)
+        assertEquals(0, repository.reads)
     }
 
     @Test fun unavailableDirectPasswordRemainsLockedAndCannotSave() = runTest {

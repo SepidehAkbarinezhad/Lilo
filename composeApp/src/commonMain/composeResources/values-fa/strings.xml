@@ -148,4 +148,5 @@
     <string name="password_copied">رمز عبور کپی شد</string>
     <string name="short_name_too_long">نام باید حداکثر %1$d کاراکتر باشد.</string>
     <string name="field_max_length">حداکثر %1$d کاراکتر وارد کنید.</string>
+    <string name="home_no_items">موردی ثبت نشده</string>
 </resources>

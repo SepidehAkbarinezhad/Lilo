@@ -38,7 +38,7 @@ class NoteListViewModel(
         val effectiveNotes = notes.map { note -> note.copy(groupId = note.groupId?.takeIf { id -> groups.any { it.id == id } }) }
         ui.copy(groups = groups.toGroupOptions(language), selectedGroup = selected,
             notesResult = effectiveNotes.matching(NoteQuery(text, selected,
-                if (ui.sortOrder == NoteSortOrder.Title) NoteSort.TITLE else NoteSort.UPDATED)))
+                if (ui.sortOrder == NoteSortOrder.Title) NoteSort.TITLE else NoteSort.UPDATED, language = language)))
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteListState())
 
     override fun onAction(action: BaseAction) {

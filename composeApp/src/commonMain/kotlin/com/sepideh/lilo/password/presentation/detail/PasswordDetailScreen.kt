@@ -36,10 +36,12 @@ fun PasswordDetailScreenRoot(id: String?, viewModel: PasswordDetailViewModel, on
     LaunchedEffect(id) { viewModel.initialize(id) }
     AppBackHandler { viewModel.back() }
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack, bodyContainer = {
-        PasswordGate(state.request, id != null && state.locked && !state.loadFailed, { viewModel.back(); true }) {
+        if (id != null && state.locked && !state.loadFailed) {
+            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {}
+        } else {
             BaseFormScreen(title = if (id == null) Res.string.password_add_title else Res.string.password_edit_title,
                 accent = colors.passwordColor, saveActionColor = colors.passwordAction, textSaveAction = true,
-                actionLabel = Res.string.note_save_action, saveEnabled = !state.loading && !state.saving && !state.loadFailed,
+                actionLabel = Res.string.note_save_action, saveEnabled = !state.locked && !state.loading && !state.saving && !state.loadFailed,
                 onBack = { viewModel.back(); true }, onSave = viewModel::save) { padding ->
                 Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),
                     verticalArrangement = Arrangement.spacedBy(LiloSpacing.Section)) {
@@ -49,8 +51,9 @@ fun PasswordDetailScreenRoot(id: String?, viewModel: PasswordDetailViewModel, on
                         if (state.loadFailed) TextButton(onClick = viewModel::load) { Text(stringResource(Res.string.note_retry)) }
                     }
                     PasswordServiceSelector(
+                        selectedId = state.record.serviceId,
                         selectedName = services.services.find { it.id == state.record.serviceId }?.displayName(),
-                        enabled = !state.loading && !state.saving && !state.loadFailed,
+                        enabled = !state.locked && !state.loading && !state.saving && !state.loadFailed,
                         isError = state.serviceInvalid,
                         onClick = { servicesModel.open(state.record.serviceId) },
                     )

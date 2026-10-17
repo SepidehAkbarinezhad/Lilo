@@ -48,25 +48,23 @@ fun FeatureCardShell(
         contentColor = colors.textPrimary) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             HomeFeatureHeading(feature, actionColor, onAddClick, onCardClick)
-            if (reportFailed || detail == null || detail.subTitleReportCount > 0) {
-                HorizontalDivider(color = actionColor.copy(alpha = .14f))
-                if (reportFailed) {
-                    AppText(text = Res.string.home_report_error, color = colors.textSecondary)
-                    TextButton(onClick = onRetryReport, colors = ButtonDefaults.textButtonColors(contentColor = actionColor)) {
-                        Text(stringResource(Res.string.note_retry))
-                    }
-                } else when (detail) {
-                    is TaskReportDetail -> HomeTaskReport(detail, actionColor, completingTaskIds, onCompleteTask, onCardClick, onLatestClick)
-                    is NoteReportDetail -> HomeLatestSummary(detail.totalCount, Res.string.home_total_notes,
-                        detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_notes, onCardClick, onLatestClick)
-                    is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
-                        localizedServiceName(detail.lastAddedService, detail.lastAddedServiceFa), detail.lastAddedAt, Res.string.password_empty, onCardClick, onLatestClick,
-                        leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) },
-                        subtitle = detail.lastAddedIdentifier)
-                    null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                        color = actionColor, trackColor = accent.copy(alpha = .15f))
-                    else -> Unit
+            HorizontalDivider(color = actionColor.copy(alpha = .14f))
+            if (reportFailed) {
+                AppText(text = Res.string.home_report_error, color = colors.textSecondary)
+                TextButton(onClick = onRetryReport, colors = ButtonDefaults.textButtonColors(contentColor = actionColor)) {
+                    Text(stringResource(Res.string.note_retry))
                 }
+            } else when (detail) {
+                is TaskReportDetail -> HomeTaskReport(detail, actionColor, completingTaskIds, onCompleteTask, onCardClick, onLatestClick)
+                is NoteReportDetail -> HomeLatestSummary(detail.totalCount, Res.string.home_total_notes,
+                    detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_items, onCardClick, onLatestClick)
+                is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
+                    localizedServiceName(detail.lastAddedService, detail.lastAddedServiceFa), detail.lastAddedAt, Res.string.home_no_items, onCardClick, onLatestClick,
+                    leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) },
+                    subtitle = detail.lastAddedIdentifier)
+                null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                    color = actionColor, trackColor = accent.copy(alpha = .15f))
+                else -> Unit
             }
         }
     }
