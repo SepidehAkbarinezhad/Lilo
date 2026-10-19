@@ -1,5 +1,9 @@
 package com.sepideh.lilo.core.presentation.components.picker
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -63,6 +67,8 @@ actual fun ReminderCalendar(
         )
     ) {
         PersianDatePicker(
+            // Its lazy date grid needs finite height inside the scrollable reminder editor.
+            modifier = Modifier.height(440.dp * LocalDensity.current.fontScale),
             state = state,
             title = {},
             showModeToggle = false,

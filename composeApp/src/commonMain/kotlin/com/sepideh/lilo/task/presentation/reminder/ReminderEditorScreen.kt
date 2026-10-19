@@ -7,8 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseFormScreen
 import com.sepideh.lilo.core.presentation.TextType
@@ -58,32 +62,41 @@ fun ReminderEditorScreen(
                 else onConfirm(at, selectedRepeat, zoneId)
             }
         }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            Box(Modifier.fillMaxWidth().height(440.dp * androidx.compose.ui.platform.LocalDensity.current.fontScale)) {
-                ReminderCalendar(date, accent, onDateChange = { day = it.toString(); error = false })
-            }
-            AppText(text = Res.string.reminder_time_title, textType = TextType.SectionTitle)
-            TimeWheelPicker(hours, minutes, accent,
-                onHourChange = { hours = it; error = false },
-                onMinuteChange = { minutes = it; error = false })
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                AppText(text = Res.string.repeat_label, textType = TextType.SectionTitle)
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-                    RepeatRule.entries.forEach { rule ->
-                        LiloSelectionChip(stringResource(rule.label), selectedRepeat == rule, accent,
-                            { repeatCode = rule.name; error = false }, modifier = Modifier.weight(1f), centerLabel = true)
+        Column(Modifier.fillMaxSize().padding(padding).imePadding().padding(horizontal = 20.dp)) {
+            // Reserve exactly the message's measured height, including wrapping at larger font sizes.
+            AppText(text = Res.string.reminder_future_error, textType = TextType.FieldError,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth().alpha(if (error) 1f else 0f)
+                    .then(if (error) Modifier.semantics { liveRegion = LiveRegionMode.Polite }
+                        else Modifier.clearAndSetSemantics {}))
+            Column(Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(Modifier.fillMaxWidth()) {
+                    ReminderCalendar(date, accent, onDateChange = { day = it.toString(); error = false })
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AppText(text = Res.string.reminder_time_title, textType = TextType.SectionTitle)
+                    TimeWheelPicker(hours, minutes, accent,
+                        onHourChange = { hours = it; error = false },
+                        onMinuteChange = { minutes = it; error = false })
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AppText(text = Res.string.repeat_label, textType = TextType.SectionTitle)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
+                        RepeatRule.entries.forEach { rule ->
+                            LiloSelectionChip(stringResource(rule.label), selectedRepeat == rule, accent,
+                                { repeatCode = rule.name; error = false }, modifier = Modifier.weight(1f), centerLabel = true)
+                        }
+                    }
+                    if (selectedRepeat == RepeatRule.WEEKLY) {
+                        val weekdays = listOf(Res.string.weekday_mon, Res.string.weekday_tue, Res.string.weekday_wed,
+                            Res.string.weekday_thu, Res.string.weekday_fri, Res.string.weekday_sat, Res.string.weekday_sun)
+                        AppText(text = stringResource(Res.string.repeat_every_weekday, stringResource(weekdays[date.dayOfWeek.ordinal])),
+                            textType = TextType.Caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                if (selectedRepeat == RepeatRule.WEEKLY) {
-                    val weekdays = listOf(Res.string.weekday_mon, Res.string.weekday_tue, Res.string.weekday_wed,
-                        Res.string.weekday_thu, Res.string.weekday_fri, Res.string.weekday_sat, Res.string.weekday_sun)
-                    AppText(text = stringResource(Res.string.repeat_every_weekday, stringResource(weekdays[date.dayOfWeek.ordinal])),
-                        textType = TextType.Caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
+                Spacer(Modifier.height(8.dp))
             }
-            if (error) AppText(text = Res.string.reminder_future_error, color = MaterialTheme.colorScheme.error)
-            Spacer(Modifier.height(16.dp))
         }
     }
 }
