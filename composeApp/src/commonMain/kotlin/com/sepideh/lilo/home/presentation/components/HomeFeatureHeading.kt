@@ -37,12 +37,14 @@ internal fun HomeFeatureHeading(feature: LiloFeature, actionColor: Color, onAdd:
         Column(Modifier.weight(1f)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 AppText(text = title, textType = TextType.SectionTitle, modifier = Modifier.weight(1f), maxLines = 2)
+                // Bring the glyphs closer while retaining separate 48dp touch targets.
+                IconButton(onClick = onAdd, modifier = Modifier.size(48.dp)) {
+                    Icon(LiloIcons.Add, stringResource(Res.string.home_add_feature, title),
+                        Modifier.size(24.dp).offset(x = 4.dp), tint = actionColor)
+                }
                 IconButton(onClick = onList, modifier = Modifier.size(48.dp)) {
                     Icon(vectorResource(Res.drawable.home_list), stringResource(Res.string.home_open_list, title),
-                        Modifier.size(23.dp), tint = actionColor)
-                }
-                IconButton(onClick = onAdd, modifier = Modifier.size(48.dp)) {
-                    Icon(LiloIcons.Add, stringResource(Res.string.home_add_feature, title), Modifier.size(25.dp), tint = actionColor)
+                        Modifier.size(24.dp).offset(x = (-4).dp), tint = actionColor)
                 }
             }
             AppText(text = slogan, textType = TextType.Caption, color = colors.textSecondary)
