@@ -5,12 +5,12 @@ import com.sepideh.lilo.note.domain.model.Note
 import kotlin.test.*
 
 class HomeReportsTest {
-    @Test fun taskPreviewSkipsCompletedActivitiesAndCountsActualRemaining() {
+    @Test fun taskPreviewShowsLatestAddedEvenWhenCompletedAndCountsActualRemaining() {
         val report = taskHomeReport(listOf(Task(title = "Old", createdAt = 1),
-            Task(title = "Completed", done = true, createdAt = 3), Task(id = 42, title = "Latest", description = "First line\nSecond line", createdAt = 2)))
+            Task(id = 42, title = "Latest", description = "First line\nSecond line", done = true, createdAt = 3), Task(title = "Earlier unfinished", createdAt = 2)))
         assertEquals("Latest", report.nextTaskTitle)
         assertEquals("First line\nSecond line", report.nextTaskDescription)
-        assertFalse(report.nextTaskDone)
+        assertTrue(report.nextTaskDone)
         assertEquals(42L, report.nextTaskId)
         assertEquals(2, report.remainingCount)
         assertEquals(1, report.completedCount)
@@ -59,30 +59,33 @@ class HomeReportsTest {
         assertEquals(20L, report.latestUpdatedAt)
     }
 
-    @Test fun earliestUpcomingTodayWinsOverLatestTaskAndTomorrow() {
-        val now = 1_000L
-        val report = taskHomeReport(listOf(Task(id = 1, title = "Latest", createdAt = 100),
-            Task(id = 2, title = "Later", reminderAt = 20_000, reminderTimeZoneId = "UTC"),
-            Task(id = 3, title = "Next", reminderAt = 10_000, reminderTimeZoneId = "UTC"),
-            Task(id = 4, title = "Tomorrow", reminderAt = 86_400_000, reminderTimeZoneId = "UTC")),
-            now, kotlinx.datetime.TimeZone.UTC)
-        assertEquals(3L, report.nextTaskId)
-        assertEquals("00:00", report.nextTaskTime)
-        assertEquals(4, report.remainingCount)
-    }
-    @Test fun pastAndCompletedRemindersDoNotDisplaceFallback() {
-        val report = taskHomeReport(listOf(Task(id = 1, title = "Latest", createdAt = 100),
-            Task(id = 2, title = "Past", reminderAt = 500, reminderTimeZoneId = "UTC"),
-            Task(id = 3, title = "Done", done = true, reminderAt = 2000, reminderTimeZoneId = "UTC")),
-            1000, kotlinx.datetime.TimeZone.UTC)
+    @Test fun latestAddedWinsOverUpcomingAndRecurringReminders() {
+        val report = taskHomeReport(listOf(
+            Task(id = 1, title = "Latest", createdAt = 100),
+            Task(id = 2, title = "Soon", createdAt = 30, reminderAt = 10_000, reminderTimeZoneId = "UTC"),
+            Task(id = 3, title = "Daily", createdAt = 20, reminderAt = 20_000, reminderTimeZoneId = "UTC",
+                repeatRule = com.sepideh.lilo.task.domain.reminder.RepeatRule.DAILY),
+        ))
         assertEquals(1L, report.nextTaskId)
         assertNull(report.nextTaskTime)
+        assertEquals(3, report.remainingCount)
     }
-    @Test fun recurringReminderUsesTodaysOccurrence() {
-        val task = Task(id = 9, title = "Daily", reminderAt = 10_000, reminderTimeZoneId = "UTC",
-            repeatRule = com.sepideh.lilo.task.domain.reminder.RepeatRule.DAILY)
-        val report = taskHomeReport(listOf(task), 86_400_000, kotlinx.datetime.TimeZone.UTC)
-        assertEquals(9L, report.nextTaskId)
-        assertNotNull(report.nextTaskTime)
+
+    @Test fun completionKeepsLatestPreviewAndUpdatesCounts() {
+        val latest = Task(id = 2, title = "Latest", createdAt = 20)
+        val tasks = listOf(Task(id = 1, title = "Older", createdAt = 10), latest)
+        val before = taskHomeReport(tasks)
+        val after = taskHomeReport(tasks.map { if (it.id == latest.id) it.copy(done = true, updatedAt = 50) else it })
+        assertEquals(before.nextTaskId, after.nextTaskId)
+        assertTrue(after.nextTaskDone)
+        assertEquals(1, after.remainingCount)
+        assertEquals(1, after.completedCount)
+    }
+
+    @Test fun creationOrderWinsOverEditsAndUsesIdForTiedTimestamps() {
+        val tasks = listOf(Task(id = 1, title = "Old edited", createdAt = 10, updatedAt = 100),
+            Task(id = 2, title = "Latest", createdAt = 20), Task(id = 3, title = "Same timestamp", createdAt = 20))
+        assertEquals(3L, taskHomeReport(tasks).nextTaskId)
+        assertEquals(3L, taskHomeReport(tasks.reversed()).nextTaskId)
     }
 }
