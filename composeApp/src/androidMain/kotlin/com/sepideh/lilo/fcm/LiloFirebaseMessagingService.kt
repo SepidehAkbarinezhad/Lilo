@@ -8,12 +8,16 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import android.Manifest
+import android.content.pm.PackageManager
 
 class LiloFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("FCM", "🔄 New token: $token")
+        Log.d("FCM", "Messaging token refreshed")
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -31,6 +35,9 @@ class LiloFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun showNotification(title: String, message: String) {
+        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val channelId = "lilo_channel"
         val notificationId = System.currentTimeMillis().toInt()
 
@@ -62,8 +69,13 @@ class LiloFirebaseMessagingService : FirebaseMessagingService() {
 
         // SHOW IT!
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(notificationId, notification)
+        try {
+            manager.notify(notificationId, notification)
+        } catch (_: SecurityException) {
+            // Notification permission may be revoked after the check above.
+            return
+        }
 
-        Log.e("FCM", "✅ NOTIFICATION DISPLAYED: $title")
+        Log.d("FCM", "Notification displayed")
     }
 }
