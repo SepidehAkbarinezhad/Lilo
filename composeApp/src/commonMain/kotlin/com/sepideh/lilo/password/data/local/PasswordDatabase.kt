@@ -3,7 +3,14 @@ package com.sepideh.lilo.password.data.local
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
-@Entity(tableName = "passwords")
+@Entity(
+    tableName = "passwords",
+    foreignKeys = [ForeignKey(
+        entity = PasswordServiceEntity::class, parentColumns = ["id"], childColumns = ["serviceId"],
+        onDelete = ForeignKey.RESTRICT,
+    )],
+    indices = [Index("serviceId")],
+)
 data class PasswordEntity(
     @PrimaryKey val id: String,
     val format: Int,
@@ -39,7 +46,7 @@ interface PasswordDao {
     @Query("DELETE FROM passwords WHERE id = :id") suspend fun delete(id: String)
 }
 
-@Database(entities = [PasswordEntity::class, PasswordServiceEntity::class], version = 1)
+@Database(entities = [PasswordEntity::class, PasswordServiceEntity::class], version = 1, exportSchema = true)
 @ConstructedBy(PasswordDbConstructor::class)
 abstract class PasswordDatabase : RoomDatabase() { abstract fun passwords(): PasswordDao; abstract fun services(): PasswordServiceDao }
 @Suppress("NO_ACTUAL_FOR_EXPECT")

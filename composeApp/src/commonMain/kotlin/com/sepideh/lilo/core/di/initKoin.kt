@@ -1,7 +1,6 @@
 package com.sepideh.lilo.core.di
 
 import com.sepideh.lilo.task.di.taskGroupModule
-import com.sepideh.lilo.task.di.taskGroupPlatformModule
 import com.sepideh.lilo.home.di.homeModule
 import com.sepideh.lilo.note.di.noteModule
 import com.sepideh.lilo.note.di.notePlatformModule
@@ -25,7 +24,6 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             corePlatformModule(),
             taskPlatformModule(),
             notePlatformModule(),
-            taskGroupPlatformModule(),
             taskModule,
             noteModule,
             com.sepideh.lilo.password.di.passwordModule,

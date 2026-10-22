@@ -16,7 +16,6 @@ fun getNoteDatabaseBuilder(): RoomDatabase.Builder<NoteDatabase> {
         name = dbFilePath,
     ).setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.Default)
-        .addMigrations(NoteFeatureMigration)
         .addCallback(NoteDefaultsCallback)
 }
 

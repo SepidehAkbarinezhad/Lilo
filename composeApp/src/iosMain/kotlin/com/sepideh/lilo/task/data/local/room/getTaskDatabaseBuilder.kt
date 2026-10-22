@@ -13,7 +13,7 @@ fun getTaskDatabaseBuilder(): RoomDatabase.Builder<TaskDatabase> {
     val dbFilePath = documentDirectory() + "/task.db"
     return Room.databaseBuilder<TaskDatabase>(
         name = dbFilePath,
-    ).setDriver(BundledSQLiteDriver())
+    ).setDriver(BundledSQLiteDriver()).addCallback(TaskGroupDefaultsCallback)
 }
 
 @OptIn(ExperimentalForeignApi::class)

@@ -19,7 +19,7 @@ class NoteRepositoryImpl(
         noteDao.getNoteById(id)?.toDomain()
 
     override suspend fun upsertNote(note: Note): Long =
-        noteDao.upsertNote(note.toEntity())
+        noteDao.upsertWithGroup(note.toEntity())
 
     override suspend fun deleteNote(id: Long) =
         noteDao.deleteNote(id)

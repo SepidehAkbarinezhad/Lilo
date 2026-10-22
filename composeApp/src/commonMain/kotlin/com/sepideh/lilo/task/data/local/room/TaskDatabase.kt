@@ -6,12 +6,14 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 
 @Database(
-    entities = [TaskEntity::class],
-    version = 2
+    entities = [TaskEntity::class, TaskGroupEntity::class],
+    version = 1,
+    exportSchema = true
 )
 @ConstructedBy(DbConstructor::class)
 abstract class TaskDatabase : RoomDatabase(){
     abstract fun taskDao(): TaskDao
+    abstract fun taskGroupDao(): TaskGroupDao
 }
 
 // The Room compiler generates the `actual` implementations.

@@ -11,7 +11,7 @@ fun TaskEntity.toTask(): Task = Task(
     title = title,
     description = description,
     done = done,
-    groupId = groupId,
+    groupId = groupId ?: 0,
     priority = priority.toTaskPriority().toStorageCode(),
     reminderAt = reminderAt,
     repeatRule = RepeatRule.fromCode(repeatRule),
@@ -25,11 +25,11 @@ fun TaskEntity.toTask(): Task = Task(
 fun List<TaskEntity>.toTaskList() = this.map { it.toTask() }
 
 fun Task.toEntity(): TaskEntity = TaskEntity(
-    id = id,
+    id = id ?: 0,
     title = title,
     description = description,
     done = done,
-    groupId = groupId,
+    groupId = groupId.takeUnless { it == 0L },
     priority = priority.toTaskPriority().toStorageCode(),
     reminderAt = reminderAt,
     repeatRule = repeatRule.name,

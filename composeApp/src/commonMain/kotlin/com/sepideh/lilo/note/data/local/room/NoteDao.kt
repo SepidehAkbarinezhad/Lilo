@@ -14,6 +14,16 @@ interface NoteDao {
     @Upsert
     suspend fun upsertNote(note: NoteEntity): Long
 
+    @Query("SELECT EXISTS(SELECT 1 FROM note_groups WHERE id = :id)")
+    suspend fun groupExists(id: Long): Boolean
+
+    @Transaction
+    suspend fun upsertWithGroup(note: NoteEntity): Long {
+        val groupId = note.groupId?.takeIf { groupExists(it) }
+        val insertedId = upsertNote(note.copy(groupId = groupId))
+        return if (note.id == 0L) insertedId else note.id
+    }
+
     @Query("DELETE FROM notes WHERE id = :id")
     suspend fun deleteNote(id: Long)
 }

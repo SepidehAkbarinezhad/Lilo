@@ -21,8 +21,7 @@ class LiloApplication : Application() {
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val token = task.result
-                    Log.d("FCM", "✅ Token received: $token")
+                    Log.d("FCM", "Messaging token received")
 
                     subscribeToTopic()
                 } else {

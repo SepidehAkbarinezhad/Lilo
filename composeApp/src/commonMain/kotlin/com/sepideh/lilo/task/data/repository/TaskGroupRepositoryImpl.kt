@@ -21,7 +21,8 @@ class TaskGroupRepositoryImpl(
         val previous = if (group.id != 0L) taskGroupDao.getGroupById(group.id) else null
         requireShortNameLength(group.titleEn, previous?.titleEn)
         requireShortNameLength(group.titleFa, previous?.titleFa)
-        return taskGroupDao.upsertUnique(group.toEntity())
+        val insertedId = taskGroupDao.upsertUnique(group.toEntity())
+        return if (group.id == 0L) insertedId else group.id
     }
 
     override suspend fun deleteGroup(id: Long) {

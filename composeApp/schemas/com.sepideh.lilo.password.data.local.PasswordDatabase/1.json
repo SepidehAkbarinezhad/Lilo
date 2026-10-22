@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "911ddf17d7cc716631573ab363a5dedb",
+    "identityHash": "3c2d5d098a186a14e85450cafe815a99",
     "entities": [
       {
         "tableName": "passwords",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `format` INTEGER NOT NULL, `nonce` BLOB NOT NULL, `ciphertext` BLOB NOT NULL, `wrappedKey` BLOB NOT NULL DEFAULT X'', `title` TEXT NOT NULL DEFAULT '', `username` TEXT NOT NULL DEFAULT '', `website` TEXT NOT NULL DEFAULT '', `createdAt` INTEGER NOT NULL DEFAULT 0, `updatedAt` INTEGER NOT NULL DEFAULT 0, `serviceId` TEXT DEFAULT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `format` INTEGER NOT NULL, `nonce` BLOB NOT NULL, `ciphertext` BLOB NOT NULL, `wrappedKey` BLOB NOT NULL DEFAULT X'', `title` TEXT NOT NULL DEFAULT '', `username` TEXT NOT NULL DEFAULT '', `website` TEXT NOT NULL DEFAULT '', `createdAt` INTEGER NOT NULL DEFAULT 0, `updatedAt` INTEGER NOT NULL DEFAULT 0, `serviceId` TEXT DEFAULT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`serviceId`) REFERENCES `password_services`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -86,7 +86,31 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_passwords_serviceId",
+            "unique": false,
+            "columnNames": [
+              "serviceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_passwords_serviceId` ON `${TABLE_NAME}` (`serviceId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "password_services",
+            "onDelete": "RESTRICT",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "serviceId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "password_services",
@@ -144,7 +168,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '911ddf17d7cc716631573ab363a5dedb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3c2d5d098a186a14e85450cafe815a99')"
     ]
   }
 }

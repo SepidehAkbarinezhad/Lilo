@@ -43,7 +43,7 @@ class TaskRepoImpl(
     override suspend fun upsertTask(task: Task): Long {
         val existing = task.id?.let { taskDao.getTaskById(it) }
         val now = kotlin.time.Clock.System.now().toEpochMilliseconds()
-        return taskDao.upsert(task.withTimestamps(existing?.toTask(), now).toEntity())
+        return taskDao.upsertWithGroup(task.withTimestamps(existing?.toTask(), now).toEntity())
     }
 
     override suspend fun getTaskById(id: Long): Task? {
