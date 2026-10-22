@@ -28,7 +28,7 @@ class TaskMutations(
         selectedImages: List<com.sepideh.lilo.core.domain.images.ImageSource>? = null): SaveTaskResult = mutex.withLock {
         require(task.title.isNotBlank())
         if (task.reminderAt != null) TimeZone.of(requireNotNull(task.reminderTimeZoneId))
-        val previous = task.id?.let { repository.getTaskById(it) }
+        val previous = task.id?.let { requireNotNull(repository.getTaskById(it)) { "Task no longer exists" } }
         val imported = selectedImages?.let { requireNotNull(imageStore).importImages(it) }.orEmpty()
         // Once persistence starts, finish the commit and its side effects even if the form closes.
         // Cancellation at the database return boundary must not delete committed attachments.

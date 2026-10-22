@@ -57,6 +57,19 @@ class TaskAttachmentSaveTest {
         assertTrue(images.removed.isEmpty())
     }
 
+    @Test fun savingADeletedTaskDoesNotRecreateItOrImportImages() = runBlocking {
+        val repo = Repo()
+        val images = object : ImageStore {
+            override suspend fun importImages(sources: List<ImageSource>): List<String> = error("Must not import")
+            override suspend fun removeImages(names: List<String>) = Unit
+        }
+        assertFailsWith<IllegalArgumentException> {
+            TaskMutations(repo, Scheduler(), images).save(Task(id = 99, title = "Deleted"),
+                selectedImages = listOf(ImageSource("selected")))
+        }
+        assertNull(repo.task)
+    }
+
     private class Images : ImageStore {
         val removed=mutableListOf<String>()
         override suspend fun importImages(sources:List<ImageSource>) = listOf("new.jpg")
