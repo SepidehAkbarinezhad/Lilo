@@ -19,4 +19,4 @@ Image selection uses existing platform APIs and dependencies; FileKit is removed
 
 Picker sources are draft references for the current form session, not persistent attachment IDs. Save copies them into the private `images` directory; task records store only portable relative names. Removal also recognizes the previous `task-images` directory so the refactor does not discard earlier attachments. The database format and migration are unchanged by this native-picker replacement.
 
-The native iOS migration test is under `iosTest`; Android host unit tests cannot load the Android SQLite JNI driver. The common mapping and import-policy tests run on Android's host test target without additional dependencies.
+The first-release Room baseline and current validation are documented in [the code health audit](pre-release-health-audit.md). Development-only migration tests were replaced by Android instrumented database integrity tests. Common mapping and import-policy tests run on Android's host test target.

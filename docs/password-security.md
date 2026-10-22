@@ -28,6 +28,8 @@ Tests cover public-key wrapping, independent record keys, authenticated encrypti
 
 ## Services
 
-Service IDs and names are browsable organizational metadata. Service moves and renames never decrypt or rewrite credential ciphertext. The current database service assignment overrides the encrypted snapshot when an entry is opened. A save requires an existing service in the same database transaction. Deleting an in-use service atomically reassigns records to an existing replacement. 
+Service IDs and names are browsable organizational metadata. Service moves and renames never decrypt or rewrite credential ciphertext. The current database service assignment overrides the encrypted snapshot when an entry is opened. An indexed Room foreign key now prevents references to missing services. List/Home queries select public metadata without loading ciphertext or wrapped keys. A save requires an existing service in the same database transaction. Deleting an in-use service atomically reassigns records to an existing replacement.
 
 Android add/save, biometric reveal, and hiding were confirmed on the connected phone before the service addition. iOS runtime authentication remains unverified.
+
+Current database verification and remaining device checks are recorded in [the first-release code health audit](pre-release-health-audit.md).

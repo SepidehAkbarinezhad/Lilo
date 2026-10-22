@@ -1,5 +1,7 @@
 # Task refactor
 
+Historical refactor record. For the current database contract and verified results, see [the first-release code health audit](pre-release-health-audit.md).
+
 Base: `develop`. Existing Notes source files are deliberately unchanged.
 
 ## Boundaries
