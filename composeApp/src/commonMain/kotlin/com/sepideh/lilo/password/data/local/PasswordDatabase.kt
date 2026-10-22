@@ -18,9 +18,15 @@ data class PasswordEntity(
     @ColumnInfo(defaultValue = "NULL") val serviceId: String? = null,
 )
 
+data class PasswordMetadata(
+    val id: String, val title: String, val username: String, val website: String,
+    val createdAt: Long, val updatedAt: Long, val serviceId: String?,
+)
+
 @Dao
 interface PasswordDao {
-    @Query("SELECT * FROM passwords") fun observe(): Flow<List<PasswordEntity>>
+    @Query("SELECT id, title, username, website, createdAt, updatedAt, serviceId FROM passwords")
+    fun observe(): Flow<List<PasswordMetadata>>
     @Query("SELECT * FROM passwords WHERE id = :id") suspend fun get(id: String): PasswordEntity?
     @Upsert suspend fun save(record: PasswordEntity)
     @Query("SELECT COUNT(*) FROM password_services WHERE id = :id") suspend fun serviceExists(id: String): Int

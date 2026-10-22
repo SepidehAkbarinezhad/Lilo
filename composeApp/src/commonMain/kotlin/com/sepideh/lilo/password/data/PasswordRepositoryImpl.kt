@@ -13,10 +13,12 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: VaultCrypto, private val services: PasswordServiceRepository) : PasswordRepository {
     // Browsing returns only the explicitly public metadata, never decrypted fields.
-    override fun observePasswords() = combine(dao.observe(), services.observe()) { rows, services -> rows.map { row ->
+    override fun observePasswords() = combine(dao.observe(), services.observe()) { rows, services ->
+        val servicesById = services.associateBy { it.id }
+        rows.map { row ->
         Password(id = row.id, title = row.title, username = row.username, website = row.website,
-            createdAt = row.createdAt, updatedAt = row.updatedAt, serviceId = row.serviceId, serviceName = services.find { it.id == row.serviceId }?.name.orEmpty(),
-            serviceNameFa = services.find { it.id == row.serviceId }?.nameFa.orEmpty())
+            createdAt = row.createdAt, updatedAt = row.updatedAt, serviceId = row.serviceId, serviceName = servicesById[row.serviceId]?.name.orEmpty(),
+            serviceNameFa = servicesById[row.serviceId]?.nameFa.orEmpty())
     } }
 
     override suspend fun unlockRequest(id: String): PasswordUnlockRequest {

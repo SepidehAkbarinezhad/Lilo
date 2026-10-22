@@ -122,7 +122,9 @@ class PasswordEncryptionTest {
     private class MemoryDao : PasswordDao {
         val rows = linkedMapOf<String, PasswordEntity>()
         var beforeRead: () -> Unit = {}
-        override fun observe(): Flow<List<PasswordEntity>> = flowOf(rows.values.toList())
+        override fun observe(): Flow<List<PasswordMetadata>> = flowOf(rows.values.map {
+            PasswordMetadata(it.id, it.title, it.username, it.website, it.createdAt, it.updatedAt, it.serviceId)
+        })
         override suspend fun get(id: String): PasswordEntity? { beforeRead(); return rows[id] }
         override suspend fun serviceExists(id: String) = if (id == "google") 1 else 0
         override suspend fun updateMetadata(id: String, title: String, username: String, website: String, createdAt: Long, updatedAt: Long) {
