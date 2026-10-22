@@ -7,6 +7,8 @@ import com.sepideh.lilo.note.domain.repository.NoteRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.time.Clock
 
 class NoteMutations(
@@ -14,7 +16,9 @@ class NoteMutations(
     private val imageStore: ImageStore,
     private val now: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) {
-    suspend fun save(note: Note, selectedImages: List<ImageSource>? = null): Note {
+    private val mutex = Mutex()
+
+    suspend fun save(note: Note, selectedImages: List<ImageSource>? = null): Note = mutex.withLock {
         require(note.title.isNotBlank())
         val original = if (note.id != 0L) requireNotNull(repository.getNoteById(note.id)) else null
         val timestamp = now()
@@ -22,7 +26,7 @@ class NoteMutations(
         val updated = note.copy(title = note.title.trim(), imageNames = note.imageNames + imported.orEmpty(),
             createdAt = original?.createdAt ?: timestamp, updatedAt = timestamp)
         // Keep the database commit and attachment ownership transfer indivisible on cancellation.
-        return withContext(NonCancellable) {
+        withContext(NonCancellable) {
             val saved = try {
                 val returnedId = repository.upsertNote(updated)
                 updated.copy(id = if (updated.id == 0L) returnedId else updated.id)
@@ -36,10 +40,12 @@ class NoteMutations(
         }
     }
 
-    suspend fun delete(id: Long) {
-        val note = repository.getNoteById(id) ?: return
-        repository.deleteNote(id)
-        removeBestEffort(note.imageNames)
+    suspend fun delete(id: Long) = mutex.withLock {
+        val note = repository.getNoteById(id) ?: return@withLock
+        withContext(NonCancellable) {
+            repository.deleteNote(id)
+            removeBestEffort(note.imageNames)
+        }
     }
 
     private suspend fun removeBestEffort(names: List<String>) {
