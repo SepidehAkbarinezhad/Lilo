@@ -87,7 +87,39 @@ class TaskDiscardTest {
         assertTrue(model.stateValue.value.loadFailed)
     }
 
-    private fun model(missing: Boolean = false, onSave: () -> Unit = { error("Discard must not save") }): TaskDetailViewModel {
+    @Test fun failedGroupReadDoesNotFreezeDraftAndRetryResubscribes() = runTest {
+        var reads = 0
+        val model = model(groupFlow = flow { if (reads++ == 0) error("Read failed"); emit(listOf(TaskGroup(id = 7, titleEn = "Work"))) })
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.stateValue.collect() }
+        runCurrent()
+        assertTrue(model.stateValue.value.hasError)
+        model.onAction(TaskDetailAction.OnTitleChanged("Keep my draft"))
+        runCurrent()
+        assertEquals("Keep my draft", model.stateValue.value.task.title)
+        model.onAction(TaskDetailAction.Retry)
+        runCurrent()
+        assertFalse(model.stateValue.value.hasError)
+        assertTrue(model.stateValue.value.groups.any { it.id == 7L })
+        assertEquals("Keep my draft", model.stateValue.value.task.title)
+    }
+
+    @Test fun failedTaskLoadCanBeRetriedWithoutLeavingTheScreen() = runTest {
+        var available = false
+        val model = model(findTask = { if (available) Task(id = it, title = "Recovered") else error("Read failed") })
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.stateValue.collect() }
+        model.onAction(TaskDetailAction.OnGetSelectedTaskInfo(1))
+        runCurrent()
+        assertTrue(model.stateValue.value.loadFailed)
+        available = true
+        model.onAction(TaskDetailAction.Retry)
+        runCurrent()
+        assertFalse(model.stateValue.value.loadFailed)
+        assertEquals("Recovered", model.stateValue.value.task.title)
+    }
+
+    private fun model(missing: Boolean = false, onSave: () -> Unit = { error("Discard must not save") },
+        groupFlow: Flow<List<TaskGroup>> = flowOf(emptyList()),
+        findTask: ((Long) -> Task?)? = null): TaskDetailViewModel {
         val language = LanguageProvider(UserPreferencesManager(object : UserPreferencesRepository {
             override val userPreferences = flowOf(UserPreferences())
             override suspend fun updateTheme(theme: AppTheme) {}
@@ -100,10 +132,10 @@ class TaskDiscardTest {
             override suspend fun clearGroup(id: Long) {}
             override suspend fun deleteTask(id: Long) {}
             override suspend fun upsertTask(task: Task): Long { onSave(); return 1 }
-            override suspend fun getTaskById(id: Long) = if (missing) null else Task(id = id, title = "Original", priority = 1)
+            override suspend fun getTaskById(id: Long) = if (findTask != null) findTask(id) else if (missing) null else Task(id = id, title = "Original", priority = 1)
         }
         val groups = object : TaskGroupRepository {
-            override fun getAllGroups() = flowOf(emptyList<TaskGroup>())
+            override fun getAllGroups() = groupFlow
             override suspend fun addGroup(group: TaskGroup): Long = error("Unexpected group write")
             override suspend fun deleteGroup(id: Long) {}
             override suspend fun getGroupById(id: Long): TaskGroup? = null

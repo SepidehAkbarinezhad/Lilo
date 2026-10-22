@@ -100,7 +100,10 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
         onBack = { onAction(TaskDetailAction.Back); true }, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(com.sepideh.lilo.ui.theme.LiloSpacing.Screen), verticalArrangement = Arrangement.spacedBy(com.sepideh.lilo.ui.theme.LiloSpacing.Section)) {
-            if (state.hasError) Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)
+            if (state.hasError) Column {
+                Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)
+                TextButton(onClick = { onAction(TaskDetailAction.Retry) }) { Text(stringResource(Res.string.note_retry)) }
+            }
             if (state.isLoading || state.isSaving) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             AppOutlineTextField(accentColor = accent,
                 leadingIcon = { Icon(LiloIcons.Edit, null, Modifier.size(com.sepideh.lilo.ui.theme.LiloSize.Icon)) },

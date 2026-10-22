@@ -8,6 +8,7 @@ import com.sepideh.lilo.task.presentation.model.SortOrder
 
 
 sealed interface TaskListAction : BaseAction {
+    data object Retry : TaskListAction
     data class OnSortOrderChanged(val sortOrder: SortOrder) : TaskListAction
     data class OnGroupSelected(val id: Long?) : TaskListAction
     data class OnSearchToggle(val open: Boolean) : TaskListAction

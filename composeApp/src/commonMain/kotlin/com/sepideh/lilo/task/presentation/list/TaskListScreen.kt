@@ -71,7 +71,10 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
             }
         }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            if (state.hasError) Text(stringResource(Res.string.task_operation_error), Modifier.padding(20.dp), color = MaterialTheme.colorScheme.error)
+            if (state.hasError) Column(Modifier.padding(horizontal = 20.dp)) {
+                Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)
+                TextButton(onClick = { onAction(TaskListAction.Retry) }) { Text(stringResource(Res.string.note_retry)) }
+            }
             LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                 item(key = "all") {
                     LiloSelectionChip(label = stringResource(Res.string.group_all), selected = state.selectedGroup == null,

@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import lilo.composeapp.generated.resources.Res
 import lilo.composeapp.generated.resources.error_empty_field_label
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class TaskDetailViewModel(
     private val taskGroupFactory: TaskGroupFactory,
     private val languageProvider: LanguageProvider,
@@ -32,15 +33,28 @@ class TaskDetailViewModel(
     private val local = MutableStateFlow(TaskDetailState())
     private var loadedTaskId: Long? = null
     private var original = local.value.task
-    val stateValue = combine(local, taskGroupRepository.getAllGroups(), languageProvider.languageFlow) { state, groups, language ->
+    private val refresh = MutableStateFlow(0)
+    private val groups = refresh.flatMapLatest {
+        taskGroupRepository.getAllGroups()
+            .catch { local.update { it.copy(hasError = true) }; emit(emptyList()) }
+    }
+    val stateValue = combine(local, groups, languageProvider.languageFlow) { state, groups, language ->
         val items = groups.toPresentationList(language)
         state.copy(groups = items, selectedGroup = items.find { it.id == state.task.groupId })
-    }.catch { local.update { it.copy(hasError = true) }; emit(local.value) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), local.value)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), local.value)
 
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
+            TaskDetailAction.Retry -> {
+                if (local.value.isSaving || local.value.isLoading) return
+                local.update { it.copy(hasError = false) }
+                refresh.update { it + 1 }
+                if (local.value.loadFailed) loadedTaskId?.let { id ->
+                    loadedTaskId = null
+                    onAction(TaskDetailAction.OnGetSelectedTaskInfo(id))
+                }
+            }
             TaskDetailAction.Back -> if (!local.value.isSaving && !local.value.isLoading && !local.value.isAddingGroup) {
                 val draft = local.value
                 if (draft.task != original || draft.selectedImages.orEmpty().isNotEmpty() || draft.removedImageNames.isNotEmpty()) {
@@ -110,7 +124,7 @@ class TaskDetailViewModel(
             is TaskDetailAction.OnGetSelectedTaskInfo -> {
                 if (loadedTaskId == action.taskId) return
                 loadedTaskId = action.taskId
-                local.update { it.copy(isLoading = true) }
+                local.update { it.copy(isLoading = true, loadFailed = false) }
                 launchOperation {
                     val task = taskRepository.getTaskById(action.taskId) ?: error("Task not found")
                     original = task
@@ -123,8 +137,8 @@ class TaskDetailViewModel(
             TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(groupManagementOpen = false, duplicateGroupName = false) }
             is TaskDetailAction.OnDeleteGroup -> launchOperation {
                 if (stateValue.value.groups.none { it.id == action.groupId && it.isDeletable }) return@launchOperation
-                taskRepository.clearGroup(action.groupId)
                 taskGroupRepository.deleteGroup(action.groupId)
+                if (original.groupId == action.groupId) original = original.copy(groupId = 0)
                 local.update { it.copy(
                     task = if (it.task.groupId == action.groupId) it.task.copy(groupId = 0) else it.task,
                     draftGroupId = it.draftGroupId.takeUnless { id -> id == action.groupId },
@@ -180,7 +194,7 @@ class TaskDetailViewModel(
             }
             val task = state.task.copy(
                 imageNames = state.task.imageNames.filterNot { it in state.removedImageNames },
-                groupId = state.task.groupId.takeIf { id -> stateValue.value.groups.any { it.id == id } } ?: 0,
+                groupId = state.task.groupId.takeIf { id -> taskGroupRepository.getGroupById(id) != null } ?: 0,
             )
             val result = mutations.save(task, scheduleReminder = allowed, selectedImages = state.selectedImages)
             original = task.copy(id = result.id, imageNames = result.imageNames)

@@ -19,7 +19,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class TaskListViewModel(
     languageProvider: LanguageProvider,
     taskRepository: TaskRepository,
@@ -27,12 +27,17 @@ class TaskListViewModel(
     private val mutations: TaskMutations,
 ) : BaseViewModel() {
     private val local = MutableStateFlow(TaskListState(isLoading = true))
+    private val refresh = MutableStateFlow(0)
     private val query = local.map { it.searchQuery }.distinctUntilChanged().debounce(250)
-    private val tasks = taskRepository.getAllTasks()
-        .onEach { local.update { it.copy(isLoading = false) } }
-        .catch { local.update { it.copy(isLoading = false, hasError = true) }; emit(emptyList()) }
-    private val groups = taskGroupRepository.getAllGroups()
-        .catch { local.update { it.copy(hasError = true) }; emit(emptyList()) }
+    private val tasks = refresh.flatMapLatest {
+        taskRepository.getAllTasks()
+            .onEach { local.update { it.copy(isLoading = false) } }
+            .catch { local.update { it.copy(isLoading = false, hasError = true) }; emit(emptyList()) }
+    }
+    private val groups = refresh.flatMapLatest {
+        taskGroupRepository.getAllGroups()
+            .catch { local.update { it.copy(hasError = true) }; emit(emptyList()) }
+    }
 
     // One collector combines every filter; Apply never launches another Room subscription.
     val state = combine(local, tasks, groups, query, languageProvider.languageFlow) { ui, tasks, groups, text, language ->
@@ -54,6 +59,10 @@ class TaskListViewModel(
     override fun onAction(action: BaseAction) {
         super.onAction(action)
         when (action) {
+            TaskListAction.Retry -> {
+                local.update { it.copy(hasError = false, isLoading = true) }
+                refresh.update { it + 1 }
+            }
             is TaskListAction.OnSortOrderChanged -> local.update { it.copy(sortOrder = action.sortOrder) }
             is TaskListAction.OnGroupSelected -> local.update { it.copy(selectedGroup = action.id) }
             is TaskListAction.OnSearchQueryChange -> local.update { it.copy(searchQuery = action.query) }
