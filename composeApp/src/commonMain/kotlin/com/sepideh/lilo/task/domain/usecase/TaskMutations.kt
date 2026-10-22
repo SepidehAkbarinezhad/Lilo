@@ -58,17 +58,22 @@ class TaskMutations(
         // Read the current row rather than overwriting it with a stale list snapshot.
         repository.getTaskById(id)?.let { current ->
             val updated = current.copy(done = completed)
-            repository.upsertTask(updated)
-            syncReminder(updated)
+            withContext(NonCancellable) {
+                repository.upsertTask(updated)
+                syncReminder(updated)
+            }
         }
     }
 
     suspend fun delete(id: Long) = mutex.withLock {
         repository.getTaskById(id)?.let { task ->
-            scheduler.cancelReminder(id)
-            repository.deleteTask(id)
-            synchronizeAll()
-            imageStore?.removeImages(task.imageNames)
+            withContext(NonCancellable) {
+                // Persist first: receivers reject deleted rows even if cancelling an alarm fails.
+                repository.deleteTask(id)
+                runCatching { imageStore?.removeImages(task.imageNames) }
+                scheduler.cancelReminder(id)
+                synchronizeAll()
+            }
         }
     }
 

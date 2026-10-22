@@ -33,6 +33,30 @@ class TaskAttachmentSaveTest {
         assertEquals(listOf("new.jpg"),repo.task!!.imageNames)
         assertTrue(images.removed.isEmpty())
     }
+    @Test fun alarmFailureCannotPreventDeletionOrLeaveItsImagesBehind() = runBlocking {
+        val repo = Repo(Task(id=1,title="Task",imageNames=listOf("saved.jpg")))
+        val images = Images()
+        val scheduler = object : ReminderScheduler {
+            override suspend fun scheduleReminder(reminder: Reminder) = Unit
+            override suspend fun cancelReminder(taskId: Long): Unit = error("Alarm service unavailable")
+        }
+        assertFailsWith<IllegalStateException> { TaskMutations(repo,scheduler,images).delete(1) }
+        assertNull(repo.task)
+        assertEquals(listOf("saved.jpg"),images.removed)
+    }
+
+    @Test fun databaseDeleteFailureLeavesImagesAndAlarmsIntact() = runBlocking {
+        val repo = Repo(Task(id=1,title="Task",imageNames=listOf("saved.jpg")),fail=true)
+        val images = Images()
+        val scheduler = object : ReminderScheduler {
+            override suspend fun scheduleReminder(reminder: Reminder) = Unit
+            override suspend fun cancelReminder(taskId: Long): Unit = error("Must not cancel before commit")
+        }
+        assertFailsWith<IllegalStateException> { TaskMutations(repo,scheduler,images).delete(1) }
+        assertNotNull(repo.task)
+        assertTrue(images.removed.isEmpty())
+    }
+
     private class Images : ImageStore {
         val removed=mutableListOf<String>()
         override suspend fun importImages(sources:List<ImageSource>) = listOf("new.jpg")
@@ -47,7 +71,7 @@ class TaskAttachmentSaveTest {
         override fun getTasksByFilter(done:Boolean?,priority:List<Int>)=getAllTasks()
         override suspend fun getTaskById(id:Long)=task?.takeIf { it.id==id }
         override suspend fun clearGroup(id:Long) {}
-        override suspend fun deleteTask(id:Long) { task=null }
+        override suspend fun deleteTask(id:Long) { check(!fail); task=null }
         override suspend fun upsertTask(task:Task):Long {
             check(!fail)
             this.task=task.copy(id=task.id?:1L)
