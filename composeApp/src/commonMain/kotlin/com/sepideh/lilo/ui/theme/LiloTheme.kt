@@ -27,7 +27,7 @@ internal fun LiloTheme(
     content: @Composable () -> Unit
 ) {
     val userPreferencesManager: UserPreferencesManager = remember { getKoin().get() }
-    val loadedPreferences by userPreferencesManager.userPreferences.collectAsState(initial = null)
+    val loadedPreferences by userPreferencesManager.appearancePreferences.collectAsState(initial = null)
     // Keep the native first frame visible until the saved appearance is known.
     val userPreferences = loadedPreferences ?: return
     val darkTheme = when (userPreferences.theme) {

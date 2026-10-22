@@ -12,7 +12,7 @@ class LanguageProvider(userPreferencesManager: UserPreferencesManager) {
 
     private val scope = CoroutineScope(SupervisorJob())
 
-    val languageFlow: StateFlow<AppLanguage> = userPreferencesManager.userPreferences
+    val languageFlow: StateFlow<AppLanguage> = userPreferencesManager.appearancePreferences
         .map {
             it.language }
         .stateIn(

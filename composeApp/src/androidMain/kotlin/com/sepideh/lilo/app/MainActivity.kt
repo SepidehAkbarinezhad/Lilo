@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
             val preferences = getKoin().get<UserPreferencesManager>()
             val uiModeManager = getSystemService(UiModeManager::class.java)
             lifecycleScope.launch {
-                preferences.userPreferences.map { it.theme }.distinctUntilChanged().collect { theme ->
+                preferences.appearancePreferences.map { it.theme }.distinctUntilChanged().collect { theme ->
                     // Android persists this choice for the next system launch screen.
                     uiModeManager.setApplicationNightMode(when (theme) {
                         AppTheme.DARK -> UiModeManager.MODE_NIGHT_YES
