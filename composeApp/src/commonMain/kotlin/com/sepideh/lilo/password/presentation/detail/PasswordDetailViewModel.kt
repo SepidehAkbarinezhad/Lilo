@@ -7,16 +7,26 @@ import com.sepideh.lilo.password.domain.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
-data class PasswordDetailState(
-    val locked: Boolean = true, val record: Password = Password(),
-    val request: PasswordUnlockRequest? = null,
-    val loadFailed: Boolean = false, val loading: Boolean = false, val saving: Boolean = false,
-    val error: Boolean = false, val setupRequired: Boolean = false,
-    val identifierInvalid: Boolean = false, val serviceInvalid: Boolean = false, val websiteInvalid: Boolean = false, val secretInvalid: Boolean = false,
-    val visible: Boolean = false, val discardOpen: Boolean = false,
-)
-
 class PasswordDetailViewModel(private val repository: PasswordRepository, private val crypto: VaultCrypto) : BaseViewModel() {
+    override fun onAction(action: BaseAction) {
+        super.onAction(action)
+        when (action) {
+            is PasswordDetailAction.OnInitialize -> initialize(action.id)
+            PasswordDetailAction.Retry -> load()
+            is PasswordDetailAction.OnTitleChanged -> edit { it.copy(title = action.value) }
+            is PasswordDetailAction.OnUsernameChanged -> edit { it.copy(username = action.value) }
+            is PasswordDetailAction.OnSecretChanged -> edit { it.copy(secret = action.value) }
+            is PasswordDetailAction.OnWebsiteChanged -> edit { it.copy(website = action.value) }
+            is PasswordDetailAction.OnNotesChanged -> edit { it.copy(notes = action.value) }
+            is PasswordDetailAction.OnServiceSelected -> edit { it.copy(serviceId = action.id) }
+            PasswordDetailAction.OnVisibility -> visibility()
+            PasswordDetailAction.OnSave -> save()
+            PasswordDetailAction.Back -> back()
+            PasswordDetailAction.KeepEditing -> keepEditing()
+            PasswordDetailAction.Discard -> discard()
+        }
+    }
+
     private val local = MutableStateFlow(PasswordDetailState())
     val state = local.asStateFlow()
     private var id: String? = null
@@ -43,7 +53,7 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
         } }
     }
 
-    fun initialize(value: String?) {
+    private fun initialize(value: String?) {
         if (initialized) return
         id = value
         initialized = true
@@ -51,7 +61,7 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
         else load()
     }
 
-    fun load() {
+    private fun load() {
         val recordId = id ?: return
         operation?.cancel()
         val session = crypto.session.value
@@ -79,14 +89,14 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
         onAction(BaseAction.OnNavigateTo(null))
     }
 
-    fun edit(transform: (Password) -> Password) {
+    private fun edit(transform: (Password) -> Password) {
         val ui = local.value
         if (ui.locked || ui.loading || ui.saving || ui.loadFailed) return
         local.update { it.copy(error = false, setupRequired = false, record = transform(it.record), serviceInvalid = false, websiteInvalid = false, secretInvalid = false, identifierInvalid = false) }
     }
-    fun visibility() { if (!local.value.locked) local.update { it.copy(visible = !it.visible) } }
+    private fun visibility() { if (!local.value.locked) local.update { it.copy(visible = !it.visible) } }
 
-    fun save() {
+    private fun save() {
         val ui = local.value
         val session = crypto.session.value
         if (ui.locked || ui.loading || ui.saving || ui.loadFailed) return
@@ -110,14 +120,14 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
         }
     }
 
-    fun back() {
+    private fun back() {
         val ui = local.value
         if (ui.saving) return
         if (!ui.locked && ui.record != original) local.update { it.copy(discardOpen = true) }
         else discard()
     }
-    fun keepEditing() { local.update { it.copy(discardOpen = false) } }
-    fun discard() {
+    private fun keepEditing() { local.update { it.copy(discardOpen = false) } }
+    private fun discard() {
         operation?.cancel()
         local.value = PasswordDetailState()
         original = Password()

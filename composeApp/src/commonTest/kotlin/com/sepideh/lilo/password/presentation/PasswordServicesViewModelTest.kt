@@ -3,6 +3,7 @@ package com.sepideh.lilo.password.presentation
 import androidx.lifecycle.ViewModelStore
 import com.sepideh.lilo.core.domain.validation.DuplicateNameException
 import com.sepideh.lilo.password.domain.*
+import com.sepideh.lilo.password.presentation.components.PasswordServicesAction
 import com.sepideh.lilo.password.presentation.components.PasswordServicesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,20 +20,20 @@ class PasswordServicesViewModelTest {
     @Test fun duplicateKeepsEditorAndSelectionThenValidRetrySucceeds() = runTest {
         val model = PasswordServicesViewModel(DuplicateRepository())
         store.put("services", model)
-        model.open("google")
-        model.manage()
-        model.edit()
-        model.name("Gmail")
-        model.save()
+        model.onAction(PasswordServicesAction.OnOpen("google"))
+        model.onAction(PasswordServicesAction.OnManage)
+        model.onAction(PasswordServicesAction.OnEdit())
+        model.onAction(PasswordServicesAction.OnNameChanged("Gmail"))
+        model.onAction(PasswordServicesAction.OnSave)
         runCurrent()
         assertTrue(model.state.value.duplicateName)
         assertTrue(model.state.value.editorOpen)
         assertEquals("Gmail", model.state.value.name)
         assertEquals("google", model.state.value.draftId)
         assertFalse(model.state.value.busy)
-        model.name("Work")
+        model.onAction(PasswordServicesAction.OnNameChanged("Work"))
         assertFalse(model.state.value.duplicateName)
-        model.save()
+        model.onAction(PasswordServicesAction.OnSave)
         runCurrent()
         assertFalse(model.state.value.editorOpen)
         assertEquals("new", model.state.value.draftId)
