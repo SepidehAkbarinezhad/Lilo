@@ -2,7 +2,7 @@ package com.sepideh.lilo.home.domain
 import androidx.compose.runtime.Composable
 import com.sepideh.lilo.home.presentation.model.*
 import kotlinx.coroutines.flow.map
-import com.sepideh.lilo.password.domain.PasswordRepository
+import com.sepideh.lilo.password.domain.repository.PasswordRepository
 /** Home observes public entry metadata only; it never decrypts credentials. */
 class PasswordFeatureCardImpl(private val repository: PasswordRepository) : FeatureCard<PasswordReportDetail> {
     override val feature = LiloFeature.PASSWORDS

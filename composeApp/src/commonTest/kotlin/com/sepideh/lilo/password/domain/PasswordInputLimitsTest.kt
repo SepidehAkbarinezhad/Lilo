@@ -1,5 +1,9 @@
 package com.sepideh.lilo.password.domain
 
+import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.model.requirePasswordFieldLengths
+import com.sepideh.lilo.password.domain.model.secretTooLong
+
 import kotlin.test.*
 
 class PasswordInputLimitsTest {

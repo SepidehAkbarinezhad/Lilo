@@ -8,8 +8,8 @@ data class HomeState(
     val completingTaskIds: Set<Long> = emptySet(),
     val completionFailed: Boolean = false,
     val openingPasswordId: String? = null,
-    val passwordRequest: com.sepideh.lilo.password.domain.PasswordUnlockRequest? = null,
-    val passwordAuthError: com.sepideh.lilo.password.domain.UnlockResult? = null,
+    val passwordRequest: com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest? = null,
+    val passwordAuthError: com.sepideh.lilo.password.domain.crypto.UnlockResult? = null,
     val passwordOpenFailed: Boolean = false,
     val reportDetails: Map<LiloFeature, ReportDetail?> =
         LiloFeature.entries.associateWith { null }

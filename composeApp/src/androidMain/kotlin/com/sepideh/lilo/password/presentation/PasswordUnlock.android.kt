@@ -1,7 +1,7 @@
 package com.sepideh.lilo.password.presentation
 
-import com.sepideh.lilo.password.domain.UnlockResult
-import com.sepideh.lilo.password.domain.PasswordUnlockRequest
+import com.sepideh.lilo.password.domain.crypto.UnlockResult
+import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import com.sepideh.lilo.password.data.AndroidVaultCrypto
-import com.sepideh.lilo.password.domain.VaultCrypto
+import com.sepideh.lilo.password.domain.crypto.VaultCrypto
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -97,8 +97,8 @@ private fun unlockFailure(error: Exception): UnlockResult {
     android.util.Log.w("LiloPasswordAuth", error.javaClass.simpleName)
     return when (error) {
     is android.security.keystore.KeyPermanentlyInvalidatedException,
-    is com.sepideh.lilo.password.domain.VaultKeyUnavailableException -> UnlockResult.KEY_UNAVAILABLE
-    is com.sepideh.lilo.password.domain.DeviceLockRequiredException -> UnlockResult.UNAVAILABLE
+    is com.sepideh.lilo.password.domain.crypto.VaultKeyUnavailableException -> UnlockResult.KEY_UNAVAILABLE
+    is com.sepideh.lilo.password.domain.crypto.DeviceLockRequiredException -> UnlockResult.UNAVAILABLE
     else -> UnlockResult.FAILED
 }
 }

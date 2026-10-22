@@ -1,6 +1,6 @@
 package com.sepideh.lilo.home.domain
 
-import com.sepideh.lilo.password.domain.Password
+import com.sepideh.lilo.password.domain.model.Password
 import kotlin.test.*
 
 class PasswordHomeReportTest {

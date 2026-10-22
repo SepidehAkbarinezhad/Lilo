@@ -1,4 +1,4 @@
-package com.sepideh.lilo.password.domain
+package com.sepideh.lilo.password.domain.model
 
 const val PASSWORD_TITLE_MAX_LENGTH = 60
 const val PASSWORD_SECRET_MAX_LENGTH = 256

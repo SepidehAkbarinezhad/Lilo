@@ -1,8 +1,10 @@
-package com.sepideh.lilo.password.domain
+package com.sepideh.lilo.password.domain.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 @Serializable
+@SerialName("com.sepideh.lilo.password.domain.Password")
 data class Password(
     val id: String = "", val title: String = "", val username: String = "",
     val secret: String = "", val website: String = "", val notes: String = "",
@@ -14,14 +16,3 @@ data class Password(
     val displayTitle: String get() = title.ifBlank { serviceName }
     override fun toString(): String = "Password(redacted)"
 }
-
-enum class UnlockResult { SUCCESS, CANCELLED, UNAVAILABLE, KEY_UNAVAILABLE, FAILED }
-
-data class SealedPassword(val format: Int, val nonce: ByteArray, val ciphertext: ByteArray, val wrappedKey: ByteArray = byteArrayOf())
-
-class VaultLockedException : IllegalStateException("Passwords are locked")
-
-class VaultKeyUnavailableException : IllegalStateException("Password key unavailable")
-
-data class PasswordUnlockRequest(val id: String, val sealed: SealedPassword)
-class DeviceLockRequiredException : IllegalStateException("Device screen lock required")

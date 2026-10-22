@@ -2,7 +2,7 @@ package com.sepideh.lilo.password.presentation.components
 
 import androidx.compose.runtime.Composable
 import com.sepideh.lilo.core.domain.model.AppLanguage
-import com.sepideh.lilo.password.domain.PasswordService
+import com.sepideh.lilo.password.domain.model.PasswordService
 import com.sepideh.lilo.ui.theme.LocalLiloAppLanguage
 
 @Composable

@@ -1,7 +1,7 @@
 package com.sepideh.lilo.home.domain
 
 import com.sepideh.lilo.home.presentation.model.PasswordReportDetail
-import com.sepideh.lilo.password.domain.Password
+import com.sepideh.lilo.password.domain.model.Password
 
 internal fun passwordHomeReport(records: List<Password>): PasswordReportDetail {
     val latest = records.maxWithOrNull(compareBy<Password> { it.createdAt }.thenBy { it.id })

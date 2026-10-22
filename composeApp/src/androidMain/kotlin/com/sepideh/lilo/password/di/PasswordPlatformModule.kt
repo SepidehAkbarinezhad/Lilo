@@ -5,8 +5,8 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.sepideh.lilo.password.data.AndroidVaultCrypto
 import com.sepideh.lilo.password.data.passwordDirectory
 import com.sepideh.lilo.password.data.local.PasswordDatabase
-import com.sepideh.lilo.password.domain.VaultCrypto
-import com.sepideh.lilo.password.domain.PasswordClipboard
+import com.sepideh.lilo.password.domain.crypto.VaultCrypto
+import com.sepideh.lilo.password.domain.clipboard.PasswordClipboard
 import com.sepideh.lilo.password.data.AndroidPasswordClipboard
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext

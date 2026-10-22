@@ -86,10 +86,10 @@ fun PasswordDetailScreen(state: PasswordDetailState, onAction: (BaseAction) -> U
 private fun PasswordDetailPreview() {
     LiloPreviewWrapper {
         PasswordDetailScreen(PasswordDetailState(locked = false, isEditing = true,
-            record = com.sepideh.lilo.password.domain.Password(id = "sample", title = "Personal email",
+            record = com.sepideh.lilo.password.domain.model.Password(id = "sample", title = "Personal email",
                 username = "hello@example.com", secret = "sample-password", website = "example.com", serviceId = "google"),
             services = PasswordServicesState(loaded = true, services = listOf(
-                com.sepideh.lilo.password.domain.PasswordService("google", "Google", true),
+                com.sepideh.lilo.password.domain.model.PasswordService("google", "Google", true),
             ))), {})
     }
 }

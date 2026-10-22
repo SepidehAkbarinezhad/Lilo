@@ -1,6 +1,8 @@
 package com.sepideh.lilo.password.presentation.detail
 
-import com.sepideh.lilo.password.domain.*
+import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
+
 
 data class PasswordDetailState(
     val isEditing: Boolean = false,

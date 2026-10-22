@@ -1,14 +1,13 @@
 package com.sepideh.lilo.password.data
 
-import com.sepideh.lilo.password.domain.SealedPassword
-import com.sepideh.lilo.password.domain.PasswordUnlockRequest
+import com.sepideh.lilo.password.domain.crypto.SealedPassword
+import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.sepideh.lilo.password.domain.UnlockResult
-import com.sepideh.lilo.password.domain.VaultKeyUnavailableException
+import com.sepideh.lilo.password.domain.crypto.UnlockResult
+import com.sepideh.lilo.password.domain.crypto.VaultKeyUnavailableException
 import kotlinx.cinterop.*
 import kotlinx.coroutines.*
-import platform.CoreCrypto.*
 import platform.CoreFoundation.*
 import platform.Foundation.*
 import platform.LocalAuthentication.*

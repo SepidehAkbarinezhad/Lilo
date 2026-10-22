@@ -1,7 +1,8 @@
 package com.sepideh.lilo.password.presentation.list
 
+import com.sepideh.lilo.password.domain.crypto.UnlockResult
+
 import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.password.domain.*
 
 sealed interface PasswordListAction : BaseAction {
     data object Retry : PasswordListAction

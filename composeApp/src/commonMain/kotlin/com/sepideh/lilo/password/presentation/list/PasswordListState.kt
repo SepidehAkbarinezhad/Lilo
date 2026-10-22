@@ -1,6 +1,9 @@
 package com.sepideh.lilo.password.presentation.list
 
-import com.sepideh.lilo.password.domain.*
+import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
+import com.sepideh.lilo.password.domain.crypto.UnlockResult
+
 
 data class PasswordListState(
     val loading: Boolean = true,

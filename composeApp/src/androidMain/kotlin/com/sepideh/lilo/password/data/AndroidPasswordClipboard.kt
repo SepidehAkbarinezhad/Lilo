@@ -5,7 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.os.PersistableBundle
-import com.sepideh.lilo.password.domain.PasswordClipboard
+import com.sepideh.lilo.password.domain.clipboard.PasswordClipboard
 import kotlinx.coroutines.*
 import java.util.UUID
 

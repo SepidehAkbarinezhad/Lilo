@@ -1,6 +1,7 @@
 package com.sepideh.lilo.password.presentation.components
 
-import com.sepideh.lilo.password.domain.*
+import com.sepideh.lilo.password.domain.model.PasswordService
+
 
 data class PasswordServicesState(
     val services: List<PasswordService> = emptyList(), val loaded: Boolean = false, val open: Boolean = false,

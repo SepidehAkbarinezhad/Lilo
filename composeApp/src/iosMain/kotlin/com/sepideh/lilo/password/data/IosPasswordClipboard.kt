@@ -1,6 +1,6 @@
 package com.sepideh.lilo.password.data
 
-import com.sepideh.lilo.password.domain.PasswordClipboard
+import com.sepideh.lilo.password.domain.clipboard.PasswordClipboard
 import platform.Foundation.NSDate
 import platform.Foundation.dateWithTimeIntervalSinceNow
 import platform.UIKit.UIPasteboard

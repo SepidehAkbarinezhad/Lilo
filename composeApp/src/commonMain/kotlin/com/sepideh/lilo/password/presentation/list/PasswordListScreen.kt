@@ -14,11 +14,11 @@ import com.sepideh.lilo.core.presentation.*
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.components.gesture.SwipeToRevealDelete
 import com.sepideh.lilo.core.presentation.icons.LiloIcons
-import com.sepideh.lilo.password.domain.matching
+import com.sepideh.lilo.password.domain.model.matching
 import com.sepideh.lilo.password.presentation.components.PasswordServicesViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import com.sepideh.lilo.password.presentation.rememberPasswordUnlocker
-import com.sepideh.lilo.password.domain.UnlockResult
+import com.sepideh.lilo.password.domain.crypto.UnlockResult
 import com.sepideh.lilo.password.presentation.list.components.PasswordListItem
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.*
@@ -91,7 +91,7 @@ fun PasswordListScreen(state: PasswordListState, onAction: (BaseAction) -> Unit)
 private fun PasswordListPreview() {
     LiloPreviewWrapper {
         PasswordListScreen(PasswordListState(loading = false, records = listOf(
-            com.sepideh.lilo.password.domain.Password(id = "sample", title = "Personal email",
+            com.sepideh.lilo.password.domain.model.Password(id = "sample", title = "Personal email",
                 username = "hello@example.com", serviceId = "google", serviceName = "Google"),
         )), {})
     }

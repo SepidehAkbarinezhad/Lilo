@@ -1,6 +1,8 @@
 package com.sepideh.lilo.password.data
 
-import com.sepideh.lilo.password.domain.*
+import com.sepideh.lilo.password.domain.crypto.DeviceLockRequiredException
+import com.sepideh.lilo.password.domain.crypto.VaultKeyUnavailableException
+
 import kotlinx.cinterop.*
 import platform.CoreFoundation.*
 import platform.Foundation.*

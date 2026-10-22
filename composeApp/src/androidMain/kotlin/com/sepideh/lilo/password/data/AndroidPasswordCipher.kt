@@ -1,6 +1,6 @@
 package com.sepideh.lilo.password.data
 
-import com.sepideh.lilo.password.domain.SealedPassword
+import com.sepideh.lilo.password.domain.crypto.SealedPassword
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec

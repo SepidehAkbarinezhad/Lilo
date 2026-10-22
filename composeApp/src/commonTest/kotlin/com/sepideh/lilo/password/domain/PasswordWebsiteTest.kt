@@ -1,5 +1,9 @@
 package com.sepideh.lilo.password.domain
 
+import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.model.matching
+import com.sepideh.lilo.password.domain.model.normalizePasswordWebsite
+
 import kotlin.test.*
 
 class PasswordWebsiteTest {

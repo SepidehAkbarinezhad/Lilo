@@ -1,15 +1,4 @@
-package com.sepideh.lilo.password.domain
-
-import kotlinx.coroutines.flow.Flow
-
-data class PasswordService(val id: String, val name: String, val isDefault: Boolean = false, val nameFa: String = name)
-interface PasswordServiceRepository {
-    fun observe(): Flow<List<PasswordService>>
-    suspend fun create(name: String): PasswordService
-    suspend fun rename(id: String, name: String)
-    suspend fun usage(id: String): Int
-    suspend fun delete(id: String, replacementId: String?)
-}
+package com.sepideh.lilo.password.domain.model
 
 /** HTTP(S) website input, including Unicode domain labels. Empty input is optional. */
 fun normalizePasswordWebsite(input: String): String? {

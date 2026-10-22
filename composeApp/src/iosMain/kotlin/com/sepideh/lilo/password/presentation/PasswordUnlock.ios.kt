@@ -1,10 +1,10 @@
 package com.sepideh.lilo.password.presentation
 
-import com.sepideh.lilo.password.domain.UnlockResult
-import com.sepideh.lilo.password.domain.PasswordUnlockRequest
+import com.sepideh.lilo.password.domain.crypto.UnlockResult
+import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
 import androidx.compose.runtime.*
 import com.sepideh.lilo.password.data.IosVaultCrypto
-import com.sepideh.lilo.password.domain.VaultCrypto
+import com.sepideh.lilo.password.domain.crypto.VaultCrypto
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.launch
 import platform.Foundation.*

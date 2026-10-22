@@ -29,7 +29,7 @@ import com.sepideh.lilo.app.navigation.detailRoute
 import com.sepideh.lilo.core.presentation.components.AppText
 import lilo.composeapp.generated.resources.*
 import com.sepideh.lilo.password.presentation.rememberPasswordUnlocker
-import com.sepideh.lilo.password.domain.UnlockResult
+import com.sepideh.lilo.password.domain.crypto.UnlockResult
 
 @Composable
 fun HomescreenRoot(

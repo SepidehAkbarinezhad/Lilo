@@ -6,8 +6,8 @@ import com.sepideh.lilo.password.data.IosVaultCrypto
 import com.sepideh.lilo.password.data.passwordDirectory
 import com.sepideh.lilo.password.data.local.PasswordDatabase
 import com.sepideh.lilo.password.data.local.PasswordDbConstructor
-import com.sepideh.lilo.password.domain.VaultCrypto
-import com.sepideh.lilo.password.domain.PasswordClipboard
+import com.sepideh.lilo.password.domain.crypto.VaultCrypto
+import com.sepideh.lilo.password.domain.clipboard.PasswordClipboard
 import com.sepideh.lilo.password.data.IosPasswordClipboard
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module

@@ -1,5 +1,8 @@
 package com.sepideh.lilo.password.domain
 
+import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.model.matching
+
 import kotlin.test.*
 
 class PasswordRulesTest {

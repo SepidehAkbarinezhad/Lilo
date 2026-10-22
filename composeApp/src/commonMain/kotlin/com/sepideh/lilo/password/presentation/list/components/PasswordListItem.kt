@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.format.creationDateLabel
-import com.sepideh.lilo.password.domain.Password
+import com.sepideh.lilo.password.domain.model.Password
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource

@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.components.group.GroupSelectionRow
 import com.sepideh.lilo.password.presentation.list.components.PasswordServiceIcon
-import com.sepideh.lilo.password.domain.PasswordService
+import com.sepideh.lilo.password.domain.model.PasswordService
 import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource

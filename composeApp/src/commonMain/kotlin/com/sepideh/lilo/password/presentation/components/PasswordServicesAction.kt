@@ -1,7 +1,8 @@
 package com.sepideh.lilo.password.presentation.components
 
+import com.sepideh.lilo.password.domain.model.PasswordService
+
 import com.sepideh.lilo.core.presentation.BaseAction
-import com.sepideh.lilo.password.domain.*
 
 sealed interface PasswordServicesAction : BaseAction {
     data class OnOpen(val id: String?) : PasswordServicesAction

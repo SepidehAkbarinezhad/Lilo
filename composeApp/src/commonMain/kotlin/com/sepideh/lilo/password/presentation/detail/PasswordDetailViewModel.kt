@@ -1,9 +1,16 @@
 package com.sepideh.lilo.password.presentation.detail
 
+import com.sepideh.lilo.password.domain.crypto.DeviceLockRequiredException
+import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.repository.PasswordRepository
+import com.sepideh.lilo.password.domain.crypto.VaultCrypto
+import com.sepideh.lilo.password.domain.model.normalizePasswordWebsite
+import com.sepideh.lilo.password.domain.model.secretTooLong
+import com.sepideh.lilo.password.domain.model.titleTooLong
+
 import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
-import com.sepideh.lilo.password.domain.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 

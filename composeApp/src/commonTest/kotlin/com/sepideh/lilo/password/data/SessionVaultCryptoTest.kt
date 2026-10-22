@@ -1,6 +1,8 @@
 package com.sepideh.lilo.password.data
 
-import com.sepideh.lilo.password.domain.*
+import com.sepideh.lilo.password.domain.crypto.SealedPassword
+import com.sepideh.lilo.password.domain.crypto.VaultLockedException
+
 import kotlinx.coroutines.*
 import kotlin.test.*
 

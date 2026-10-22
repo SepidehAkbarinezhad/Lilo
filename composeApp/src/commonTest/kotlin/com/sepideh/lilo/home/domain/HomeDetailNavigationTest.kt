@@ -3,7 +3,7 @@ package com.sepideh.lilo.home.domain
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.app.navigation.detailRoute
 import com.sepideh.lilo.note.domain.model.Note
-import com.sepideh.lilo.password.domain.Password
+import com.sepideh.lilo.password.domain.model.Password
 import com.sepideh.lilo.task.domain.model.Task
 import kotlin.test.*
 
