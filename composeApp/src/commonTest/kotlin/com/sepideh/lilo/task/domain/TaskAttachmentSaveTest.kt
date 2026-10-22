@@ -70,6 +70,21 @@ class TaskAttachmentSaveTest {
         assertNull(repo.task)
     }
 
+    @Test fun formSaveCannotUndoCompletionFromANotificationOrRearmItsReminder() = runBlocking {
+        val current = Task(id = 1, title = "Original", done = true, reminderAt = 100, reminderTimeZoneId = "UTC")
+        val repo = Repo(current)
+        var scheduled = listOf(-1L)
+        val scheduler = object : ReminderScheduler {
+            override suspend fun scheduleReminder(reminder: Reminder) = Unit
+            override suspend fun cancelReminder(taskId: Long) = Unit
+            override suspend fun synchronize(reminders: List<Reminder>) { scheduled = reminders.map { it.id } }
+        }
+        TaskMutations(repo, scheduler).save(current.copy(title = "Edited", done = false))
+        assertTrue(requireNotNull(repo.task).done)
+        assertEquals("Edited", repo.task?.title)
+        assertTrue(scheduled.isEmpty())
+    }
+
     private class Images : ImageStore {
         val removed=mutableListOf<String>()
         override suspend fun importImages(sources:List<ImageSource>) = listOf("new.jpg")

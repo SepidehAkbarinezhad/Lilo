@@ -33,7 +33,9 @@ class TaskMutations(
         // Once persistence starts, finish the commit and its side effects even if the form closes.
         // Cancellation at the database return boundary must not delete committed attachments.
         withContext(NonCancellable) {
-            val saved = task.copy(imageNames = task.imageNames + imported)
+            // Completion may have changed through a notification while the form was open.
+            // setCompleted owns completion changes; form saves preserve the current value.
+            val saved = task.copy(done = previous?.done ?: task.done, imageNames = task.imageNames + imported)
             val result = try { repository.upsertTask(saved) }
             catch (failure: Throwable) {
                 runCatching { imageStore?.removeImages(imported) }
