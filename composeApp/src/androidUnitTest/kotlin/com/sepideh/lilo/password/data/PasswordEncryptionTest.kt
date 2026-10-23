@@ -1,5 +1,6 @@
 package com.sepideh.lilo.password.data
 
+import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import com.sepideh.lilo.password.domain.model.Password
 import com.sepideh.lilo.password.domain.model.PasswordService
 import com.sepideh.lilo.password.domain.repository.PasswordServiceRepository
@@ -13,17 +14,19 @@ import kotlin.test.*
 
 class PasswordEncryptionTest {
     private val key = ByteArray(32) { it.toByte() }
+    private val wrappedKey = ByteArray(256) // Cipher-only tests; RSA round-trip is tested separately.
     private val aad = "lilo-password-v1:record".encodeToByteArray()
     @Test fun roundTripAndFreshNonce() {
         val input = "secret فارسی".encodeToByteArray()
-        val first = AndroidPasswordCipher.encrypt(key, input, aad)
-        val second = AndroidPasswordCipher.encrypt(key, input, aad)
+        val first = AndroidPasswordCipher.encrypt(key, input, aad, wrappedKey)
+        val second = AndroidPasswordCipher.encrypt(key, input, aad, wrappedKey)
+        assertEquals(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, first.format)
         assertContentEquals(input, AndroidPasswordCipher.decrypt(key, first, aad))
         assertFalse(first.nonce.contentEquals(second.nonce))
         assertFalse(first.ciphertext.contentEquals(second.ciphertext))
     }
     @Test fun rejectsTamperingAndWrongIdentityOrKey() {
-        val encrypted = AndroidPasswordCipher.encrypt(key, "private".encodeToByteArray(), aad)
+        val encrypted = AndroidPasswordCipher.encrypt(key, "private".encodeToByteArray(), aad, wrappedKey)
         for (index in listOf(0, encrypted.ciphertext.lastIndex)) {
             val damaged = encrypted.ciphertext.copyOf().apply { this[index] = (this[index].toInt() xor 1).toByte() }
             assertFails { AndroidPasswordCipher.decrypt(key, encrypted.copy(ciphertext = damaged), aad) }
@@ -32,7 +35,19 @@ class PasswordEncryptionTest {
         assertFails { AndroidPasswordCipher.decrypt(key, encrypted.copy(nonce = nonce), aad) }
         assertFails { AndroidPasswordCipher.decrypt(key, encrypted, "other-row".encodeToByteArray()) }
         assertFails { AndroidPasswordCipher.decrypt(ByteArray(32), encrypted, aad) }
-        assertFails { AndroidPasswordCipher.decrypt(key, encrypted.copy(format = 2), aad) }
+        for (format in listOf(PasswordEncryptionFormat.IOS_AES_CBC_HMAC_RSA_OAEP, 3, 4, 0, -1, Int.MAX_VALUE)) {
+            assertFailsWith<IllegalArgumentException> { AndroidPasswordCipher.decrypt(key, encrypted.copy(format = format), aad) }
+        }
+        for (malformed in listOf(
+            encrypted.copy(wrappedKey = byteArrayOf()), // Obsolete whole-vault envelope, despite reused ID.
+            encrypted.copy(wrappedKey = ByteArray(255)), encrypted.copy(wrappedKey = ByteArray(257)),
+            encrypted.copy(nonce = ByteArray(11)), encrypted.copy(nonce = ByteArray(13)),
+            encrypted.copy(ciphertext = ByteArray(15)),
+        )) {
+            assertFailsWith<IllegalArgumentException> { AndroidPasswordCipher.validateRecord(malformed) }
+            assertFailsWith<IllegalArgumentException> { AndroidPasswordCipher.decrypt(key, malformed, aad) }
+        }
+        assertFailsWith<IllegalArgumentException> { AndroidPasswordCipher.decrypt(ByteArray(16), encrypted, aad) }
     }
     @Test fun repositoryExposesMetadataButProtectsSecretsAndPreservesCreationDate() = runBlocking<Unit> {
         val dao = MemoryDao()
@@ -92,18 +107,21 @@ class PasswordEncryptionTest {
         val firstKey = unwrap(first)
         val secondKey = unwrap(second)
         try {
+            assertEquals(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, first.format)
+            assertEquals(256, first.wrappedKey.size)
             assertFalse(firstKey.contentEquals(secondKey))
-            assertEquals("first secret", AndroidPasswordCipher.decrypt(firstKey, first.copy(format = 1), "lilo-password-v1:one".encodeToByteArray()).decodeToString())
-            assertFails { AndroidPasswordCipher.decrypt(firstKey, second.copy(format = 1), "lilo-password-v1:two".encodeToByteArray()) }
-            assertFails { AndroidPasswordCipher.decrypt(firstKey, first.copy(format = 1), "lilo-password-v1:two".encodeToByteArray()) }
+            assertFails { unwrap(first.copy(wrappedKey = first.wrappedKey.copyOf().apply { this[0] = (this[0].toInt() xor 1).toByte() })) }
+            assertFails { AndroidPasswordCipher.seal(pair.public, byteArrayOf(1), " ") }
+            assertEquals("first secret", AndroidPasswordCipher.decrypt(firstKey, first, "lilo-password-v1:one".encodeToByteArray()).decodeToString())
+            assertFails { AndroidPasswordCipher.decrypt(firstKey, second, "lilo-password-v1:two".encodeToByteArray()) }
+            assertFails { AndroidPasswordCipher.decrypt(firstKey, first, "lilo-password-v1:two".encodeToByteArray()) }
         } finally { firstKey.fill(0); secondKey.fill(0) }
     }
 
     private class TestSession : SessionVaultCrypto() {
         override suspend fun seal(plaintext: ByteArray, recordId: String) =
-            AndroidPasswordCipher.encrypt(ByteArray(32) { it.toByte() }, plaintext, "lilo-password-v1:$recordId".encodeToByteArray())
+            AndroidPasswordCipher.encrypt(ByteArray(32) { it.toByte() }, plaintext, "lilo-password-v1:$recordId".encodeToByteArray(), ByteArray(256))
         fun unlock(key: ByteArray) = acceptAuthenticatedKey(key)
-        override suspend fun encrypt(key: ByteArray, plaintext: ByteArray, aad: ByteArray) = AndroidPasswordCipher.encrypt(key, plaintext, aad)
         override suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray) = AndroidPasswordCipher.decrypt(key, record, aad)
     }
     private class TestServices : PasswordServiceRepository {
@@ -132,9 +150,6 @@ class PasswordEncryptionTest {
         })
         override suspend fun get(id: String): PasswordEntity? { beforeRead(); return rows[id] }
         override suspend fun serviceExists(id: String) = if (id == "google") 1 else 0
-        override suspend fun updateMetadata(id: String, title: String, username: String, website: String, createdAt: Long, updatedAt: Long) {
-            rows[id]?.let { rows[id] = it.copy(title = title, username = username, website = website, createdAt = createdAt, updatedAt = updatedAt) }
-        }
         override suspend fun save(record: PasswordEntity) { rows[record.id] = record }
         override suspend fun delete(id: String) { rows.remove(id) }
     }

@@ -1,5 +1,6 @@
 package com.sepideh.lilo.password.presentation
 
+import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import com.sepideh.lilo.password.domain.model.Password
 import com.sepideh.lilo.password.domain.clipboard.PasswordClipboard
 import com.sepideh.lilo.password.domain.repository.PasswordRepository
@@ -534,7 +535,7 @@ class PasswordViewModelTest {
         override fun observePasswords(): Flow<List<Password>> = records.map { rows -> rows.map { it.copy(secret = "", notes = "") } }
         override suspend fun unlockRequest(id: String): PasswordUnlockRequest {
             require(records.value.any { it.id == id })
-            return PasswordUnlockRequest(id, SealedPassword(3, byteArrayOf(), byteArrayOf()))
+            return PasswordUnlockRequest(id, SealedPassword(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(), byteArrayOf()))
         }
         override suspend fun get(id: String): Password? { reads++; beforeRead(); return records.value.find { it.id == id } }
         override suspend fun save(password: Password): Password {

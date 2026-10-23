@@ -43,9 +43,6 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
         val result = try { Json.decodeFromString<Password>(bytes.decodeToString()).also { require(it.id == id) } }
         finally { bytes.fill(0) }
         if (crypto.session.value != session) throw VaultLockedException()
-        // Preserve the old encrypted record while making its metadata browsable after first authorized access.
-        if (row.createdAt == 0L) dao.updateMetadata(id, result.title, result.username, result.website, result.createdAt, result.updatedAt)
-        if (crypto.session.value != session) throw VaultLockedException()
         val service = services.observe().first().find { it.id == row.serviceId }
         if (crypto.session.value != session) throw VaultLockedException()
         return result.copy(serviceId = row.serviceId, serviceName = service?.name.orEmpty(), serviceNameFa = service?.nameFa.orEmpty())

@@ -1,5 +1,6 @@
 package com.sepideh.lilo.password.data
 
+import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import com.sepideh.lilo.password.domain.crypto.SealedPassword
 import kotlinx.cinterop.*
 import kotlinx.coroutines.*
@@ -10,15 +11,24 @@ import platform.Security.*
 internal object IosPasswordCipher {
     // CommonCrypto's public KMP APIs provide AES-CBC and HMAC. Encrypt-then-MAC authenticates
     // the versioned record ID, IV and ciphertext before any plaintext is decrypted.
-    suspend fun encrypt(key: ByteArray, plaintext: ByteArray, aad: ByteArray): SealedPassword = withContext(Dispatchers.Default) {
+    suspend fun encrypt(key: ByteArray, plaintext: ByteArray, aad: ByteArray, wrappedKey: ByteArray): SealedPassword = withContext(Dispatchers.Default) {
         require(key.size == 64)
+        require(wrappedKey.size == 256)
         val iv = randomBytes(16)
         val cipher = aes(kCCEncrypt, key, iv, plaintext)
-        SealedPassword(2, iv, cipher + mac(key, aad + iv + cipher))
+        SealedPassword(PasswordEncryptionFormat.IOS_AES_CBC_HMAC_RSA_OAEP, iv, cipher + mac(key, aad + iv + cipher), wrappedKey)
     }
+    fun validateRecord(record: SealedPassword) {
+        require(record.format == PasswordEncryptionFormat.IOS_AES_CBC_HMAC_RSA_OAEP) { "Unsupported password format" }
+        require(record.wrappedKey.size == 256 && record.nonce.size == 16 &&
+            record.ciphertext.size >= 48 && (record.ciphertext.size - 32) % 16 == 0) {
+            "Malformed password envelope"
+        }
+    }
+
     suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray): ByteArray = withContext(Dispatchers.Default) {
         require(key.size == 64)
-        require(record.format == 2 && record.nonce.size == 16 && record.ciphertext.size >= 48)
+        validateRecord(record)
         val cipher = record.ciphertext.copyOfRange(0, record.ciphertext.size - 32)
         val expected = mac(key, aad + record.nonce + cipher)
         val actual = record.ciphertext.copyOfRange(cipher.size, record.ciphertext.size)

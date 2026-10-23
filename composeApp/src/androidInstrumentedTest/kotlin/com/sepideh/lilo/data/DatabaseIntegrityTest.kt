@@ -1,5 +1,6 @@
 package com.sepideh.lilo.data
 
+import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.useReaderConnection
@@ -118,7 +119,7 @@ class DatabaseIntegrityTest {
         try {
             assertEquals(7, db.services().observe().first().size)
             db.services().insertUnique(PasswordServiceEntity("custom", "Custom", "custom", false))
-            val record = PasswordEntity("credential", 3, byteArrayOf(1), byteArrayOf(2, 3),
+            val record = PasswordEntity("credential", PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(1), byteArrayOf(2, 3),
                 wrappedKey = byteArrayOf(4), title = "Mail", createdAt = 10, updatedAt = 20, serviceId = "custom")
             db.passwords().saveWithService(record)
             assertFails { db.passwords().save(record.copy(id = "orphan", serviceId = "missing")) }

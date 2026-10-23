@@ -23,6 +23,7 @@ internal object IosRecordKeys {
     }
 
     fun wrap(key: ByteArray): ByteArray {
+        require(key.size == 64)
         val path = passwordDirectory() + "/reader-public.der"
         val context = LAContext()
         try { if (!context.canEvaluatePolicy(LAPolicyDeviceOwnerAuthentication, null)) throw DeviceLockRequiredException() }
@@ -34,8 +35,10 @@ internal object IosRecordKeys {
                 SecItemCopyMatching(it, null)
             }
             if (exists != errSecItemNotFound) throw VaultKeyUnavailableException()
+            // Software RSA is protected at Keychain retrieval by userPresence. privateKeyUsage
+            // describes Secure Enclave operations and is not supported for this software key.
             val control = requireNotNull(SecAccessControlCreateWithFlags(kCFAllocatorDefault,
-                kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, kSecAccessControlUserPresence or kSecAccessControlPrivateKeyUsage, null))
+                kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, kSecAccessControlUserPresence, null))
             try {
                 val attrs: Map<Any?, Any?> = mapOf(cfObject(kSecAttrKeyType) to cfObject(kSecAttrKeyTypeRSA), cfObject(kSecAttrKeySizeInBits) to 2048,
                     cfObject(kSecPrivateKeyAttrs) to mapOf(cfObject(kSecAttrIsPermanent) to true,

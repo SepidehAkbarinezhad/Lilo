@@ -41,8 +41,6 @@ interface PasswordDao {
         require(record.serviceId != null && serviceExists(record.serviceId) == 1)
         save(record)
     }
-    @Query("UPDATE passwords SET title = :title, username = :username, website = :website, createdAt = :createdAt, updatedAt = :updatedAt WHERE id = :id")
-    suspend fun updateMetadata(id: String, title: String, username: String, website: String, createdAt: Long, updatedAt: Long)
     @Query("DELETE FROM passwords WHERE id = :id") suspend fun delete(id: String)
 }
 

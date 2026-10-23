@@ -1,5 +1,6 @@
 package com.sepideh.lilo.password.data
 
+import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import com.sepideh.lilo.password.domain.crypto.SealedPassword
 import com.sepideh.lilo.password.domain.crypto.VaultLockedException
 
@@ -13,13 +14,12 @@ class SessionVaultCryptoTest {
         vault.unlock(key)
         assertTrue(key.all { it == 0.toByte() })
         val generation = vault.generation
-        vault.seal(byteArrayOf(1), "id")
+        vault.open(SealedPassword(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(), byteArrayOf(1)), "id")
         assertTrue(vault.operationKey!!.all { it == 0.toByte() })
         vault.lock()
         assertFalse(vault.unlocked)
         assertTrue(vault.generation > generation)
-        assertFailsWith<VaultLockedException> { vault.seal(byteArrayOf(1), "id") }
-        assertFailsWith<VaultLockedException> { vault.open(SealedPassword(1, byteArrayOf(), byteArrayOf(1)), "id") }
+        assertFailsWith<VaultLockedException> { vault.open(SealedPassword(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(), byteArrayOf(1)), "id") }
     }
     @Test fun lockDuringDecryptionRejectsAndWipesLatePlaintext() = runBlocking<Unit> {
         val vault = ProbeCrypto()
@@ -27,7 +27,7 @@ class SessionVaultCryptoTest {
         val started = CompletableDeferred<Unit>()
         val resume = CompletableDeferred<Unit>()
         vault.pause = { started.complete(Unit); resume.await() }
-        val result = async { runCatching { vault.open(SealedPassword(1, byteArrayOf(), byteArrayOf(1)), "id") } }
+        val result = async { runCatching { vault.open(SealedPassword(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(), byteArrayOf(1)), "id") } }
         started.await()
         vault.lock()
         vault.unlock(ByteArray(32) { 8 })
@@ -39,18 +39,15 @@ class SessionVaultCryptoTest {
     @Test fun authenticationForOneRecordDoesNotAuthorizeAnother() = runBlocking<Unit> {
         val vault = ProbeCrypto()
         vault.unlock(ByteArray(32) { 7 }, "one")
-        assertFailsWith<VaultLockedException> { vault.open(SealedPassword(1, byteArrayOf(), byteArrayOf(1)), "two") }
-        assertContentEquals(byteArrayOf(1, 2, 3), vault.open(SealedPassword(1, byteArrayOf(), byteArrayOf(1)), "one"))
+        assertFailsWith<VaultLockedException> { vault.open(SealedPassword(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(), byteArrayOf(1)), "two") }
+        assertContentEquals(byteArrayOf(1, 2, 3), vault.open(SealedPassword(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(), byteArrayOf(1)), "one"))
     }
     private class ProbeCrypto : SessionVaultCrypto() {
         var operationKey: ByteArray? = null
         var decrypted: ByteArray? = null
         var pause: suspend () -> Unit = {}
         fun unlock(key: ByteArray, id: String? = null) = acceptAuthenticatedKey(key, id)
-        override suspend fun encrypt(key: ByteArray, plaintext: ByteArray, aad: ByteArray): SealedPassword {
-            operationKey = key
-            return SealedPassword(1, byteArrayOf(), plaintext.copyOf())
-        }
+        override suspend fun seal(plaintext: ByteArray, recordId: String): SealedPassword = error("Not used by session tests")
         override suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray): ByteArray {
             operationKey = key
             pause()

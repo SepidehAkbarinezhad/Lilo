@@ -17,12 +17,6 @@ import platform.UIKit.*
 @OptIn(ExperimentalForeignApi::class)
 internal fun cfObject(pointer: CFTypeRef?): Any = requireNotNull(CFBridgingRelease(CFRetain(pointer)))
 @OptIn(ExperimentalForeignApi::class)
-internal fun keyAttributes(): Map<Any?, Any?> = mapOf(
-    cfObject(kSecClass) to cfObject(kSecClassGenericPassword),
-    cfObject(kSecAttrService) to "com.sepideh.lilo.passwords.v1",
-    cfObject(kSecAttrAccount) to "vault-key",
-)
-@OptIn(ExperimentalForeignApi::class)
 internal fun <T> withDictionary(values: Map<Any?, Any?>, block: (CFDictionaryRef) -> T): T {
     val dictionary: CFDictionaryRef = requireNotNull(CFBridgingRetain(values)).reinterpret()
     return try { block(dictionary) } finally { CFRelease(dictionary) }
@@ -37,7 +31,6 @@ fun passwordDirectory(): String {
     val marker = "$path/install.marker"
     if (!manager.fileExistsAtPath(marker)) {
         // Keychain can outlive uninstall; a fresh local install must not reuse the old key.
-        withDictionary(keyAttributes()) { SecItemDelete(it) }
         withDictionary(IosRecordKeys.query()) { SecItemDelete(it) }
         check(manager.createFileAtPath(marker, NSData(), null))
     }
@@ -60,26 +53,11 @@ class IosVaultCrypto : SessionVaultCrypto() {
         authentication = context
         var pendingKey: ByteArray? = null
         return try {
+            require(request.id.isNotBlank())
+            IosPasswordCipher.validateRecord(request.sealed)
             passwordDirectory()
             val key = withContext(Dispatchers.Default) {
-                val bytes = if (request.sealed.format == 4) {
-                    IosRecordKeys.unwrap(request.sealed.wrappedKey, context, reason)
-                } else {
-                    require(request.sealed.format == 2)
-                    memScoped {
-                        val result = alloc<CFTypeRefVar>(); result.value = null
-                        val status = withDictionary(keyAttributes() + mapOf(cfObject(kSecReturnData) to true,
-                            cfObject(kSecUseAuthenticationContext) to context, cfObject(kSecUseOperationPrompt) to reason)) {
-                            SecItemCopyMatching(it, result.ptr)
-                        }
-                        if (status == errSecItemNotFound) throw VaultKeyUnavailableException()
-                        if (status == errSecUserCanceled) null else {
-                            check(status == errSecSuccess)
-                            val data = CFBridgingRelease(result.value) as NSData
-                            data.bytes!!.reinterpret<ByteVar>().readBytes(data.length.toInt())
-                        }
-                    }
-                }
+                val bytes = IosRecordKeys.unwrap(request.sealed.wrappedKey, context, reason)
                 bytes?.also { pendingKey = it; require(it.size == 64) }
             }
             pendingKey = key
@@ -97,20 +75,17 @@ class IosVaultCrypto : SessionVaultCrypto() {
 
     override suspend fun seal(plaintext: ByteArray, recordId: String): SealedPassword = withContext(Dispatchers.Default) {
         writes.withLock {
+            require(recordId.isNotBlank())
             val key = randomBytes(64)
             try {
                 val wrapped = IosRecordKeys.wrap(key)
-                IosPasswordCipher.encrypt(key, plaintext, "lilo-password-v1:$recordId".encodeToByteArray())
-                    .copy(format = 4, wrappedKey = wrapped)
+                IosPasswordCipher.encrypt(key, plaintext, "lilo-password-v1:$recordId".encodeToByteArray(), wrapped)
             } finally { key.fill(0) }
         }
     }
 
-    override suspend fun encrypt(key: ByteArray, plaintext: ByteArray, aad: ByteArray) = IosPasswordCipher.encrypt(key, plaintext, aad)
-    override suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray): ByteArray {
-        require(record.format == 2 || record.format == 4)
-        return IosPasswordCipher.decrypt(key, record.copy(format = 2), aad)
-    }
+    override suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray): ByteArray =
+        IosPasswordCipher.decrypt(key, record, aad)
     private fun randomBytes(size: Int): ByteArray = ByteArray(size).also { data ->
         data.usePinned { check(SecRandomCopyBytes(kSecRandomDefault, size.toULong(), it.addressOf(0)) == errSecSuccess) }
     }

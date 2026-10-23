@@ -1,5 +1,6 @@
 package com.sepideh.lilo.home.presentation
 
+import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import com.sepideh.lilo.password.domain.model.Password
 import com.sepideh.lilo.password.domain.repository.PasswordRepository
 import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
@@ -142,7 +143,7 @@ class HomeFailureTest {
         override suspend fun unlockRequest(id: String): PasswordUnlockRequest {
             requests++
             require(id == "one")
-            return PasswordUnlockRequest(id, SealedPassword(3, byteArrayOf(), byteArrayOf()))
+            return PasswordUnlockRequest(id, SealedPassword(PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(), byteArrayOf()))
         }
         override suspend fun get(id: String): Password? = error("Home must not decrypt credentials")
         override suspend fun save(password: Password): Password = error("Not used")
