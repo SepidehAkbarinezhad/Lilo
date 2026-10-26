@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3c2d5d098a186a14e85450cafe815a99",
+    "identityHash": "634d04ba826ce62ef069d9518e565784",
     "entities": [
       {
         "tableName": "passwords",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `format` INTEGER NOT NULL, `nonce` BLOB NOT NULL, `ciphertext` BLOB NOT NULL, `wrappedKey` BLOB NOT NULL DEFAULT X'', `title` TEXT NOT NULL DEFAULT '', `username` TEXT NOT NULL DEFAULT '', `website` TEXT NOT NULL DEFAULT '', `createdAt` INTEGER NOT NULL DEFAULT 0, `updatedAt` INTEGER NOT NULL DEFAULT 0, `serviceId` TEXT DEFAULT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`serviceId`) REFERENCES `password_services`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `format` INTEGER NOT NULL, `nonce` BLOB NOT NULL, `ciphertext` BLOB NOT NULL, `wrappedKey` BLOB NOT NULL DEFAULT X'', `title` TEXT NOT NULL DEFAULT '', `username` TEXT NOT NULL DEFAULT '', `website` TEXT NOT NULL DEFAULT '', `createdAt` INTEGER NOT NULL DEFAULT 0, `updatedAt` INTEGER NOT NULL DEFAULT 0, `serviceId` TEXT DEFAULT NULL, `notes` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`id`), FOREIGN KEY(`serviceId`) REFERENCES `password_services`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -79,6 +79,13 @@
             "columnName": "serviceId",
             "affinity": "TEXT",
             "defaultValue": "NULL"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
           }
         ],
         "primaryKey": {
@@ -168,7 +175,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3c2d5d098a186a14e85450cafe815a99')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '634d04ba826ce62ef069d9518e565784')"
     ]
   }
 }

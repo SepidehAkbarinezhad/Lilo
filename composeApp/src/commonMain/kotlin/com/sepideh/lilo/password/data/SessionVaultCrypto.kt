@@ -48,11 +48,12 @@ abstract class SessionVaultCrypto : VaultCrypto {
     // Saving uses a fresh record key and the platform's public key, never a session key.
     abstract override suspend fun seal(plaintext: ByteArray, recordId: String): SealedPassword
     final override suspend fun open(record: SealedPassword, recordId: String): ByteArray =
-        withKey(recordId) { decrypt(it, record, aad(recordId)) }
+        withKey(recordId) { decrypt(it, record, passwordAad(recordId)) }
 
     protected abstract suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray): ByteArray
-    private fun aad(id: String): ByteArray {
-        require(id.isNotBlank())
-        return "lilo-password-v1:$id".encodeToByteArray()
-    }
+}
+
+internal fun passwordAad(id: String): ByteArray {
+    require(id.isNotBlank())
+    return "lilo-password-v1:$id".encodeToByteArray()
 }

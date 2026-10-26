@@ -1,10 +1,5 @@
 package com.sepideh.lilo.password.domain.model
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
-
-@Serializable
-@SerialName("com.sepideh.lilo.password.domain.Password")
 data class Password(
     val id: String = "", val title: String = "", val username: String = "",
     val secret: String = "", val website: String = "", val notes: String = "",

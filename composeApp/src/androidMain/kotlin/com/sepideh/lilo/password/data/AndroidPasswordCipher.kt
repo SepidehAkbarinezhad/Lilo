@@ -15,7 +15,7 @@ internal object AndroidPasswordCipher {
         val key = ByteArray(32).also(java.security.SecureRandom()::nextBytes)
         try {
             val wrapper = Cipher.getInstance("RSA/ECB/OAEPPadding").apply { init(Cipher.ENCRYPT_MODE, publicKey, oaep) }
-            return encrypt(key, plaintext, "lilo-password-v1:$recordId".encodeToByteArray(), wrapper.doFinal(key))
+            return encrypt(key, plaintext, passwordAad(recordId), wrapper.doFinal(key))
         } finally { key.fill(0) }
     }
 

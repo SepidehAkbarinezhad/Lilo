@@ -120,7 +120,8 @@ class DatabaseIntegrityTest {
             assertEquals(7, db.services().observe().first().size)
             db.services().insertUnique(PasswordServiceEntity("custom", "Custom", "custom", false))
             val record = PasswordEntity("credential", PasswordEncryptionFormat.ANDROID_AES_GCM_RSA_OAEP, byteArrayOf(1), byteArrayOf(2, 3),
-                wrappedKey = byteArrayOf(4), title = "Mail", createdAt = 10, updatedAt = 20, serviceId = "custom")
+                wrappedKey = byteArrayOf(4), title = "Mail", createdAt = 10, updatedAt = 20, serviceId = "custom",
+                notes = "Plain note")
             db.passwords().saveWithService(record)
             assertFails { db.passwords().save(record.copy(id = "orphan", serviceId = "missing")) }
             assertFails { db.services().delete("custom", "missing") }
@@ -132,12 +133,14 @@ class DatabaseIntegrityTest {
             assertContentEquals(record.ciphertext, moved.ciphertext)
             assertContentEquals(record.wrappedKey, moved.wrappedKey)
             assertContentEquals(record.nonce, moved.nonce)
+            assertEquals(record.notes, moved.notes)
             assertEquals(record.createdAt, moved.createdAt)
             assertEquals("Mail", db.passwords().observe().first().single().title)
             checkIntegrity(db)
             db.close()
             db = passwordDb(name)
             assertContentEquals(record.ciphertext, db.passwords().get(record.id)?.ciphertext)
+            assertEquals(record.notes, db.passwords().get(record.id)?.notes)
             assertNull(db.services().get("custom"))
             checkIntegrity(db)
         } finally { db.close(); context.deleteDatabase(name) }

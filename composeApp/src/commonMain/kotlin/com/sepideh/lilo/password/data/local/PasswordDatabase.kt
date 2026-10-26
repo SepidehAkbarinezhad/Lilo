@@ -23,6 +23,7 @@ data class PasswordEntity(
     @ColumnInfo(defaultValue = "0") val createdAt: Long = 0,
     @ColumnInfo(defaultValue = "0") val updatedAt: Long = 0,
     @ColumnInfo(defaultValue = "NULL") val serviceId: String? = null,
+    @ColumnInfo(defaultValue = "''") val notes: String = "",
 )
 
 data class PasswordMetadata(

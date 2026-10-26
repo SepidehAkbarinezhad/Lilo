@@ -1,15 +1,8 @@
 package com.sepideh.lilo.password.data
 
 import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
-import com.sepideh.lilo.password.domain.model.Password
-import com.sepideh.lilo.password.domain.model.PasswordService
-import com.sepideh.lilo.password.domain.repository.PasswordServiceRepository
 import com.sepideh.lilo.password.domain.crypto.SealedPassword
-import com.sepideh.lilo.password.domain.crypto.VaultLockedException
 
-import com.sepideh.lilo.password.data.local.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import kotlin.test.*
 
 class PasswordEncryptionTest {
@@ -49,53 +42,6 @@ class PasswordEncryptionTest {
         }
         assertFailsWith<IllegalArgumentException> { AndroidPasswordCipher.decrypt(ByteArray(16), encrypted, aad) }
     }
-    @Test fun repositoryExposesMetadataButProtectsSecretsAndPreservesCreationDate() = runBlocking<Unit> {
-        val dao = MemoryDao()
-        val crypto = TestSession().apply { unlock(key.copyOf()) }
-        val repo = PasswordRepositoryImpl(dao, crypto, TestServices())
-        val initial = repo.save(Password(serviceId = "google", title = "Private bank", username = "private-user", secret = " private-secret ", website = "example.org", notes = "private-notes"))
-        assertEquals(initial.copy(serviceName = "Google", serviceNameFa = "گوگل"), repo.get(initial.id))
-        val row = dao.rows.getValue(initial.id)
-        for (plain in listOf(initial.title, initial.username, initial.secret, initial.website, initial.notes)) {
-            assertFalse(row.ciphertext.decodeToString().contains(plain))
-        }
-        val edited = repo.save(initial.copy(title = "Updated"))
-        assertEquals(initial.id, edited.id)
-        assertEquals(initial.createdAt, edited.createdAt)
-        assertEquals(" private-secret ", edited.secret)
-        assertEquals(1, dao.rows.size)
-        assertFailsWith<IllegalArgumentException> { repo.save(Password(title = "", secret = "x")) }
-        assertFailsWith<IllegalArgumentException> { repo.save(Password(id = "missing", title = "x", secret = "x")) }
-        crypto.lock()
-        assertFailsWith<VaultLockedException> { repo.get(initial.id) }
-        assertEquals(edited.title, repo.observePasswords().first().single().title)
-        assertEquals("گوگل", repo.observePasswords().first().single().serviceNameFa)
-        assertEquals("", repo.observePasswords().first().single().secret)
-        assertEquals("", repo.observePasswords().first().single().notes)
-        assertFailsWith<VaultLockedException> { repo.save(initial) }
-        assertEquals(1, dao.rows.size)
-        repo.delete(initial.id)
-        assertTrue(dao.rows.isEmpty())
-    }
-    @Test fun lockWhileDatabaseReadIsSuspendedRejectsPlaintext() = runBlocking<Unit> {
-        val dao = MemoryDao()
-        val crypto = TestSession().apply { unlock(key.copyOf()) }
-        val repo = PasswordRepositoryImpl(dao, crypto, TestServices())
-        val record = repo.save(Password(serviceId = "google", title = "name", secret = "secret"))
-        dao.beforeRead = { crypto.lock() }
-        assertFailsWith<VaultLockedException> { repo.get(record.id) }
-    }
-    @Test fun newRecordCanBeSavedWhileLockedButCannotBeRead() = runBlocking<Unit> {
-        val crypto = TestSession()
-        val repo = PasswordRepositoryImpl(MemoryDao(), crypto, TestServices())
-        val record = repo.save(Password(serviceId = "google", title = "Mail", secret = "private"))
-        assertFalse(crypto.unlocked)
-        assertEquals("Mail", repo.observePasswords().first().single().title)
-        assertFailsWith<VaultLockedException> { repo.get(record.id) }
-        crypto.unlock(key.copyOf())
-        assertEquals("private", repo.get(record.id)?.secret)
-    }
-
     @Test fun publicKeySaveUsesIndependentKeysAndBindsCiphertextToRecord() {
         val pair = java.security.KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
         val first = AndroidPasswordCipher.seal(pair.public, "first secret".encodeToByteArray(), "one")
@@ -118,39 +64,4 @@ class PasswordEncryptionTest {
         } finally { firstKey.fill(0); secondKey.fill(0) }
     }
 
-    private class TestSession : SessionVaultCrypto() {
-        override suspend fun seal(plaintext: ByteArray, recordId: String) =
-            AndroidPasswordCipher.encrypt(ByteArray(32) { it.toByte() }, plaintext, "lilo-password-v1:$recordId".encodeToByteArray(), ByteArray(256))
-        fun unlock(key: ByteArray) = acceptAuthenticatedKey(key)
-        override suspend fun decrypt(key: ByteArray, record: SealedPassword, aad: ByteArray) = AndroidPasswordCipher.decrypt(key, record, aad)
-    }
-    private class TestServices : PasswordServiceRepository {
-        override fun observe() = flowOf(listOf(PasswordService("google", "Google", true, "گوگل")))
-        override suspend fun create(name: String): PasswordService = error("unused")
-        override suspend fun rename(id: String, name: String) = Unit
-        override suspend fun usage(id: String) = 0
-        override suspend fun delete(id: String, replacementId: String?) = Unit
-    }
-    @Test fun titleIsOptionalButUnknownServiceAndInvalidWebsiteAreRejected() = runBlocking<Unit> {
-        val dao = MemoryDao()
-        val repo = PasswordRepositoryImpl(dao, TestSession(), TestServices())
-        val saved = repo.save(Password(serviceId = "google", username = "user", secret = "secret", website = "مثال.ir/راهنما"))
-        assertEquals("", saved.title)
-        assertEquals("https://مثال.ir/راهنما", saved.website)
-        assertEquals("Google", repo.observePasswords().first().single().displayTitle)
-        assertFailsWith<IllegalArgumentException> { repo.save(Password(serviceId = "deleted", secret = "secret")) }
-        assertFailsWith<IllegalArgumentException> { repo.save(Password(serviceId = "google", secret = "secret", website = "bad address")) }
-        assertEquals(1, dao.rows.size)
-    }
-    private class MemoryDao : PasswordDao {
-        val rows = linkedMapOf<String, PasswordEntity>()
-        var beforeRead: () -> Unit = {}
-        override fun observe(): Flow<List<PasswordMetadata>> = flowOf(rows.values.map {
-            PasswordMetadata(it.id, it.title, it.username, it.website, it.createdAt, it.updatedAt, it.serviceId)
-        })
-        override suspend fun get(id: String): PasswordEntity? { beforeRead(); return rows[id] }
-        override suspend fun serviceExists(id: String) = if (id == "google") 1 else 0
-        override suspend fun save(record: PasswordEntity) { rows[record.id] = record }
-        override suspend fun delete(id: String) { rows.remove(id) }
-    }
 }

@@ -13,8 +13,6 @@ import com.sepideh.lilo.password.domain.model.requirePasswordFieldLengths
 import com.sepideh.lilo.password.data.local.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -39,13 +37,14 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
         val session = crypto.session.value
         if (!session.unlocked || (session.recordId != null && session.recordId != id)) throw VaultLockedException()
         val row = dao.get(id) ?: return null
-        val bytes = crypto.open(row.sealed(), id)
-        val result = try { Json.decodeFromString<Password>(bytes.decodeToString()).also { require(it.id == id) } }
-        finally { bytes.fill(0) }
+        val sealed = row.sealed()
+        val secret = decodeAndWipe(crypto.open(sealed, id))
         if (crypto.session.value != session) throw VaultLockedException()
         val service = services.observe().first().find { it.id == row.serviceId }
         if (crypto.session.value != session) throw VaultLockedException()
-        return result.copy(serviceId = row.serviceId, serviceName = service?.name.orEmpty(), serviceNameFa = service?.nameFa.orEmpty())
+        return Password(id = row.id, title = row.title, username = row.username, website = row.website,
+            secret = secret, notes = row.notes, createdAt = row.createdAt, updatedAt = row.updatedAt,
+            serviceId = row.serviceId, serviceName = service?.name.orEmpty(), serviceNameFa = service?.nameFa.orEmpty())
     }
 
     override suspend fun save(password: Password): Password {
@@ -61,14 +60,18 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
         val saved = password.copy(id = previous?.id ?: Uuid.random().toString(), title = password.title.trim(),
             username = password.username.trim(), website = website, serviceName = "", serviceNameFa = "",
             createdAt = previous?.createdAt?.takeIf { it != 0L } ?: password.createdAt.takeIf { it != 0L } ?: now, updatedAt = now)
-        val bytes = Json.encodeToString(saved).encodeToByteArray()
+        val bytes = saved.secret.encodeToByteArray(throwOnInvalidSequence = true)
         val sealed = try { crypto.seal(bytes, saved.id) } finally { bytes.fill(0) }
         if (crypto.session.value != session) throw VaultLockedException()
         dao.saveWithService(PasswordEntity(saved.id, sealed.format, sealed.nonce, sealed.ciphertext, sealed.wrappedKey,
-            saved.title, saved.username, saved.website, saved.createdAt, saved.updatedAt, saved.serviceId))
+            saved.title, saved.username, saved.website, saved.createdAt, saved.updatedAt, saved.serviceId,
+            saved.notes))
         return saved
     }
 
     override suspend fun delete(id: String) { dao.delete(id) }
+    private fun decodeAndWipe(bytes: ByteArray): String =
+        try { bytes.decodeToString(throwOnInvalidSequence = true) } finally { bytes.fill(0) }
+
     private fun PasswordEntity.sealed() = SealedPassword(format, nonce, ciphertext, wrappedKey)
 }

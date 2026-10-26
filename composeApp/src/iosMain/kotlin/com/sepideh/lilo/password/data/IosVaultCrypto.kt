@@ -79,7 +79,7 @@ class IosVaultCrypto : SessionVaultCrypto() {
             val key = randomBytes(64)
             try {
                 val wrapped = IosRecordKeys.wrap(key)
-                IosPasswordCipher.encrypt(key, plaintext, "lilo-password-v1:$recordId".encodeToByteArray(), wrapped)
+                IosPasswordCipher.encrypt(key, plaintext, passwordAad(recordId), wrapped)
             } finally { key.fill(0) }
         }
     }
