@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.data
 
 
+import com.sepideh.lilo.core.domain.model.AppLanguage
 import platform.UserNotifications.*
 import platform.darwin.NSObject
 import kotlinx.coroutines.*
@@ -23,8 +24,7 @@ class NotificationDelegate : NSObject(), UNUserNotificationCenterDelegateProtoco
         registration = scope.launch {
             try {
                 getKoin().get<UserPreferencesRepository>().userPreferences.map { it.language }.distinctUntilChanged().collect { language ->
-                    val action = UNNotificationAction.actionWithIdentifier(COMPLETE_TASK_ACTION, markDoneNotificationLabel(language), 0uL)
-                    val category = UNNotificationCategory.categoryWithIdentifier(TASK_NOTIFICATION_CATEGORY, listOf(action), emptyList<String>(), 0uL)
+                    val category = taskNotificationCategory(language)
                     UNUserNotificationCenter.currentNotificationCenter().setNotificationCategories(setOf(category))
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
@@ -68,4 +68,12 @@ class NotificationDelegate : NSObject(), UNUserNotificationCenterDelegateProtoco
             withCompletionHandler(if (enabled) UNNotificationPresentationOptionAlert or UNNotificationPresentationOptionSound else 0uL)
         }
     }
+}
+
+internal suspend fun taskNotificationCategory(language: AppLanguage): UNNotificationCategory {
+    // Finish resource loading before bridging arguments to Objective-C: suspension here
+    // can outlive the autoreleased NSString created for an earlier argument.
+    val title = markDoneNotificationLabel(language)
+    val action = UNNotificationAction.actionWithIdentifier(COMPLETE_TASK_ACTION, title, 0uL)
+    return UNNotificationCategory.categoryWithIdentifier(TASK_NOTIFICATION_CATEGORY, listOf(action), emptyList<String>(), 0uL)
 }

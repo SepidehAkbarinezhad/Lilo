@@ -76,12 +76,14 @@ internal object IosRecordKeys {
     fun unwrap(wrapped: ByteArray, context: LAContext, reason: String): ByteArray? = memScoped {
         require(wrapped.size == 256)
         val result = alloc<CFTypeRefVar>(); result.value = null
+        context.localizedReason = reason
         val status = withDictionary(query() + mapOf(cfObject(kSecReturnRef) to true,
-            cfObject(kSecUseAuthenticationContext) to context, cfObject(kSecUseOperationPrompt) to reason)) {
+            cfObject(kSecUseAuthenticationContext) to context)) {
             SecItemCopyMatching(it, result.ptr)
         }
         if (status == errSecUserCanceled) return@memScoped null
         if (status == errSecItemNotFound) throw VaultKeyUnavailableException()
+        if (status != errSecSuccess) NSLog("LiloPasswordAuth: key lookup failed, OSStatus=$status")
         check(status == errSecSuccess)
         val privateKey: SecKeyRef = requireNotNull(result.value).reinterpret()
         try { withData(wrapped) { input ->
@@ -90,7 +92,11 @@ internal object IosRecordKeys {
             try {
                 if (decrypted == null) {
                     val code = error.value?.let { CFErrorGetCode(it) }
-                    if (code == errSecUserCanceled.toLong() || code == -2L) null else error("Authentication failed")
+                    if (code == errSecUserCanceled.toLong() || code == -2L) null
+                    else {
+                        NSLog("LiloPasswordAuth: key unwrap failed, code=$code")
+                        error("Authentication failed")
+                    }
                 } else (CFBridgingRelease(decrypted) as NSData).asBytes()
             } finally { error.value?.let { CFRelease(it) } }
         } } finally { CFRelease(privateKey) }

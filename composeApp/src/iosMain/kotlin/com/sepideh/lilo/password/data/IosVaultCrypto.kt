@@ -16,10 +16,29 @@ import platform.UIKit.*
 
 @OptIn(ExperimentalForeignApi::class)
 internal fun cfObject(pointer: CFTypeRef?): Any = requireNotNull(CFBridgingRelease(CFRetain(pointer)))
-@OptIn(ExperimentalForeignApi::class)
-internal fun <T> withDictionary(values: Map<Any?, Any?>, block: (CFDictionaryRef) -> T): T {
-    val dictionary: CFDictionaryRef = requireNotNull(CFBridgingRetain(values)).reinterpret()
-    return try { block(dictionary) } finally { CFRelease(dictionary) }
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+internal fun <T> withDictionary(values: Map<*, *>, block: (CFDictionaryRef) -> T): T = memScoped {
+    // Kotlin Boolean bridges as NSNumber, but Security requires CFBoolean for flags
+    // such as kSecReturnRef and the nested kSecAttrIsPermanent attribute.
+    val dictionary = requireNotNull(CFDictionaryCreateMutable(kCFAllocatorDefault, values.size.toLong(),
+        kCFTypeDictionaryKeyCallBacks.ptr, kCFTypeDictionaryValueCallBacks.ptr))
+    try {
+        for ((key, value) in values) {
+            val nativeKey = requireNotNull(CFBridgingRetain(key))
+            try {
+                when (value) {
+                    is Boolean -> CFDictionarySetValue(dictionary, nativeKey, if (value) kCFBooleanTrue else kCFBooleanFalse)
+                    is Map<*, *> -> withDictionary(value) { CFDictionarySetValue(dictionary, nativeKey, it) }
+                    else -> {
+                        val nativeValue = requireNotNull(CFBridgingRetain(value))
+                        try { CFDictionarySetValue(dictionary, nativeKey, nativeValue) }
+                        finally { CFRelease(nativeValue) }
+                    }
+                }
+            } finally { CFRelease(nativeKey) }
+        }
+        block(dictionary)
+    } finally { CFRelease(dictionary) }
 }
 
 @OptIn(ExperimentalForeignApi::class)
@@ -38,19 +57,56 @@ fun passwordDirectory(): String {
     return path
 }
 
+// Called on Main: a system authentication sheet can leave the app Inactive briefly
+// after Keychain returns. Only resume in Active; backgrounding/cancellation wins.
+internal suspend fun awaitPasswordForeground(
+    result: CompletableDeferred<Boolean>,
+    center: NSNotificationCenter = NSNotificationCenter.defaultCenter,
+    applicationState: () -> UIApplicationState = { UIApplication.sharedApplication.applicationState },
+): Boolean {
+    val active = center.addObserverForName(UIApplicationDidBecomeActiveNotification, null, NSOperationQueue.mainQueue) {
+        result.complete(true)
+    }
+    val background = center.addObserverForName(UIApplicationDidEnterBackgroundNotification, null, NSOperationQueue.mainQueue) {
+        result.complete(false)
+    }
+    return try {
+        // Subscribe before inspecting state so activation cannot be missed.
+        when (applicationState()) {
+            UIApplicationState.UIApplicationStateActive -> result.complete(true)
+            UIApplicationState.UIApplicationStateBackground -> result.complete(false)
+            else -> Unit
+        }
+        result.await() && applicationState() == UIApplicationState.UIApplicationStateActive
+    } finally {
+        center.removeObserver(active)
+        center.removeObserver(background)
+    }
+}
+
 @OptIn(ExperimentalForeignApi::class)
 class IosVaultCrypto : SessionVaultCrypto() {
     private val writes = Mutex()
     private var authentication: LAContext? = null
     private var attempt = 0
-    fun cancelUnlock() { attempt++; authentication?.invalidate(); authentication = null }
+    private var foreground: CompletableDeferred<Boolean>? = null
+    fun cancelUnlock() {
+        attempt++
+        authentication?.invalidate()
+        authentication = null
+        foreground?.complete(false)
+        foreground = null
+    }
 
     suspend fun unlock(reason: String, request: PasswordUnlockRequest): UnlockResult {
+        cancelUnlock()
         lock()
         val context = LAContext()
         if (!context.canEvaluatePolicy(LAPolicyDeviceOwnerAuthentication, null)) { context.invalidate(); return UnlockResult.UNAVAILABLE }
         val token = ++attempt
         authentication = context
+        val activation = CompletableDeferred<Boolean>()
+        foreground = activation
         var pendingKey: ByteArray? = null
         return try {
             require(request.id.isNotBlank())
@@ -63,14 +119,22 @@ class IosVaultCrypto : SessionVaultCrypto() {
             pendingKey = key
             if (key == null) UnlockResult.CANCELLED
             else withContext(Dispatchers.Main.immediate) {
-                if (token != attempt || UIApplication.sharedApplication.applicationState != UIApplicationState.UIApplicationStateActive) {
+                if (token != attempt || !awaitPasswordForeground(activation) || token != attempt) {
                     key.fill(0); UnlockResult.CANCELLED
                 } else { acceptAuthenticatedKey(key, request.id); UnlockResult.SUCCESS }
             }
         } catch (e: CancellationException) { context.invalidate(); throw e }
         catch (_: VaultKeyUnavailableException) { UnlockResult.KEY_UNAVAILABLE }
-        catch (_: Exception) { UnlockResult.FAILED }
-        finally { pendingKey?.fill(0); context.invalidate(); if (authentication === context) authentication = null }
+        catch (failure: Exception) {
+            NSLog("LiloPasswordAuth: unlock failed (%@)", failure::class.simpleName.orEmpty())
+            UnlockResult.FAILED
+        }
+        finally {
+            pendingKey?.fill(0)
+            context.invalidate()
+            if (authentication === context) authentication = null
+            if (foreground === activation) foreground = null
+        }
     }
 
     override suspend fun seal(plaintext: ByteArray, recordId: String): SealedPassword = withContext(Dispatchers.Default) {
