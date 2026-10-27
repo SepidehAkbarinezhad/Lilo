@@ -9,6 +9,7 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyInfo
 import android.security.keystore.KeyProperties
 import android.util.AtomicFile
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +60,20 @@ class AndroidVaultCrypto(private val context: Context) : SessionVaultCrypto() {
             val publicKey = KeyFactory.getInstance("RSA").generatePublic(X509EncodedKeySpec(encoded))
             AndroidPasswordCipher.seal(publicKey, plaintext, recordId)
         }
+    }
+
+    // Lilo's authentication strategy:
+   // Keys created on Android 7–10 use time-based authentication (duration = 30).
+   // Keys created on Android 11+ use per-operation authentication.(duration = 0)
+   // Since OS upgrades preserve the existing key policy, check KeyInfo
+   // instead of assuming the policy from the current Android version.
+    fun usesTimedAuthentication(): Boolean {
+        val key = keystore.getKey(alias, null) as? PrivateKey ?: throw VaultKeyUnavailableException()
+        val info = KeyFactory.getInstance(key.algorithm, "AndroidKeyStore").getKeySpec(key, KeyInfo::class.java)
+        check(info.isUserAuthenticationRequired)
+        // Positive duration indicates time-based authentication.
+        // -1 indicates per-operation authentication.
+        return info.userAuthenticationValidityDurationSeconds > 0
     }
 
     fun prepareUnlock(request: PasswordUnlockRequest): UnlockOperation {

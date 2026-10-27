@@ -8,7 +8,7 @@ Names, usernames, websites, and timestamps are deliberately browsable metadata i
 
 ## Encryption and authentication
 
-Each save receives a fresh independent random record key. Android encrypts the payload with AES-256-GCM and wraps its 32-byte key using RSA-2048 OAEP with SHA-256 and MGF1-SHA1. The RSA public key permits saving without authentication. Its private key is non-exportable in Android Keystore and requires OS authentication to decrypt the selected record key. Android 11+ uses a cryptographically bound biometric/device-credential prompt. Android 7–10 uses device credential confirmation and a 30-second Keystore authentication window.
+Each save receives a fresh independent random record key. Android encrypts the payload with AES-256-GCM and wraps its 32-byte key using RSA-2048 OAEP with SHA-256 and MGF1-SHA1. The RSA public key permits saving without authentication. Its private key is non-exportable in Android Keystore and requires OS authentication to decrypt the selected record key. Keys created on Android 11+ use a cryptographically bound biometric/device-credential prompt. Keys created on Android 7–10 use device credential confirmation and a 30-second Keystore authentication window, including after an OS upgrade. On Android 11+, unlock reads the existing RSA key’s `KeyInfo` before initializing the decrypt cipher: a positive authentication validity duration keeps the credential-confirmation flow; per-operation keys (`-1` or `0`) keep the `CryptoObject` flow. A failed policy lookup fails unlock rather than replacing the key or guessing its policy.
 
 iOS uses separate 32-byte AES-256-CBC and HMAC-SHA256 keys, encrypt-then-MAC, wrapped together with RSA-2048 OAEP-SHA256. The private RSA key is a Keychain item with userPresence and WhenPasscodeSetThisDeviceOnly access. The public key is stored in the app directory and is not secret. This is a Keychain-protected software RSA key, not a Secure Enclave key.
 
@@ -65,3 +65,5 @@ Service IDs and names are browsable organizational metadata. Service moves and r
 Android add/save, biometric reveal, and hiding were confirmed on the connected phone before the service addition. iOS runtime authentication remains unverified.
 
 Current database verification and remaining device checks are recorded in [the first-release code health audit](pre-release-health-audit.md).
+
+The Android OS-upgrade authentication fix requires a device check with an existing 30-second RSA key on Android 11+: wait beyond the authorization window, confirm that credential authentication precedes cipher initialization, reveal an existing password, then verify cancellation leaves it hidden. Newly created per-operation keys must retain their existing biometric/device-credential flow. No key regeneration or data migration is performed.

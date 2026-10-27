@@ -38,7 +38,7 @@ actual fun rememberPasswordUnlocker(onResult: (UnlockResult) -> Unit): (Password
     val credential = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         try {
             if (result.resultCode == Activity.RESULT_OK && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                // Old Android authorizes the timed Keystore key after credential confirmation.
+                // Credential confirmation authorizes timed keys, including after an OS upgrade.
                 val operation = crypto.prepareUnlock(requireNotNull(requested))
                 crypto.completeUnlock(operation)
                 callback(UnlockResult.SUCCESS)
@@ -52,10 +52,19 @@ actual fun rememberPasswordUnlocker(onResult: (UnlockResult) -> Unit): (Password
         if (signal != null) return@unlock
         val keyguard = activity.getSystemService(KeyguardManager::class.java)
         if (!keyguard.isDeviceSecure) { callback(UnlockResult.UNAVAILABLE); return@unlock }
-        if (Build.VERSION.SDK_INT < 30) {
-            val intent = keyguard.createConfirmDeviceCredentialIntent(title, reason)
-            if (intent != null) credential.launch(intent) else callback(UnlockResult.UNAVAILABLE)
-        } else try {
+        try {
+            // Lilo authentication strategy (an app decision, not an Android restriction):
+            // Use credential confirmation on older Android versions
+            // or when an existing key has a time-based policy.(a android 10 saved password , updated to higher version)
+            val useCredentialConfirmation =
+                Build.VERSION.SDK_INT < 30 ||
+                    crypto.usesTimedAuthentication()
+
+            if (useCredentialConfirmation) {
+                val intent = keyguard.createConfirmDeviceCredentialIntent(title, reason)
+                if (intent != null) credential.launch(intent) else callback(UnlockResult.UNAVAILABLE)
+                return@unlock
+            }
             val operation = crypto.prepareUnlock(request)
             pending = operation
             val cancellation = CancellationSignal()
