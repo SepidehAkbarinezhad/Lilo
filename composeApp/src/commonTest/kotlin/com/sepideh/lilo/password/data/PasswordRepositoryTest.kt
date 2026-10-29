@@ -2,6 +2,9 @@ package com.sepideh.lilo.password.data
 
 import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.validation.PasswordValidationError
+import com.sepideh.lilo.password.domain.validation.PasswordValidationException
+import com.sepideh.lilo.password.domain.validation.PasswordValidator
 import com.sepideh.lilo.password.domain.model.matching
 import com.sepideh.lilo.password.domain.model.PasswordService
 import com.sepideh.lilo.password.domain.repository.PasswordServiceRepository
@@ -15,6 +18,58 @@ import kotlin.test.*
 
 class PasswordRepositoryTest {
     private val key = ByteArray(64) { it.toByte() }
+
+    @Test fun invalidInputsReturnTypedErrorsBeforeAnyPersistenceOrSealing() = runBlocking<Unit> {
+        val dao = MemoryDao()
+        val crypto = TestSession()
+        val repo = PasswordRepositoryImpl(dao, crypto, TestServices())
+        val valid = Password(title = "Mail", serviceId = "google", secret = "secret")
+        val invalid = listOf(
+            valid.copy(title = " ", username = "\t"),
+            valid.copy(title = "a".repeat(61)),
+            valid.copy(serviceId = null),
+            valid.copy(serviceId = " \t"),
+            valid.copy(secret = ""),
+            valid.copy(secret = " \t\r\n"),
+            valid.copy(secret = "\u00a0\u2003"),
+            valid.copy(secret = "x".repeat(257)),
+            valid.copy(website = "bad address"),
+            Password(),
+        )
+        for (password in invalid) {
+            val failure = assertFailsWith<PasswordValidationException> { repo.save(password) }
+            assertEquals(PasswordValidator.validate(password), failure.errors)
+            assertTrue(failure.errors.isNotEmpty())
+            assertNull(crypto.secretInput)
+            assertTrue(dao.rows.isEmpty())
+        }
+    }
+
+    @Test fun validBoundariesPreserveSecretAndExistingNormalization() = runBlocking<Unit> {
+        val dao = MemoryDao()
+        val repo = PasswordRepositoryImpl(dao, TestSession(), TestServices())
+        val secret = " " + "ر".repeat(254) + " "
+        val saved = repo.save(Password(title = "  " + "ع".repeat(60) + "  ", username = " user ",
+            serviceId = "google", secret = secret, website = " HTTP://example.com:8080/path "))
+        assertEquals(secret, saved.secret)
+        assertEquals("ع".repeat(60), saved.title)
+        assertEquals("user", saved.username)
+        assertEquals("http://example.com:8080/path", saved.website)
+        assertEquals(saved.title, dao.rows.getValue(saved.id).title)
+    }
+
+    @Test fun technicalFailureIsNotConvertedToValidationFailure() = runBlocking<Unit> {
+        val dao = MemoryDao()
+        val expected = IllegalStateException("Storage unavailable")
+        dao.beforeSave = { throw expected }
+        val repo = PasswordRepositoryImpl(dao, TestSession(), TestServices())
+        val failure = assertFailsWith<IllegalStateException> {
+            repo.save(Password(title = "Mail", serviceId = "google", secret = " valid "))
+        }
+        assertSame(expected, failure)
+        assertTrue(dao.rows.isEmpty())
+    }
+
     @Test fun repositoryExposesMetadataButProtectsSecretsAndPreservesCreationDate() = runBlocking<Unit> {
         val dao = MemoryDao()
         val crypto = TestSession().apply { unlock(key.copyOf()) }
@@ -67,7 +122,7 @@ class PasswordRepositoryTest {
         val dao = MemoryDao()
         val crypto = TestSession()
         val repo = PasswordRepositoryImpl(dao, crypto, TestServices())
-        for (secret in listOf(" \t\n", "  رمز 🔑 e\u0301\u0000\r\n ", "{\"secret\":\"not a JSON payload\"}")) {
+        for (secret in listOf(" \tvalue\n", "  رمز 🔑 e\u0301\u0000\r\n ", "{\"secret\":\"not a JSON payload\"}")) {
             val saved = repo.save(Password(title = "Metadata", username = "public-user", website = "example.org",
                 serviceId = "google", secret = secret, notes = "  private یادداشت\n"))
             val envelope = repo.unlockRequest(saved.id).sealed
@@ -200,19 +255,22 @@ class PasswordRepositoryTest {
         assertEquals("", saved.title)
         assertEquals("https://مثال.ir/راهنما", saved.website)
         assertEquals("Google", repo.observePasswords().first().single().displayTitle)
-        assertFailsWith<IllegalArgumentException> { repo.save(Password(serviceId = "deleted", secret = "secret")) }
-        assertFailsWith<IllegalArgumentException> { repo.save(Password(serviceId = "google", secret = "secret", website = "bad address")) }
+        val missingService = assertFailsWith<IllegalArgumentException> { repo.save(Password(title = "Mail", serviceId = "deleted", secret = "secret")) }
+        assertFalse(missingService is PasswordValidationException)
+        val invalidWebsite = assertFailsWith<PasswordValidationException> { repo.save(Password(title = "Mail", serviceId = "google", secret = "secret", website = "bad address")) }
+        assertEquals(setOf(PasswordValidationError.InvalidWebsite), invalidWebsite.errors)
         assertEquals(1, dao.rows.size)
     }
     private class MemoryDao : PasswordDao {
         val rows = linkedMapOf<String, PasswordEntity>()
         var beforeRead: () -> Unit = {}
+        var beforeSave: () -> Unit = {}
         override fun observe(): Flow<List<PasswordMetadata>> = flowOf(rows.values.map {
             PasswordMetadata(it.id, it.title, it.username, it.website, it.createdAt, it.updatedAt, it.serviceId)
         })
         override suspend fun get(id: String): PasswordEntity? { beforeRead(); return rows[id] }
         override suspend fun serviceExists(id: String) = if (id in listOf("google", "github")) 1 else 0
-        override suspend fun save(record: PasswordEntity) { rows[record.id] = record }
+        override suspend fun save(record: PasswordEntity) { beforeSave(); rows[record.id] = record }
         override suspend fun delete(id: String) { rows.remove(id) }
     }
 }

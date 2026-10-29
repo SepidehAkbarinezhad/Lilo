@@ -4,9 +4,9 @@ import com.sepideh.lilo.password.domain.crypto.DeviceLockRequiredException
 import com.sepideh.lilo.password.domain.model.Password
 import com.sepideh.lilo.password.domain.repository.PasswordRepository
 import com.sepideh.lilo.password.domain.crypto.VaultCrypto
-import com.sepideh.lilo.password.domain.model.normalizePasswordWebsite
-import com.sepideh.lilo.password.domain.model.secretTooLong
-import com.sepideh.lilo.password.domain.model.titleTooLong
+import com.sepideh.lilo.password.domain.validation.PasswordValidationError
+import com.sepideh.lilo.password.domain.validation.PasswordValidationException
+import com.sepideh.lilo.password.domain.validation.PasswordValidator
 
 import androidx.lifecycle.viewModelScope
 import com.sepideh.lilo.core.presentation.BaseAction
@@ -49,8 +49,11 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
             if (initialized && changed) {
                 operation?.cancel()
                 if (id == null) {
-                    if (!session.unlocked) local.update { it.copy(record = it.record.copy(secret = "", notes = ""),
-                        saving = false, visible = true, discardOpen = false) }
+                    if (!session.unlocked) local.update {
+                        val record = it.record.copy(secret = "", notes = "")
+                        it.copy(record = record, validationErrors = visibleErrors(record, it.validationErrors),
+                            saving = false, visible = true, discardOpen = false)
+                    }
                 } else if (!session.unlocked) {
                     if (!local.value.locked) {
                         leaveLockedEditor()
@@ -81,7 +84,8 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
                     val record = requireNotNull(repository.get(recordId))
                     if (crypto.session.value == session) {
                         original = record
-                        local.update { it.copy(record = record, request = request, locked = false, loading = false, visible = true) }
+                        local.update { it.copy(record = record, validationErrors = visibleErrors(record),
+                            request = request, locked = false, loading = false, visible = true) }
                     }
                 } else leaveLockedEditor()
             } catch (cancelled: CancellationException) { throw cancelled }
@@ -99,7 +103,19 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
     private fun edit(transform: (Password) -> Password) {
         val ui = local.value
         if (ui.locked || ui.loading || ui.saving || ui.loadFailed) return
-        local.update { it.copy(error = false, setupRequired = false, record = transform(it.record), serviceInvalid = false, websiteInvalid = false, secretInvalid = false, identifierInvalid = false) }
+        local.update {
+            val record = transform(it.record)
+            it.copy(error = false, setupRequired = false, record = record,
+                validationErrors = visibleErrors(record, it.validationErrors))
+        }
+    }
+
+    // Length errors are immediate; other errors remain visible after Save until corrected.
+    private fun visibleErrors(
+        record: Password,
+        previous: Set<PasswordValidationError> = emptySet(),
+    ): Set<PasswordValidationError> = PasswordValidator.validate(record).filterTo(mutableSetOf()) {
+        it == PasswordValidationError.TitleTooLong || it == PasswordValidationError.SecretTooLong || it in previous
     }
     private fun visibility() { if (!local.value.locked) local.update { it.copy(visible = !it.visible) } }
 
@@ -108,8 +124,9 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
         val session = crypto.session.value
         if (ui.locked || ui.loading || ui.saving || ui.loadFailed) return
         if (id != null && (!session.unlocked || session.recordId != id)) return
-        if (!ui.record.hasIdentifier || ui.record.serviceId.isNullOrBlank() || ui.record.secret.isEmpty() || ui.record.titleTooLong || ui.record.secretTooLong || normalizePasswordWebsite(ui.record.website) == null) {
-            local.update { it.copy(identifierInvalid = !ui.record.hasIdentifier, serviceInvalid = ui.record.serviceId.isNullOrBlank(), websiteInvalid = normalizePasswordWebsite(ui.record.website) == null, secretInvalid = ui.record.secret.isEmpty()) }
+        val errors = PasswordValidator.validate(ui.record)
+        local.update { it.copy(validationErrors = errors, error = false, setupRequired = false) }
+        if (errors.isNotEmpty()) {
             return
         }
         local.update { it.copy(saving = true, error = false, setupRequired = false) }
@@ -122,6 +139,11 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
                     onAction(BaseAction.OnNavigateTo(null))
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
+            catch (invalid: PasswordValidationException) {
+                if (crypto.session.value == session) local.update {
+                    it.copy(validationErrors = invalid.errors, error = false, setupRequired = false, saving = false)
+                }
+            }
             catch (_: DeviceLockRequiredException) { local.update { it.copy(error = true, setupRequired = true, saving = false) } }
             catch (_: Exception) { if (crypto.session.value == session) local.update { it.copy(error = true, saving = false) } }
         }

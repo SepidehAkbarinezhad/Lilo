@@ -3,8 +3,7 @@ package com.sepideh.lilo.password.presentation.detail.components
 import com.sepideh.lilo.password.domain.model.PASSWORD_SECRET_MAX_LENGTH
 import com.sepideh.lilo.password.domain.model.PASSWORD_TITLE_MAX_LENGTH
 import com.sepideh.lilo.password.domain.model.Password
-import com.sepideh.lilo.password.domain.model.secretTooLong
-import com.sepideh.lilo.password.domain.model.titleTooLong
+import com.sepideh.lilo.password.domain.validation.PasswordValidationError
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,12 +32,6 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
     val accent = LiloExtendedTheme.colors.passwordColor
     val enabled = !state.locked && !state.loading && !state.saving && !state.loadFailed
     val ltr = MaterialTheme.typography.bodyLarge.copy(textDirection = TextDirection.Ltr)
-    fun validation(invalid: Boolean, label: StringResource) =
-        if (invalid) ValidationStatus(
-            isSuccessful = false,
-            messageId = Res.string.error_empty_field_label,
-            args = arrayOf(label)
-        ) else ValidationStatus()
     AppOutlineTextField(
         accentColor = accent,
         leadingIcon = { Icon(LiloIcons.Edit, null, Modifier.size(LiloSize.Icon)) },
@@ -47,10 +40,10 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
             value = state.record.title,
             enabled = enabled,
             onValueChange = { value -> onAction(PasswordDetailAction.OnTitleChanged(value)) },
-            validationStatus = if (state.record.titleTooLong) ValidationStatus(
-                isSuccessful = false,
-                value = stringResource(Res.string.field_max_length, PASSWORD_TITLE_MAX_LENGTH)
-            ) else ValidationStatus()
+            validationStatus = validation(
+                PasswordValidationError.TitleTooLong in state.validationErrors,
+                Res.string.field_max_length, PASSWORD_TITLE_MAX_LENGTH
+            )
         )
     )
     AppOutlineTextField(
@@ -63,7 +56,7 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
             enabled = enabled,
             onValueChange = { value -> onAction(PasswordDetailAction.OnUsernameChanged(value)) })
     )
-    if (state.identifierInvalid) AppText(
+    if (PasswordValidationError.IdentifierRequired in state.validationErrors) AppText(
         text = Res.string.password_identifier_required,
         color = MaterialTheme.colorScheme.error
     )
@@ -98,10 +91,12 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
             isRequired = true,
             enabled = enabled,
             onValueChange = { value -> onAction(PasswordDetailAction.OnSecretChanged(value)) },
-            validationStatus = if (state.record.secretTooLong) ValidationStatus(
-                isSuccessful = false,
-                value = stringResource(Res.string.field_max_length, PASSWORD_SECRET_MAX_LENGTH)
-            ) else validation(state.secretInvalid, Res.string.password_secret)
+            validationStatus = if (PasswordValidationError.SecretTooLong in state.validationErrors) validation(
+                true, Res.string.field_max_length, PASSWORD_SECRET_MAX_LENGTH
+            ) else validation(
+                PasswordValidationError.SecretRequired in state.validationErrors,
+                args = arrayOf(stringResource(Res.string.password_secret))
+            )
         )
     )
     AppOutlineTextField(
@@ -117,10 +112,10 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
             hint = "example.com",
             enabled = enabled,
             onValueChange = { value -> onAction(PasswordDetailAction.OnWebsiteChanged(value)) },
-            validationStatus = if (state.websiteInvalid) ValidationStatus(
-                isSuccessful = false,
-                messageId = Res.string.password_website_invalid
-            ) else ValidationStatus()
+            validationStatus = validation(
+                PasswordValidationError.InvalidWebsite in state.validationErrors,
+                Res.string.password_website_invalid
+            )
         )
     )
     AppOutlineTextField(
@@ -138,6 +133,16 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
     )
 }
 
+@Composable
+private fun validation(
+    invalid: Boolean,
+    messageId: StringResource = Res.string.error_empty_field_label,
+    vararg args: Any,
+): ValidationStatus = if (invalid) ValidationStatus(
+    isSuccessful = false,
+    value = stringResource(messageId, *args),
+) else ValidationStatus()
+
 @AppPreviews
 @Composable
 private fun PasswordFieldsPreview() {
@@ -153,6 +158,28 @@ private fun PasswordFieldsPreview() {
                     )
                 ),
                 {})
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun PasswordFieldsValidationPreview() {
+    LiloPreviewWrapper {
+        Column(Modifier.padding(20.dp)) {
+            PasswordFields(
+                PasswordDetailState(
+                    locked = false,
+                    record = Password(secret = " ".repeat(PASSWORD_SECRET_MAX_LENGTH + 1), website = "invalid"),
+                    validationErrors = setOf(
+                        PasswordValidationError.IdentifierRequired,
+                        PasswordValidationError.SecretRequired,
+                        PasswordValidationError.SecretTooLong,
+                        PasswordValidationError.InvalidWebsite,
+                    ),
+                ),
+                {},
+            )
         }
     }
 }

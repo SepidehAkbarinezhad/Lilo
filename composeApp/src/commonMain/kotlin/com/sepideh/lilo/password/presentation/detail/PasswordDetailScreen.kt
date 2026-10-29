@@ -1,6 +1,7 @@
 package com.sepideh.lilo.password.presentation.detail
 
 import com.sepideh.lilo.password.presentation.components.displayName
+import com.sepideh.lilo.password.domain.validation.PasswordValidationError
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.*
@@ -65,7 +65,7 @@ fun PasswordDetailScreen(state: PasswordDetailState, onAction: (BaseAction) -> U
                     selectedId = state.record.serviceId,
                     selectedName = state.services.services.find { it.id == state.record.serviceId }?.displayName(),
                     enabled = !state.locked && !state.loading && !state.saving && !state.loadFailed,
-                    isError = state.serviceInvalid,
+                    isError = PasswordValidationError.ServiceRequired in state.validationErrors,
                     onClick = { onAction(PasswordServicesAction.OnOpen(state.record.serviceId)) },
                 )
                 PasswordFields(state, onAction)

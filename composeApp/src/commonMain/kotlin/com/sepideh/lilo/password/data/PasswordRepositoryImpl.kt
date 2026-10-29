@@ -8,7 +8,8 @@ import com.sepideh.lilo.password.domain.crypto.SealedPassword
 import com.sepideh.lilo.password.domain.crypto.VaultCrypto
 import com.sepideh.lilo.password.domain.crypto.VaultLockedException
 import com.sepideh.lilo.password.domain.model.normalizePasswordWebsite
-import com.sepideh.lilo.password.domain.model.requirePasswordFieldLengths
+import com.sepideh.lilo.password.domain.validation.PasswordValidationException
+import com.sepideh.lilo.password.domain.validation.PasswordValidator
 
 import com.sepideh.lilo.password.data.local.*
 import kotlinx.coroutines.flow.combine
@@ -48,8 +49,8 @@ class PasswordRepositoryImpl(private val dao: PasswordDao, private val crypto: V
     }
 
     override suspend fun save(password: Password): Password {
-        requirePasswordFieldLengths(password)
-        require(password.hasIdentifier && !password.serviceId.isNullOrBlank() && password.secret.isNotEmpty())
+        val errors = PasswordValidator.validate(password)
+        if (errors.isNotEmpty()) throw PasswordValidationException(errors)
         val website = requireNotNull(normalizePasswordWebsite(password.website))
         val session = crypto.session.value
         val previous = password.id.takeIf { it.isNotEmpty() }?.let { id ->

@@ -2,6 +2,8 @@ package com.sepideh.lilo.password.presentation
 
 import com.sepideh.lilo.password.domain.crypto.PasswordEncryptionFormat
 import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.validation.PasswordValidationError
+import com.sepideh.lilo.password.domain.validation.PasswordValidationException
 import com.sepideh.lilo.password.domain.clipboard.PasswordClipboard
 import com.sepideh.lilo.password.domain.repository.PasswordRepository
 import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
@@ -51,6 +53,124 @@ class PasswordViewModelTest {
         runCurrent()
         assertEquals(1, repository.writes)
         assertEquals(" " + "x".repeat(254) + " ", model.state.value.record.secret)
+    }
+
+    @Test fun lengthsAreImmediateButRequiredAndWebsiteErrorsWaitForSave() = runTest {
+        val model = tracked(PasswordDetailViewModel(FakeRepository(), FakeCrypto()))
+        model.onAction(PasswordDetailAction.OnInitialize(null))
+        assertTrue(model.state.value.validationErrors.isEmpty())
+        model.onAction(PasswordDetailAction.OnWebsiteChanged("invalid"))
+        model.onAction(PasswordDetailAction.OnSecretChanged(" \t\n"))
+        assertTrue(model.state.value.validationErrors.isEmpty())
+        model.onAction(PasswordDetailAction.OnTitleChanged("a".repeat(61)))
+        model.onAction(PasswordDetailAction.OnSecretChanged("x".repeat(257)))
+        assertEquals(setOf(PasswordValidationError.TitleTooLong, PasswordValidationError.SecretTooLong),
+            model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnTitleChanged("  " + "a".repeat(60) + "  "))
+        assertEquals(setOf(PasswordValidationError.SecretTooLong), model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnSecretChanged("x".repeat(256)))
+        assertTrue(model.state.value.validationErrors.isEmpty())
+        model.onAction(PasswordDetailAction.OnSave)
+        assertEquals(setOf(PasswordValidationError.ServiceRequired, PasswordValidationError.InvalidWebsite),
+            model.state.value.validationErrors)
+    }
+
+    @Test fun editsRevalidateRelatedErrorsAndPreserveUnrelatedErrors() = runTest {
+        val model = tracked(PasswordDetailViewModel(FakeRepository(), FakeCrypto()))
+        model.onAction(PasswordDetailAction.OnInitialize(null))
+        model.onAction(PasswordDetailAction.OnWebsiteChanged("invalid"))
+        model.onAction(PasswordDetailAction.OnSave)
+        val initial = setOf(PasswordValidationError.IdentifierRequired, PasswordValidationError.ServiceRequired,
+            PasswordValidationError.SecretRequired, PasswordValidationError.InvalidWebsite)
+        assertEquals(initial, model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnNotesChanged("notes"))
+        model.onAction(PasswordDetailAction.OnTitleChanged(" "))
+        assertEquals(initial, model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnUsernameChanged("user"))
+        assertEquals(initial - PasswordValidationError.IdentifierRequired, model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnServiceSelected("google"))
+        assertEquals(setOf(PasswordValidationError.SecretRequired, PasswordValidationError.InvalidWebsite),
+            model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnSecretChanged(" \t\n"))
+        assertTrue(PasswordValidationError.SecretRequired in model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnSecretChanged(" valid "))
+        assertEquals(setOf(PasswordValidationError.InvalidWebsite), model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnWebsiteChanged("still invalid"))
+        assertEquals(setOf(PasswordValidationError.InvalidWebsite), model.state.value.validationErrors)
+        model.onAction(PasswordDetailAction.OnWebsiteChanged("example.com"))
+        assertTrue(model.state.value.validationErrors.isEmpty())
+        assertEquals(" valid ", model.state.value.record.secret)
+    }
+
+    @Test fun blankSecretsNeverReachRepositoryAndValidSecretIsUnchanged() = runTest {
+        val repository = FakeRepository()
+        val model = tracked(PasswordDetailViewModel(repository, FakeCrypto()))
+        model.onAction(PasswordDetailAction.OnInitialize(null))
+        model.onAction(PasswordDetailAction.OnTitleChanged("Mail"))
+        model.onAction(PasswordDetailAction.OnServiceSelected("google"))
+        for (secret in listOf("", " ", "\t\r\n", "\u00a0\u2003")) {
+            model.onAction(PasswordDetailAction.OnSecretChanged(secret))
+            model.onAction(PasswordDetailAction.OnSave)
+            runCurrent()
+            assertEquals(setOf(PasswordValidationError.SecretRequired), model.state.value.validationErrors)
+            assertFalse(model.state.value.error)
+            assertFalse(model.state.value.saving)
+            assertEquals(0, repository.writes)
+        }
+        val secret = " \tرمز 🔑 e\u0301\u0000\r\n "
+        model.onAction(PasswordDetailAction.OnSecretChanged(secret))
+        model.onAction(PasswordDetailAction.OnSave)
+        runCurrent()
+        assertEquals(1, repository.writes)
+        assertEquals(secret, model.state.value.record.secret)
+        assertTrue(model.state.value.validationErrors.isEmpty())
+    }
+
+    @Test fun repositoryValidationFailureIsSeparateFromTechnicalFailureAndCanBeRetried() = runTest {
+        val errors = setOf(PasswordValidationError.InvalidWebsite)
+        val repository = FakeRepository().apply { validationFailure = errors }
+        val model = tracked(PasswordDetailViewModel(repository, FakeCrypto()))
+        model.onAction(PasswordDetailAction.OnInitialize(null))
+        model.onAction(PasswordDetailAction.OnTitleChanged("Mail"))
+        model.onAction(PasswordDetailAction.OnServiceSelected("google"))
+        model.onAction(PasswordDetailAction.OnSecretChanged(" keep spaces "))
+        model.onAction(PasswordDetailAction.OnSave)
+        runCurrent()
+        assertEquals(errors, model.state.value.validationErrors)
+        assertFalse(model.state.value.error)
+        assertFalse(model.state.value.saving)
+        assertEquals(" keep spaces ", model.state.value.record.secret)
+        repository.validationFailure = null
+        repository.failSave = true
+        model.onAction(PasswordDetailAction.OnSave)
+        runCurrent()
+        assertTrue(model.state.value.validationErrors.isEmpty())
+        assertTrue(model.state.value.error)
+        assertFalse(model.state.value.saving)
+        repository.failSave = false
+        model.onAction(PasswordDetailAction.OnSave)
+        runCurrent()
+        assertFalse(model.state.value.error)
+        assertEquals(3, repository.writes)
+    }
+
+    @Test fun clearingDraftOrLoadingAnotherRecordDoesNotRetainValidationErrors() = runTest {
+        val repository = FakeRepository().apply {
+            records.value = listOf(Password(id = "one", title = "a".repeat(61), secret = "x".repeat(257)))
+        }
+        val crypto = FakeCrypto()
+        val model = tracked(PasswordDetailViewModel(repository, crypto))
+        model.onAction(PasswordDetailAction.OnInitialize(null))
+        model.onAction(PasswordDetailAction.OnSave)
+        assertTrue(model.state.value.validationErrors.isNotEmpty())
+        model.onAction(PasswordDetailAction.Discard)
+        assertTrue(model.state.value.validationErrors.isEmpty())
+        model.onResetState()
+        crypto.unlock("one")
+        model.onAction(PasswordDetailAction.OnInitialize("one"))
+        runCurrent()
+        assertEquals(setOf(PasswordValidationError.TitleTooLong, PasswordValidationError.SecretTooLong),
+            model.state.value.validationErrors)
     }
 
     @Test fun addOpensAndSavesWithoutUnlocking() = runTest {
@@ -187,13 +307,13 @@ class PasswordViewModelTest {
         model.onAction(PasswordDetailAction.OnSecretChanged("secret"))
         model.onAction(PasswordDetailAction.OnSave)
         runCurrent()
-        assertTrue(model.state.value.serviceInvalid)
+        assertTrue(PasswordValidationError.ServiceRequired in model.state.value.validationErrors)
         assertEquals(0, repo.writes)
         model.onAction(PasswordDetailAction.OnServiceSelected("google"))
         model.onAction(PasswordDetailAction.OnWebsiteChanged("bad address"))
         model.onAction(PasswordDetailAction.OnSave)
         runCurrent()
-        assertTrue(model.state.value.websiteInvalid)
+        assertTrue(PasswordValidationError.InvalidWebsite in model.state.value.validationErrors)
         assertEquals(0, repo.writes)
         model.onAction(PasswordDetailAction.OnWebsiteChanged("example.com"))
         model.onAction(PasswordDetailAction.OnUsernameChanged("hello@example.com"))
@@ -211,7 +331,7 @@ class PasswordViewModelTest {
         model.onAction(PasswordDetailAction.OnUsernameChanged(" "))
         model.onAction(PasswordDetailAction.OnSave)
         runCurrent()
-        assertTrue(model.state.value.identifierInvalid)
+        assertTrue(PasswordValidationError.IdentifierRequired in model.state.value.validationErrors)
         assertEquals(0, repo.writes)
         model.onAction(PasswordDetailAction.OnTitleChanged("Personal"))
         model.onAction(PasswordDetailAction.OnSave)
@@ -531,6 +651,7 @@ class PasswordViewModelTest {
         var reads = 0
         var writes = 0
         var failSave = false
+        var validationFailure: Set<PasswordValidationError>? = null
         var beforeRead: suspend () -> Unit = {}
         override fun observePasswords(): Flow<List<Password>> = records.map { rows -> rows.map { it.copy(secret = "", notes = "") } }
         override suspend fun unlockRequest(id: String): PasswordUnlockRequest {
@@ -540,6 +661,7 @@ class PasswordViewModelTest {
         override suspend fun get(id: String): Password? { reads++; beforeRead(); return records.value.find { it.id == id } }
         override suspend fun save(password: Password): Password {
             writes++
+            validationFailure?.let { throw PasswordValidationException(it) }
             if (failSave) error("Storage unavailable")
             return password.copy(id = password.id.ifEmpty { "saved" })
         }

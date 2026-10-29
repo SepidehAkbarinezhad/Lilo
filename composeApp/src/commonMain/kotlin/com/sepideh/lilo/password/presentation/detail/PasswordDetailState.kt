@@ -1,6 +1,7 @@
 package com.sepideh.lilo.password.presentation.detail
 
 import com.sepideh.lilo.password.domain.model.Password
+import com.sepideh.lilo.password.domain.validation.PasswordValidationError
 import com.sepideh.lilo.password.domain.crypto.PasswordUnlockRequest
 
 
@@ -11,6 +12,6 @@ data class PasswordDetailState(
     val request: PasswordUnlockRequest? = null,
     val loadFailed: Boolean = false, val loading: Boolean = false, val saving: Boolean = false,
     val error: Boolean = false, val setupRequired: Boolean = false,
-    val identifierInvalid: Boolean = false, val serviceInvalid: Boolean = false, val websiteInvalid: Boolean = false, val secretInvalid: Boolean = false,
+    val validationErrors: Set<PasswordValidationError> = emptySet(),
     val visible: Boolean = false, val discardOpen: Boolean = false,
 )
