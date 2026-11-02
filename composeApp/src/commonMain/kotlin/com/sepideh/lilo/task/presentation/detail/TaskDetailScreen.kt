@@ -121,6 +121,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
                 onClick = { onAction(TaskDetailAction.OnGroupIcon) }, enabled = !state.isSaving && !state.isLoading && !state.loadFailed)
             FormSelectionRow(icon = LiloIcons.Reminder, title = stringResource(Res.string.reminder_label), accent = accent,
                 value = com.sepideh.lilo.task.presentation.reminder.taskReminderLabel(task, includeRepeat = true),
+                valueBelowTitle = true,
                 onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },
                 clearContentDescription = stringResource(Res.string.remove_reminder_action),
                 enabled = !state.isSaving && !state.isLoading && !state.loadFailed,
