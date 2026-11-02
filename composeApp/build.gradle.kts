@@ -42,6 +42,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         androidMain.dependencies {
+            implementation(libs.coil.compose)
             implementation(libs.persian.date.picker)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)

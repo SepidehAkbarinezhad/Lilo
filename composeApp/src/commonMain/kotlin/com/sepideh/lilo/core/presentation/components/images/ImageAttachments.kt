@@ -1,6 +1,5 @@
 package com.sepideh.lilo.core.presentation.components.images
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -14,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -67,17 +65,21 @@ fun ImageAttachments(images: List<AttachmentPreview>, accent: Color, enabled: Bo
 
 @Composable
 private fun AttachmentImage(image: AttachmentPreview, thumbnail: Boolean, description: String, modifier: Modifier) {
-    val loaded by rememberAttachmentBitmap(image, thumbnail)
-    val bitmap = loaded.bitmap
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.surfaceVariant) {
-        if (bitmap != null) Image(bitmap, description, Modifier.fillMaxSize(), contentScale = if (thumbnail) ContentScale.Crop else ContentScale.Fit)
-        else Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            if (loaded.loading) CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp, color = LiloExtendedTheme.colors.textSupporting)
-            else Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(LiloIcons.Images, description, tint = LiloExtendedTheme.colors.textSupporting)
-                if (!thumbnail) AppText(text = Res.string.attachment_unavailable, modifier = Modifier.padding(16.dp))
-            }
-        }
+        AttachmentImageContent(image, thumbnail, description, Modifier.fillMaxSize(),
+            loading = {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp, color = LiloExtendedTheme.colors.textSupporting)
+                }
+            },
+            error = {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(LiloIcons.Images, description, tint = LiloExtendedTheme.colors.textSupporting)
+                        if (!thumbnail) AppText(text = Res.string.attachment_unavailable, modifier = Modifier.padding(16.dp))
+                    }
+                }
+            })
     }
 }
 

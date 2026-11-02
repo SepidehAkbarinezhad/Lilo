@@ -12,7 +12,7 @@ import platform.UIKit.*
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun rememberAttachmentBitmap(image: AttachmentPreview, thumbnail: Boolean): State<AttachmentBitmapState> =
+internal fun rememberAttachmentBitmap(image: AttachmentPreview, thumbnail: Boolean): State<AttachmentBitmapState> =
     produceState(AttachmentBitmapState(), image, thumbnail) {
         value = AttachmentBitmapState()
         val decoded = withContext(Dispatchers.Default) {
@@ -39,3 +39,5 @@ actual fun rememberAttachmentBitmap(image: AttachmentPreview, thumbnail: Boolean
         }
         value = AttachmentBitmapState(decoded, loading = false)
     }
+
+internal data class AttachmentBitmapState(val bitmap: ImageBitmap? = null, val loading: Boolean = true)
