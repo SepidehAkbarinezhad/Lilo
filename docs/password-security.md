@@ -4,7 +4,7 @@
 
 Add opens the form immediately. A new password is visible while the user enters it, with an eye control to hide it. Saving requires a device screen lock but no biometric prompt. The list shows names and usernames with a fixed masked password placeholder. Its eye authenticates for that record and reveals the password; tapping again hides it. Tapping a card authenticates and opens the editor. Backgrounding the app hides revealed passwords and clears uncommitted password/notes text.
 
-Names, usernames, websites, and timestamps are deliberately browsable metadata in the local database. The primary encrypted payload contains only the exact UTF-8 `secret`, with no JSON, trimming, normalization, or duplicated metadata. `notes` is plain text in Room, like the other metadata; it has no encryption or cryptographic integrity protection. This does not change the independent Notes feature. The existing list/search projection still omits notes; the editor reads them from Room. Home does not preview credential details. There is no cloud, recovery, export, or dedicated clipboard integration.
+Names, usernames, websites, and timestamps are deliberately browsable metadata in the local database. The primary encrypted payload contains only the exact UTF-8 `secret`, with no JSON, trimming, normalization, or duplicated metadata. `notes` is plain text in Room, like the other metadata; it has no encryption or cryptographic integrity protection. This does not change the independent Notes feature. The existing list/search projection still omits notes; the editor reads them from Room. Home does not preview credential details. There is no cloud, recovery, or export. Password copying uses a dedicated platform clipboard implementation.
 
 ## Encryption and authentication
 
@@ -67,3 +67,13 @@ Android add/save, biometric reveal, and hiding were confirmed on the connected p
 Current database verification and remaining device checks are recorded in [the first-release code health audit](pre-release-health-audit.md).
 
 The Android OS-upgrade authentication fix requires a device check with an existing 30-second RSA key on Android 11+: wait beyond the authorization window, confirm that credential authentication precedes cipher initialization, reveal an existing password, then verify cancellation leaves it hidden. Newly created per-operation keys must retain their existing biometric/device-credential flow. No key regeneration or data migration is performed.
+
+## Android password clipboard expiry (H3)
+
+Password copies retain the sensitive-content flag and a fresh ownership token. The clipboard description now also carries copy times from the wall and monotonic clocks. No secret or expiry record is written to app preferences or files, and delayed cleanup retains only metadata. Expiry is 60 seconds from the original copy; clock rollback or a detected elapsed-clock reset expires the clip conservatively.
+
+Cleanup attempts the deadline, rechecks ownership immediately before clearing, and retries when the main window gains input focus. Recreating the process recovers the original deadline from the OS clipboard itself, even when the user returns to a screen other than Passwords. Recopying starts a new deadline. Old Lilo clips with an ownership token but no timestamps expire on return. API 28+ clears the primary clip; older supported versions replace it with empty text.
+
+Android restricts clipboard description reads without input focus ([API contract](https://developer.android.com/reference/android/content/ClipboardManager#getPrimaryClipDescription())). Therefore background/process-death cleanup at exactly 60 seconds cannot be guaranteed. Returning to Lilo enables safe cleanup; background services or alarms would not bypass that access restriction. Android exposes no atomic compare-and-clear operation: the token is rechecked immediately before clearing, but another process can theoretically replace the clip between those OS calls. Clipboard history, third-party copies, or metadata stripped by another app cannot be revoked by Lilo. No iOS clipboard behavior changes.
+
+Regression tests exercise deadline boundaries, background denial and foreground retry, process recreation before/after expiry, replacement content, repeated copies, transient access failures, ownership rechecking, and clock changes. Physical-device acceptance remains necessary on Android 7–12 and newer versions: copy a test credential, switch apps for over a minute, return, repeat with process death, and verify that subsequently copied unrelated content survives.

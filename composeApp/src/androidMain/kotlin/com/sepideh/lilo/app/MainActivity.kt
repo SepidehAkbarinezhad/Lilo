@@ -15,8 +15,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import androidx.annotation.RequiresApi
+import com.sepideh.lilo.password.data.AndroidPasswordClipboard
 
 class MainActivity : ComponentActivity() {
+    // Retry expired password clipboard cleanup when the app regains window focus.
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        getKoin().get<AndroidPasswordClipboard>().onWindowFocusChanged(hasFocus)
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         // The launch logo belongs only to startup, never behind screen transitions.
