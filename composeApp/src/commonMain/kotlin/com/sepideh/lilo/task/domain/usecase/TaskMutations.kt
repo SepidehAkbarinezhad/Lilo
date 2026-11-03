@@ -1,6 +1,7 @@
 package com.sepideh.lilo.task.domain.usecase
 
 import com.sepideh.lilo.core.domain.images.ImageStore
+import com.sepideh.lilo.core.domain.images.ImageSource
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.asReminder
 import com.sepideh.lilo.task.domain.reminder.nextOccurrence
@@ -14,7 +15,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.TimeZone
 import kotlin.time.ExperimentalTime
 
-/** Serializes mutations and owns notification side effects independently of either screen. */
+/** Orders task commits with reminder validation, delivery and scheduling, independently of screens. */
 @OptIn(ExperimentalTime::class)
 class TaskMutations(
     private val repository: TaskRepository,
@@ -22,37 +23,49 @@ class TaskMutations(
     private val imageStore: ImageStore? = null,
     private val notificationsEnabled: suspend () -> Boolean = { true },
 ) {
+    // Room transactions alone cannot order a read/modify/write with OS notification side effects.
+    // Whole-list reconciliation and the notification preference also cross task boundaries.
+    // File imports and cleanup do not participate in this critical section.
     private val mutex = Mutex()
 
     suspend fun save(task: Task, scheduleReminder: Boolean = true,
-        selectedImages: List<com.sepideh.lilo.core.domain.images.ImageSource>? = null): SaveTaskResult = mutex.withLock {
+        selectedImages: List<ImageSource>? = null): SaveTaskResult {
         require(task.title.isNotBlank())
         if (task.reminderAt != null) TimeZone.of(requireNotNull(task.reminderTimeZoneId))
-        val previous = task.id?.let { requireNotNull(repository.getTaskById(it)) { "Task no longer exists" } }
+        // Avoid importing for an already-deleted row. This is only a preflight check;
+        // completion, deletion and other saves may proceed while the provider is copying.
+        task.id?.let { requireNotNull(repository.getTaskById(it)) { "Task no longer exists" } }
         val imported = selectedImages?.let { requireNotNull(imageStore).importImages(it) }.orEmpty()
-        // Once persistence starts, finish the commit and its side effects even if the form closes.
-        // Cancellation at the database return boundary must not delete committed attachments.
-        withContext(NonCancellable) {
-            // Completion may have changed through a notification while the form was open.
-            // setCompleted owns completion changes; form saves preserve the current value.
-            val saved = task.copy(done = previous?.done ?: task.done, imageNames = task.imageNames + imported)
-            val result = try { repository.upsertTask(saved) }
-            catch (failure: Throwable) {
-                runCatching { imageStore?.removeImages(imported) }
-                throw failure
+        var committed = false
+        var obsoleteImages = emptyList<String>()
+        try {
+            return mutex.withLock {
+                val previous = task.id?.let { requireNotNull(repository.getTaskById(it)) { "Task no longer exists" } }
+                // Once persistence starts, finish its side effects even if the caller closes.
+                // Mark ownership inside this context, before cancellation can discard the result.
+                withContext(NonCancellable) {
+                    val retainedImages = if (previous == null) task.imageNames else
+                        task.imageNames.filter { it in previous.imageNames }
+                    val saved = task.copy(done = previous?.done ?: task.done, imageNames = retainedImages + imported)
+                    val result = repository.upsertTask(saved)
+                    committed = true
+                    obsoleteImages = previous?.imageNames.orEmpty() - saved.imageNames.toSet()
+                    val id = if (result == -1L) requireNotNull(task.id) else result
+                    val reminderFailed = try {
+                        previous?.id?.let { scheduler.cancelReminder(it) }
+                        if (!scheduleReminder) {
+                            scheduler.cancelReminder(id)
+                        } else syncReminder(saved.copy(id = id))
+                        false
+                    } catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                    catch (_: Exception) { true }
+                    SaveTaskResult(id, reminderFailed, saved.imageNames)
+                }
             }
-            val id = if (result == -1L) requireNotNull(task.id) else result
-            // Cleanup only follows a committed row, independently of reminder scheduling.
-            runCatching { imageStore?.removeImages(previous?.imageNames.orEmpty() - saved.imageNames.toSet()) }
-            val reminderFailed = try {
-                previous?.id?.let { scheduler.cancelReminder(it) }
-                if (!scheduleReminder) {
-                    scheduler.cancelReminder(id)
-                } else syncReminder(saved.copy(id = id))
-                false
-            } catch (e: kotlinx.coroutines.CancellationException) { throw e }
-            catch (_: Exception) { true }
-            SaveTaskResult(id, reminderFailed, saved.imageNames)
+        } finally {
+            // Includes cancellation while waiting for the lock and deletion during import.
+            // A stale draft cannot reattach obsolete names: retainedImages is checked above.
+            removeImagesBestEffort(if (committed) obsoleteImages else imported)
         }
     }
 
@@ -67,15 +80,29 @@ class TaskMutations(
         }
     }
 
-    suspend fun delete(id: Long) = mutex.withLock {
-        repository.getTaskById(id)?.let { task ->
-            withContext(NonCancellable) {
-                // Persist first: receivers reject deleted rows even if cancelling an alarm fails.
-                repository.deleteTask(id)
-                runCatching { imageStore?.removeImages(task.imageNames) }
-                scheduler.cancelReminder(id)
-                synchronizeAll()
+    suspend fun delete(id: Long) {
+        var obsoleteImages = emptyList<String>()
+        try {
+            mutex.withLock {
+                repository.getTaskById(id)?.let { task ->
+                    withContext(NonCancellable) {
+                        // Persist first: receivers reject deleted rows even if cancelling an alarm fails.
+                        repository.deleteTask(id)
+                        obsoleteImages = task.imageNames
+                        scheduler.cancelReminder(id)
+                        synchronizeAll()
+                    }
+                }
             }
+        } finally {
+            removeImagesBestEffort(obsoleteImages)
+        }
+    }
+
+    private suspend fun removeImagesBestEffort(names: List<String>) {
+        if (names.isEmpty()) return
+        withContext(NonCancellable) {
+            runCatching { imageStore?.removeImages(names) }
         }
     }
 
