@@ -6,7 +6,9 @@ import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.Reminder
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
+import com.sepideh.lilo.task.domain.reminder.nextOccurrence
 import com.sepideh.lilo.task.domain.repository.TaskRepository
+import com.sepideh.lilo.task.domain.usecase.ExpiredReminderException
 import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flowOf
@@ -18,6 +20,40 @@ class TaskMutationConcurrencyTest {
     private val at = 2_000_000_000_000L
     private fun task(id: Long = 1) = Task(id = id, title = "Original", reminderAt = at,
         reminderTimeZoneId = "UTC", repeatRule = RepeatRule.DAILY, imageNames = listOf("old.jpg"))
+
+    @Test fun modifiedOneTimeReminderExpiringDuringImportCannotReplaceStoredSchedule() = runTest {
+        val original = task()
+        val repo = Repo(original)
+        val images = Images().apply { importGate = CompletableDeferred() }
+        var now = at - 1
+        val mutations = TaskMutations(repo, Scheduler(), images, now = { now })
+        val saving = async {
+            assertFailsWith<ExpiredReminderException> {
+                mutations.save(original.copy(repeatRule = RepeatRule.NONE), selectedImages = selection)
+            }
+        }
+        runCurrent()
+        assertTrue(images.importStarted)
+        now = at
+        images.importGate!!.complete(Unit)
+        saving.await()
+        assertEquals(original, repo.rows[1])
+        assertEquals(listOf("new.jpg"), images.removed)
+    }
+
+    @Test fun elapsedDailyAndWeeklyAnchorsStillSaveAndSchedule() = runTest {
+        val now = at + 1
+        for (rule in listOf(RepeatRule.DAILY, RepeatRule.WEEKLY)) {
+            val scheduler = Scheduler()
+            val repo = Repo()
+            val mutations = TaskMutations(repo, scheduler, now = { now })
+            val result = mutations.save(Task(title = "Practice", reminderAt = at, repeatRule = rule, reminderTimeZoneId = "UTC"))
+            val reminder = scheduler.synchronized.single()
+            assertEquals(at, repo.rows.getValue(result.id).reminderAt)
+            assertEquals(rule, reminder.repeatRule)
+            assertTrue(requireNotNull(reminder.nextOccurrence(now)) > now)
+        }
+    }
 
     @Test fun receiversProceedDuringImportAndSavePreservesTheirCompletion() = runTest {
         val original = task()

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.TimeZone
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 /** Orders task commits with reminder validation, delivery and scheduling, independently of screens. */
@@ -21,12 +22,23 @@ class TaskMutations(
     private val repository: TaskRepository,
     private val scheduler: ReminderScheduler,
     private val imageStore: ImageStore? = null,
+    private val now: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     private val notificationsEnabled: suspend () -> Boolean = { true },
 ) {
     // Room transactions alone cannot order a read/modify/write with OS notification side effects.
     // Whole-list reconciliation and the notification preference also cross task boundaries.
     // File imports and cleanup do not participate in this critical section.
     private val mutex = Mutex()
+
+    fun nextReminderAtForSave(task: Task, previous: Task?): Long? {
+        val at = task.reminderAt ?: return null
+        val zone = requireNotNull(task.reminderTimeZoneId)
+        val next = nextOccurrence(at, task.repeatRule, zone, now())
+        val unchanged = previous?.reminderAt == at && previous.repeatRule == task.repeatRule &&
+            previous.reminderTimeZoneId == zone
+        if (next == null && !unchanged) throw ExpiredReminderException()
+        return next
+    }
 
     suspend fun save(task: Task, scheduleReminder: Boolean = true,
         selectedImages: List<ImageSource>? = null): SaveTaskResult {
@@ -41,6 +53,7 @@ class TaskMutations(
         try {
             return mutex.withLock {
                 val previous = task.id?.let { requireNotNull(repository.getTaskById(it)) { "Task no longer exists" } }
+                nextReminderAtForSave(task, previous)
                 // Once persistence starts, finish its side effects even if the caller closes.
                 // Mark ownership inside this context, before cancellation can discard the result.
                 withContext(NonCancellable) {
@@ -146,3 +159,5 @@ class TaskMutations(
 }
 
 data class SaveTaskResult(val id: Long, val reminderFailed: Boolean, val imageNames: List<String> = emptyList())
+
+class ExpiredReminderException : IllegalArgumentException("Reminder time has passed")

@@ -87,6 +87,60 @@ class TaskDiscardTest {
         assertTrue(model.stateValue.value.loadFailed)
     }
 
+    @Test fun oneTimeReminderExpiringBeforeSaveShowsFieldErrorUntilChangedOrCleared() = runTest {
+        var now = 10L
+        var writes = 0
+        val model = model(onSave = { writes++ }, now = { now }, missingPermission = ReminderPermission.NOTIFICATIONS)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.stateValue.collect() }
+        model.onAction(TaskDetailAction.OnTitleChanged("Practice"))
+        model.onAction(TaskDetailAction.OnReminderConfirmed(20, RepeatRule.NONE, "UTC"))
+
+        now = 20
+        model.onAction(TaskDetailAction.OnAddTaskButton())
+        runCurrent()
+        val rejected = model.stateValue.value
+        assertTrue(rejected.reminderExpired)
+        assertFalse(rejected.isSaving)
+        assertFalse(rejected.hasError)
+        assertNull(rejected.missingPermission)
+        assertEquals(20L, rejected.task.reminderAt)
+        assertEquals(0, writes)
+
+        model.onAction(TaskDetailAction.OnDateReminderIcon)
+        model.onAction(TaskDetailAction.OnDismissReminder)
+        runCurrent()
+        assertTrue(model.stateValue.value.reminderExpired)
+        model.onAction(TaskDetailAction.OnReminderConfirmed(30, RepeatRule.NONE, "UTC"))
+        runCurrent()
+        assertFalse(model.stateValue.value.reminderExpired)
+        now = 31
+        model.onAction(TaskDetailAction.OnAddTaskButton())
+        runCurrent()
+        assertTrue(model.stateValue.value.reminderExpired)
+        model.onAction(TaskDetailAction.OnClearReminder)
+        runCurrent()
+        assertFalse(model.stateValue.value.reminderExpired)
+        model.onAction(TaskDetailAction.OnAddTaskButton())
+        runCurrent()
+        assertEquals(1, writes)
+    }
+
+    @Test fun titleEditKeepsHistoricalReminderWithoutRequestingPermission() = runTest {
+        var writes = 0
+        val model = model(onSave = { writes++ }, missingPermission = ReminderPermission.NOTIFICATIONS,
+            findTask = { Task(id = it, title = "Original", reminderAt = 5, reminderTimeZoneId = "UTC") })
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.stateValue.collect() }
+        model.onAction(TaskDetailAction.OnGetSelectedTaskInfo(1))
+        runCurrent()
+        model.onAction(TaskDetailAction.OnTitleChanged("Edited"))
+        model.onAction(TaskDetailAction.OnAddTaskButton())
+        runCurrent()
+        assertEquals(1, writes)
+        assertEquals(5L, model.stateValue.value.task.reminderAt)
+        assertNull(model.stateValue.value.missingPermission)
+        assertFalse(model.stateValue.value.reminderExpired)
+    }
+
     @Test fun failedGroupReadDoesNotFreezeDraftAndRetryResubscribes() = runTest {
         var reads = 0
         val model = model(groupFlow = flow { if (reads++ == 0) error("Read failed"); emit(listOf(TaskGroup(id = 7, titleEn = "Work"))) })
@@ -119,6 +173,7 @@ class TaskDiscardTest {
 
     private fun model(missing: Boolean = false, onSave: () -> Unit = { error("Discard must not save") },
         groupFlow: Flow<List<TaskGroup>> = flowOf(emptyList()),
+        now: () -> Long = { 10L }, missingPermission: ReminderPermission? = null,
         findTask: ((Long) -> Task?)? = null): TaskDetailViewModel {
         val language = LanguageProvider(UserPreferencesManager(object : UserPreferencesRepository {
             override val userPreferences = flowOf(UserPreferences())
@@ -145,10 +200,10 @@ class TaskDiscardTest {
             override suspend fun cancelReminder(taskId: Long) {}
         }
         val permissions = object : ReminderPermissions {
-            override suspend fun missingPermission(): ReminderPermission? = null
+            override suspend fun missingPermission(): ReminderPermission? = missingPermission
             override suspend fun request(permission: ReminderPermission) {}
         }
         return TaskDetailViewModel(TaskGroupFactory(language), language, repository, groups,
-            TaskMutations(repository, scheduler), permissions).also { store.put("task", it) }
+            TaskMutations(repository, scheduler, now = now), permissions).also { store.put("task", it) }
     }
 }

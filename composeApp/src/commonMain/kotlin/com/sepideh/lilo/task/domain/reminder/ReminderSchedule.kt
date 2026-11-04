@@ -7,7 +7,10 @@ import kotlin.time.Instant
  * A nonexistent local time shifts forward through the gap. An overlap fires once,
  * at the earlier offset chosen by kotlinx-datetime.
  */
-fun Reminder.nextOccurrence(afterMillis: Long): Long? {
+fun Reminder.nextOccurrence(afterMillis: Long): Long? =
+    nextOccurrence(reminderAt, repeatRule, timeZoneId, afterMillis)
+
+internal fun nextOccurrence(reminderAt: Long, repeatRule: RepeatRule, timeZoneId: String, afterMillis: Long): Long? {
     if (reminderAt > afterMillis) return reminderAt
     if (repeatRule == RepeatRule.NONE) return null
     val zone = TimeZone.of(timeZoneId)
