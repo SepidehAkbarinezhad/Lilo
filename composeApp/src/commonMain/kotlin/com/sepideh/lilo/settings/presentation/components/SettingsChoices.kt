@@ -10,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -17,7 +19,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,23 +38,16 @@ fun <T> SettingsChoices(
     label: @Composable (T) -> String,
     onSelect: (T) -> Unit,
     icon: (@Composable (T) -> ImageVector)? = null,
-    selectionFailed: Boolean = false,
 ) {
     if (options.isEmpty()) return
     val colors = LiloExtendedTheme.colors
     val selectedIndex = options.indexOf(selected).coerceAtLeast(0)
-    val indicator = remember { Animatable(selectedIndex.toFloat()) }
-    val scope = rememberCoroutineScope()
-    val currentOnSelect by rememberUpdatedState(onSelect)
-    val currentSelectedIndex by rememberUpdatedState(selectedIndex)
-    val currentSelectionFailed by rememberUpdatedState(selectionFailed)
-    var previewIndex by remember { mutableStateOf<Int?>(null) }
-    var animating by remember { mutableStateOf(false) }
+    // A language change recreates the row. Resume the slide from its last drawn position.
+    val indicator = rememberSaveable(saver = Saver(
+        save = { it.value }, restore = { position: Float -> Animatable(position) },
+    )) { Animatable(selectedIndex.toFloat()) }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    LaunchedEffect(selectedIndex, selectionFailed) {
-        // Keep the clicked option highlighted while its preference is being saved.
-        if (previewIndex != null && previewIndex != selectedIndex && !selectionFailed) return@LaunchedEffect
-        previewIndex = null
+    LaunchedEffect(selectedIndex) {
         indicator.animateTo(selectedIndex.toFloat(), tween(180))
     }
     Row(
@@ -74,24 +68,9 @@ fun <T> SettingsChoices(
             SettingsChoice(
                 text = label(value),
                 icon = icon?.invoke(value),
-                selected = index == (previewIndex ?: selectedIndex),
+                selected = index == selectedIndex,
                 enabled = enabled,
-                onClick = {
-                    if (!animating && previewIndex == null && index != selectedIndex) scope.launch {
-                        animating = true
-                        previewIndex = index
-                        try {
-                            indicator.animateTo(index.toFloat(), tween(180))
-                            // Finish before a language change rebuilds the localized UI.
-                            currentOnSelect(value)
-                            // A repeated failure can retain the same error state without another emission.
-                            if (currentSelectionFailed && currentSelectedIndex != index) {
-                                previewIndex = null
-                                indicator.animateTo(currentSelectedIndex.toFloat(), tween(180))
-                            }
-                        } finally { animating = false }
-                    }
-                },
+                onClick = { onSelect(value) },
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             )
         }

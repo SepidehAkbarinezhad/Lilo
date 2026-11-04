@@ -44,7 +44,6 @@ fun SettingsScreenRoot(
 @Composable
 fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onBack: () -> Boolean) {
     val colors = LiloExtendedTheme.colors
-    val enabled = state.loaded && !state.saving
     BaseScreen(header = { BaseHeader(title = Res.string.setting_task_title, onBackPressed = onBack) }) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp).padding(top = 16.dp).navigationBarsPadding(),
@@ -53,22 +52,20 @@ fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onB
                 title = stringResource(Res.string.theme_label),
                 icon = vectorResource(Res.drawable.lilo_appearance),
             ) {
-                SettingsChoices(listOf(AppTheme.SYSTEM, AppTheme.LIGHT, AppTheme.DARK), state.userPreferences.theme, enabled,
+                SettingsChoices(listOf(AppTheme.SYSTEM, AppTheme.LIGHT, AppTheme.DARK), state.userPreferences.theme, state.loaded,
                     label = { stringResource(it.labelRes) },
                     icon = { vectorResource(it.iconRes) },
-                    selectionFailed = state.failedAction is SettingsAction.SelectTheme,
                     onSelect = { onAction(SettingsAction.SelectTheme(it)) })
             }
             SettingsSection(stringResource(Res.string.language_label), vectorResource(Res.drawable.lilo_language)) {
-                SettingsChoices(listOf(AppLanguage.FA, AppLanguage.EN), state.userPreferences.language, enabled,
+                SettingsChoices(listOf(AppLanguage.FA, AppLanguage.EN), state.userPreferences.language, state.loaded,
                     label = { stringResource(if (it == AppLanguage.FA) Res.string.settings_language_fa else Res.string.settings_language_en) },
-                    selectionFailed = state.failedAction is SettingsAction.SelectLanguage,
                     onSelect = { onAction(SettingsAction.SelectLanguage(it)) })
             }
-            ReminderSetting(state.userPreferences.notificationsEnabled, enabled) {
+            ReminderSetting(state.userPreferences.notificationsEnabled, state.loaded && !state.saving) {
                 onAction(SettingsAction.SetNotifications(it))
             }
-            if (state.failedAction != null || state.loadFailed) {
+            if (state.failedActions.isNotEmpty() || state.loadFailed) {
                 AppText(text = Res.string.settings_save_error, color = MaterialTheme.colorScheme.error)
                 TextButton(onClick = { onAction(SettingsAction.Retry) }, colors = ButtonDefaults.textButtonColors(contentColor = colors.brand)) {
                     AppText(text = Res.string.settings_retry)

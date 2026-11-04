@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class SettingsViewModel(
     private val userPreferencesManager: UserPreferencesManager,
@@ -19,6 +21,7 @@ class SettingsViewModel(
     private val mutableState = MutableStateFlow(SettingsState())
     val state = mutableState.asStateFlow()
     private var observation: Job? = null
+    private val writes = Mutex()
 
     init { observePreferences() }
 
@@ -37,21 +40,27 @@ class SettingsViewModel(
 
     override fun onAction(action: BaseAction) {
         if (action !is SettingsAction) { super.onAction(action); return }
-        if (action == SettingsAction.Retry) {
-            if (state.value.loadFailed) observePreferences()
-            else state.value.failedAction?.let(::savePreference)
-        } else savePreference(action)
+        if (action == SettingsAction.Retry && state.value.loadFailed) {
+            observePreferences()
+            return
+        }
+        if (!state.value.loaded) return
+        viewModelScope.launch {
+            writes.withLock {
+                if (action == SettingsAction.Retry) state.value.failedActions.forEach { savePreference(it) }
+                else savePreference(action)
+            }
+        }
     }
 
-    private fun savePreference(action: SettingsAction) {
-        if (!state.value.loaded || state.value.saving) return
-        mutableState.update { it.copy(saving = true, failedAction = null) }
-        viewModelScope.launch {
-            try { persist(action) }
-            catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { mutableState.update { it.copy(failedAction = action) } }
-            finally { mutableState.update { it.copy(saving = false) } }
+    private suspend fun savePreference(action: SettingsAction) {
+        mutableState.update { state ->
+            state.copy(saving = true, failedActions = state.failedActions.filterNot { it::class == action::class })
         }
+        try { persist(action) }
+        catch (cancelled: CancellationException) { throw cancelled }
+        catch (_: Exception) { mutableState.update { it.copy(failedActions = it.failedActions + action) } }
+        finally { mutableState.update { it.copy(saving = false) } }
     }
 
     private suspend fun persist(action: SettingsAction) {
