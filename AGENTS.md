@@ -73,13 +73,13 @@ Use structured concurrency, preserve cancellation, and handle failures explicitl
 
 Each feature has one recognizable accent color. Use the theme's semantic color tokens rather than scattering literal colors through components.
 
-| Area | Light-theme accent |
-| --- | --- |
-| Brand | Deep Orange 500 — `#FF5722` |
-| Tasks | Amber 500 — `#FFC107` |
-| Notes | Green 500 — `#4CAF50` |
-| Expenses | Blue 700 — `#1976D2` |
-| Passwords | Purple 500 — `#9C27B0` |
+| Area | Semantic token | Light | Dark |
+| --- | --- | --- | --- |
+| Brand (deep orange) | `brand` | `#E64A19` | `#FF5722` |
+| Tasks (sage) | `taskColor` | `#B9CC9D` | `#C0D2A4` |
+| Notes (coral) | `noteColor` | `#E8B9A4` | `#E5BA9A` |
+| Expenses (blue) | `expenseColor` | `#B4D6E0` | `#A4CED9` |
+| Passwords (lavender) | `passwordColor` | `#CBB7E2` | `#D3C1E7` |
 
 Use theme-specific variants for dark mode. Feature accents identify actions and selected states; priority colors communicate priority independently. Group chips remain neutral unless a separate category-color feature is deliberately introduced.
 
