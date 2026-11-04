@@ -9,11 +9,11 @@ import com.sepideh.lilo.password.domain.crypto.UnlockResult
 import com.sepideh.lilo.password.domain.crypto.VaultCrypto
 import com.sepideh.lilo.password.domain.crypto.VaultSession
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModelStore
 import com.sepideh.lilo.app.navigation.AppRoutes
 import kotlinx.coroutines.launch
-import com.sepideh.lilo.home.domain.*
+import com.sepideh.lilo.note.domain.model.Note
+import com.sepideh.lilo.note.domain.repository.NoteRepository
 import com.sepideh.lilo.home.presentation.model.*
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.repository.TaskRepository
@@ -31,21 +31,14 @@ class HomeFailureTest {
         val store = ViewModelStore()
         try {
             var attempts = 0
-            val card = object : FeatureCard<ReportDetail> {
-                override val feature = LiloFeature.NOTES
-                override fun getReportDetailStrategy() = object : ReportDetailStrategy<ReportDetail> {
-                    override fun observeReportDetail(): Flow<ReportDetail> = flow {
-                        attempts++
-                        if (attempts == 1) error("Read failed")
-                        emit(NoteReportDetail("Recovered", "", 1, null, 0))
-                        kotlinx.coroutines.awaitCancellation()
-                    }
-                }
-                override fun getReportRender() = object : ReportRenderStrategy<ReportDetail> {
-                    @Composable override fun Render(detail: ReportDetail) = Unit
-                }
-            }
-            val model = HomeViewModel(FeatureCardFactory(listOf(card)), TaskMutations(UnusedTasks(), UnusedScheduler()), FakePasswords(), FakeCrypto())
+            val notes = TestNotes(flow {
+                attempts++
+                if (attempts == 1) error("Read failed")
+                emit(listOf(Note(id = 1, title = "Recovered")))
+                kotlinx.coroutines.awaitCancellation()
+            })
+            val tasks = UnusedTasks()
+            val model = HomeViewModel(tasks, notes, TaskMutations(tasks, UnusedScheduler()), FakePasswords(), FakeCrypto())
             store.put("home", model)
             model.onAction(HomeAction.ObserveFeature(LiloFeature.NOTES))
             runCurrent()
@@ -130,7 +123,8 @@ class HomeFailureTest {
         try {
             val repository = FakePasswords()
             val crypto = FakeCrypto()
-            val model = HomeViewModel(FeatureCardFactory(emptyList()), TaskMutations(UnusedTasks(), UnusedScheduler()), repository, crypto)
+            val tasks = UnusedTasks()
+            val model = HomeViewModel(tasks, TestNotes(emptyFlow()), TaskMutations(tasks, UnusedScheduler()), repository, crypto)
             store.put("home", model)
             val routes = mutableListOf<AppRoutes?>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.baseOneTimeEvents.collect { routes += it.route } }
@@ -155,6 +149,12 @@ class HomeFailureTest {
         fun unlock(id: String) { session.value = VaultSession(generation + 1, true, id) }
         override suspend fun seal(plaintext: ByteArray, recordId: String): SealedPassword = error("Not used")
         override suspend fun open(record: SealedPassword, recordId: String): ByteArray = error("Not used")
+    }
+    private class TestNotes(private val notes: Flow<List<Note>>) : NoteRepository {
+        override fun getAllNotes() = notes
+        override suspend fun getNoteById(id: Long): Note? = error("Not used")
+        override suspend fun upsertNote(note: Note): Long = error("Not used")
+        override suspend fun deleteNote(id: Long): Unit = error("Not used")
     }
     private class UnusedTasks : TaskRepository {
         override fun getAllTasks(): Flow<List<Task>> = error("Not used")

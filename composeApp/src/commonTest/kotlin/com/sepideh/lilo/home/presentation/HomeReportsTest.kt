@@ -1,4 +1,4 @@
-package com.sepideh.lilo.home.domain
+package com.sepideh.lilo.home.presentation
 
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.note.domain.model.Note

@@ -1,4 +1,4 @@
-package com.sepideh.lilo.home.domain
+package com.sepideh.lilo.home.presentation
 
 import com.sepideh.lilo.home.presentation.model.PasswordReportDetail
 import com.sepideh.lilo.password.domain.model.Password
