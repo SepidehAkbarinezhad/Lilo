@@ -10,6 +10,7 @@ import lilo.composeapp.generated.resources.title_label
 data class TaskDetailState(
     val task: com.sepideh.lilo.task.domain.model.Task = com.sepideh.lilo.task.domain.model.Task(priority = 1),
     val reminderEditorOpen: Boolean = false,
+    val reminderExpired: Boolean = false,
     val groupManagementOpen: Boolean = false,
     val draftGroupId: Long? = null,
     val isSaving: Boolean = false,

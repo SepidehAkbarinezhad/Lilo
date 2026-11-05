@@ -9,7 +9,11 @@ import com.sepideh.lilo.app.navigation.AppRoutes
 import kotlinx.coroutines.Job
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseViewModel
-import com.sepideh.lilo.home.domain.FeatureCardFactory
+import com.sepideh.lilo.home.presentation.model.ReportDetail
+import com.sepideh.lilo.note.domain.repository.NoteRepository
+import com.sepideh.lilo.task.domain.repository.TaskRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import com.sepideh.lilo.home.presentation.model.LiloFeature
 import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import kotlinx.coroutines.launch
@@ -21,7 +25,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
-class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
+class HomeViewModel(
+    private val taskRepository: TaskRepository,
+    private val noteRepository: NoteRepository,
     private val taskMutations: TaskMutations,
     private val passwordRepository: PasswordRepository,
     private val crypto: VaultCrypto
@@ -98,10 +104,12 @@ class HomeViewModel(private val featureCardFactory: FeatureCardFactory,
         if (!observedFeatures.add(feature)) return // already subscribed
 
         _state.update { it.copy(failedFeatures = it.failedFeatures - feature) }
-        featureCardFactory.cardFor(feature)
-            .getReportDetailStrategy()
-            .observeReportDetail()
-            .onEach { detail ->
+        val report: Flow<ReportDetail> = when (feature) {
+            LiloFeature.TASKS -> taskRepository.getAllTasks().map(::taskHomeReport)
+            LiloFeature.NOTES -> noteRepository.getAllNotes().map(::noteHomeReport)
+            LiloFeature.PASSWORDS -> passwordRepository.observePasswords().map(::passwordHomeReport)
+        }
+        report.onEach { detail ->
                 _state.update { current ->
                     current.copy(reportDetails = current.reportDetails + (feature to detail))
                 }

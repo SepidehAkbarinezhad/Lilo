@@ -5,6 +5,15 @@
 xcuserdata
 !src/**/build/
 local.properties
+# Android signing keys and local signing credentials must never be committed.
+*.jks
+*.keystore
+*.p12
+*.pfx
+key.properties
+keystore.properties
+signing.properties
+*.keystore.properties
 .idea
 .DS_Store
 captures

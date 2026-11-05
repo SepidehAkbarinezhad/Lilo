@@ -1,30 +1,17 @@
 package com.sepideh.lilo.home.di
 
-import com.sepideh.lilo.home.domain.FeatureCard
-import com.sepideh.lilo.home.domain.FeatureCardFactory
-import com.sepideh.lilo.home.domain.NoteFeatureCardImpl
-import com.sepideh.lilo.home.domain.TaskFeatureCardImpl
 import com.sepideh.lilo.home.presentation.HomeViewModel
 import org.koin.core.module.dsl.viewModel
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val homeModule = module {
-
-    single { TaskFeatureCardImpl(get()) } bind FeatureCard::class
-    single { NoteFeatureCardImpl(get()) } bind FeatureCard::class
-    single { com.sepideh.lilo.home.domain.PasswordFeatureCardImpl(get()) } bind FeatureCard::class
-
-
-    single { FeatureCardFactory(getAll()) }
-
     viewModel {
         HomeViewModel(
-            featureCardFactory = get(),
+            taskRepository = get(),
+            noteRepository = get(),
             taskMutations = get(),
             passwordRepository = get(),
             crypto = get()
         )
     }
-
 }

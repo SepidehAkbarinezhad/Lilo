@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:809457203767:android:8526080bd562be6cecddb2",
+        "mobilesdk_app_id": "1:809457203767:android:37cbad71fe6e8ed5ecddb2",
         "android_client_info": {
-          "package_name": "com.sepideh.lilo.kmp"
+          "package_name": "com.sepideh.lilo.kmp.app"
         }
       },
       "oauth_client": [],

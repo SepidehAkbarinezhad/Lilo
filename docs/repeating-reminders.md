@@ -39,6 +39,29 @@ The common recurrence calculator shifts nonexistent DST times forward and uses t
 earlier occurrence of an ambiguous time once. iOS native repeats follow the platform
 calendar's DST matching behaviour. Device tests must cover both platforms.
 
+## Task mutation synchronization (H4)
+
+The singleton mutation lock orders task read/modify/write operations with reminder
+validation, re-arming, notification delivery and cancellation. Room protects individual
+transactions, but cannot make these database and operating-system operations atomic.
+Removing the lock would allow a stale save to undo completion, or a receiver/restoration
+snapshot to re-arm an alarm after a concurrent cancellation. A per-task lock would not
+cover whole-list reconciliation or notification preference changes.
+
+Image imports run before acquiring this lock. New imports have unique file names and
+remain owned by the save until its database commit succeeds. The task is re-read under
+the lock afterward: deletion rejects the save, completion is preserved, and attachments
+removed by another save are not reattached from a stale form. Cancellation while waiting
+for the lock or a failed commit cleans up only the staged imports. After a successful
+commit, cancellation cannot remove its newly owned attachments.
+
+Cleanup of obsolete images runs after releasing the lock, including on task deletion
+and scheduling failure. Android alarm, completion and restoration receivers therefore
+do not wait for image-provider copies or file deletion. Their existing `goAsync()` /
+`finish()` handling is unchanged. This removes the image-I/O dependency; it does not
+provide a hard deadline guarantee for database or OS service calls. No timeout that
+could silently abandon a completion or reminder was introduced.
+
 ## First-release schema
 
 Room schema remains version 1, with no migration and no destructive fallback, as

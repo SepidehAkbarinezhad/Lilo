@@ -12,6 +12,7 @@ import com.sepideh.lilo.task.domain.reminder.ReminderPermissions
 import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.repository.TaskRepository
+import com.sepideh.lilo.task.domain.usecase.ExpiredReminderException
 import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import com.sepideh.lilo.task.presentation.model.Priority
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
@@ -94,17 +95,19 @@ class TaskDetailViewModel(
             TaskDetailAction.OnDateReminderIcon -> local.update { it.copy(reminderEditorOpen = true) }
             TaskDetailAction.OnDismissReminder -> local.update { it.copy(reminderEditorOpen = false) }
             is TaskDetailAction.OnReminderConfirmed -> local.update {
-                it.copy(task = it.task.copy(reminderAt = action.at, repeatRule = action.repeat, reminderTimeZoneId = action.zoneId), reminderEditorOpen = false)
+                it.copy(task = it.task.copy(reminderAt = action.at, repeatRule = action.repeat, reminderTimeZoneId = action.zoneId),
+                    reminderEditorOpen = false, reminderExpired = false)
             }
             TaskDetailAction.OnClearReminder -> local.update {
-                it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null))
+                it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null), reminderExpired = false)
             }
             is TaskDetailAction.OnAddTaskButton -> save()
             TaskDetailAction.OnAskSaveWithoutReminder -> local.update {
                 it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = true)
             }
             TaskDetailAction.OnSaveWithoutReminder -> {
-                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null), missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
+                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null),
+                    reminderExpired = false, missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
                 save()
             }
             is TaskDetailAction.OnGrantPermissionButton -> launchOperation {
@@ -128,7 +131,7 @@ class TaskDetailViewModel(
                 launchOperation {
                     val task = taskRepository.getTaskById(action.taskId) ?: error("Task not found")
                     original = task
-                    local.update { it.copy(task = task, selectedPriority = Priority.getById(task.priority), isLoading = false) }
+                    local.update { it.copy(task = task, selectedPriority = Priority.getById(task.priority), isLoading = false, reminderExpired = false) }
                 }
             }
 
@@ -187,8 +190,9 @@ class TaskDetailViewModel(
         launchOperation {
             val state = local.value
             val missing = permissions.missingPermission()
+            val nextReminderAt = mutations.nextReminderAtForSave(state.task, original)
             val allowed = missing == null
-            if (state.task.reminderAt != null && missing != null) {
+            if (nextReminderAt != null && missing != null) {
                 local.update { it.copy(isSaving = false, missingPermission = missing) }
                 return@launchOperation
             }
@@ -213,6 +217,9 @@ class TaskDetailViewModel(
     private fun launchOperation(block: suspend () -> Unit) {
         viewModelScope.launch {
             try { block() } catch (e: CancellationException) { throw e }
+            catch (_: ExpiredReminderException) {
+                local.update { it.copy(reminderExpired = true, isSaving = false, missingPermission = null, awaitingPermissionReturn = false) }
+            }
             catch (_: DuplicateNameException) { local.update { it.copy(duplicateGroupName = true, isAddingGroup = false) } }
             catch (_: Exception) { local.update { it.copy(hasError = true, loadFailed = it.loadFailed || it.isLoading, isSaving = false, isLoading = false, isAddingGroup = false, awaitingPermissionReturn = false) } }
         }

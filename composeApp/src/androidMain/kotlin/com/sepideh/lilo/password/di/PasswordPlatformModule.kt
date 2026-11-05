@@ -13,7 +13,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 actual fun passwordPlatformModule() = module {
-    single<PasswordClipboard> { AndroidPasswordClipboard(androidContext()) }
+    single { AndroidPasswordClipboard(androidContext()) }
+    single<PasswordClipboard> { get<AndroidPasswordClipboard>() }
     single<VaultCrypto> { AndroidVaultCrypto(androidContext()) }
     single { Room.databaseBuilder<PasswordDatabase>(androidContext(), passwordDirectory(androidContext()).resolve("passwords.db").absolutePath)
         .addCallback(com.sepideh.lilo.password.data.local.PasswordDefaultsCallback).setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build() }

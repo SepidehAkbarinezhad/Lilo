@@ -9,6 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.sepideh.lilo.core.presentation.format.localizedDigits
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.task.presentation.reminder.ReminderEditorScreen
@@ -17,6 +20,7 @@ import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
 import com.sepideh.lilo.core.presentation.BaseRoot
 import com.sepideh.lilo.core.presentation.BaseFormScreen
+import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.components.group.GroupOption
 import com.sepideh.lilo.core.presentation.components.group.GroupSelectionSheet
@@ -27,6 +31,7 @@ import com.sepideh.lilo.task.presentation.detail.components.TaskPrioritySelector
 import com.sepideh.lilo.task.presentation.detail.components.SaveWithoutReminderDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
+import com.sepideh.lilo.ui.theme.LiloSpacing
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
@@ -119,13 +124,20 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
             FormSelectionRow(accent = accent, icon = LiloIcons.Groups, title = stringResource(Res.string.group_field_label),
                 value = state.selectedGroup?.takeIf { it.isDeletable }?.title ?: stringResource(Res.string.no_group_label),
                 onClick = { onAction(TaskDetailAction.OnGroupIcon) }, enabled = !state.isSaving && !state.isLoading && !state.loadFailed)
-            FormSelectionRow(icon = LiloIcons.Reminder, title = stringResource(Res.string.reminder_label), accent = accent,
-                value = com.sepideh.lilo.task.presentation.reminder.taskReminderLabel(task, includeRepeat = true),
-                valueBelowTitle = true,
-                onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },
-                clearContentDescription = stringResource(Res.string.remove_reminder_action),
-                enabled = !state.isSaving && !state.isLoading && !state.loadFailed,
-                onClear = if (state.task.reminderAt != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
+            Column(verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
+                FormSelectionRow(icon = LiloIcons.Reminder, title = stringResource(Res.string.reminder_label), accent = accent,
+                    value = com.sepideh.lilo.task.presentation.reminder.taskReminderLabel(task, includeRepeat = true),
+                    valueBelowTitle = true,
+                    onClick = { onAction(TaskDetailAction.OnDateReminderIcon) },
+                    clearContentDescription = stringResource(Res.string.remove_reminder_action),
+                    enabled = !state.isSaving && !state.isLoading && !state.loadFailed,
+                    onClear = if (state.task.reminderAt != null) ({ onAction(TaskDetailAction.OnClearReminder) }) else null)
+                if (state.reminderExpired) {
+                    AppText(text = Res.string.reminder_future_error, textType = TextType.FieldError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+                }
+            }
             com.sepideh.lilo.core.presentation.components.images.ImageAttachments(
                 images = com.sepideh.lilo.core.presentation.images.attachmentPreviews(task.imageNames, state.removedImageNames, state.selectedImages),
                 accent = accent, enabled = !state.isLoading && !state.isSaving && !state.loadFailed,

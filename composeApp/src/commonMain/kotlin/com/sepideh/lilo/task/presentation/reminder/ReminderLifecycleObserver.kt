@@ -24,7 +24,7 @@ fun ReminderLifecycleObserver() {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                println("Reminder restoration failed: ${e.message}")
+                println("Reminder restoration failed")
             }
             awaitCancellation()
         }

@@ -6,6 +6,6 @@ data class SettingsState(
     val userPreferences: UserPreferences = UserPreferences(),
     val loaded: Boolean = false,
     val saving: Boolean = false,
-    val failedAction: SettingsAction? = null,
+    val failedActions: List<SettingsAction> = emptyList(),
     val loadFailed: Boolean = false,
 )

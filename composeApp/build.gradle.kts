@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.File
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -96,7 +97,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.sepideh.lilo.kmp"
+        applicationId = "com.sepideh.lilo.kmp.app"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -108,9 +109,31 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
+    signingConfigs {
+        create("release") {
+            // Supply these only in the build environment, never in tracked properties.
+            storeFile = providers.environmentVariable("LILO_RELEASE_STORE_FILE").orNull?.let { path ->
+                val keystore = File(path)
+                require(keystore.isAbsolute && !keystore.canonicalFile.toPath().startsWith(rootDir.canonicalFile.toPath())) {
+                    "LILO_RELEASE_STORE_FILE must be an absolute path outside the repository."
+                }
+                keystore
+            }
+            storePassword = providers.environmentVariable("LILO_RELEASE_STORE_PASSWORD").orNull
+            keyAlias = providers.environmentVariable("LILO_RELEASE_KEY_ALIAS").orNull
+            keyPassword = providers.environmentVariable("LILO_RELEASE_KEY_PASSWORD").orNull
+        }
+    }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -118,6 +141,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
+
+// AGP omits validateSigningRelease when credentials are incomplete, so explicitly
+// gate packaging. Compilation/R8 checks can still run without a private key.
+val validateReleaseSigningCredentials = tasks.register("validateReleaseSigningCredentials") {
+    group = "verification"
+    description = "Checks external release signing inputs without displaying credentials."
+    doLast {
+        val required = listOf("LILO_RELEASE_STORE_FILE", "LILO_RELEASE_STORE_PASSWORD",
+            "LILO_RELEASE_KEY_ALIAS", "LILO_RELEASE_KEY_PASSWORD")
+        val missing = required.filter { providers.environmentVariable(it).orNull.isNullOrBlank() }
+        check(missing.isEmpty()) { "Release signing requires: ${missing.joinToString()}. See docs/android-release-signing.md." }
+        check(File(providers.environmentVariable("LILO_RELEASE_STORE_FILE").get()).isFile) {
+            "Release keystore file does not exist. See docs/android-release-signing.md."
+        }
+    }
+}
+tasks.matching { it.name in setOf("packageRelease", "packageReleaseBundle", "assembleRelease", "bundleRelease") }
+    .configureEach { dependsOn(validateReleaseSigningCredentials) }
 
 dependencies {
     debugImplementation(compose.uiTooling)

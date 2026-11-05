@@ -1,4 +1,4 @@
-package com.sepideh.lilo.home.domain
+package com.sepideh.lilo.home.presentation
 
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.app.navigation.detailRoute

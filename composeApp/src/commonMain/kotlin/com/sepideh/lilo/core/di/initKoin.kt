@@ -13,9 +13,9 @@ import org.koin.dsl.KoinAppDeclaration
 fun initKoin(config: KoinAppDeclaration? = null) {
 
     startKoin {
-        config?.invoke(this)
         //sets Koin's internal logger
         logger(PlatformLogger())
+        config?.invoke(this)
         modules(
             homeModule,
             coreModule,

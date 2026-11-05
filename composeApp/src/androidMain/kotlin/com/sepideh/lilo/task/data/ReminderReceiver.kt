@@ -17,6 +17,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.sepideh.lilo.app.MainActivity
+import com.sepideh.lilo.BuildConfig
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import kotlinx.coroutines.*
@@ -33,7 +34,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 val label = markDoneNotificationLabel(getKoin().get<UserPreferencesRepository>().userPreferences.first().language)
                 getKoin().get<TaskMutations>().deliverReminder(taskId, triggerAt) { showNotification(context, it, label) }
             } catch (e: Exception) {
-                Log.e("LiloReminder", "Reminder delivery failed", e)
+                Log.e("LiloReminder", "Reminder delivery failed", e.takeIf { BuildConfig.DEBUG })
             } finally { pending.finish() }
         }
     }
@@ -82,7 +83,7 @@ class ReminderRestoreReceiver : BroadcastReceiver() {
         val pending = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try { getKoin().get<TaskMutations>().restoreReminders() }
-            catch (e: Exception) { Log.e("LiloReminder", "Could not restore reminders", e) }
+            catch (e: Exception) { Log.e("LiloReminder", "Could not restore reminders", e.takeIf { BuildConfig.DEBUG }) }
             finally { pending.finish() }
         }
     }
