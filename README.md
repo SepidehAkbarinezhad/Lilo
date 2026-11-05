@@ -41,7 +41,7 @@ Lilo follows Clean Architecture principles with feature-based organization and s
   </tr>
   <tr>
     <td align="center"><img src="screenShots/password-list.jpg" alt="Password list with service names, masked passwords, and reveal and copy controls" width="220"><br>Passwords</td>
-    <td align="center"><img src="screenShots/password-services.jpg" alt="Service selection sheet in the password creation form" width="220"><br>Password services</td>
+    <td align="center"><img src="screenShots/password-services.jpg" alt="Service selection sheet in the password creation form" width="220"><br>Add Password</td>
     <td align="center"><img src="screenShots/settings-light.jpg" alt="Settings in light mode with appearance, language, and reminder preferences" width="220"><br>Settings</td>
   </tr>
 </table>
