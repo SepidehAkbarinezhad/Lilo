@@ -7,12 +7,14 @@ import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.memory.MemoryCache
 import com.google.firebase.FirebaseApp
+import com.sepideh.lilo.BuildConfig
 import com.sepideh.lilo.fcm.LiloFirebaseMessagingService
 import com.google.firebase.messaging.FirebaseMessaging
 import com.sepideh.lilo.core.di.initKoin
 import com.sepideh.lilo.core.presentation.images.AttachmentPreviewMapper
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.logger.EmptyLogger
 
 class LiloApplication : Application(), SingletonImageLoader.Factory {
 
@@ -27,6 +29,7 @@ class LiloApplication : Application(), SingletonImageLoader.Factory {
         super.onCreate()
 
         initKoin {
+            if (!BuildConfig.DEBUG) logger(EmptyLogger())
             androidContext(this@LiloApplication)
         }
 

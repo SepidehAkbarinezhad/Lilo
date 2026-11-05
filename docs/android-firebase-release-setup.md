@@ -1,6 +1,6 @@
 # Android identity and Firebase setup
 
-Android application ID: `com.sepideh.lilo.kmp.app`. Kotlin packages and the Android namespace remain `com.sepideh.lilo`; iOS is unchanged. Version code/name remain `1` / `1.0`. Release signing is not configured.
+Android application ID: `com.sepideh.lilo.kmp.app`. Kotlin packages and the Android namespace remain `com.sepideh.lilo`; iOS is unchanged. Version code/name remain `1` / `1.0`. Release signing reads external environment variables; see [signed APK instructions](android-release-signing.md). No signing key is stored in this repository.
 
 This is a separate Android app, not an update to the existing Bazaar installation. It gets separate local storage; existing app data does not migrate automatically. Keep the old installation if its data is needed.
 
@@ -51,6 +51,8 @@ See [FCM client setup and device testing](https://firebase.google.com/docs/cloud
 
 ## Verify the other services
 
-For Analytics, enable debug reporting with `adb shell setprop debug.firebase.analytics.app com.sepideh.lilo.kmp.app`, reopen/use the app, and inspect Firebase **Analytics → DebugView**. Disable it afterward with `adb shell setprop debug.firebase.analytics.app .none.`. Automatic events do not imply feature-specific tracking. See [Analytics DebugView](https://firebase.google.com/docs/analytics/debugview).
+Automatic Analytics and Crashlytics collection is disabled by `src/debug/AndroidManifest.xml` for Debug; FCM remains enabled. Release retains automatic collection. For an intentional disposable Debug test, temporarily change the corresponding collection metadata to `true`, rebuild/reinstall, and restore it afterward. Do not commit that temporary change.
 
-For Crashlytics, follow the [official controlled test-crash procedure](https://firebase.google.com/docs/crashlytics/android/test-implementation) on a disposable debug installation, relaunch, and confirm the report for the new registration. Remove any temporary crash trigger before release; none is included in this change.
+For Analytics, after enabling collection for the test, enable debug reporting with `adb shell setprop debug.firebase.analytics.app com.sepideh.lilo.kmp.app`, reopen/use the app, and inspect Firebase **Analytics → DebugView**. Disable it afterward with `adb shell setprop debug.firebase.analytics.app .none.`. Automatic events do not imply feature-specific tracking. See [Analytics DebugView](https://firebase.google.com/docs/analytics/debugview).
+
+For Crashlytics, follow the [official controlled test-crash procedure](https://firebase.google.com/docs/crashlytics/android/test-implementation) on a disposable debug installation with collection temporarily enabled, relaunch, and confirm the report for the new registration. Remove any temporary crash trigger before release; none is included in this change.

@@ -1,5 +1,7 @@
 package com.sepideh.lilo.task.data
 
+import com.sepideh.lilo.BuildConfig
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -23,7 +25,7 @@ class ReminderCompletionReceiver : BroadcastReceiver() {
                 // Also dismiss a stale notification whose task has already been deleted.
                 NotificationManagerCompat.from(context).cancel("task:$taskId", 0)
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (failure: Exception) { Log.e("LiloReminder", "Could not complete task from notification", failure) }
+            catch (failure: Exception) { Log.e("LiloReminder", "Could not complete task from notification", failure.takeIf { BuildConfig.DEBUG }) }
             finally { pending.finish() }
         }
     }

@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">لیلو</string>
     <string name="fcm_default_body">محتوای جدید در دسترس است</string>
     <string name="fcm_channel_name">اعلان‌های لیلو</string>
     <string name="fcm_channel_description">خبرهای برنامهٔ لیلو</string>
