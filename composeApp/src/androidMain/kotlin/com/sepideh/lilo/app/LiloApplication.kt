@@ -7,6 +7,7 @@ import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.memory.MemoryCache
 import com.google.firebase.FirebaseApp
+import com.sepideh.lilo.fcm.LiloFirebaseMessagingService
 import com.google.firebase.messaging.FirebaseMessaging
 import com.sepideh.lilo.core.di.initKoin
 import com.sepideh.lilo.core.presentation.images.AttachmentPreviewMapper
@@ -31,14 +32,14 @@ class LiloApplication : Application(), SingletonImageLoader.Factory {
 
         FirebaseApp.initializeApp(this)
 
+        LiloFirebaseMessagingService.createNotificationChannel(this)
+
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("FCM", "Messaging token received")
-
                     subscribeToTopic()
                 } else {
-                    Log.e("FCM", "❌ Failed to get token", task.exception)
+                    Log.e("FCM", "Failed to get messaging token")
                 }
             }
     }
@@ -46,12 +47,8 @@ class LiloApplication : Application(), SingletonImageLoader.Factory {
     private fun subscribeToTopic() {
         FirebaseMessaging.getInstance().subscribeToTopic("all_users")
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("FCM", "✅ Successfully subscribed to 'news' topic")
-                } else {
-                    Log.e("FCM", "❌ Subscription FAILED", task.exception)
-                    Log.e("FCM", "Error message: ${task.exception?.message}")
-
+                if (!task.isSuccessful) {
+                    Log.e("FCM", "Failed to subscribe to all_users")
                 }
             }
     }

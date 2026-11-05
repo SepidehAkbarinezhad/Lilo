@@ -1,81 +1,86 @@
 package com.sepideh.lilo.fcm
 
-import android.util.Log
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import android.Manifest
-import android.content.pm.PackageManager
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+import com.sepideh.lilo.R
+import com.sepideh.lilo.app.MainActivity
+import java.util.UUID
 
 class LiloFirebaseMessagingService : FirebaseMessagingService() {
-
-    override fun onNewToken(token: String) {
-        super.onNewToken(token)
-        Log.d("FCM", "Messaging token refreshed")
-    }
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        super.onMessageReceived(remoteMessage)
-
-        // 🔴 CRITICAL - THIS RUNS WHEN APP IS IN FOREGROUND
-        Log.d("FCM", "🔥🔥🔥 MESSAGE RECEIVED BY APP! 🔥🔥🔥")
-
-        // Extract notification payload
-        val title = remoteMessage.notification?.title ?: "Lilo Update"
-        val body = remoteMessage.notification?.body ?: "New content available"
-
-        // 🔴 ACTUALLY SHOW THE NOTIFICATION
-        showNotification(title, body)
-    }
-
-    private fun showNotification(title: String, message: String) {
+        // FCM displays background notification/mixed messages itself. Render only here;
+        // never render their data extras again when MainActivity opens.
         if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
-        val channelId = "lilo_channel"
-        val notificationId = System.currentTimeMillis().toInt()
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED) return
 
-        // Create channel (required for Android 8+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Lilo Notifications",
-                NotificationManager.IMPORTANCE_HIGH // HIGH = heads-up popup
-            ).apply {
-                description = "Updates from Lilo app"
-                enableLights(true)
-                enableVibration(true)
-            }
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.createNotificationChannel(channel)
-            Log.d("FCM", "✅ Notification channel created")
-        }
-
-        // Build the notification
-        val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // 🔴 REPLACE with your own icon
+        val content = FcmNotificationContent.resolve(
+            remoteMessage.data,
+            remoteMessage.notification?.title,
+            remoteMessage.notification?.body,
+            remoteMessage.notification?.imageUrl?.toString(),
+            getString(R.string.app_name),
+            getString(R.string.fcm_default_body),
+        )
+        createNotificationChannel(this)
+        val image = NotificationImageLoader.load(content.imageUrl)
+        val openApp = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(content.title)
+            .setContentText(content.body)
+            .setSmallIcon(R.drawable.lilo_launcher_monochrome)
+            .setContentIntent(openApp)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setStyle(if (image != null) {
+                NotificationCompat.BigPictureStyle().bigPicture(image).setSummaryText(content.body)
+            } else {
+                NotificationCompat.BigTextStyle().bigText(content.body)
+            })
             .build()
-
-        // SHOW IT!
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         try {
-            manager.notify(notificationId, notification)
+            // Re-delivery of the same message updates its existing notification.
+            getSystemService(NotificationManager::class.java).notify(
+                remoteMessage.messageId ?: UUID.randomUUID().toString(), 0, notification,
+            )
         } catch (_: SecurityException) {
-            // Notification permission may be revoked after the check above.
-            return
+            // Permission may be revoked while the image is loading.
         }
+    }
 
-        Log.d("FCM", "Notification displayed")
+    companion object {
+        private const val CHANNEL_ID = "lilo_channel"
+
+        fun createNotificationChannel(context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    CHANNEL_ID, context.getString(R.string.fcm_channel_name),
+                    NotificationManager.IMPORTANCE_HIGH,
+                ).apply {
+                    description = context.getString(R.string.fcm_channel_description)
+                    enableLights(true)
+                    enableVibration(true)
+                }
+                context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+            }
+        }
     }
 }
