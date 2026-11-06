@@ -5,8 +5,6 @@ import com.sepideh.lilo.ui.theme.*
 import com.sepideh.lilo.core.presentation.icons.LiloIcons
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +22,6 @@ import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.components.AppPreviews
 import com.sepideh.lilo.core.presentation.components.ListEmptyState
 import com.sepideh.lilo.core.presentation.components.AppText
-import com.sepideh.lilo.core.presentation.components.LiloSelectionChip
 import com.sepideh.lilo.core.presentation.components.DeleteConfirmationDialog
 import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.task.domain.model.Task
@@ -32,6 +29,7 @@ import com.sepideh.lilo.task.presentation.detail.TaskDetailScreen
 import com.sepideh.lilo.task.presentation.detail.TaskDetailState
 import com.sepideh.lilo.task.presentation.list.components.TaskFilterSheet
 import com.sepideh.lilo.task.presentation.list.components.TaskList
+import com.sepideh.lilo.task.presentation.list.components.TaskGroupList
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -75,17 +73,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
                 Text(stringResource(Res.string.task_operation_error), color = MaterialTheme.colorScheme.error)
                 TextButton(onClick = { onAction(TaskListAction.Retry) }) { Text(stringResource(Res.string.note_retry)) }
             }
-            LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-                item(key = "all") {
-                    LiloSelectionChip(label = stringResource(Res.string.group_all), selected = state.selectedGroup == null,
-                        accent = accent, onClick = { onAction(TaskListAction.OnGroupSelected(null)) })
-                }
-                items(state.groups, key = { it.id }) { group ->
-                    val id = group.id.takeIf { it != 0L }
-                    LiloSelectionChip(label = group.title, selected = state.selectedGroup == id, accent = accent,
-                        onClick = { onAction(TaskListAction.OnGroupSelected(id)) })
-                }
-            }
+            TaskGroupList(state, clickable = true, onAction = onAction)
             if (isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             if (state.tasksResult.isEmpty() && !isLoading) {
                 val filtered = state.selectedGroup != null || state.searchQuery.isNotBlank() ||

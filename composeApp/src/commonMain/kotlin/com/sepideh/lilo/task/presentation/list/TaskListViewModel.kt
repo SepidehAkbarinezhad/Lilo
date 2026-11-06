@@ -41,7 +41,8 @@ class TaskListViewModel(
 
     // One collector combines every filter; Apply never launches another Room subscription.
     val state = combine(local, tasks, groups, query, languageProvider.languageFlow) { ui, tasks, groups, text, language ->
-        val groupId = ui.selectedGroup?.takeIf { id -> groups.any { it.id == id } }
+        // null means all tasks; 0 is the persisted no-group ID, not a group table row.
+        val groupId = ui.selectedGroup?.takeIf { id -> id == 0L || groups.any { it.id == id } }
         val filter = ui.taskFilterOption
         ui.copy(
             tasksResult = tasks.matching(TaskQuery(
