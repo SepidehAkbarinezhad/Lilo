@@ -19,6 +19,9 @@ import androidx.lifecycle.Lifecycle
 import com.sepideh.lilo.password.data.AndroidVaultCrypto
 import com.sepideh.lilo.password.domain.crypto.VaultCrypto
 import lilo.composeapp.generated.resources.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -29,27 +32,51 @@ actual fun rememberPasswordUnlocker(onResult: (UnlockResult) -> Unit): (Password
     val activity = LocalContext.current.activity()
     val crypto = koinInject<VaultCrypto>() as AndroidVaultCrypto
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val scope = rememberCoroutineScope()
     val callback by rememberUpdatedState(onResult)
     val title = stringResource(Res.string.password_unlock_title)
     val reason = stringResource(Res.string.password_unlock_reason)
     var signal by remember { mutableStateOf<CancellationSignal?>(null) }
     var pending by remember { mutableStateOf<AndroidVaultCrypto.UnlockOperation?>(null) }
-    var requested by remember { mutableStateOf<PasswordUnlockRequest?>(null) }
+    var credentialRequest by remember { mutableStateOf<PasswordUnlockRequest?>(null) }
+    var credentialCompletion by remember { mutableStateOf<Job?>(null) }
     val credential = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        try {
-            if (result.resultCode == Activity.RESULT_OK && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                // Credential confirmation authorizes timed keys, including after an OS upgrade.
-                val operation = crypto.prepareUnlock(requireNotNull(requested))
-                crypto.completeUnlock(operation)
-                callback(UnlockResult.SUCCESS)
-            } else callback(UnlockResult.CANCELLED)
-        } catch (e: Exception) { callback(unlockFailure(e)) }
+        if (credentialCompletion?.isActive != true) {
+            val request = credentialRequest
+            credentialRequest = null
+            credentialCompletion = scope.launch {
+                deliverCredentialUnlockResult(
+                    lifecycle = lifecycle,
+                    confirmed = result.resultCode == Activity.RESULT_OK,
+                    request = request,
+                    unlock = { confirmedRequest ->
+                        try {
+                            // Credential confirmation authorizes timed keys, including after an OS upgrade.
+                            val operation = crypto.prepareUnlock(confirmedRequest)
+                            crypto.completeUnlock(operation)
+                            UnlockResult.SUCCESS
+                        } catch (cancelled: CancellationException) {
+                            throw cancelled
+                        } catch (error: Exception) {
+                            unlockFailure(error)
+                        }
+                    },
+                    onResult = { callback(it) },
+                )
+            }
+        }
     }
-    DisposableEffect(Unit) { onDispose { signal?.cancel(); pending?.input?.fill(0) } }
+    DisposableEffect(lifecycle) {
+        onDispose {
+            credentialCompletion?.cancel()
+            credentialRequest = null
+            signal?.cancel()
+            pending?.input?.fill(0)
+        }
+    }
     return unlock@{ request ->
-        requested = request
+        if (signal != null || credentialRequest != null || credentialCompletion?.isActive == true) return@unlock
         crypto.lock()
-        if (signal != null) return@unlock
         val keyguard = activity.getSystemService(KeyguardManager::class.java)
         if (!keyguard.isDeviceSecure) { callback(UnlockResult.UNAVAILABLE); return@unlock }
         try {
@@ -62,7 +89,10 @@ actual fun rememberPasswordUnlocker(onResult: (UnlockResult) -> Unit): (Password
 
             if (useCredentialConfirmation) {
                 val intent = keyguard.createConfirmDeviceCredentialIntent(title, reason)
-                if (intent != null) credential.launch(intent) else callback(UnlockResult.UNAVAILABLE)
+                if (intent != null) {
+                    credentialRequest = request
+                    credential.launch(intent)
+                } else callback(UnlockResult.UNAVAILABLE)
                 return@unlock
             }
             val operation = crypto.prepareUnlock(request)
@@ -87,7 +117,7 @@ actual fun rememberPasswordUnlocker(onResult: (UnlockResult) -> Unit): (Password
                             callback(if (errorCode == BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED || errorCode == BiometricPrompt.BIOMETRIC_ERROR_CANCELED) UnlockResult.CANCELLED else UnlockResult.FAILED)
                         }
                     })
-        } catch (e: Exception) { pending?.input?.fill(0); pending = null; signal = null; callback(unlockFailure(e)) }
+        } catch (e: Exception) { credentialRequest = null; pending?.input?.fill(0); pending = null; signal = null; callback(unlockFailure(e)) }
     }
 }
 
