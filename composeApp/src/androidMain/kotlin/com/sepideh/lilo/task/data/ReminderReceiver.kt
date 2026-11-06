@@ -12,12 +12,12 @@ import com.sepideh.lilo.task.presentation.reminder.COMPLETE_TASK_ACTION
 import com.sepideh.lilo.task.presentation.reminder.markDoneNotificationLabel
 import com.sepideh.lilo.settings.domain.repo.UserPreferencesRepository
 import kotlinx.coroutines.flow.first
-import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.sepideh.lilo.app.MainActivity
 import com.sepideh.lilo.BuildConfig
+import com.sepideh.lilo.R
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.usecase.TaskMutations
 import kotlinx.coroutines.*
@@ -42,11 +42,16 @@ class ReminderReceiver : BroadcastReceiver() {
     private fun showNotification(context: Context, task: Task, completeLabel: String) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "task_reminders"
+        // Persist a resource-name URI, since numeric resource IDs can change between builds.
+        val sound = Uri.parse("android.resource://${context.packageName}/raw/${context.resources.getResourceEntryName(R.raw.lilo_reminder)}")
+        val vibration = longArrayOf(0, 160, 100, 160)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, "Task reminders", NotificationManager.IMPORTANCE_HIGH).apply {
-                setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
+                setSound(sound,
                     AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
+                enableVibration(true)
+                vibrationPattern = vibration
             }
             // Existing channel/user sound choices are retained by Android.
             manager.createNotificationChannel(channel)
@@ -67,7 +72,8 @@ class ReminderReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm).setContentTitle(task.title)
             .setContentText(task.description).setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setSound(sound)
+            .setVibrate(vibration)
             .addAction(android.R.drawable.checkbox_on_background, completeLabel, complete)
             .setAutoCancel(true).setContentIntent(launch).build()
         manager.notify("task:${task.id}", 0, notification)

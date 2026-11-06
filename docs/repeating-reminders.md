@@ -97,11 +97,37 @@ SectionTitle. The calendar is given finite height before enabling form scrolling
 its internal lazy layout is never measured with unbounded vertical constraints.
 The existing Persian picker implementations and dependencies are unchanged.
 
-New Android notification channels explicitly use the default notification sound.
-Existing channel settings are respected; a silent/low-importance channel logs a
-warning. On the device, open Lilo notification settings > Task reminders and check
-Sound/Alerting and notification volume. A channel setting cannot be reset by calling
-createNotificationChannel again.
+Task reminders use the approved original Lilo three-note chime, `lilo_reminder.wav`
+(2.8 seconds, mono 44.1 kHz, 16-bit linear PCM). The Android raw resource and iOS
+main-bundle resource contain the same unmodified audio approved on 2026-11-06.
+There is one bundled sound and no in-app sound picker or additional setting.
+
+New Android `task_reminders` channels use this sound with notification audio usage
+and two 160 ms vibrations separated by 100 ms. Android 7 uses the same sound and
+pattern directly on the notification; `VIBRATE` is a manifest permission without a
+runtime prompt. The sound URI uses the resource name rather than a numeric resource
+ID, so channel references survive resource-ID changes between builds. Keep the raw
+resource name stable. Existing channel settings are respected; a silent/low-importance
+channel logs a warning. A channel setting cannot be reset by calling
+`createNotificationChannel` again, so older development installations may retain
+their previous sound. First-release fresh installs get the Lilo sound by default.
+
+iOS schedules `UNNotificationSound.soundNamed("lilo_reminder.wav")`; the WAV is
+included in the app target's Copy Bundle Resources phase. iOS controls notification
+haptics. Both platforms play through the OS notification system and respect user
+sound/volume and quiet-mode settings; no looping player or alarm-volume override is
+used. Cloud/FCM notifications retain their existing behavior.
+
+Platform references: [Android notification channels](https://developer.android.com/develop/ui/compose/notifications/channels)
+and [Apple notification sounds](https://developer.apple.com/documentation/usernotifications/unnotificationsound).
+
+Sound validation on 2026-11-06: all 54 targeted task/reminder-preference tests passed;
+`:composeApp:assembleDebug` and `:composeApp:compileKotlinIosSimulatorArm64` succeeded.
+Both WAV copies and the packaged APK audio match the approved preview byte-for-byte.
+Xcode project syntax and the app target's sound-resource membership were checked.
+Physical-device sound/vibration playback and a full iOS app build remain unverified.
+Device acceptance should cover fresh-channel delivery in the background, Android 7
+and 8+ notification paths, quiet mode, and preserving existing user channel choices.
 
 Validation for this follow-up: dependency boundary checks, resource XML parsing and
 git whitespace checks passed. Compilation was blocked at Gradle download in the

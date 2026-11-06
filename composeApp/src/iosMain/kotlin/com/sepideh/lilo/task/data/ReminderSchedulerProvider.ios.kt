@@ -65,7 +65,8 @@ class ReminderSchedulerProvider(
             val canRepeat = nativeNext != null && kotlin.math.abs(nativeNext - at) < 1000
             val trigger = if (canRepeat) repeatTrigger!! else oneShotTrigger(at, reminder.timeZoneId)
             val content = UNMutableNotificationContent().apply {
-                setTitle(reminder.title); setBody(reminder.content); setSound(UNNotificationSound.defaultSound())
+                setTitle(reminder.title); setBody(reminder.content)
+                setSound(UNNotificationSound.soundNamed("lilo_reminder.wav"))
                 setCategoryIdentifier(TASK_NOTIFICATION_CATEGORY)
                 setUserInfo(mapOf("taskId" to reminder.id.toString()))
             }
