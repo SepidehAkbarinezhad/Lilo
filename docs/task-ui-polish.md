@@ -16,7 +16,7 @@ Feature-independent chips, checkboxes, fields, form selection rows, group select
 
 Manage Groups now uses the same rounded sheet, header, spacing and row vocabulary as group selection. It retains deletion confirmation and adds access to the existing quick-create action. The reusable inline editor requests focus, supports IME Done, handles busy/blank states, and clears input/focus on cancel or successful creation. Lists reserve space for footer controls when the keyboard appears. Persistence and validation remain caller-owned.
 
-Related search/filter, reminder/repetition, empty states, permission/deletion dialogs, selection and disabled states share the semantic hierarchy and vectors. Persian time and image counts use a shared digit formatter. Selection rows stack values on narrow layouts or enlarged fonts. Native image selection still lives in core: Android Photo Picker through existing Activity Result APIs and iOS PHPicker, with common contracts and import behavior.
+Related search/filter, reminder/repetition, empty states, permission/deletion dialogs, selection and disabled states share the semantic hierarchy and vectors. Persian time and image counts use a shared digit formatter. Selection rows stack values on narrow layouts or enlarged fonts. Native image selection still lives in core: Android SAF with an image MIME filter through existing Activity Result APIs and iOS PHPicker, with common contracts and import behavior.
 
 ## Decisions beyond the screenshots
 

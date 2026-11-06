@@ -9,7 +9,9 @@ Image selection uses existing platform APIs and dependencies; FileKit is removed
 
 ## Android
 
-`ActivityResultContracts.PickMultipleVisualMedia` launches the system Photo Picker, restricted to images. AndroidX Activity already exists in the project and supplies the older-device fallback to `ACTION_OPEN_DOCUMENT`. Results are content URI references; only the native `ImageStore` interprets them with `ContentResolver`. Copies run on the IO dispatcher. The limit is enforced after fallback results as well as in the picker.
+`ActivityResultContracts.OpenDocument` and `OpenMultipleDocuments` launch the Storage Access Framework (SAF) file picker on every supported Android version, with the accepted MIME types restricted to `image/*`. This avoids the Google Play services photo-picker component, which can open a network-error screen on affected devices. AndroidX Activity already exists in the project; no extra dependency or broad storage permission is needed. Locally stored images can be selected offline; remote document providers may still require a connection.
+
+Results are content URI references; only the native `ImageStore` interprets them with `ContentResolver`. Copies run on the IO dispatcher. SAF does not enforce the app's selection limit, so Lilo takes at most the allowed number of returned images. Cancelling preserves the previous selection. URI grants are used for the current form session without taking persistent grants; Save imports images into private storage, as before. See [Android's SAF documentation](https://developer.android.com/training/data-storage/shared/documents-files).
 
 ## iOS
 

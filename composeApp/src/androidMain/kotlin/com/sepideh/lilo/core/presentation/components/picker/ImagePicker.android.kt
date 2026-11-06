@@ -1,7 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.picker
 
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,12 +18,12 @@ actual fun rememberImagePicker(onSelected: (List<ImageSource>) -> Unit, onError:
     val selected by rememberUpdatedState(onSelected)
     val error by rememberUpdatedState(onError)
     var picking by rememberSaveable { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(maxOf(2, maxSelection))) { uris ->
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         picking = false
-        // ACTION_OPEN_DOCUMENT fallback does not enforce the native selection limit.
+        // SAF does not enforce a selection limit, so retain only the allowed images.
         if (uris.isNotEmpty()) selected(uris.take(limit).map { ImageSource(it.toString()) })
     }
-    val singleLauncher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+    val singleLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         picking = false
         if (uri != null) selected(listOf(ImageSource(uri.toString())))
     }
@@ -32,8 +31,8 @@ actual fun rememberImagePicker(onSelected: (List<ImageSource>) -> Unit, onError:
         if (!picking) {
             picking = true
             try {
-                val request = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                if (limit == 1) singleLauncher.launch(request) else launcher.launch(request)
+                val imageTypes = arrayOf("image/*")
+                if (limit == 1) singleLauncher.launch(imageTypes) else launcher.launch(imageTypes)
             }
             catch (_: Exception) { picking = false; error() }
         }
