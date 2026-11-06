@@ -54,7 +54,7 @@ fun PasswordDetailScreen(state: PasswordDetailState, onAction: (BaseAction) -> U
             accent = colors.passwordColor, saveActionColor = colors.passwordAction, textSaveAction = true,
             actionLabel = Res.string.note_save_action, saveEnabled = !state.locked && !state.loading && !state.saving && !state.loadFailed,
             onBack = { onAction(PasswordDetailAction.Back); true }, onSave = { onAction(PasswordDetailAction.OnSave) }) { padding ->
-            Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),
+            Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),
                 verticalArrangement = Arrangement.spacedBy(LiloSpacing.Section)) {
                 if (state.loading || state.saving) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.passwordColor)
                 if (state.error) {
