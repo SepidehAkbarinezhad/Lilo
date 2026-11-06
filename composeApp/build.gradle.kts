@@ -86,6 +86,10 @@ kotlin {
     }
 }
 
+// Keep local credentials in Gradle user-home gradle.properties, outside this repository.
+fun releaseSigningValue(name: String): String? =
+    providers.gradleProperty(name).orNull
+
 android {
     applicationVariants.all {
         outputs.all {
@@ -114,17 +118,16 @@ android {
     }
     signingConfigs {
         create("release") {
-            // Supply these only in the build environment, never in tracked properties.
-            storeFile = providers.environmentVariable("LILO_RELEASE_STORE_FILE").orNull?.let { path ->
+            storeFile = releaseSigningValue("LILO_RELEASE_STORE_FILE")?.takeIf { it.isNotBlank() }?.let { path ->
                 val keystore = File(path)
                 require(keystore.isAbsolute && !keystore.canonicalFile.toPath().startsWith(rootDir.canonicalFile.toPath())) {
                     "LILO_RELEASE_STORE_FILE must be an absolute path outside the repository."
                 }
                 keystore
             }
-            storePassword = providers.environmentVariable("LILO_RELEASE_STORE_PASSWORD").orNull
-            keyAlias = providers.environmentVariable("LILO_RELEASE_KEY_ALIAS").orNull
-            keyPassword = providers.environmentVariable("LILO_RELEASE_KEY_PASSWORD").orNull
+            storePassword = releaseSigningValue("LILO_RELEASE_STORE_PASSWORD")
+            keyAlias = releaseSigningValue("LILO_RELEASE_KEY_ALIAS")
+            keyPassword = releaseSigningValue("LILO_RELEASE_KEY_PASSWORD")
         }
     }
     buildTypes {
@@ -150,10 +153,13 @@ val validateReleaseSigningCredentials = tasks.register("validateReleaseSigningCr
     doLast {
         val required = listOf("LILO_RELEASE_STORE_FILE", "LILO_RELEASE_STORE_PASSWORD",
             "LILO_RELEASE_KEY_ALIAS", "LILO_RELEASE_KEY_PASSWORD")
-        val missing = required.filter { providers.environmentVariable(it).orNull.isNullOrBlank() }
-        check(missing.isEmpty()) { "Release signing requires: ${missing.joinToString()}. See docs/android-release-signing.md." }
-        check(File(providers.environmentVariable("LILO_RELEASE_STORE_FILE").get()).isFile) {
-            "Release keystore file does not exist. See docs/android-release-signing.md."
+        val missing = required.filter { releaseSigningValue(it).isNullOrBlank() }
+        check(missing.isEmpty()) {
+            "Set ${missing.joinToString()} in Gradle user-home gradle.properties. See docs/android-release-signing.md."
+        }
+        val keystore = File(requireNotNull(releaseSigningValue("LILO_RELEASE_STORE_FILE")))
+        check(keystore.isFile && keystore.canRead()) {
+            "Release keystore file is missing or unreadable. See docs/android-release-signing.md."
         }
     }
 }

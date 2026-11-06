@@ -1,6 +1,6 @@
 # Android identity and Firebase setup
 
-Android application ID: `com.sepideh.lilo.kmp.app`. Kotlin packages and the Android namespace remain `com.sepideh.lilo`; iOS is unchanged. Version code/name remain `1` / `1.0`. Release signing reads external environment variables; see [signed APK instructions](android-release-signing.md). No signing key is stored in this repository.
+Android application ID: `com.sepideh.lilo.kmp.app`. Kotlin packages and the Android namespace remain `com.sepideh.lilo`; iOS is unchanged. Version code/name remain `1` / `1.0`. Release signing reads only Gradle properties, stored in Gradle user home; see [signed APK instructions](android-release-signing.md). No signing key is stored in this repository.
 
 This is a separate Android app, not an update to the existing Bazaar installation. It gets separate local storage; existing app data does not migrate automatically. Keep the old installation if its data is needed.
 
