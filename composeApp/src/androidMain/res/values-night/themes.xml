@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Lilo" parent="Theme.Material3.DayNight.NoActionBar" />
-    <style name="Theme.App.Starting" parent="Theme.Lilo">
-        <item name="android:windowBackground">@drawable/lilo_launch_background</item>
-    </style>
 </resources>
