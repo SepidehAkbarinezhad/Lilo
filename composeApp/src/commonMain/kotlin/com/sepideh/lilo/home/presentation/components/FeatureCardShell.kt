@@ -31,6 +31,7 @@ fun FeatureCardShell(
     onLatestClick: (() -> Unit)? = null,
 ) {
     val colors = LiloExtendedTheme.colors
+    val contentPadding = 16.dp
     val accent = feature.accentColor(colors)
     val dark = MaterialTheme.colorScheme.background.luminance() < .5f
     val actionColor = when (feature) {
@@ -46,8 +47,8 @@ fun FeatureCardShell(
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp),
         color = lerp(MaterialTheme.colorScheme.background, accent, backgroundTint),
         contentColor = colors.textPrimary) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            HomeFeatureHeading(feature, actionColor, onAddClick, onCardClick)
+        Column(Modifier.padding(contentPadding), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            HomeFeatureHeading(feature, actionColor, onAddClick, onCardClick, actionEndInset = contentPadding)
             HorizontalDivider(color = actionColor.copy(alpha = .14f))
             if (reportFailed) {
                 AppText(text = Res.string.home_report_error, color = colors.textSecondary)
