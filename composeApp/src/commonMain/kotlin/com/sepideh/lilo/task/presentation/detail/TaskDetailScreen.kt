@@ -26,16 +26,12 @@ import com.sepideh.lilo.core.presentation.components.group.GroupOption
 import com.sepideh.lilo.core.presentation.components.group.GroupSelectionSheet
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.core.presentation.components.form.FormSelectionRow
-import com.sepideh.lilo.core.presentation.components.group.GroupManagementDialog
+import com.sepideh.lilo.core.presentation.components.group.GroupManagementEditor
 import com.sepideh.lilo.task.presentation.detail.components.TaskPrioritySelector
 import com.sepideh.lilo.task.presentation.detail.components.SaveWithoutReminderDialog
 import com.sepideh.lilo.task.presentation.detail.components.PermissionDeniedDialog
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import com.sepideh.lilo.ui.theme.LiloSpacing
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
@@ -60,18 +56,22 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onSelect = { viewModel.onAction(TaskDetailAction.OnGroupDraftSelected(it)) },
                 onManage = { viewModel.onAction(TaskDetailAction.OnManageGroups) },
                 onConfirm = { viewModel.onAction(TaskDetailAction.OnConfirmGroup) },
-                onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissGroupDialog) },
-            )
-            if (state.groupManagementOpen) GroupManagementDialog(
-                closeActionColor = LiloExtendedTheme.colors.taskAction,
-                selectedId = state.draftGroupId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
-                onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewGroup(it)) },
-                accent = LiloExtendedTheme.colors.taskColor,
-                groups = state.groups.filter { it.isDeletable }.map { GroupOption(it.id, it.title, it.isDeletable, it.isEditable) },
-                errorMessage = if (state.duplicateGroupName) stringResource(Res.string.group_name_exists) else if (state.hasError) stringResource(Res.string.task_operation_error) else null,
-                onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteGroup(it)) },
-                onRename = { id, title -> viewModel.onAction(TaskDetailAction.OnRenameGroup(id, title)) },
-                onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
+                onDismiss = {
+                    viewModel.onAction(TaskDetailAction.OnCloseManageGroups)
+                    viewModel.onAction(TaskDetailAction.OnDismissGroupDialog)
+                },
+                busy = state.isAddingGroup,
+                managementContent = if (state.groupManagementOpen) ({ GroupManagementEditor(
+                    closeActionColor = LiloExtendedTheme.colors.taskAction,
+                    selectedId = state.draftGroupId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
+                    onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewGroup(it)) },
+                    accent = LiloExtendedTheme.colors.taskColor,
+                    groups = state.groups.filter { it.isDeletable }.map { GroupOption(it.id, it.title, it.isDeletable, it.isEditable) },
+                    errorMessage = if (state.duplicateGroupName) stringResource(Res.string.group_name_exists) else if (state.hasError) stringResource(Res.string.task_operation_error) else null,
+                    onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteGroup(it)) },
+                    onRename = { id, title -> viewModel.onAction(TaskDetailAction.OnRenameGroup(id, title)) },
+                    onDismiss = { viewModel.onAction(TaskDetailAction.OnCloseManageGroups) },
+                ) }) else null,
             )
             state.missingPermission?.let { PermissionDeniedDialog(it, viewModel::onAction) }
             if (state.confirmSaveWithoutReminder) SaveWithoutReminderDialog(viewModel::onAction)

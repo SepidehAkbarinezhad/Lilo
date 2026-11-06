@@ -20,61 +20,53 @@ import com.sepideh.lilo.core.presentation.icons.LiloIcons
 import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupManagementDialog(groups: List<GroupOption>, onDelete: (Long) -> Unit,
+fun GroupManagementEditor(groups: List<GroupOption>, onDelete: (Long) -> Unit,
     onDismiss: () -> Unit, errorMessage: String? = null, accent: Color,
     selectedId: Long? = null, isAdding: Boolean = false, addedVersion: Int = 0, onCreate: ((String) -> Unit)? = null, onRename: ((Long, String) -> Unit)? = null,
     deleteMessage: String = stringResource(Res.string.delete_group_message),
     closeActionColor: Color = accent) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
+    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
     var editing by remember { mutableStateOf(false) }
     var renameId by remember { mutableStateOf<Long?>(null) }
     var renameTitle by remember { mutableStateOf("") }
     LaunchedEffect(addedVersion) { if (addedVersion > 0) { renameId = null; renameTitle = "" } }
     var deleteId by remember { mutableStateOf<Long?>(null) }
-    ModalBottomSheet(onDismissRequest = { if (!isAdding) onDismiss() },
-        sheetState = sheetState,
-        shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
-        Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen).padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
-            Row(Modifier.fillMaxWidth().padding(bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                AppText(text = Res.string.manage_groups_action, textType = TextType.SectionTitle,
-                    modifier = Modifier.weight(1f).padding(end = 12.dp))
-                TextButton(enabled = !isAdding, onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onDismiss()
-                    }
-                }) {
-                    AppText(text = Res.string.close_group_management_action, textType = TextType.Action, color = closeActionColor)
-                }
+    Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen).padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
+        Row(Modifier.fillMaxWidth().padding(bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            AppText(text = Res.string.manage_groups_action, textType = TextType.SectionTitle,
+                modifier = Modifier.weight(1f).padding(end = 12.dp))
+            TextButton(enabled = !isAdding, onClick = {
+                focusManager.clearFocus()
+                onDismiss()
+            }) {
+                AppText(text = Res.string.close_group_management_action, textType = TextType.Action, color = closeActionColor)
             }
-            GroupManagementContent(groups, errorMessage, { deleteId = it }, accent, selectedId,
-                !isAdding && renameId == null && !editing, Modifier.weight(1f, fill = false),
-                onEdit = if (onRename != null) ({ group -> renameId = group.id; renameTitle = group.label }) else null,
-                addedVersion = addedVersion)
-            if (renameId != null && onRename != null) {
-                val focus = remember { androidx.compose.ui.focus.FocusRequester() }
-                LaunchedEffect(renameId) { focus.requestFocus() }
-                fun submitRename() { if (!isAdding && renameTitle.isNotBlank() && !isShortNameTooLong(renameTitle)) onRename(renameId!!, renameTitle.trim()) }
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(value = renameTitle, onValueChange = { renameTitle = it }, singleLine = true,
-                        enabled = !isAdding, modifier = Modifier.weight(1f).focusRequester(focus),
-                        isError = isShortNameTooLong(renameTitle),
-                        supportingText = if (isShortNameTooLong(renameTitle)) ({ AppText(text = stringResource(Res.string.short_name_too_long, SHORT_NAME_MAX_LENGTH), textType = TextType.FieldError) }) else null,
-                        label = { AppText(text = Res.string.edit_group_action) }, shape = MaterialTheme.shapes.medium,
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
-                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submitRename() }),
-                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent))
-                    InlineEditorActions(renameTitle, isAdding, onConfirm = { submitRename() },
-                        onCancel = { renameId = null; renameTitle = "" })
-                }
-            }
-            if (onCreate != null && renameId == null) InlineGroupEditor(accent, isAdding, addedVersion, onCreate, onEditingChanged = { editing = it })
         }
+        GroupManagementContent(groups, errorMessage, { deleteId = it }, accent, selectedId,
+            !isAdding && renameId == null && !editing, Modifier.weight(1f, fill = false),
+            onEdit = if (onRename != null) ({ group -> renameId = group.id; renameTitle = group.label }) else null,
+            addedVersion = addedVersion)
+        if (renameId != null && onRename != null) {
+            val focus = remember { androidx.compose.ui.focus.FocusRequester() }
+            LaunchedEffect(renameId) { focus.requestFocus() }
+            fun submitRename() { if (!isAdding && renameTitle.isNotBlank() && !isShortNameTooLong(renameTitle)) onRename(renameId!!, renameTitle.trim()) }
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                OutlinedTextField(value = renameTitle, onValueChange = { renameTitle = it }, singleLine = true,
+                    enabled = !isAdding, modifier = Modifier.weight(1f).focusRequester(focus),
+                    isError = isShortNameTooLong(renameTitle),
+                    supportingText = if (isShortNameTooLong(renameTitle)) ({ AppText(text = stringResource(Res.string.short_name_too_long, SHORT_NAME_MAX_LENGTH), textType = TextType.FieldError) }) else null,
+                    label = { AppText(text = Res.string.edit_group_action) }, shape = MaterialTheme.shapes.medium,
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submitRename() }),
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent))
+                InlineEditorActions(renameTitle, isAdding, onConfirm = { submitRename() },
+                    onCancel = { renameId = null; renameTitle = "" })
+            }
+        }
+        if (onCreate != null && renameId == null) InlineGroupEditor(accent, isAdding, addedVersion, onCreate, onEditingChanged = { editing = it })
     }
     deleteId?.let { id -> DeleteConfirmationDialog(accent = accent, title = stringResource(Res.string.delete_group_title), message = deleteMessage, confirmFirst = true,
         onConfirm = { onDelete(id); deleteId = null }, onDismiss = { deleteId = null }) }
