@@ -108,7 +108,7 @@
     <string name="password_edit_title">Edit password</string>
     <string name="password_delete_title">Delete password</string>
     <string name="password_sort_title">Sort passwords</string>
-    <string name="password_username">Username, email or phone</string>
+    <string name="password_username">Username</string>
     <string name="password_secret">Password</string>
     <string name="password_website">Website</string>
     <string name="password_notes">Notes</string>
@@ -137,8 +137,7 @@
     <string name="created_on_date">Created %1$s</string>
     <string name="edit_cancel_title">Edit</string>
     <string name="edit_cancel_action">Cancel</string>
-    <string name="password_identifier_required">Enter a title or a username, email or phone number.</string>
-    <string name="password_identifier_hint">Enter at least a title or a username, email or phone number.</string>
+    <string name="password_identifier_required">At least one of the two fields, title or username, is required.</string>
     <string name="password_updated_date">Last updated: %1$s</string>
     <string name="group_name_exists">A group with this name already exists.</string>
     <string name="service_name_exists">A service with this name already exists.</string>

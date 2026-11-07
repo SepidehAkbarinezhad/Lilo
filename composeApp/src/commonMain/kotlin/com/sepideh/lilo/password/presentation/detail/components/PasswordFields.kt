@@ -60,10 +60,6 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
         text = Res.string.password_identifier_required,
         color = MaterialTheme.colorScheme.error
     )
-    AppText(
-        text = Res.string.password_identifier_hint,
-        color = LiloExtendedTheme.colors.textSupporting
-    )
     AppOutlineTextField(
         accentColor = accent,
         textStyle = ltr,

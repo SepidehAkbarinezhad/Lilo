@@ -108,7 +108,7 @@
     <string name="password_edit_title">ویرایش گذرواژه</string>
     <string name="password_delete_title">حذف گذرواژه</string>
     <string name="password_sort_title">مرتب‌سازی گذرواژه‌ها</string>
-    <string name="password_username">نام کاربری، ایمیل یا شماره موبایل</string>
+    <string name="password_username">نام کاربری</string>
     <string name="password_secret">گذرواژه</string>
     <string name="password_website">وب‌سایت</string>
     <string name="password_notes">توضیحات</string>
@@ -137,8 +137,7 @@
     <string name="created_on_date">تاریخ ایجاد: %1$s</string>
     <string name="edit_cancel_title">ویرایش</string>
     <string name="edit_cancel_action">انصراف</string>
-    <string name="password_identifier_required">عنوان یا نام کاربری، ایمیل یا شماره موبایل را وارد کنید.</string>
-    <string name="password_identifier_hint">حداقل یکی از عنوان یا نام کاربری، ایمیل یا شماره موبایل لازم است.</string>
+    <string name="password_identifier_required">حداقل یکی از دو فیلد عنوان یا نام کاربری الزامی است.</string>
     <string name="password_updated_date">آخرین ویرایش: %1$s</string>
     <string name="group_name_exists">گروهی با این نام وجود دارد.</string>
     <string name="service_name_exists">سرویسی با این نام وجود دارد.</string>

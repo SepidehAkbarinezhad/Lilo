@@ -22,8 +22,8 @@ fun NoteListItem(note: Note, group: String?, onClick: () -> Unit, modifier: Modi
  Surface(onClick = onClick, modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp),
   color = MaterialTheme.colorScheme.surface, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=.55f))) {
   Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-   AppText(text=note.title, textType=TextType.BodyLarge, color=LiloExtendedTheme.colors.title, maxLines=1)
-   if (note.content.isNotBlank()) AppText(text=note.content, color=LiloExtendedTheme.colors.textSecondary, maxLines=1)
+   AppText(modifier=Modifier.fillMaxWidth(), text=note.title, textType=TextType.BodyLarge, color=LiloExtendedTheme.colors.title, maxLines=1)
+   if (note.content.isNotBlank()) AppText(modifier=Modifier.fillMaxWidth(), text=note.content, color=LiloExtendedTheme.colors.textSecondary, maxLines=1)
    if (!group.isNullOrBlank() || note.imageNames.isNotEmpty() || note.lastModifiedAt > 0) {
     ItemMetadata(group, note.imageNames.size, trailing = if (note.lastModifiedAt > 0) ({ CreationDateCaption(note.lastModifiedAt, showLabel = false) }) else null)
    }
@@ -31,3 +31,17 @@ fun NoteListItem(note: Note, group: String?, onClick: () -> Unit, modifier: Modi
  }
 }
 @AppPreviews @Composable private fun NoteItemPreview() { LiloPreviewWrapper { NoteListItem(Note(title="A small idea",content="Make room for a little creativity every day."),"Personal",{}) } }
+
+@AppPreviews
+@Composable
+private fun NoteItemShortPersianTextPreview() {
+ LiloPreviewWrapper {
+  Box(Modifier.width(360.dp).padding(20.dp)) {
+   NoteListItem(
+    note = Note(title = "فهرست مطالعه", content = "کتابخانه نیمه‌شب", createdAt = 1_794_000_000_000L),
+    group = "مطالعه",
+    onClick = {},
+   )
+  }
+ }
+}
