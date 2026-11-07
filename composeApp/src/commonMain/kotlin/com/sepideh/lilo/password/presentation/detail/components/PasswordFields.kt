@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.icons.LiloIcons
@@ -31,7 +32,14 @@ import org.jetbrains.compose.resources.vectorResource
 fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
     val accent = LiloExtendedTheme.colors.passwordColor
     val enabled = !state.locked && !state.loading && !state.saving && !state.loadFailed
-    val ltr = MaterialTheme.typography.bodyLarge.copy(textDirection = TextDirection.Ltr)
+    val credentialTextStyle = MaterialTheme.typography.bodyLarge.copy(
+        textDirection = TextDirection.Ltr,
+        textAlign = TextAlign.Left,
+    )
+    val usernameTextStyle = MaterialTheme.typography.bodyLarge.copy(
+        textDirection = TextDirection.Content,
+        textAlign = TextAlign.Start,
+    )
     AppOutlineTextField(
         accentColor = accent,
         leadingIcon = { Icon(LiloIcons.Edit, null, Modifier.size(LiloSize.Icon)) },
@@ -48,7 +56,7 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
     )
     AppOutlineTextField(
         accentColor = accent,
-        textStyle = ltr,
+        textStyle = usernameTextStyle,
         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
         textFieldRequired = TextFieldRequired(
             label = stringResource(Res.string.password_username),
@@ -62,7 +70,7 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
     )
     AppOutlineTextField(
         accentColor = accent,
-        textStyle = ltr,
+        textStyle = credentialTextStyle,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             autoCorrectEnabled = false
@@ -97,7 +105,7 @@ fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
     )
     AppOutlineTextField(
         accentColor = accent,
-        textStyle = ltr,
+        textStyle = credentialTextStyle,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Uri,
             autoCorrectEnabled = false
@@ -150,10 +158,63 @@ private fun PasswordFieldsPreview() {
                     record = Password(
                         title = "Mail",
                         username = "hello@example.com",
-                        secret = "example"
+                        secret = "example",
+                        website = "https://example.com/account",
                     )
                 ),
                 {})
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun PasswordFieldsVisiblePreview() {
+    LiloPreviewWrapper {
+        Column(Modifier.padding(20.dp)) {
+            PasswordFields(
+                PasswordDetailState(
+                    locked = false,
+                    visible = true,
+                    record = Password(
+                        username = "hello@example.com",
+                        secret = "Example!42",
+                        website = "https://example.com/account?tab=security",
+                    ),
+                ),
+                {},
+            )
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun PasswordFieldsEmptyPreview() {
+    LiloPreviewWrapper {
+        Column(Modifier.padding(20.dp)) {
+            PasswordFields(PasswordDetailState(locked = false), {})
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun PasswordFieldsPersianUsernamePreview() {
+    LiloPreviewWrapper {
+        Column(Modifier.padding(20.dp)) {
+            PasswordFields(
+                PasswordDetailState(
+                    locked = false,
+                    visible = true,
+                    record = Password(
+                        username = "علی۱۲۳",
+                        secret = "Example!42",
+                        website = "https://example.com/account",
+                    ),
+                ),
+                {},
+            )
         }
     }
 }
