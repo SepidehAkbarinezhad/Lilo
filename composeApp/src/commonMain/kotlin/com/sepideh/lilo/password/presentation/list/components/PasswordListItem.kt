@@ -36,7 +36,6 @@ fun PasswordListItem(record: Password, revealed: String? = null, busy: Boolean =
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val date = creationDateLabel(record.updatedAt.takeIf { it > 0 } ?: record.createdAt, rtl)
     val dateDescription = date?.let { stringResource(Res.string.password_updated_date, it) }
-    val identifier = record.username.ifBlank { record.title }
     Surface(onClick = onClick, enabled = !busy, modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .4f))) {
@@ -44,19 +43,26 @@ fun PasswordListItem(record: Password, revealed: String? = null, busy: Boolean =
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 PasswordServiceIcon(record.serviceId, colors.textSecondary, Modifier.size(18.dp))
-                Text(localizedServiceName(record.serviceName, record.serviceNameFa).ifBlank { stringResource(Res.string.not_set_label) },
-                    modifier = Modifier.weight(1f),
-                    color = colors.textSecondary, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                    maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-            Column(Modifier.fillMaxWidth().padding(start = 24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    PasswordItemLabel(stringResource(if (record.username.isNotBlank()) Res.string.password_username else Res.string.title_label))
-                    Text(identifier, Modifier.fillMaxWidth(), color = colors.textPrimary,
-                        textAlign = if (rtl) TextAlign.Right else TextAlign.Left,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Normal,
-                            textDirection = if (record.username.isNotBlank()) TextDirection.Ltr else TextDirection.Content),
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(localizedServiceName(record.serviceName, record.serviceNameFa).ifBlank { stringResource(Res.string.not_set_label) },
+                        color = colors.textPrimary, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
                         maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    if (record.title.isNotBlank()) {
+                        Text(record.title, color = colors.textSecondary, style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
+                }
+            }
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (record.username.isNotBlank()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        PasswordItemLabel(stringResource(Res.string.password_username))
+                        Text(record.username, Modifier.fillMaxWidth(), color = colors.textPrimary,
+                            textAlign = if (rtl) TextAlign.Right else TextAlign.Left,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Normal,
+                                textDirection = TextDirection.Ltr),
+                            maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     PasswordItemLabel(stringResource(Res.string.password_secret))
@@ -101,7 +107,7 @@ private fun PasswordItemLabel(label: String) {
 private fun PasswordItemPreview() {
     LiloPreviewWrapper {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            PasswordListItem(Password(serviceId = "google", serviceName = "Gmail", username = "sepideh@gmail.com", updatedAt = 1791244800000L), onReveal = {}, onCopy = {}, onClick = {})
+            PasswordListItem(Password(serviceId = "google", serviceName = "Gmail", title = "Personal account", username = "sepideh@gmail.com", updatedAt = 1791244800000L), onReveal = {}, onCopy = {}, onClick = {})
             PasswordListItem(Password(serviceId = "google", serviceName = "Gmail", username = "sepideh@gmail.com", updatedAt = 1791244800000L), revealed = "Example-password-123!", onReveal = {}, onCopy = {}, onClick = {})
             PasswordListItem(Password(serviceId = "github", serviceName = "GitHub", title = "Personal projects", updatedAt = 1791331200000L), copied = true, onReveal = {}, onCopy = {}, onClick = {})
         }
