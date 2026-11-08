@@ -58,7 +58,8 @@ fun FeatureCardShell(
             } else when (detail) {
                 is TaskReportDetail -> HomeTaskReport(detail, actionColor, completingTaskIds, onCompleteTask, onCardClick, onLatestClick)
                 is NoteReportDetail -> HomeLatestSummary(detail.totalCount, Res.string.home_total_notes,
-                    detail.latestTitle, detail.latestUpdatedAt, Res.string.home_no_items, onCardClick, onLatestClick)
+                    detail.latestTitle, null, Res.string.home_no_items, onCardClick, onLatestClick,
+                    subtitle = detail.latestSnippet.takeIf { it.isNotBlank() })
                 is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
                     localizedServiceName(detail.lastAddedService, detail.lastAddedServiceFa), detail.lastAddedAt, Res.string.home_no_items, onCardClick, onLatestClick,
                     leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) },
@@ -92,6 +93,15 @@ private fun EmptyHomeCardsPreview() {
             FeatureCardShell(LiloFeature.NOTES, {}, {}, NoteReportDetail("", "", 0, null, 0))
             FeatureCardShell(LiloFeature.PASSWORDS, {}, {}, PasswordReportDetail(0, "", "", 0))
         }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun HomeNoteWithDescriptionPreview() {
+    LiloPreviewWrapper {
+        FeatureCardShell(LiloFeature.NOTES, {}, {},
+            NoteReportDetail("Weekend trip", "Pack a book and a camera", 8, null, 8))
     }
 }
 
