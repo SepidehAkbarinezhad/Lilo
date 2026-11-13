@@ -59,6 +59,9 @@ kotlin {
             implementation(libs.firebase.crashlytics)
 
         }
+        iosMain.dependencies {
+            implementation(libs.persian.date.picker)
+        }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
