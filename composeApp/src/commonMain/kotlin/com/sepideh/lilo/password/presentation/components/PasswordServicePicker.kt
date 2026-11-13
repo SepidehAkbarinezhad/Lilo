@@ -57,14 +57,14 @@ fun PasswordServicePicker(state: PasswordServicesState, onAction: (BaseAction) -
             if (!state.managing) {
                 Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen)
                     .padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
-                    SheetHeader(Res.string.password_service, Res.string.confirm_action, colors.passwordColor, true, onConfirm = {
+                    SheetHeader(Res.string.password_service, Res.string.confirm_action, colors.passwords.accent, true, onConfirm = {
                         state.draftId?.let(onConfirm)
                         onAction(PasswordServicesAction.OnConfirmSelection)
                     })
                     LazyColumn(Modifier.weight(1f, fill = false).fillMaxWidth().heightIn(max = 360.dp),
                         state = listState, verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                         items(state.services, key = { it.id }) { service ->
-                            GroupSelectionRow(service.displayName(), state.draftId == service.id, colors.passwordColor,
+                            GroupSelectionRow(service.displayName(), state.draftId == service.id, colors.passwords.accent,
                                 enabled = !state.busy, compact = true,
                                 leadingIcon = { PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon)) }) { onAction(PasswordServicesAction.OnDraftSelected(service.id)) }
                         }
@@ -84,10 +84,10 @@ fun PasswordServicePicker(state: PasswordServicesState, onAction: (BaseAction) -
                         AppText(text = Res.string.password_services_manage, textType = TextType.SectionTitle,
                             modifier = Modifier.weight(1f).padding(end = LiloSpacing.Item))
                         TextButton(onClick = { focusManager.clearFocus(); onAction(PasswordServicesAction.OnCloseManagement) }, enabled = !state.busy) {
-                            AppText(text = Res.string.close_group_management_action, textType = TextType.Action, color = colors.passwordAction)
+                            AppText(text = Res.string.close_group_management_action, textType = TextType.Action, color = colors.passwords.action)
                         }
                     }
-                    if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.passwordColor)
+                    if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.passwords.accent)
                     if (state.duplicateName) AppText(text = Res.string.service_name_exists, color = MaterialTheme.colorScheme.error)
                     if (state.error && state.deleting == null) AppText(text = Res.string.password_service_error, color = MaterialTheme.colorScheme.error)
                     LazyColumn(Modifier.weight(1f, fill = false).fillMaxWidth().heightIn(max = 360.dp),
@@ -125,8 +125,8 @@ fun PasswordServicePicker(state: PasswordServicesState, onAction: (BaseAction) -
                                 shape = MaterialTheme.shapes.medium,
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                                 keyboardActions = KeyboardActions(onDone = { onAction(PasswordServicesAction.OnSave) }),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = colors.passwordColor,
-                                    cursorColor = colors.passwordColor, focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = colors.passwords.accent,
+                                    cursorColor = colors.passwords.accent, focusedContainerColor = MaterialTheme.colorScheme.surface,
                                     unfocusedContainerColor = MaterialTheme.colorScheme.surface))
                             InlineEditorActions(state.name, state.busy, { onAction(PasswordServicesAction.OnSave) }, { onAction(PasswordServicesAction.OnCancelEdit) })
                         }

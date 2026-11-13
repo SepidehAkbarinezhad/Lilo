@@ -16,7 +16,7 @@ import com.sepideh.lilo.ui.theme.*
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 @Composable fun NoteEditorFields(state:NoteDetailState,onAction:(BaseAction)->Unit) {
- val accent=LiloExtendedTheme.colors.noteColor
+ val accent=LiloExtendedTheme.colors.notes.accent
  AppOutlineTextField(accentColor=accent,leadingIcon={Icon(LiloIcons.Edit,null,Modifier.size(LiloSize.Icon))},
   textFieldRequired=TextFieldRequired(label=stringResource(Res.string.title_label),isRequired=true,value=state.note.title,onValueChange={onAction(NoteDetailAction.Title(it))},enabled=state.fieldsEnabled,validationStatus=state.titleError))
  AppDescriptionTextField(accentColor=accent,

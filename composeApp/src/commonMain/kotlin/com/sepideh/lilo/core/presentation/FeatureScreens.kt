@@ -31,28 +31,28 @@ fun FeatureActionButton(label: StringResource, accent: Color, enabled: Boolean =
 
 @Composable
 fun BaseFormScreen(
-    title: StringResource, accent: Color, saveEnabled: Boolean,
+    title: StringResource, featureColors: FeatureColors, saveEnabled: Boolean,
     onBack: () -> Boolean, onSave: () -> Unit,
     actionLabel: StringResource = Res.string.save_task_action,
     textSaveAction: Boolean = false,
-    saveActionColor: Color = accent,
+    saveActionColor: Color = featureColors.primary,
     bottomSaveAction: Boolean = true,
     isSaving: Boolean = false,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     if (bottomSaveAction) {
-        BottomActionFormScreen(title, accent, saveEnabled, isSaving, actionLabel, onBack, onSave, content)
+        BottomActionFormScreen(title, featureColors, saveEnabled, isSaving, actionLabel, onBack, onSave, content)
         return
     }
     Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
-        BaseHeader(title = title, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
-            actions = { if (textSaveAction) TextButton(onClick = onSave, enabled = saveEnabled, colors = ButtonDefaults.textButtonColors(contentColor = saveActionColor)) { Text(text = stringResource(actionLabel), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) } else FeatureActionButton(actionLabel, accent, saveEnabled, onSave) })
+        BaseHeader(title = title, featureColors = featureColors, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
+            actions = { if (textSaveAction) TextButton(onClick = onSave, enabled = saveEnabled, colors = ButtonDefaults.textButtonColors(contentColor = saveActionColor)) { Text(text = stringResource(actionLabel), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) } else FeatureActionButton(actionLabel, featureColors.accent, saveEnabled, onSave) })
     }, content = content)
 }
 
 @Composable
 fun BaseListScreen(
-    title: StringResource, accent: Color, searchVisible: Boolean, query: String,
+    title: StringResource, featureColors: FeatureColors, searchVisible: Boolean, query: String,
     searchHint: StringResource, filtersActive: Boolean,
     onBack: () -> Boolean, onSearchVisible: (Boolean) -> Unit,
     onQueryChange: (String) -> Unit, onFilter: (() -> Unit)?,
@@ -64,7 +64,7 @@ fun BaseListScreen(
     Scaffold(containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             Column {
-                FeatureListHeader(title, accent, searchVisible, query, searchHint, filtersActive,
+                FeatureListHeader(title, featureColors, searchVisible, query, searchHint, filtersActive,
                     onBack, onSearchVisible, onQueryChange, onFilter, filterIcon, filterLabel)
                 Spacer(Modifier.height(LiloSpacing.Screen))
             }

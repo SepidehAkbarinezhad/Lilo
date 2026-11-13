@@ -29,7 +29,7 @@ internal fun PasswordServiceSelector(selectedName: String?, selectedId: String? 
         FormSelectionRow(
             icon = passwordServiceImageVector(selectedId),
             title = selectedName ?: label, value = "", onClick = onClick,
-            enabled = enabled, accent = colors.passwordColor,
+            enabled = enabled, accent = colors.passwords.accent,
             modifier = Modifier.semantics {
                 if (selectedName != null) contentDescription = label
                 if (isError) error(errorMessage)

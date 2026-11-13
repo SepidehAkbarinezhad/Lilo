@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun PasswordFields(state: PasswordDetailState, onAction: (BaseAction) -> Unit) {
-    val accent = LiloExtendedTheme.colors.passwordColor
+    val accent = LiloExtendedTheme.colors.passwords.accent
     val enabled = !state.locked && !state.loading && !state.saving && !state.loadFailed
     val credentialTextStyle = MaterialTheme.typography.bodyLarge.copy(
         textDirection = TextDirection.Ltr,

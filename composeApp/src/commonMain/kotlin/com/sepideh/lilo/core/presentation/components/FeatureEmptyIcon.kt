@@ -32,7 +32,7 @@ fun FeatureEmptyIcon(
                 .size(circleSize)
                 .clip(CircleShape)
                 .background(
-                    feature.accentColor(colors)
+                    feature.colors(colors).accent
                         .copy(alpha = 0.12f)
                 ),
             contentAlignment = Alignment.Center
@@ -40,7 +40,7 @@ fun FeatureEmptyIcon(
             Icon(
                 modifier = Modifier.size(circleSize * 0.35f),
                 imageVector = feature.iconRes,
-                tint = feature.accentColor(colors),
+                tint = feature.colors(colors).accent,
                 contentDescription = null
             )
         }

@@ -30,7 +30,7 @@ internal fun HomeFeatureHeading(feature: LiloFeature, actionColor: Color, onAdd:
     }
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Surface(shape = RoundedCornerShape(16.dp), color = feature.accentColor(colors).copy(alpha = .32f)) {
+        Surface(shape = RoundedCornerShape(16.dp), color = feature.colors(colors).home.iconContainer) {
             Box(Modifier.size(52.dp), contentAlignment = Alignment.Center) {
                 Icon(if (feature == LiloFeature.NOTES) vectorResource(Res.drawable.home_note) else feature.iconRes,
                     null, Modifier.size(28.dp), tint = actionColor)

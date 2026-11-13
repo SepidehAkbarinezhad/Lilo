@@ -40,7 +40,7 @@ fun TaskListScreenRoot(viewModel: TaskListViewModel, onNavigateTo: (AppRoutes) -
     BaseRoot(viewModel = viewModel, navigateTo = onNavigateTo, onBack = onBack,
         bodyContainer = { TaskListScreen(state, state.isLoading, viewModel::onAction) },
         dialogContent = {
-            if (state.isDeleteDialogOpen) DeleteConfirmationDialog(title =  stringResource(Res.string.delete_task_confirmation_title),accent = LiloExtendedTheme.colors.taskColor,
+            if (state.isDeleteDialogOpen) DeleteConfirmationDialog(title =  stringResource(Res.string.delete_task_confirmation_title),accent = LiloExtendedTheme.colors.tasks.accent,
                 onConfirm = { viewModel.onAction(TaskListAction.OnDeleteTaskConfirm) },
                 onDismiss = { viewModel.onAction(TaskListAction.OnDismissDeleteDialog) })
         })
@@ -48,10 +48,10 @@ fun TaskListScreenRoot(viewModel: TaskListViewModel, onNavigateTo: (AppRoutes) -
 
 @Composable
 fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (BaseAction) -> Unit) {
-    val accent = LiloExtendedTheme.colors.taskColor
+    val accent = LiloExtendedTheme.colors.tasks.accent
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    BaseListScreen(title = Res.string.tasks_list_title, accent = accent,
+    BaseListScreen(title = Res.string.tasks_list_title, featureColors = LiloExtendedTheme.colors.tasks,
         searchVisible = state.isSearchVisible, query = state.searchQuery, searchHint = Res.string.search_tasks_action,
         filtersActive = state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty(),
         onBack = { onAction(BaseAction.OnNavigateTo(null)); true },
@@ -64,7 +64,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
                 keyboard?.hide()
                 onAction(TaskListAction.OnSearchToggle(false))
                 onAction(BaseAction.OnNavigateTo(AppRoutes.Tasks.Detail(null)))
-            }, modifier = Modifier.size(64.dp), shape = androidx.compose.foundation.shape.CircleShape, containerColor = accent, contentColor = LiloExtendedTheme.colors.onTaskAccent) {
+            }, modifier = Modifier.size(64.dp), shape = androidx.compose.foundation.shape.CircleShape, containerColor = LiloExtendedTheme.colors.tasks.primary, contentColor = LiloExtendedTheme.colors.tasks.onPrimary) {
                 Icon(LiloIcons.Add, stringResource(Res.string.add_task_label), Modifier.size(36.dp))
             }
         }) { padding ->

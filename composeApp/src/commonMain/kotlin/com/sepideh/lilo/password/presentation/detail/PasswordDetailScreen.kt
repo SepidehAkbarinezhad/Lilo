@@ -51,12 +51,12 @@ fun PasswordDetailScreen(state: PasswordDetailState, onAction: (BaseAction) -> U
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {}
     } else {
         BaseFormScreen(title = if (!state.isEditing) Res.string.password_add_title else Res.string.password_edit_title,
-            accent = colors.passwordColor, isSaving = state.saving,
+            featureColors = LiloExtendedTheme.colors.passwords, isSaving = state.saving,
             actionLabel = Res.string.note_save_action, saveEnabled = !state.locked && !state.loading && !state.saving && !state.loadFailed,
             onBack = { onAction(PasswordDetailAction.Back); true }, onSave = { onAction(PasswordDetailAction.OnSave) }) { padding ->
             Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),
                 verticalArrangement = Arrangement.spacedBy(LiloSpacing.Section)) {
-                if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.passwordColor)
+                if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.passwords.accent)
                 if (state.error) {
                     AppText(text = if (state.setupRequired) Res.string.password_auth_unavailable else Res.string.password_operation_error, color = MaterialTheme.colorScheme.error)
                     if (state.loadFailed) TextButton(onClick = { onAction(PasswordDetailAction.Retry) }) { Text(stringResource(Res.string.note_retry)) }
@@ -76,7 +76,7 @@ fun PasswordDetailScreen(state: PasswordDetailState, onAction: (BaseAction) -> U
     if (!state.locked) PasswordServicePicker(state.services, onAction) { id ->
         onAction(PasswordDetailAction.OnServiceSelected(id))
     }
-    if (!state.locked && state.discardOpen) EditCancellationDialog(colors.passwordColor,
+    if (!state.locked && state.discardOpen) EditCancellationDialog(colors.passwords.accent,
         onKeepEditing = { onAction(PasswordDetailAction.KeepEditing) },
         onDiscard = { onAction(PasswordDetailAction.Discard) })
 }

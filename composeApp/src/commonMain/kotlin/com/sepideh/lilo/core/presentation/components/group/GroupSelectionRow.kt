@@ -38,8 +38,8 @@ fun GroupSelectionRow(label: String, selected: Boolean, accent: Color, enabled: 
 private fun GroupSelectionRowPreview() {
     LiloPreviewWrapper {
         Column(verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-            GroupSelectionRow("Personal", true, LiloExtendedTheme.colors.taskColor) {}
-            GroupSelectionRow("Work", false, LiloExtendedTheme.colors.taskColor) {}
+            GroupSelectionRow("Personal", true, LiloExtendedTheme.colors.tasks.accent) {}
+            GroupSelectionRow("Work", false, LiloExtendedTheme.colors.tasks.accent) {}
         }
     }
 }

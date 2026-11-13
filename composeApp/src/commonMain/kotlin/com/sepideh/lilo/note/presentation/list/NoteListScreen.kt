@@ -22,19 +22,19 @@ import org.jetbrains.compose.resources.vectorResource
  val state by viewModel.state.collectAsStateWithLifecycle()
  BaseRoot(viewModel=viewModel,navigateTo=onNavigateTo,onBack=onBack,bodyContainer={NoteListScreen(state,viewModel::onAction)},dialogContent={
   if(state.isSortSheetOpen) NoteSortSheet(state,viewModel::onAction)
-  if(state.isDeleteDialogOpen) DeleteConfirmationDialog(accent=LiloExtendedTheme.colors.noteColor,
+  if(state.isDeleteDialogOpen) DeleteConfirmationDialog(accent=LiloExtendedTheme.colors.notes.accent,
    title=stringResource(Res.string.note_delete_title),message=stringResource(Res.string.delete_item_confirmation),
    onConfirm={viewModel.onAction(NoteListAction.ConfirmDelete)},onDismiss={viewModel.onAction(NoteListAction.DismissDelete)})
  })
 }
 @Composable fun NoteListScreen(state:NoteListState,onAction:(BaseAction)->Unit) {
- val accent=LiloExtendedTheme.colors.noteColor
- BaseListScreen(title=Res.string.note_feature_title,accent=accent,
+ val accent=LiloExtendedTheme.colors.notes.accent
+ BaseListScreen(title=Res.string.note_feature_title,featureColors = LiloExtendedTheme.colors.notes,
   searchVisible=state.isSearchVisible,query=state.searchQuery,searchHint=Res.string.note_search_hint,
   filtersActive=state.sortOrder!=NoteSortOrder.Date,
   filterIcon=LiloIcons.Sort,filterLabel=Res.string.note_sort_title,
   onBack={onAction(BaseAction.OnNavigateTo(null));true},onSearchVisible={onAction(NoteListAction.SearchVisible(it))},onQueryChange={onAction(NoteListAction.Search(it))},onFilter={onAction(NoteListAction.OpenSort)},
-  floatingActionButton={FloatingActionButton(onClick={onAction(BaseAction.OnNavigateTo(AppRoutes.Notes.Detail(null)))},shape=CircleShape,containerColor=accent,modifier=Modifier.size(64.dp)) { Icon(LiloIcons.Add,stringResource(Res.string.add_note_title),Modifier.size(32.dp),tint=LiloExtendedTheme.colors.onNoteAccent) }}) { padding ->
+  floatingActionButton={FloatingActionButton(onClick={onAction(BaseAction.OnNavigateTo(AppRoutes.Notes.Detail(null)))},shape=CircleShape,containerColor=LiloExtendedTheme.colors.notes.primary,modifier=Modifier.size(64.dp)) { Icon(LiloIcons.Add,stringResource(Res.string.add_note_title),Modifier.size(32.dp),tint=LiloExtendedTheme.colors.notes.onPrimary) }}) { padding ->
   Column(Modifier.fillMaxSize().padding(padding)) {
     val options=listOf(null to stringResource(Res.string.all),0L to stringResource(Res.string.no_group_label))+state.groups.map { it.id to it.label }
    LazyRow(contentPadding=PaddingValues(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)) {

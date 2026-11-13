@@ -48,9 +48,9 @@ fun NoteDetailScreenRoot(noteId: Long?, viewModel: NoteDetailViewModel, onNaviga
 
 @Composable
 fun NoteDetailScreen(state: NoteDetailState, onAction: (BaseAction) -> Unit) {
-    val accent = LiloExtendedTheme.colors.noteColor
+    val accent = LiloExtendedTheme.colors.notes.accent
     BaseFormScreen(title = if (state.isEditing) Res.string.edit_note_title else Res.string.add_note_title,
-        accent = accent, saveEnabled = state.fieldsEnabled, isSaving = state.isSaving,
+        featureColors = LiloExtendedTheme.colors.notes, saveEnabled = state.fieldsEnabled, isSaving = state.isSaving,
         actionLabel = Res.string.note_save_action,
         onBack = { onAction(NoteDetailAction.Back); true }, onSave = { onAction(NoteDetailAction.Save) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),

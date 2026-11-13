@@ -52,7 +52,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 addedVersion = state.groupAddedVersion,
                 groups = state.groups.filter { it.isDeletable }.map { GroupOption(it.id, it.title) },
                 selectedId = state.draftGroupId.takeUnless { id -> state.groups.any { it.id == id && !it.isDeletable } },
-                accent = LiloExtendedTheme.colors.taskColor,
+                accent = LiloExtendedTheme.colors.tasks.accent,
                 onSelect = { viewModel.onAction(TaskDetailAction.OnGroupDraftSelected(it)) },
                 onManage = { viewModel.onAction(TaskDetailAction.OnManageGroups) },
                 onConfirm = { viewModel.onAction(TaskDetailAction.OnConfirmGroup) },
@@ -62,10 +62,10 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 },
                 busy = state.isAddingGroup,
                 managementContent = if (state.groupManagementOpen) ({ GroupManagementEditor(
-                    closeActionColor = LiloExtendedTheme.colors.taskAction,
+                    closeActionColor = LiloExtendedTheme.colors.tasks.action,
                     selectedId = state.draftGroupId, isAdding = state.isAddingGroup, addedVersion = state.groupAddedVersion,
                     onCreate = { viewModel.onAction(TaskDetailAction.OnAddNewGroup(it)) },
-                    accent = LiloExtendedTheme.colors.taskColor,
+                    accent = LiloExtendedTheme.colors.tasks.accent,
                     groups = state.groups.filter { it.isDeletable }.map { GroupOption(it.id, it.title, it.isDeletable, it.isEditable) },
                     errorMessage = if (state.duplicateGroupName) stringResource(Res.string.group_name_exists) else if (state.hasError) stringResource(Res.string.task_operation_error) else null,
                     onDelete = { viewModel.onAction(TaskDetailAction.OnDeleteGroup(it)) },
@@ -75,7 +75,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
             )
             state.missingPermission?.let { PermissionDeniedDialog(it, viewModel::onAction) }
             if (state.confirmSaveWithoutReminder) SaveWithoutReminderDialog(viewModel::onAction)
-            if (state.confirmDiscard) EditCancellationDialog(LiloExtendedTheme.colors.taskColor,
+            if (state.confirmDiscard) EditCancellationDialog(LiloExtendedTheme.colors.tasks.accent,
                 onKeepEditing = { viewModel.onAction(TaskDetailAction.KeepEditing) },
                 onDiscard = { viewModel.onAction(TaskDetailAction.Discard) })
         })
@@ -83,7 +83,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
 
 @Composable
 fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) -> Unit, onBack: () -> Boolean, isEditing: Boolean) {
-    val accent = LiloExtendedTheme.colors.taskColor
+    val accent = LiloExtendedTheme.colors.tasks.accent
     val pickImages = com.sepideh.lilo.core.presentation.components.picker.rememberImagePicker(
         onSelected = { onAction(TaskDetailAction.OnImagesSelected(it)) },
         onError = { onAction(TaskDetailAction.OnImagePickerFailure) },
@@ -101,7 +101,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     }
     BaseFormScreen(
         title = if (isEditing) Res.string.edit_task_title else Res.string.add_task_title,
-        accent = accent, isSaving = state.isSaving, saveEnabled = !state.isSaving && !state.isLoading && !state.loadFailed,
+        featureColors = LiloExtendedTheme.colors.tasks, isSaving = state.isSaving, saveEnabled = !state.isSaving && !state.isLoading && !state.loadFailed,
         onBack = { onAction(TaskDetailAction.Back); true }, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)

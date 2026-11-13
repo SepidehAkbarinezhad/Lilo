@@ -40,13 +40,13 @@ fun PasswordListScreenRoot(viewModel: PasswordListViewModel, onNavigateTo: (AppR
 @Composable
 fun PasswordListScreen(state: PasswordListState, onAction: (BaseAction) -> Unit) {
     val colors = LiloExtendedTheme.colors
-    BaseListScreen(title = Res.string.password_feature_title, accent = colors.passwordColor,
+    BaseListScreen(title = Res.string.password_feature_title, featureColors = LiloExtendedTheme.colors.passwords,
         searchVisible = state.searchVisible, query = state.query, searchHint = Res.string.password_search,
         filtersActive = state.alphabetical || state.serviceId != null, onBack = { onAction(BaseAction.OnNavigateTo(null)); true }, onSearchVisible = { onAction(PasswordListAction.OnSearchChanged(it)) },
         onQueryChange = { onAction(PasswordListAction.OnQueryChanged(it)) }, onFilter = null,
         floatingActionButton = {
             FloatingActionButton(onClick = { onAction(BaseAction.OnNavigateTo(AppRoutes.Passwords.Detail(null))) }, modifier = Modifier.size(64.dp),
-                shape = CircleShape, containerColor = colors.passwordColor, contentColor = colors.onPasswordAccent) {
+                shape = CircleShape, containerColor = LiloExtendedTheme.colors.passwords.primary, contentColor = colors.passwords.onPrimary) {
                 Icon(LiloIcons.Add, stringResource(Res.string.password_add_title), Modifier.size(32.dp))
             }
         }) { padding ->
@@ -59,13 +59,13 @@ fun PasswordListScreen(state: PasswordListState, onAction: (BaseAction) -> Unit)
                     else -> Res.string.password_unlock_failed
                 }, modifier = Modifier.padding(20.dp), color = MaterialTheme.colorScheme.error)
             }
-            if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.passwordColor)
+            if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.passwords.accent)
             if (state.error) {
                 AppText(text = Res.string.password_operation_error, modifier = Modifier.padding(horizontal = 20.dp), color = MaterialTheme.colorScheme.error)
                 TextButton(onClick = { onAction(PasswordListAction.Retry) }) { Text(stringResource(Res.string.note_retry)) }
             }
             if (!state.loading && !state.error && records.isEmpty()) ListEmptyState(
-                if (state.query.isBlank() && state.serviceId == null) Res.string.password_empty else Res.string.password_no_results, colors.passwordColor, icon = com.sepideh.lilo.ui.icons.PasswordCardIcon)
+                if (state.query.isBlank() && state.serviceId == null) Res.string.password_empty else Res.string.password_no_results, colors.passwords.accent, icon = com.sepideh.lilo.ui.icons.PasswordCardIcon)
             else LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 items(records, key = { it.id }) { record ->
@@ -80,7 +80,7 @@ fun PasswordListScreen(state: PasswordListState, onAction: (BaseAction) -> Unit)
         }
     }
 
-    if (state.deleteId != null) DeleteConfirmationDialog(colors.passwordColor,
+    if (state.deleteId != null) DeleteConfirmationDialog(colors.passwords.accent,
         { onAction(PasswordListAction.OnDeleteConfirm) },
         { onAction(PasswordListAction.OnDeleteSelected(null)) },
         title = stringResource(Res.string.password_delete_title), message = stringResource(Res.string.delete_item_confirmation))

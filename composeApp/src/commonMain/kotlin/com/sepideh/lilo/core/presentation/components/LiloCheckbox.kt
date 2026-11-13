@@ -15,11 +15,11 @@ import com.sepideh.lilo.ui.theme.*
 
 /** Small visual checkbox inside a full touch target; one accessible toggleable node. */
 @Composable
-fun LiloCheckbox(checked: Boolean, enabled: Boolean, label: String, accent: Color, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+fun LiloCheckbox(checked: Boolean, enabled: Boolean, label: String, accent: Color, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier, checkedContainerColor: Color = accent.copy(alpha = .2f)) {
     Box(modifier.size(LiloSize.TouchTarget).toggleable(value = checked, enabled = enabled, role = Role.Checkbox, onValueChange = onCheckedChange)
         .semantics { contentDescription = label }, contentAlignment = Alignment.Center) {
         Surface(Modifier.size(26.dp), shape = MaterialTheme.shapes.extraSmall,
-            color = if (checked) accent.copy(alpha = .2f) else Color.Transparent,
+            color = if (checked) checkedContainerColor else Color.Transparent,
             border = if (checked) null else BorderStroke(1.4.dp, if (enabled) LiloExtendedTheme.colors.textSecondary else LiloExtendedTheme.colors.textDisabled)) {
             Box(contentAlignment = Alignment.Center) { if (checked) Icon(LiloIcons.Check, null, Modifier.size(22.dp), tint = LiloExtendedTheme.colors.title) }
         }

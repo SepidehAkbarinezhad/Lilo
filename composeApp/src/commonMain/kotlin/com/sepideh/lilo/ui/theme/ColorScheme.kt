@@ -61,10 +61,10 @@ import androidx.compose.material3.lightColorScheme
  *
  * Feature identity is intentionally NOT represented by Material primary:
  *
- * LiloExtendedTheme.colors.taskColor     → Tasks
- * LiloExtendedTheme.colors.noteColor     → Notes
+ * LiloExtendedTheme.colors.tasks     → Tasks
+ * LiloExtendedTheme.colors.notes     → Notes
  * LiloExtendedTheme.colors.expenseColor  → Expenses
- * LiloExtendedTheme.colors.passwordColor → Passwords
+ * LiloExtendedTheme.colors.passwords → Passwords
  *
  * Material primary = Lilo identity.
  * Feature colors = feature identity.

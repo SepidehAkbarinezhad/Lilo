@@ -14,16 +14,6 @@ val Amber300 = Color(0xFFFFD54F)
 val Amber500 = Color(0xFFFFC107)
 val Amber600 = Color(0xFFFFA000)
 
-// Feature colors - Light
-val Green500 = Color(0xFF4CAF50)
-val Blue700 = Color(0xFF1976D2)
-val Purple500 = Color(0xFF9C27B0)
-
-// Feature colors - Dark
-val Green300 = Color(0xFF81C784)
-val Blue300 = Color(0xFF64B5F6)
-val Purple200 = Color(0xFFCE93D8)
-
 // Neutral colors
 val White = Color(0xFFFFFFFF)
 
@@ -54,20 +44,35 @@ val DarkError = Color(0xFFFFB4AB)
 
 
 
-// Feature colors — Light
-val SageLight = Color(0xFFB9CC9D)
-val CoralLight = Color(0xFFE8B9A4)
+// Expenses retain their existing identity; no expense UI is part of this refactor.
 val BlueLight = Color(0xFFB4D6E0)
-val LavenderLight = Color(0xFFCBB7E2)
-val SageActionLight = Color(0xFF607447)
-
-// Feature colors — Dark
-val SageDark = Color(0xFFC0D2A4)
-val CoralDark = Color(0xFFE5BA9A)
 val BlueDark = Color(0xFFA4CED9)
-val LavenderDark = Color(0xFFD3C1E7)
 
-// Dark feature tones for icons on pastel feature buttons.
-val CoralActionLight = Color(0xFF8B4F37)
+// Fixed HCT tones generated with Material Color Utilities TonalPalette.fromInt(seed).
+// Generator: com.google.android.material:material:1.13.0 (offline tooling only).
+// Preserve seed hue/chroma. Header/action Light roles: 40/100/90/10.
+// Dark roles: 80/20/30/90. Home is preserved separately. See docs/feature-colors.md.
 
-val LavenderActionLight = Color(0xFF71518E)
+// Sage seed #B9CC9D
+val Sage10 = Color(0xFF121F02)
+val Sage20 = Color(0xFF263513)
+val Sage30 = Color(0xFF3C4C28)
+val Sage40 = Color(0xFF53643D)
+val Sage80 = Color(0xFFBACD9E)
+val Sage90 = Color(0xFFD6E9B8)
+
+// Coral seed #E8B9A4
+val Coral10 = Color(0xFF2E1508)
+val Coral20 = Color(0xFF46291B)
+val Coral30 = Color(0xFF603F2F)
+val Coral40 = Color(0xFF7A5645)
+val Coral80 = Color(0xFFECBCA7)
+val Coral90 = Color(0xFFFFDBCC)
+
+// Lavender seed #CBB7E2
+val Lavender10 = Color(0xFF231436)
+val Lavender20 = Color(0xFF382A4C)
+val Lavender30 = Color(0xFF4F4064)
+val Lavender40 = Color(0xFF68577D)
+val Lavender80 = Color(0xFFD3BEEA)
+val Lavender90 = Color(0xFFEDDCFF)

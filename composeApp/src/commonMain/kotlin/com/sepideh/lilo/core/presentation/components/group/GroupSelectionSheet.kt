@@ -71,5 +71,5 @@ fun GroupSelectionContent(groups: List<GroupOption>, selectedId: Long?, accent: 
 @Composable
 private fun GroupSelectionPreview() {
     LiloPreviewWrapper { GroupSelectionContent(listOf(GroupOption(1, "Personal"), GroupOption(2, "Work")), 1,
-        LiloExtendedTheme.colors.taskColor, {}, {}, {}) }
+        LiloExtendedTheme.colors.tasks.accent, {}, {}, {}) }
 }

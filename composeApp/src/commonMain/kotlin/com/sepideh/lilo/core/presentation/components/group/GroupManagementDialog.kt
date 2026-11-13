@@ -74,7 +74,7 @@ fun GroupManagementEditor(groups: List<GroupOption>, onDelete: (Long) -> Unit,
 
 @Composable
 fun GroupManagementContent(groups: List<GroupOption>, errorMessage: String? = null, onDelete: (Long) -> Unit,
-    accent: Color = LiloExtendedTheme.colors.taskColor, selectedId: Long? = null, enabled: Boolean = true, modifier: Modifier = Modifier, onEdit: ((GroupOption) -> Unit)? = null, addedVersion: Int = 0) {
+    accent: Color = LiloExtendedTheme.colors.tasks.accent, selectedId: Long? = null, enabled: Boolean = true, modifier: Modifier = Modifier, onEdit: ((GroupOption) -> Unit)? = null, addedVersion: Int = 0) {
     val listState = rememberLazyListState()
     LaunchedEffect(addedVersion, groups.map { it.id }) {
         if (addedVersion > 0) {

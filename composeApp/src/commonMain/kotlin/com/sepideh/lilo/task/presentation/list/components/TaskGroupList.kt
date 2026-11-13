@@ -22,7 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TaskGroupList(state: TaskListState, clickable: Boolean, onAction: (BaseAction) -> Unit) {
-    val accent = LiloExtendedTheme.colors.taskColor
+    val accent = LiloExtendedTheme.colors.tasks.accent
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small),

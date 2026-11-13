@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import com.sepideh.lilo.ui.theme.HomeFeatureColors
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,21 +32,21 @@ internal fun HomeCount(value: Int, label: StringResource, modifier: Modifier = M
 }
 
 @Composable
-internal fun HomeSummaryDivider() {
-    VerticalDivider(Modifier.height(48.dp), color = LiloExtendedTheme.colors.textSupporting.copy(alpha = .28f))
+internal fun HomeSummaryDivider(color: Color) {
+    VerticalDivider(Modifier.height(48.dp), color = color)
 }
 
 @Composable
 internal fun HomeLatestSummary(count: Int, countLabel: StringResource, latestTitle: String,
     timestamp: Long?, emptyLabel: StringResource, onClick: () -> Unit, onLatestClick: (() -> Unit)?,
-    leadingIcon: (@Composable () -> Unit)? = null, subtitle: String? = null) {
+    leadingIcon: (@Composable () -> Unit)? = null, subtitle: String? = null, home: HomeFeatureColors) {
     val colors = LiloExtendedTheme.colors
     Surface(shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = .65f)) {
+        color = home.reportContainer) {
         Row(Modifier.fillMaxWidth().heightIn(min = 84.dp).padding(horizontal = 8.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically) {
             HomeCount(count, countLabel, Modifier.weight(.38f).clickable(role = Role.Button, onClick = onClick))
-            HomeSummaryDivider()
+            HomeSummaryDivider(home.summaryDivider)
             Column(Modifier.weight(.62f).clickable(enabled = count > 0 && onLatestClick != null, role = Role.Button) { onLatestClick?.invoke() }.padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp),
                 horizontalAlignment = Alignment.Start) {
                 if (count == 0) AppText(text = emptyLabel, textType = TextType.Caption, color = colors.textSecondary)

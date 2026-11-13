@@ -77,15 +77,15 @@ fun PasswordListItem(record: Password, revealed: String? = null, busy: Boolean =
                                 maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                         IconButton(onClick = onReveal, enabled = !busy, modifier = Modifier.size(48.dp)) {
-                            if (busy) CircularProgressIndicator(Modifier.size(18.dp), color = colors.passwordAction, strokeWidth = 2.dp)
+                            if (busy) CircularProgressIndicator(Modifier.size(18.dp), color = colors.passwords.action, strokeWidth = 2.dp)
                             else Icon(vectorResource(if (revealed == null) Res.drawable.lilo_eye else Res.drawable.lilo_eye_off),
                                 stringResource(if (revealed == null) Res.string.password_reveal else Res.string.password_hide),
-                                Modifier.size(18.dp), tint = if (revealed != null) colors.passwordAction else colors.textSecondary)
+                                Modifier.size(18.dp), tint = if (revealed != null) colors.passwords.action else colors.textSecondary)
                         }
                         IconButton(onClick = onCopy, enabled = !busy, modifier = Modifier.size(48.dp)) {
                             Icon(if (copied) LiloIcons.Check else LiloIcons.Copy,
                                 stringResource(if (copied) Res.string.password_copied else Res.string.password_copy),
-                                Modifier.size(18.dp), tint = if (copied || revealed != null) colors.passwordAction else colors.textSecondary)
+                                Modifier.size(18.dp), tint = if (copied || revealed != null) colors.passwords.action else colors.textSecondary)
                         }
                     }
                 }

@@ -15,7 +15,7 @@ fun PermissionDeniedDialog(permission: ReminderPermission, onAction: (BaseAction
     FeaturePermissionDialog(
         title = stringResource(if (notification) Res.string.notification_permission_title else Res.string.alarm_permission_title),
         message = stringResource(if (notification) Res.string.notification_permission_body else Res.string.alarm_permission_body),
-        accent = LiloExtendedTheme.colors.taskColor,
+        accent = LiloExtendedTheme.colors.tasks.accent,
         onSettings = { onAction(TaskDetailAction.OnGrantPermissionButton()) },
         onCancel = { onAction(TaskDetailAction.OnAskSaveWithoutReminder) },
         onDismiss = { onAction(TaskDetailAction.OnCancelPermissionDialog) },

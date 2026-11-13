@@ -38,7 +38,7 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
                 verticalArrangement = if (hasMetadata) Arrangement.spacedBy(4.dp) else Arrangement.Center) {
                 Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 14.dp), verticalAlignment = Alignment.CenterVertically) {
                     com.sepideh.lilo.core.presentation.components.LiloCheckbox(checked = task.done, enabled = clickable,
-                        label = completionLabel, accent = LiloExtendedTheme.colors.taskColor,
+                        label = completionLabel, accent = LiloExtendedTheme.colors.tasks.accent,
                         onCheckedChange = { onAction(TaskListAction.OnDoneChange(task.copy(done = it))) })
                     AppText(text = task.title, textType = TextType.BodyLarge, maxLines = 1,
                         textDecoration = if (task.done) androidx.compose.ui.text.style.TextDecoration.LineThrough else androidx.compose.ui.text.style.TextDecoration.None,

@@ -5,6 +5,7 @@ import com.sepideh.lilo.ui.theme.*
 import com.sepideh.lilo.core.presentation.icons.LiloIcons
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -26,12 +27,16 @@ fun BaseHeader(
     onBackPressed: () -> Boolean = { true },
     actions: @Composable RowScope.() -> Unit = {},
     titleContent: (@Composable RowScope.() -> Unit)? = null,
+    featureColors: FeatureColors? = null,
 ) {
-    Row(modifier.fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = LiloSpacing.Item), verticalAlignment = Alignment.CenterVertically) {
+    // Optional feature background; other BaseHeader usages retain their original styling.
+    val background = if (featureColors != null) Modifier.background(featureColors.primaryContainer) else Modifier
+    Row(background.then(modifier).fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = LiloSpacing.Item), verticalAlignment = Alignment.CenterVertically) {
         if (!mainScreen) IconButton(onClick = { onBackPressed() }) {
             Icon(LiloIcons.Back, stringResource(Res.string.back_action), Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.title)
         }
         if (titleContent != null) titleContent()
+        else if (featureColors != null) AppText(text = title, modifier = Modifier.weight(1f).padding(horizontal = 8.dp), textType = TextType.ScreenTitle, color = LiloExtendedTheme.colors.title, maxLines = 1)
         else AppText(text = title, modifier = Modifier.weight(1f).padding(horizontal = 8.dp), textType = TextType.ScreenTitle, maxLines = 1)
         actions()
     }

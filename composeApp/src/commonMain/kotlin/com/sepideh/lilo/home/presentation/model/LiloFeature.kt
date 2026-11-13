@@ -1,6 +1,6 @@
 package com.sepideh.lilo.home.presentation.model
 
-import androidx.compose.ui.graphics.Color
+import com.sepideh.lilo.ui.theme.FeatureColors
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.sepideh.lilo.ui.icons.NoteCardIcon
 import com.sepideh.lilo.ui.icons.TaskCardIcon
@@ -18,21 +18,21 @@ enum class LiloFeature(
     val titleRes: StringResource,
     val subTitleRes: StringResource ,
     val iconRes: ImageVector,
-    val accentColor: (LiloColors) -> Color// Lambda that takes the light/dark palette in runtime and returns the active Color
+    val colors: (LiloColors) -> FeatureColors
 ) {
     TASKS(
         titleRes = Res.string.task_feature_title,
         subTitleRes = Res.string.task_feature_subTitle,
         iconRes = TaskCardIcon,
-        accentColor = { colors -> colors.taskColor }),
+        colors = { colors -> colors.tasks }),
     NOTES(
         titleRes = Res.string.note_feature_title,
         subTitleRes = Res.string.note_feature_subTitle,
         iconRes = NoteCardIcon,
-        accentColor = { colors -> colors.noteColor }),
+        colors = { colors -> colors.notes }),
     PASSWORDS(
         titleRes = Res.string.password_feature_title,
         subTitleRes = Res.string.password_feature_subTitle,
         iconRes = com.sepideh.lilo.ui.icons.PasswordCardIcon,
-        accentColor = { colors -> colors.passwordColor })
+        colors = { colors -> colors.passwords })
 }

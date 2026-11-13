@@ -25,7 +25,7 @@ internal fun PasswordServiceDeleteDialog(
     val deleting = state.deleting ?: return
     val colors = LiloExtendedTheme.colors
     DeleteConfirmationDialog(
-        accent = colors.passwordColor,
+        accent = colors.passwords.accent,
         title = stringResource(Res.string.password_service_delete),
         message = stringResource(Res.string.delete_item_confirmation),
         confirmFirst = true,
@@ -43,7 +43,7 @@ internal fun PasswordServiceDeleteDialog(
             verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small),
         ) {
             items(state.services.filter { it.id != deleting.id }, key = { it.id }) { service ->
-                GroupSelectionRow(service.displayName(), state.replacement == service.id, colors.passwordColor,
+                GroupSelectionRow(service.displayName(), state.replacement == service.id, colors.passwords.accent,
                     enabled = !state.busy, compact = true,
                     leadingIcon = { PasswordServiceIcon(service.id, colors.textSecondary, Modifier.size(LiloSize.SmallIcon)) }) { onReplacement(service.id) }
             }

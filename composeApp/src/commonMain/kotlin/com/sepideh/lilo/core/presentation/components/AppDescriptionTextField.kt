@@ -37,7 +37,7 @@ private fun EmptyDescriptionPreview() {
     LiloPreviewWrapper {
         var value by remember { mutableStateOf("") }
         AppDescriptionTextField(TextFieldRequired(label = stringResource(Res.string.description_label),
-            value = value, onValueChange = { value = it }), LiloExtendedTheme.colors.taskColor)
+            value = value, onValueChange = { value = it }), LiloExtendedTheme.colors.tasks.accent)
     }
 }
 
@@ -47,6 +47,6 @@ private fun ScrollableDescriptionPreview() {
     LiloPreviewWrapper {
         var value by remember { mutableStateOf("First line\nSecond line\nThird line\nFourth line\nFifth line") }
         AppDescriptionTextField(TextFieldRequired(label = stringResource(Res.string.description_label),
-            value = value, onValueChange = { value = it }), LiloExtendedTheme.colors.noteColor)
+            value = value, onValueChange = { value = it }), LiloExtendedTheme.colors.notes.accent)
     }
 }

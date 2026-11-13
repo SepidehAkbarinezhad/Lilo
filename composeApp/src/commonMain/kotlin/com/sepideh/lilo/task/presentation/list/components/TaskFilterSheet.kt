@@ -40,9 +40,9 @@ private fun TaskFilterContent(state: TaskListState, onAction: (BaseAction) -> Un
     Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState())
         .padding(horizontal = 28.dp).padding(bottom = LiloSpacing.Section),
         verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
-        SheetHeader(Res.string.filter_label, Res.string.apply_label, colors.taskColor,
+        SheetHeader(Res.string.filter_label, Res.string.apply_label, colors.tasks.accent,
             onConfirm = { onAction(TaskListAction.OnApplyFilter) },
-            onReset = { onAction(TaskListAction.OnResetFilter) }, resetActionColor = colors.taskAction)
+            onReset = { onAction(TaskListAction.OnResetFilter) }, resetActionColor = colors.tasks.action)
         AppText(text = Res.string.status_filter_label, textType = TextType.FieldLabel)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Item),
             verticalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
@@ -70,8 +70,8 @@ private fun TaskFilterChoice(label: String, selected: Boolean, onClick: () -> Un
     Surface(modifier = modifier.heightIn(min = LiloSize.TouchTarget)
         .toggleable(value = selected, role = Role.Checkbox, onValueChange = { onClick() }),
         shape = MaterialTheme.shapes.small,
-        color = if (selected) colors.taskColor.copy(alpha = .3f) else MaterialTheme.colorScheme.background,
-        border = BorderStroke(1.dp, if (selected) colors.taskAction else MaterialTheme.colorScheme.outlineVariant)) {
+        color = if (selected) colors.tasks.accent.copy(alpha = .3f) else MaterialTheme.colorScheme.background,
+        border = BorderStroke(1.dp, if (selected) colors.tasks.action else MaterialTheme.colorScheme.outlineVariant)) {
         Box(Modifier.padding(horizontal = 12.dp, vertical = 10.dp), contentAlignment = Alignment.Center) {
             AppText(text = label, textType = TextType.Body, textAlign = TextAlign.Center,
                 color = if (selected) colors.title else colors.textSecondary)

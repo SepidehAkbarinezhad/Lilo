@@ -7,7 +7,7 @@ import kotlin.test.*
 class LiloColorsTest {
     @Test fun enabledLightTextRemainsReadableOnBothReferenceSurfaces() {
         val colors = LiloColorsLight
-        val text = listOf(colors.title, colors.textPrimary, colors.textSecondary, colors.textSupporting, colors.textPlaceholder, colors.taskAction)
+        val text = listOf(colors.title, colors.textPrimary, colors.textSecondary, colors.textSupporting, colors.textPlaceholder, colors.tasks.primary)
         listOf(LightBackground, White).forEach { background ->
             text.forEach { foreground -> assertTrue(contrast(foreground, background) >= 4.5f, "Low text contrast: $foreground") }
         }

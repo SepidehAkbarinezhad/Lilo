@@ -37,7 +37,7 @@ private fun NoteSortContent(state: NoteListState, action: (BaseAction) -> Unit) 
     val colors = LiloExtendedTheme.colors
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
         .padding(horizontal = 28.dp).padding(bottom = 64.dp)) {
-        SheetHeader(Res.string.note_sort_title, Res.string.apply_label, colors.noteColor,
+        SheetHeader(Res.string.note_sort_title, Res.string.apply_label, colors.notes.accent,
             onConfirm = { action(NoteListAction.ApplySort) })
         Column(Modifier.selectableGroup()) {
             NoteSortOption(Res.string.note_recent_sort, Res.string.note_recent_sort_description,
@@ -57,7 +57,7 @@ private fun NoteSortOption(title: StringResource, description: StringResource, s
         .padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         RadioButton(selected = selected, onClick = null,
-            colors = RadioButtonDefaults.colors(selectedColor = colors.noteAction.copy(alpha = .75f), unselectedColor = colors.textSecondary))
+            colors = RadioButtonDefaults.colors(selectedColor = colors.notes.action.copy(alpha = .75f), unselectedColor = colors.textSecondary))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             AppText(text = title, textType = TextType.SectionTitle)
             AppText(text = description, textType = TextType.Body, color = colors.textSecondary)

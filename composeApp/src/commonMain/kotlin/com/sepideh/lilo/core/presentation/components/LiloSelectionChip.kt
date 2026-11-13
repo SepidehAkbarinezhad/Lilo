@@ -19,7 +19,7 @@ fun LiloSelectionChip(label: String, selected: Boolean, accent: Color, onClick: 
         border = BorderStroke(androidx.compose.ui.unit.Dp(1f), if (selected) accent else MaterialTheme.colorScheme.outlineVariant),
         label = { AppText(text = label, textType = TextType.Body, modifier = (if (centerLabel) Modifier.fillMaxWidth() else Modifier).padding(horizontal = LiloSpacing.Small),
             textAlign = if (centerLabel) TextAlign.Center else TextAlign.Start,
-            color = if (!enabled) LiloExtendedTheme.colors.textDisabled else if (selected && accent == LiloExtendedTheme.colors.taskColor) LiloExtendedTheme.colors.taskAction else if (selected) LiloExtendedTheme.colors.title else LiloExtendedTheme.colors.textSecondary) },
+            color = if (!enabled) LiloExtendedTheme.colors.textDisabled else if (selected && accent == LiloExtendedTheme.colors.tasks.accent) LiloExtendedTheme.colors.tasks.action else if (selected) LiloExtendedTheme.colors.title else LiloExtendedTheme.colors.textSecondary) },
         colors = FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.background,
             selectedContainerColor = accent.copy(alpha = .12f)))
 }

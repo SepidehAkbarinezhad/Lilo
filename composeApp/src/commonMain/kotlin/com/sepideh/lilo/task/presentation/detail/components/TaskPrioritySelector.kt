@@ -58,6 +58,6 @@ fun TaskPrioritySelector(selectedId: Int, accent: Color, enabled: Boolean = true
 @Composable
 private fun TaskPrioritySelectorPreview() {
     LiloPreviewWrapper {
-        TaskPrioritySelector(TaskPriority.MEDIUM.id, LiloExtendedTheme.colors.taskColor) {}
+        TaskPrioritySelector(TaskPriority.MEDIUM.id, LiloExtendedTheme.colors.tasks.accent) {}
     }
 }

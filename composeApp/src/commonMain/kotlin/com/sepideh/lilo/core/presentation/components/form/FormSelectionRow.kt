@@ -59,7 +59,7 @@ fun FormSelectionRow(icon: ImageVector, title: String, value: String, onClick: (
 @AppPreviews
 @Composable
 private fun FormSelectionRowPreview() {
-    LiloPreviewWrapper { FormSelectionRow(LiloIcons.Groups, "Group", "Personal", {}, accent = LiloExtendedTheme.colors.taskColor) }
+    LiloPreviewWrapper { FormSelectionRow(LiloIcons.Groups, "Group", "Personal", {}, accent = LiloExtendedTheme.colors.tasks.accent) }
 }
 
 @AppPreviews
@@ -77,7 +77,7 @@ private fun ReminderSelectionRowPreview() {
                 title = stringResource(Res.string.reminder_label),
                 value = "$dateAndTime · ${stringResource(Res.string.repeat_daily)}",
                 onClick = {},
-                accent = LiloExtendedTheme.colors.taskColor,
+                accent = LiloExtendedTheme.colors.tasks.accent,
                 onClear = {},
                 clearContentDescription = stringResource(Res.string.remove_reminder_action),
                 valueBelowTitle = true,
@@ -87,7 +87,7 @@ private fun ReminderSelectionRowPreview() {
                 title = stringResource(Res.string.reminder_label),
                 value = stringResource(Res.string.not_set_label),
                 onClick = {},
-                accent = LiloExtendedTheme.colors.taskColor,
+                accent = LiloExtendedTheme.colors.tasks.accent,
                 valueBelowTitle = true,
             )
         }

@@ -44,7 +44,7 @@ private fun AppCircleButtonPreview() {
     val liloColor =
         LiloPreviewWrapper {
             AppCircleButton(
-                color = LiloFeature.TASKS.accentColor(LiloExtendedTheme.colors),
+                color = LiloFeature.TASKS.colors(LiloExtendedTheme.colors).accent,
                 onClick = {})
         }
 }

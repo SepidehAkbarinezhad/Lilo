@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.home.presentation.model.*
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
-import com.sepideh.lilo.ui.theme.featureChromeColors
 import com.sepideh.lilo.password.presentation.list.components.PasswordServiceIcon
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -31,34 +30,34 @@ fun FeatureCardShell(
 ) {
     val colors = LiloExtendedTheme.colors
     val contentPadding = 16.dp
-    val accent = feature.accentColor(colors)
+    val home = feature.colors(colors).home
     val actionColor = when (feature) {
-        LiloFeature.TASKS -> colors.taskAction
-        LiloFeature.NOTES -> colors.noteAction
-        LiloFeature.PASSWORDS -> colors.passwordAction
+        LiloFeature.TASKS -> colors.tasks.action
+        LiloFeature.NOTES -> colors.notes.action
+        LiloFeature.PASSWORDS -> colors.passwords.action
     }
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp),
-        color = featureChromeColors(accent).container,
+        color = home.container,
         contentColor = colors.textPrimary) {
         Column(Modifier.padding(contentPadding), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             HomeFeatureHeading(feature, actionColor, onAddClick, onCardClick, actionEndInset = contentPadding)
-            HorizontalDivider(color = actionColor.copy(alpha = .14f))
+            HorizontalDivider(color = home.divider)
             if (reportFailed) {
                 AppText(text = Res.string.home_report_error, color = colors.textSecondary)
                 TextButton(onClick = onRetryReport, colors = ButtonDefaults.textButtonColors(contentColor = actionColor)) {
                     Text(stringResource(Res.string.note_retry))
                 }
             } else when (detail) {
-                is TaskReportDetail -> HomeTaskReport(detail, actionColor, completingTaskIds, onCompleteTask, onCardClick, onLatestClick)
+                is TaskReportDetail -> HomeTaskReport(detail, actionColor, home, completingTaskIds, onCompleteTask, onCardClick, onLatestClick)
                 is NoteReportDetail -> HomeLatestSummary(detail.totalCount, Res.string.home_total_notes,
                     detail.latestTitle, null, Res.string.home_no_items, onCardClick, onLatestClick,
-                    subtitle = detail.latestSnippet.takeIf { it.isNotBlank() })
+                    home = home, subtitle = detail.latestSnippet.takeIf { it.isNotBlank() })
                 is PasswordReportDetail -> HomeLatestSummary(detail.totalAccounts, Res.string.home_total_passwords,
                     localizedServiceName(detail.lastAddedService, detail.lastAddedServiceFa), detail.lastAddedAt, Res.string.home_no_items, onCardClick, onLatestClick,
                     leadingIcon = { PasswordServiceIcon(detail.lastAddedServiceId, colors.textSecondary, Modifier.size(20.dp)) },
-                    subtitle = detail.lastAddedIdentifier)
+                    home = home, subtitle = detail.lastAddedIdentifier)
                 null -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                    color = actionColor, trackColor = accent.copy(alpha = .15f))
+                    color = actionColor, trackColor = home.progressTrack)
                 else -> Unit
             }
         }
