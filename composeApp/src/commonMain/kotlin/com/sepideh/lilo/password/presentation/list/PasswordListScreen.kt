@@ -40,7 +40,7 @@ fun PasswordListScreenRoot(viewModel: PasswordListViewModel, onNavigateTo: (AppR
 @Composable
 fun PasswordListScreen(state: PasswordListState, onAction: (BaseAction) -> Unit) {
     val colors = LiloExtendedTheme.colors
-    BaseListScreen(title = Res.string.password_feature_title, accent = colors.passwordColor, referenceStyle = true,
+    BaseListScreen(title = Res.string.password_feature_title, accent = colors.passwordColor,
         searchVisible = state.searchVisible, query = state.query, searchHint = Res.string.password_search,
         filtersActive = state.alphabetical || state.serviceId != null, onBack = { onAction(BaseAction.OnNavigateTo(null)); true }, onSearchVisible = { onAction(PasswordListAction.OnSearchChanged(it)) },
         onQueryChange = { onAction(PasswordListAction.OnQueryChanged(it)) }, onFilter = null,

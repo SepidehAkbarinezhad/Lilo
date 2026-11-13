@@ -51,7 +51,7 @@ fun TaskListScreen(state: TaskListState, isLoading: Boolean = false, onAction: (
     val accent = LiloExtendedTheme.colors.taskColor
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    BaseListScreen(title = Res.string.tasks_list_title, accent = accent, referenceStyle = true,
+    BaseListScreen(title = Res.string.tasks_list_title, accent = accent,
         searchVisible = state.isSearchVisible, query = state.searchQuery, searchHint = Res.string.search_tasks_action,
         filtersActive = state.taskFilterOption.taskStatus.isNotEmpty() || state.taskFilterOption.priorityList.isNotEmpty(),
         onBack = { onAction(BaseAction.OnNavigateTo(null)); true },
@@ -97,4 +97,10 @@ private fun TaskListScreenPreview() {
                 Task(id = 4, title = "مطالعه کتاب", priority = 0, done = true, groupId = 1)),
         ), onAction = {})
     }
+}
+
+@AppPreviews
+@Composable
+private fun TaskListEmptyPreview() {
+    LiloPreviewWrapper { TaskListScreen(TaskListState(), onAction = {}) }
 }

@@ -50,12 +50,12 @@ fun NoteDetailScreenRoot(noteId: Long?, viewModel: NoteDetailViewModel, onNaviga
 fun NoteDetailScreen(state: NoteDetailState, onAction: (BaseAction) -> Unit) {
     val accent = LiloExtendedTheme.colors.noteColor
     BaseFormScreen(title = if (state.isEditing) Res.string.edit_note_title else Res.string.add_note_title,
-        accent = accent, saveEnabled = state.fieldsEnabled, textSaveAction = true,
-        saveActionColor = LiloExtendedTheme.colors.noteAction, actionLabel = Res.string.note_save_action,
+        accent = accent, saveEnabled = state.fieldsEnabled, isSaving = state.isSaving,
+        actionLabel = Res.string.note_save_action,
         onBack = { onAction(NoteDetailAction.Back); true }, onSave = { onAction(NoteDetailAction.Save) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),
+        Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),
             verticalArrangement = Arrangement.spacedBy(LiloSpacing.Section)) {
-            if (state.isLoading || state.isSaving) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
+            if (state.isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = accent)
             if (state.hasError) {
                 AppText(text = Res.string.note_operation_error, color = MaterialTheme.colorScheme.error)
                 TextButton(onClick = { onAction(NoteDetailAction.Retry) }) { Text(stringResource(Res.string.note_retry)) }

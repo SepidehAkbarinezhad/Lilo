@@ -54,7 +54,7 @@ fun ReminderEditorScreen(
     val minute = minutes
     val valid = hour in 0..23 && minute in 0..59
     BaseFormScreen(title = Res.string.reminder_label, accent = accent, saveEnabled = valid,
-        actionLabel = Res.string.confirm_action, textSaveAction = true, saveActionColor = LiloExtendedTheme.colors.taskAction, onBack = { onDismiss(); true }, onSave = {
+        bottomSaveAction = false, actionLabel = Res.string.confirm_action, textSaveAction = true, saveActionColor = LiloExtendedTheme.colors.taskAction, onBack = { onDismiss(); true }, onSave = {
             if (valid) {
                 val at = LocalDateTime(date, LocalTime(hour, minute)).toInstant(zone).toEpochMilliseconds()
                 // Existing repeats can retain their original anchor. New/edited starts must be future.

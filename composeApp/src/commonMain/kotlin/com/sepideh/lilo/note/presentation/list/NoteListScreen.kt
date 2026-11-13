@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.vectorResource
 }
 @Composable fun NoteListScreen(state:NoteListState,onAction:(BaseAction)->Unit) {
  val accent=LiloExtendedTheme.colors.noteColor
- BaseListScreen(title=Res.string.note_feature_title,accent=accent,referenceStyle=true,
+ BaseListScreen(title=Res.string.note_feature_title,accent=accent,
   searchVisible=state.isSearchVisible,query=state.searchQuery,searchHint=Res.string.note_search_hint,
   filtersActive=state.sortOrder!=NoteSortOrder.Date,
   filterIcon=LiloIcons.Sort,filterLabel=Res.string.note_sort_title,

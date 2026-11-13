@@ -7,12 +7,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.home.presentation.model.*
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
+import com.sepideh.lilo.ui.theme.featureChromeColors
 import com.sepideh.lilo.password.presentation.list.components.PasswordServiceIcon
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -33,19 +32,13 @@ fun FeatureCardShell(
     val colors = LiloExtendedTheme.colors
     val contentPadding = 16.dp
     val accent = feature.accentColor(colors)
-    val dark = MaterialTheme.colorScheme.background.luminance() < .5f
     val actionColor = when (feature) {
         LiloFeature.TASKS -> colors.taskAction
         LiloFeature.NOTES -> colors.noteAction
         LiloFeature.PASSWORDS -> colors.passwordAction
     }
-    val backgroundTint = when {
-        dark -> .16f
-        feature == LiloFeature.PASSWORDS -> .30f
-        else -> .24f
-    }
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp),
-        color = lerp(MaterialTheme.colorScheme.background, accent, backgroundTint),
+        color = featureChromeColors(accent).container,
         contentColor = colors.textPrimary) {
         Column(Modifier.padding(contentPadding), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             HomeFeatureHeading(feature, actionColor, onAddClick, onCardClick, actionEndInset = contentPadding)
