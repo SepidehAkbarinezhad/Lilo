@@ -22,6 +22,7 @@ fun BottomActionFormScreen(
     actionLabel: StringResource,
     onBack: () -> Boolean,
     onSave: () -> Unit,
+    headerColors: FeatureColors? = featureColors,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
@@ -31,7 +32,7 @@ fun BottomActionFormScreen(
             Box(Modifier.clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))) {
                 BaseHeader(
                     title = title,
-                    featureColors = featureColors,
+                    featureColors = headerColors,
                     modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)),
                     onBackPressed = onBack,
                 )

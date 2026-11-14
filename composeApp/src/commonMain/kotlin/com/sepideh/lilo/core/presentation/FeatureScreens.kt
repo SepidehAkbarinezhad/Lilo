@@ -38,14 +38,15 @@ fun BaseFormScreen(
     saveActionColor: Color = featureColors.primary,
     bottomSaveAction: Boolean = true,
     isSaving: Boolean = false,
+    headerColors: FeatureColors? = featureColors,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     if (bottomSaveAction) {
-        BottomActionFormScreen(title, featureColors, saveEnabled, isSaving, actionLabel, onBack, onSave, content)
+        BottomActionFormScreen(title, featureColors, saveEnabled, isSaving, actionLabel, onBack, onSave, headerColors, content)
         return
     }
     Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
-        BaseHeader(title = title, featureColors = featureColors, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
+        BaseHeader(title = title, featureColors = headerColors, modifier = Modifier.statusBarsPadding(), onBackPressed = onBack,
             actions = { if (textSaveAction) TextButton(onClick = onSave, enabled = saveEnabled, colors = ButtonDefaults.textButtonColors(contentColor = saveActionColor)) { Text(text = stringResource(actionLabel), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) } else FeatureActionButton(actionLabel, featureColors.accent, saveEnabled, onSave) })
     }, content = content)
 }

@@ -52,6 +52,7 @@ fun PasswordDetailScreen(state: PasswordDetailState, onAction: (BaseAction) -> U
     } else {
         BaseFormScreen(title = if (!state.isEditing) Res.string.password_add_title else Res.string.password_edit_title,
             featureColors = LiloExtendedTheme.colors.passwords, isSaving = state.saving,
+            headerColors = LiloExtendedTheme.colors.passwords.takeIf { state.isEditing },
             actionLabel = Res.string.note_save_action, saveEnabled = !state.locked && !state.loading && !state.saving && !state.loadFailed,
             onBack = { onAction(PasswordDetailAction.Back); true }, onSave = { onAction(PasswordDetailAction.OnSave) }) { padding ->
             Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),

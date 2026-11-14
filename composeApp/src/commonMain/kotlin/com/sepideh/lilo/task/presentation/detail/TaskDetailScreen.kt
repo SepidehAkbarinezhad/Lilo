@@ -102,6 +102,7 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
     BaseFormScreen(
         title = if (isEditing) Res.string.edit_task_title else Res.string.add_task_title,
         featureColors = LiloExtendedTheme.colors.tasks, isSaving = state.isSaving, saveEnabled = !state.isSaving && !state.isLoading && !state.loadFailed,
+        headerColors = LiloExtendedTheme.colors.tasks.takeIf { isEditing },
         onBack = { onAction(TaskDetailAction.Back); true }, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)
