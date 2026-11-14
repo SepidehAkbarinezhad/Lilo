@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.group
 
+import com.sepideh.lilo.ui.theme.featureTextSelectionColors
 import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
 import com.sepideh.lilo.core.domain.validation.SHORT_NAME_MAX_LENGTH
 import androidx.compose.foundation.BorderStroke
@@ -61,7 +62,7 @@ fun GroupManagementEditor(groups: List<GroupOption>, onDelete: (Long) -> Unit,
                     label = { AppText(text = Res.string.edit_group_action) }, shape = MaterialTheme.shapes.medium,
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
                     keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { submitRename() }),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent))
+                    colors = OutlinedTextFieldDefaults.colors(selectionColors = featureTextSelectionColors(accent), focusedBorderColor = accent, cursorColor = accent))
                 InlineEditorActions(renameTitle, isAdding, onConfirm = { submitRename() },
                     onCancel = { renameId = null; renameTitle = "" })
             }

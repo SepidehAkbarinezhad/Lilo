@@ -1,7 +1,9 @@
 package com.sepideh.lilo.core.presentation.components
 
+import com.sepideh.lilo.ui.theme.featureTextSelectionColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -43,12 +45,14 @@ fun AppOutlineTextField(containerModifier: Modifier = Modifier, textFieldModifie
                 border = BorderStroke(1.dp, if (errorMessage != null) MaterialTheme.colorScheme.error else if (focused) accentColor else MaterialTheme.colorScheme.outlineVariant)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {
                     if (leadingIcon != null) CompositionLocalProvider(LocalContentColor provides if (field.enabled) colors.textSecondary else colors.textDisabled) { leadingIcon() }
-                    BasicTextField(value = field.value, onValueChange = field.onValueChange, enabled = field.enabled, readOnly = field.readOnly,
-                        modifier = Modifier.weight(1f).focusRequester(focusRequester).onFocusChanged { focused = it.isFocused },
-                        textStyle = textStyle.copy(color = if (field.enabled) colors.textPrimary else colors.textDisabled),
-                        keyboardOptions = keyboardOptions, visualTransformation = visualTransformation,
-                        cursorBrush = SolidColor(accentColor), singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-                        decorationBox = { inner -> Box { if (field.value.isEmpty() && field.hint.isNotEmpty()) AppText(text = field.hint, color = colors.textPlaceholder); inner() } })
+                    CompositionLocalProvider(LocalTextSelectionColors provides featureTextSelectionColors(accentColor)) {
+                        BasicTextField(value = field.value, onValueChange = field.onValueChange, enabled = field.enabled, readOnly = field.readOnly,
+                            modifier = Modifier.weight(1f).focusRequester(focusRequester).onFocusChanged { focused = it.isFocused },
+                            textStyle = textStyle.copy(color = if (field.enabled) colors.textPrimary else colors.textDisabled),
+                            keyboardOptions = keyboardOptions, visualTransformation = visualTransformation,
+                            cursorBrush = SolidColor(accentColor), singleLine = singleLine, maxLines = maxLines, minLines = minLines,
+                            decorationBox = { inner -> Box { if (field.value.isEmpty() && field.hint.isNotEmpty()) AppText(text = field.hint, color = colors.textPlaceholder); inner() } })
+                    }
                     if (trailingIcon != null) trailingIcon()
                 }
             }
@@ -59,7 +63,7 @@ fun AppOutlineTextField(containerModifier: Modifier = Modifier, textFieldModifie
                 isError = errorMessage != null, leadingIcon = leadingIcon, trailingIcon = trailingIcon,
                 visualTransformation = visualTransformation, keyboardOptions = keyboardOptions,
                 placeholder = { if (field.hint.isNotEmpty()) AppText(text = field.hint, color = colors.textPlaceholder) },
-                colors = OutlinedTextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.surface,
+                colors = OutlinedTextFieldDefaults.colors(selectionColors = featureTextSelectionColors(accentColor), focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface, disabledContainerColor = MaterialTheme.colorScheme.surface,
                     focusedTextColor = colors.textPrimary, unfocusedTextColor = colors.textPrimary, disabledTextColor = colors.textDisabled,
                     focusedLeadingIconColor = colors.textSecondary, unfocusedLeadingIconColor = colors.textSecondary, disabledLeadingIconColor = colors.textDisabled,

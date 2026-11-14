@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.picker
 
+import com.sepideh.lilo.ui.theme.featureTextSelectionColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -68,7 +69,7 @@ fun TimeNumberField(value: String, onChange: (String) -> Unit, label: String, ma
         }, modifier = Modifier.width(80.dp), singleLine = true,
             shape = RoundedCornerShape(12.dp), textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = OutlinedTextFieldDefaults.colors(
+            colors = OutlinedTextFieldDefaults.colors(selectionColors = featureTextSelectionColors(accent),
                 focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent,
                 focusedBorderColor = accent, unfocusedBorderColor = accent,
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,

@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.header
 
+import com.sepideh.lilo.ui.theme.featureTextSelectionColors
 import com.sepideh.lilo.ui.theme.FeatureColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.border
@@ -90,7 +91,7 @@ fun FeatureListHeader(
                             Icon(LiloIcons.Close, stringResource(Res.string.close_search_action), tint = headerContentColor)
                         }
                     },
-                    colors = OutlinedTextFieldDefaults.colors(
+                    colors = OutlinedTextFieldDefaults.colors(selectionColors = featureTextSelectionColors(featureColors.accent),
                         focusedContainerColor = actionSurface,
                         unfocusedContainerColor = actionSurface,
                         focusedTextColor = headerContentColor,

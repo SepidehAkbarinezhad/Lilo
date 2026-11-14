@@ -1,5 +1,6 @@
 package com.sepideh.lilo.core.presentation.components.group
 
+import com.sepideh.lilo.ui.theme.featureTextSelectionColors
 import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
 import com.sepideh.lilo.core.domain.validation.SHORT_NAME_MAX_LENGTH
 import androidx.compose.foundation.layout.*
@@ -48,7 +49,7 @@ fun InlineGroupEditor(accent: Color, busy: Boolean, addedVersion: Int, onCreate:
                 supportingText = if (isShortNameTooLong(name)) ({ AppText(text = stringResource(Res.string.short_name_too_long, SHORT_NAME_MAX_LENGTH), textType = TextType.FieldError) }) else null,
                 placeholder = { AppText(text = Res.string.new_group_hint, color = LiloExtendedTheme.colors.textPlaceholder) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { submit() }),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = accent, cursorColor = accent,
+                colors = OutlinedTextFieldDefaults.colors(selectionColors = featureTextSelectionColors(accent), focusedBorderColor = accent, cursorColor = accent,
                     focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface))
             InlineEditorActions(name, busy, onConfirm = { submit() }, onCancel = { cancel() })
         }

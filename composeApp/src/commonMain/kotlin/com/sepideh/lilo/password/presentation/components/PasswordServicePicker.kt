@@ -1,5 +1,6 @@
 package com.sepideh.lilo.password.presentation.components
 
+import com.sepideh.lilo.ui.theme.featureTextSelectionColors
 import com.sepideh.lilo.core.domain.validation.isShortNameTooLong
 import com.sepideh.lilo.core.domain.validation.SHORT_NAME_MAX_LENGTH
 import androidx.compose.foundation.BorderStroke
@@ -125,7 +126,7 @@ fun PasswordServicePicker(state: PasswordServicesState, onAction: (BaseAction) -
                                 shape = MaterialTheme.shapes.medium,
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                                 keyboardActions = KeyboardActions(onDone = { onAction(PasswordServicesAction.OnSave) }),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = colors.passwords.accent,
+                                colors = OutlinedTextFieldDefaults.colors(selectionColors = featureTextSelectionColors(colors.passwords.accent), focusedBorderColor = colors.passwords.accent,
                                     cursorColor = colors.passwords.accent, focusedContainerColor = MaterialTheme.colorScheme.surface,
                                     unfocusedContainerColor = MaterialTheme.colorScheme.surface))
                             InlineEditorActions(state.name, state.busy, { onAction(PasswordServicesAction.OnSave) }, { onAction(PasswordServicesAction.OnCancelEdit) })
