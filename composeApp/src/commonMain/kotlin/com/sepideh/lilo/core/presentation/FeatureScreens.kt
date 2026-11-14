@@ -74,8 +74,14 @@ fun BaseListScreen(
 }
 
 @Composable
-fun SheetHeader(title: StringResource, action: StringResource, accent: Color, enabled: Boolean = true, onConfirm: () -> Unit, onReset: (() -> Unit)? = null, resetActionColor: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+fun SheetHeader(title: StringResource, action: StringResource, accent: Color, enabled: Boolean = true, onConfirm: () -> Unit, onReset: (() -> Unit)? = null, resetActionColor: Color = MaterialTheme.colorScheme.onSurfaceVariant, onDismiss: (() -> Unit)? = null) {
     Row(Modifier.fillMaxWidth().padding(bottom = 16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+        if (onDismiss != null) {
+            IconButton(onClick = onDismiss) {
+                Icon(LiloIcons.Close, stringResource(Res.string.close_sheet_action),
+                    Modifier.size(LiloSize.Icon), tint = LiloExtendedTheme.colors.title)
+            }
+        }
         AppText(text = title, textType = TextType.SectionTitle, modifier = Modifier.weight(1f).padding(end = 12.dp))
         if (onReset != null) {
             TextButton(onClick = onReset, colors = ButtonDefaults.textButtonColors(contentColor = resetActionColor)) {

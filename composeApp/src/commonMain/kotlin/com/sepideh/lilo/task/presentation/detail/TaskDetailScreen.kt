@@ -14,7 +14,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sepideh.lilo.task.presentation.reminder.ReminderEditorScreen
+import com.sepideh.lilo.task.presentation.reminder.ReminderEditorSheet
 import com.sepideh.lilo.task.presentation.reminder.label
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.presentation.BaseAction
@@ -90,14 +90,9 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
         maxSelection = (com.sepideh.lilo.core.domain.images.IMAGE_SELECTION_LIMIT -
             com.sepideh.lilo.core.presentation.images.attachmentPreviews(task.imageNames, state.removedImageNames, state.selectedImages).size).coerceAtLeast(1))
     if (state.reminderEditorOpen) {
-        androidx.compose.ui.window.Dialog(
-            onDismissRequest = { onAction(TaskDetailAction.OnDismissReminder) },
-            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
-        ) {
-            ReminderEditorScreen(task.reminderAt, task.repeatRule, task.reminderTimeZoneId, accent,
-                onConfirm = { at, repeat, zone -> onAction(TaskDetailAction.OnReminderConfirmed(at, repeat, zone)) },
-                onDismiss = { onAction(TaskDetailAction.OnDismissReminder) })
-        }
+        ReminderEditorSheet(task.reminderAt, task.repeatRule, task.reminderTimeZoneId, accent,
+            onConfirm = { at, repeat, zone -> onAction(TaskDetailAction.OnReminderConfirmed(at, repeat, zone)) },
+            onDismiss = { onAction(TaskDetailAction.OnDismissReminder) })
     }
     BaseFormScreen(
         title = if (isEditing) Res.string.edit_task_title else Res.string.add_task_title,

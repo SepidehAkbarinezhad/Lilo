@@ -1,4 +1,5 @@
 <resources>
+    <string name="close_sheet_action">Close</string>
     <string name="save_task_action">Save</string>
     <string name="task_operation_error">Could not complete the action. Please try again.</string>
     <string name="choose_group_title">Choose group</string>
