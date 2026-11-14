@@ -49,11 +49,9 @@ class PasswordDetailViewModel(private val repository: PasswordRepository, privat
             if (initialized && changed) {
                 operation?.cancel()
                 if (id == null) {
-                    if (!session.unlocked) local.update {
-                        val record = it.record.copy(secret = "", notes = "")
-                        it.copy(record = record, validationErrors = visibleErrors(record, it.validationErrors),
-                            saving = false, visible = true, discardOpen = false)
-                    }
+                    // Keep the in-memory add draft across background/device locks.
+                    // Discard or leaving the screen still clears it via the normal reset path.
+                    local.update { it.copy(saving = false) }
                 } else if (!session.unlocked) {
                     if (!local.value.locked) {
                         leaveLockedEditor()

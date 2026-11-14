@@ -283,19 +283,74 @@ class PasswordViewModelTest {
         assertFalse(model.state.value.error)
     }
 
-    @Test fun backgroundClearsUnsavedSecretWithoutBlockingAddForm() = runTest {
+    @Test fun repeatedBackgroundLocksPreserveAddDraftAndAllowSavingAfterReturn() = runTest {
         val crypto = FakeCrypto()
-        val model = tracked(PasswordDetailViewModel(FakeRepository(), crypto))
+        val repository = FakeRepository()
+        val model = tracked(PasswordDetailViewModel(repository, crypto))
+        model.onAction(PasswordDetailAction.OnInitialize(null))
+        runCurrent()
+        model.onAction(PasswordDetailAction.OnServiceSelected("google"))
+        model.onAction(PasswordDetailAction.OnTitleChanged("Mail"))
+        model.onAction(PasswordDetailAction.OnUsernameChanged("user@example.com"))
+        model.onAction(PasswordDetailAction.OnWebsiteChanged("example.com"))
+        model.onAction(PasswordDetailAction.OnSecretChanged(" رمز 🔑 with spaces "))
+        model.onAction(PasswordDetailAction.OnNotesChanged("sensitive"))
+        model.onAction(PasswordDetailAction.OnVisibility)
+        val draft = model.state.value
+        repeat(2) {
+            crypto.lock()
+            runCurrent()
+            model.onAction(PasswordDetailAction.OnInitialize(null))
+            assertEquals(draft, model.state.value)
+        }
+        assertEquals(0, repository.writes)
+        assertEquals(0, repository.reads)
+        model.onAction(PasswordDetailAction.OnSave)
+        runCurrent()
+        assertEquals(1, repository.writes)
+        assertEquals(draft.record.copy(id = "saved"), model.state.value.record)
+        assertFalse(model.state.value.saving)
+        assertFalse(crypto.unlocked)
+    }
+
+    @Test fun backgroundDuringAddSaveKeepsDraftAndAllowsRetry() = runTest {
+        val crypto = FakeCrypto()
+        val saveGate = CompletableDeferred<Unit>()
+        val repository = FakeRepository().apply { beforeSave = { saveGate.await() } }
+        val model = tracked(PasswordDetailViewModel(repository, crypto))
         model.onAction(PasswordDetailAction.OnInitialize(null))
         runCurrent()
         model.onAction(PasswordDetailAction.OnServiceSelected("google"))
         model.onAction(PasswordDetailAction.OnTitleChanged("Mail"))
         model.onAction(PasswordDetailAction.OnSecretChanged("private"))
+        val draft = model.state.value.record
+        model.onAction(PasswordDetailAction.OnSave)
+        runCurrent()
+        assertTrue(model.state.value.saving)
+        crypto.lock()
+        runCurrent()
+        assertEquals(draft, model.state.value.record)
+        assertFalse(model.state.value.saving)
+        assertFalse(model.state.value.locked)
+        saveGate.complete(Unit)
+        model.onAction(PasswordDetailAction.OnSave)
+        runCurrent()
+        assertEquals(2, repository.writes)
+        assertEquals(draft.copy(id = "saved"), model.state.value.record)
+        assertFalse(model.state.value.saving)
+    }
+
+    @Test fun leavingAddScreenClearsDraftRetainedAcrossBackground() = runTest {
+        val crypto = FakeCrypto()
+        val model = tracked(PasswordDetailViewModel(FakeRepository(), crypto))
+        model.onAction(PasswordDetailAction.OnInitialize(null))
+        runCurrent()
+        model.onAction(PasswordDetailAction.OnSecretChanged("private"))
         model.onAction(PasswordDetailAction.OnNotesChanged("sensitive"))
         crypto.lock()
         runCurrent()
-        assertFalse(model.state.value.locked)
-        assertEquals("Mail", model.state.value.record.title)
+        model.onResetState()
+        model.onAction(PasswordDetailAction.OnInitialize(null))
         assertEquals("", model.state.value.record.secret)
         assertEquals("", model.state.value.record.notes)
     }
@@ -653,6 +708,7 @@ class PasswordViewModelTest {
         var failSave = false
         var validationFailure: Set<PasswordValidationError>? = null
         var beforeRead: suspend () -> Unit = {}
+        var beforeSave: suspend () -> Unit = {}
         override fun observePasswords(): Flow<List<Password>> = records.map { rows -> rows.map { it.copy(secret = "", notes = "") } }
         override suspend fun unlockRequest(id: String): PasswordUnlockRequest {
             require(records.value.any { it.id == id })
@@ -661,6 +717,7 @@ class PasswordViewModelTest {
         override suspend fun get(id: String): Password? { reads++; beforeRead(); return records.value.find { it.id == id } }
         override suspend fun save(password: Password): Password {
             writes++
+            beforeSave()
             validationFailure?.let { throw PasswordValidationException(it) }
             if (failSave) error("Storage unavailable")
             return password.copy(id = password.id.ifEmpty { "saved" })
