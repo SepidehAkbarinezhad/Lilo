@@ -38,6 +38,7 @@ fun PasswordListItem(record: Password, revealed: String? = null, busy: Boolean =
     val dateDescription = date?.let { stringResource(Res.string.password_updated_date, it) }
     Surface(onClick = onClick, enabled = !busy, modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 1.dp,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .4f))) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,

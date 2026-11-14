@@ -32,6 +32,7 @@ fun TaskListItem(modifier: Modifier = Modifier, clickable: Boolean, task: Task, 
     val completionLabel = stringResource(if (task.done) Res.string.task_reopen_action else Res.string.task_complete_action)
     SwipeToRevealDelete(enabled = clickable, onDelete = { onAction(TaskListAction.OnDeleteTaskIcon(task)) }) {
         Surface(modifier = modifier, shape = RoundedCornerShape(18.dp),
+            shadowElevation = 1.dp,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .7f)),
             color = MaterialTheme.colorScheme.surface) {
             Column(Modifier.fillMaxWidth().heightIn(min = 80.dp).padding(vertical = 8.dp),

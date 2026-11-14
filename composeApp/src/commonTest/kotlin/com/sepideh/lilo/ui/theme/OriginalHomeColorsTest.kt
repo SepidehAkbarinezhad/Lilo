@@ -14,7 +14,8 @@ class OriginalHomeColorsTest {
             listOf(theme.tasks, theme.notes, theme.passwords).forEachIndexed { feature, colors ->
                 val accent = listOf(
                     listOf(Color(0xFFB9CC9D), Color(0xFFE8B9A4), Color(0xFFCBB7E2)),
-                    listOf(Color(0xFFC0D2A4), Color(0xFFE5BA9A), Color(0xFFD3C1E7)))[index][feature]
+                    // Dark notes use a pink-peach seed; the other reference colors stay fixed.
+                    listOf(Color(0xFFC0D2A4), Color(0xFFF0B8AB), Color(0xFFD3C1E7)))[index][feature]
                 val action = if (dark) accent else listOf(Color(0xFF607447), Color(0xFF8B4F37), Color(0xFF71518E))[feature]
                 assertEquals(accent, colors.accent)
                 assertEquals(action, colors.action)

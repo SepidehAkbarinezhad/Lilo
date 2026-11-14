@@ -49,7 +49,8 @@ fun SwipeToRevealDelete(
     val offset by animateFloatAsState(target, tween(if (dragging) 0 else 180), label = "reveal-delete")
     LaunchedEffect(enabled) { if (!enabled) revealed = false }
     val deleteLabel = stringResource(Res.string.delete_action)
-    Box(modifier.clipToBounds().semantics {
+    // Leave room for the card shadow inside the swipe clipping boundary.
+    Box(modifier.clipToBounds().padding(3.dp).semantics {
         customActions = if (enabled) listOf(CustomAccessibilityAction(deleteLabel) {
             revealed = false
             onDelete()

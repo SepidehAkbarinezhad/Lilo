@@ -20,6 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun NoteListItem(note: Note, group: String?, onClick: () -> Unit, modifier: Modifier = Modifier) {
  Surface(onClick = onClick, modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp),
+  shadowElevation = 1.dp,
   color = MaterialTheme.colorScheme.surface, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=.55f))) {
   Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
    AppText(modifier=Modifier.fillMaxWidth(), text=note.title, textType=TextType.BodyLarge, color=LiloExtendedTheme.colors.title, maxLines=1)

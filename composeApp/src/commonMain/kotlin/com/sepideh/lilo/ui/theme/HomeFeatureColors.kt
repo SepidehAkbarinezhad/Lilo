@@ -2,7 +2,7 @@ package com.sepideh.lilo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Exact sRGB results of the Home colors in commit 4f7f599.
+// Exact sRGB results of the Home colors in commit 4f7f599, with a pink-peach dark notes seed.
 // Compose's Oklab lerp and alpha compositing are evaluated only in OriginalHomeColorsTest.
 // Order: card, icon badge, inner report, divider, progress track, checked box, report divider.
 val SageHomeLight = HomeFeatureColors(
@@ -18,7 +18,7 @@ val SageHomeDark = HomeFeatureColors(
     Color(0xFF2E322C), Color(0xFF5D6553), Color(0xFF262725), Color(0xFF43493D), Color(0xFF444A3E), Color(0xFF4B5244), Color(0xFF4A4E51),
 )
 val CoralHomeDark = HomeFeatureColors(
-    Color(0xFF332F2A), Color(0xFF6C5C4E), Color(0xFF272624), Color(0xFF4C433A), Color(0xFF4E443B), Color(0xFF574B40), Color(0xFF4A4D51),
+    Color(0xFF342F2C), Color(0xFF705B55), Color(0xFF282625), Color(0xFF4F423E), Color(0xFF50433F), Color(0xFF5A4A45), Color(0xFF4B4D51),
 )
 val LavenderHomeDark = HomeFeatureColors(
     Color(0xFF303034), Color(0xFF645F6E), Color(0xFF262628), Color(0xFF47444D), Color(0xFF48464F), Color(0xFF514D58), Color(0xFF4A4D53),

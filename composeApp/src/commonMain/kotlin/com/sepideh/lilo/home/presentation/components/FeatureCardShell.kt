@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.home.presentation.model.*
@@ -30,14 +32,18 @@ fun FeatureCardShell(
 ) {
     val colors = LiloExtendedTheme.colors
     val contentPadding = 16.dp
-    val home = feature.colors(colors).home
+    val featureColors = feature.colors(colors)
+    val home = featureColors.home
     val actionColor = when (feature) {
         LiloFeature.TASKS -> colors.tasks.action
         LiloFeature.NOTES -> colors.notes.action
         LiloFeature.PASSWORDS -> colors.passwords.action
     }
     Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp),
-        color = home.container,
+        // Boost only dark Home cards; respect the app theme rather than the system theme.
+        color = if (MaterialTheme.colorScheme.background.luminance() < .5f)
+            lerp(home.container, featureColors.accent, .04f) else home.container,
+        shadowElevation = 2.dp,
         contentColor = colors.textPrimary) {
         Column(Modifier.padding(contentPadding), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             HomeFeatureHeading(feature, actionColor, onAddClick, onCardClick, actionEndInset = contentPadding)
