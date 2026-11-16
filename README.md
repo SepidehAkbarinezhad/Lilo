@@ -28,20 +28,45 @@ Lilo follows Clean Architecture principles with feature-based organization and s
 
 ## Screenshots
 
+
+## Screenshots
+
 <table>
   <tr>
-    <td align="center"><img src="screenShots/home-dashboard.jpg" alt="Home dashboard with task, note, and password summaries" width="220"><br>Home</td>
-    <td align="center"><img src="screenShots/task-list.jpg" alt="Task list with groups, priorities, and reminders" width="220"><br>Tasks</td>
-    <td align="center"><img src="screenShots/task-detail.jpg" alt="Task editor with priority, group, reminder, and image controls" width="220"><br>Task details</td>
+    <td align="center">
+      <img src="output/screenshots/01-home-screenshot.png" alt="Home" width="220">
+      <br>Home
+    </td>
+    <td align="center">
+      <img src="output/screenshots/02-tasks-screenshot.png" alt="Tasks" width="220">
+      <br>Tasks
+    </td>
+    <td align="center">
+      <img src="output/screenshots/03-task-form-screenshot.png" alt="Task Form" width="220">
+      <br>Task Form
+    </td>
+    <td align="center">
+      <img src="output/screenshots/04-notes-screenshot.png" alt="Notes" width="220">
+      <br>Notes
+    </td>
   </tr>
   <tr>
-    <td align="center"><img src="screenShots/notes-list.jpg" alt="Grouped notes with search and a swipe-to-delete action" width="220"><br>Notes</td>
-    <td align="center"><img src="screenShots/note-detail.jpg" alt="Note editor showing a shopping list and group selection" width="220"><br>Note details</td>
-    <td align="center"><img src="screenShots/note-create.jpg" alt="New note form with title, content, group, and image controls" width="220"><br>Create a note</td>
-  </tr>
-  <tr>
-    <td align="center"><img src="screenShots/password-list.jpg" alt="Password list with service names, masked passwords, and reveal and copy controls" width="220"><br>Passwords</td>
-    <td align="center"><img src="screenShots/password-services.jpg" alt="Service selection sheet in the password creation form" width="220"><br>Add Password</td>
-    <td align="center"><img src="screenShots/settings-light.jpg" alt="Settings in light mode with appearance, language, and reminder preferences" width="220"><br>Settings</td>
+    <td align="center">
+      <img src="output/screenshots/05-note-form-screenshot.png" alt="Note Form" width="220">
+      <br>Note Form
+    </td>
+    <td align="center">
+      <img src="output/screenshots/06-passwords-screenshot.png" alt="Passwords" width="220">
+      <br>Passwords
+    </td>
+    <td align="center">
+      <img src="output/screenshots/07-passwords-form-screenshot.png" alt="Password Form" width="220">
+      <br>Password Form
+    </td>
+    <td align="center">
+      <img src="output/screenshots/08-settings-screenshot.png" alt="Settings" width="220">
+      <br>Settings
+    </td>
   </tr>
 </table>
+
