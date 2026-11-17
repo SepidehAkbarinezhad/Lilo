@@ -23,11 +23,7 @@ Lilo follows Clean Architecture principles with feature-based organization and s
 - **Room Multiplatform & SQLite:** Local structured storage.
 - **DataStore:** Persistent user preferences.
 - **Navigation Compose:** Screen navigation.
-- **Kotlin Serialization & kotlinx-datetime:** Serialization and date/time handling.
 - **Firebase:** Analytics, crash reporting integration, and Android messaging.
-
-## Screenshots
-
 
 ## Screenshots
 
