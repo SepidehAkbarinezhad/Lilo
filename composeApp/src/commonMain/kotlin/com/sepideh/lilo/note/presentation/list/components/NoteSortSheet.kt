@@ -22,11 +22,8 @@ import org.jetbrains.compose.resources.StringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteSortSheet(state: NoteListState, action: (BaseAction) -> Unit) {
-    ModalBottomSheet(
+    BaseBottomSheet(
         onDismissRequest = { action(NoteListAction.DismissSort) },
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = MaterialTheme.shapes.extraLarge,
-        containerColor = MaterialTheme.colorScheme.background,
     ) {
         NoteSortContent(state, action)
     }

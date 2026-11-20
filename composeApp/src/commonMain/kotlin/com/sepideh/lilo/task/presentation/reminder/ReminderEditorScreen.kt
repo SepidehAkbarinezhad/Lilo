@@ -40,12 +40,9 @@ fun ReminderEditorSheet(
     reminderAt: Long?, repeatRule: RepeatRule, timeZoneId: String?, accent: Color,
     onConfirm: (Long, RepeatRule, String) -> Unit, onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(
+    BaseBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         modifier = Modifier.fillMaxHeight(),
-        shape = MaterialTheme.shapes.extraLarge,
-        containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = { WindowInsets.safeDrawing },
     ) {
         ReminderEditorContent(reminderAt, repeatRule, timeZoneId, accent, onConfirm, onDismiss)
