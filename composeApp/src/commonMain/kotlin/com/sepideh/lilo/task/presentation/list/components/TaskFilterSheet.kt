@@ -26,9 +26,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TaskFilterSheet(state: TaskListState, onAction: (BaseAction) -> Unit, modifier: Modifier = Modifier) {
     if (!state.isFilterSheetOpen) return
-    ModalBottomSheet(onDismissRequest = { onAction(TaskListAction.OnCloseFilterIcon) },
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
+    BaseBottomSheet(onDismissRequest = { onAction(TaskListAction.OnCloseFilterIcon) },
+    ) {
         TaskFilterContent(state, onAction, modifier)
     }
 }

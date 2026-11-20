@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -38,12 +37,6 @@ import org.jetbrains.compose.resources.stringResource
 fun PasswordServicePicker(state: PasswordServicesState, onAction: (BaseAction) -> Unit, onConfirm: (String) -> Unit) {
     val colors = LiloExtendedTheme.colors
     if (state.open) {
-        // SheetState uses this callback as a rememberSaveable key. Keep its identity stable.
-        val currentBusy = rememberUpdatedState(state.busy)
-        val confirmSheetChange: (SheetValue) -> Boolean = remember {
-            { target -> !currentBusy.value || target != SheetValue.Hidden }
-        }
-        val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
         val selectedIndex = state.services.indexOfFirst { it.id == state.draftId }
         val listState = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex.coerceAtLeast(0))
         // Also reveal the selection if services arrive after the sheet opens.
@@ -51,10 +44,11 @@ fun PasswordServicePicker(state: PasswordServicesState, onAction: (BaseAction) -
             val index = state.services.indexOfFirst { it.id == state.draftId }
             if (!state.managing && index >= 0) listState.scrollToItem(index)
         }
-        ModalBottomSheet(onDismissRequest = { if (!state.busy) onAction(PasswordServicesAction.OnClose) },
-            sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true,
-                confirmValueChange = confirmSheetChange),
-            shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
+        BaseBottomSheet(
+            onDismissRequest = { onAction(PasswordServicesAction.OnClose) },
+            dismissEnabled = !state.busy,
+        ) {
+            val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
             if (!state.managing) {
                 Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = LiloSpacing.Screen)
                     .padding(bottom = LiloSpacing.Section), verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item)) {

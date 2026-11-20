@@ -24,15 +24,7 @@ fun GroupSelectionSheet(groups: List<GroupOption>, selectedId: Long?, accent: Co
     onSelect: (Long?) -> Unit,
     onManage: () -> Unit, onConfirm: () -> Unit, onDismiss: () -> Unit, addedVersion: Int = 0,
     busy: Boolean = false, managementContent: (@Composable () -> Unit)? = null) {
-    // Busy updates must not recreate the sheet while adding or renaming a group.
-    val currentBusy = rememberUpdatedState(busy)
-    val confirmSheetChange: (SheetValue) -> Boolean = remember {
-        { target -> !currentBusy.value || target != SheetValue.Hidden }
-    }
-    ModalBottomSheet(onDismissRequest = { if (!busy) onDismiss() },
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true,
-            confirmValueChange = confirmSheetChange),
-        shape = MaterialTheme.shapes.extraLarge, containerColor = MaterialTheme.colorScheme.background) {
+    BaseBottomSheet(onDismissRequest = onDismiss, dismissEnabled = !busy) {
         if (managementContent != null) managementContent()
         else GroupSelectionContent(groups, selectedId, accent, onSelect, onManage, onConfirm, addedVersion)
     }
