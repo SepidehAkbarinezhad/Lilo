@@ -98,10 +98,17 @@ private fun ReminderEditorContent(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 AppText(text = Res.string.repeat_label, textType = TextType.SectionTitle)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
-                    RepeatRule.entries.forEach { rule ->
+                    listOf(RepeatRule.NONE, RepeatRule.DAILY).forEach { rule ->
                         LiloSelectionChip(stringResource(rule.label), selectedRepeat == rule, accent,
                             { repeatCode = rule.name; error = false }, modifier = Modifier.weight(1f), centerLabel = true)
                     }
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
+                    LiloSelectionChip(stringResource(RepeatRule.WEEKLY.label), selectedRepeat == RepeatRule.WEEKLY, accent,
+                        { repeatCode = RepeatRule.WEEKLY.name; error = false }, modifier = Modifier.weight(1f), centerLabel = true)
+                    // Monthly stays unavailable until its persistence and scheduling are supported.
+                    LiloSelectionChip(stringResource(Res.string.repeat_monthly), selected = false, accent = accent,
+                        onClick = {}, modifier = Modifier.weight(1f), enabled = false, centerLabel = true)
                 }
                 if (selectedRepeat == RepeatRule.WEEKLY) {
                     val weekdays = listOf(Res.string.weekday_mon, Res.string.weekday_tue, Res.string.weekday_wed,
