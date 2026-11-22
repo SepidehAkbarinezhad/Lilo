@@ -9,6 +9,7 @@ data class PasswordServicesState(
     val editingId: String? = null, val name: String = "", val busy: Boolean = false,
     val duplicateName: Boolean = false,
     val error: Boolean = false, val deleting: PasswordService? = null,
+    val createdId: String? = null,
     val removedId: String? = null, val movedToId: String? = null,
     val usage: Int = 0, val replacement: String? = null,
 )

@@ -56,10 +56,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onSelect = { viewModel.onAction(TaskDetailAction.OnGroupDraftSelected(it)) },
                 onManage = { viewModel.onAction(TaskDetailAction.OnManageGroups) },
                 onConfirm = { viewModel.onAction(TaskDetailAction.OnConfirmGroup) },
-                onDismiss = {
-                    viewModel.onAction(TaskDetailAction.OnCloseManageGroups)
-                    viewModel.onAction(TaskDetailAction.OnDismissGroupDialog)
-                },
+                onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissGroupDialog) },
                 busy = state.isAddingGroup,
                 managementContent = if (state.groupManagementOpen) ({ GroupManagementEditor(
                     closeActionColor = LiloExtendedTheme.colors.tasks.action,

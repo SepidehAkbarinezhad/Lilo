@@ -15,6 +15,7 @@ sealed interface PasswordServicesAction : BaseAction {
     data class OnNameChanged(val value: String) : PasswordServicesAction
     data class OnEdit(val service: PasswordService? = null) : PasswordServicesAction
     data object OnCancelEdit : PasswordServicesAction
+    data object OnConsumeCreation : PasswordServicesAction
     data object OnConsumeRemoval : PasswordServicesAction
     data object OnSave : PasswordServicesAction
     data class OnDeleteSelected(val service: PasswordService) : PasswordServicesAction

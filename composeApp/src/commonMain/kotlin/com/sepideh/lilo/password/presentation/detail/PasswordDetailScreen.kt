@@ -25,6 +25,12 @@ import org.jetbrains.compose.resources.stringResource
 fun PasswordDetailScreenRoot(id: String?, viewModel: PasswordDetailViewModel, onNavigateTo: (AppRoutes) -> Unit, onBack: () -> Boolean, servicesModel: PasswordServicesViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val services by servicesModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(services.createdId) {
+        services.createdId?.let { created ->
+            viewModel.onAction(PasswordDetailAction.OnServiceSelected(created))
+            servicesModel.onAction(PasswordServicesAction.OnConsumeCreation)
+        }
+    }
     LaunchedEffect(services.removedId) {
         services.removedId?.let { removed ->
             if (state.record.serviceId == removed) viewModel.onAction(PasswordDetailAction.OnServiceSelected(services.movedToId))

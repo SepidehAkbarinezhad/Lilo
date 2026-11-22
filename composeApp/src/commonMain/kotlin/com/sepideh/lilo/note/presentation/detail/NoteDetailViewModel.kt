@@ -61,11 +61,11 @@ class NoteDetailViewModel(
             NoteDetailAction.Discard -> super.onAction(BaseAction.OnNavigateTo(null))
             NoteDetailAction.KeepEditing -> local.update { it.copy(confirmDiscard = false) }
             NoteDetailAction.OpenGroups -> if (state.value.fieldsEnabled) local.update { it.copy(groupDialogOpen = true, draftGroupId = it.note.groupId?.takeIf { id -> state.value.groups.any { it.id == id } }) }
-            NoteDetailAction.DismissGroups -> local.update { it.copy(groupDialogOpen = false, draftGroupId = null) }
+            NoteDetailAction.DismissGroups -> closeGroups()
             is NoteDetailAction.DraftGroup -> local.update { it.copy(draftGroupId = action.id) }
             NoteDetailAction.ConfirmGroup -> if (!local.value.isGroupWorking) local.update { it.copy(note = it.note.copy(groupId = it.draftGroupId), groupDialogOpen = false) }
             NoteDetailAction.ManageGroups -> local.update { it.copy(groupManagementOpen = true, duplicateGroupName = false) }
-            NoteDetailAction.CloseManagement -> if (!local.value.isGroupWorking) local.update { it.copy(groupManagementOpen = false, duplicateGroupName = false) }
+            NoteDetailAction.CloseManagement -> closeGroups()
             is NoteDetailAction.AddGroup -> addGroup(action.title)
             is NoteDetailAction.RenameGroup -> renameGroup(action.id, action.title)
             is NoteDetailAction.DeleteGroup -> deleteGroup(action.id)
@@ -98,13 +98,21 @@ class NoteDetailViewModel(
             super.onAction(BaseAction.OnNavigateTo(null))
         }
     }
+    private fun closeGroups() {
+        if (!local.value.isGroupWorking) local.update {
+            it.copy(groupDialogOpen = false, groupManagementOpen = false, draftGroupId = null, duplicateGroupName = false)
+        }
+    }
+
     private fun addGroup(title: String) {
         if (title.isBlank() || local.value.isGroupWorking) return
         local.update { it.copy(isGroupWorking = true, hasError = false, duplicateGroupName = false) }
         operation {
             val normalized = title.trim()
             val id = groupRepository.upsertGroup(NoteGroup.create(normalized, languageProvider.currentLanguage))
-            local.update { it.copy(draftGroupId = id, isGroupWorking = false, groupAddedVersion = it.groupAddedVersion + 1) }
+            local.update { it.copy(note = it.note.copy(groupId = id), draftGroupId = id,
+                groupDialogOpen = false, groupManagementOpen = false,
+                isGroupWorking = false, groupAddedVersion = it.groupAddedVersion + 1) }
         }
     }
     private fun renameGroup(id: Long, title: String) {
