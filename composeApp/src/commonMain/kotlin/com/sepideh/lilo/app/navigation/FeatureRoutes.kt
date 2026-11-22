@@ -20,7 +20,7 @@ fun LiloFeature.routeForAdding(itemId : Long?): AppRoutes =
 /** Null IDs represent empty/unavailable previews and must never open a new-item form. */
 fun ReportDetail.detailRoute(): AppRoutes? = when (this) {
     is TaskReportDetail -> nextTaskId?.let { AppRoutes.Tasks.Detail(it) }
-    is NoteReportDetail -> latestNoteId?.let { AppRoutes.Notes.Detail(it) }
+    is NoteReportDetail -> latestNoteId?.let { AppRoutes.Notes.View(it) }
     is PasswordReportDetail -> lastAddedPasswordId?.takeIf { it.isNotBlank() }?.let { AppRoutes.Passwords.Detail(it) }
     else -> null
 }

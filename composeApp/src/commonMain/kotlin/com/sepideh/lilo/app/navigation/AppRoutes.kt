@@ -30,6 +30,8 @@ sealed class AppRoutes {
         data object List : AppRoutes()
         @Serializable
         data class Detail(val noteId : Long?) : AppRoutes()
+        @Serializable
+        data class View(val noteId: Long) : AppRoutes()
     }
 
 

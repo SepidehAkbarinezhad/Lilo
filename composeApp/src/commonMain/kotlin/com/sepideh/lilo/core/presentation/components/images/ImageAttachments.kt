@@ -19,6 +19,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.sepideh.lilo.core.domain.images.IMAGE_SELECTION_LIMIT
 import com.sepideh.lilo.core.presentation.components.AppText
 import com.sepideh.lilo.core.presentation.components.AppBackHandler
+import com.sepideh.lilo.core.presentation.components.AppPreviews
+import com.sepideh.lilo.core.presentation.components.LiloPreviewWrapper
 import com.sepideh.lilo.core.presentation.components.form.FormSelectionRow
 import com.sepideh.lilo.core.presentation.format.localizedDigits
 import com.sepideh.lilo.core.presentation.icons.LiloIcons
@@ -29,21 +31,27 @@ import androidx.compose.ui.unit.LayoutDirection
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
+/** Omit editing callbacks to show the same thumbnails and viewer without add/remove controls. */
 @Composable
-fun ImageAttachments(images: List<AttachmentPreview>, accent: Color, enabled: Boolean,
-    onAdd: () -> Unit, onRemove: (AttachmentPreview) -> Unit) {
+fun ImageAttachments(images: List<AttachmentPreview>, accent: Color, enabled: Boolean = true,
+    onAdd: (() -> Unit)? = null, onRemove: ((AttachmentPreview) -> Unit)? = null,
+    showHeader: Boolean = true) {
     var viewing by remember { mutableStateOf<String?>(null) }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        FormSelectionRow(LiloIcons.Images, stringResource(Res.string.attachment_images),
-            stringResource(Res.string.attachment_count, images.size).localizedDigits(rtl), onAdd,
-            enabled = enabled && images.size < IMAGE_SELECTION_LIMIT, accent = accent)
+        if (showHeader) FormSelectionRow(LiloIcons.Images, stringResource(Res.string.attachment_images),
+            stringResource(Res.string.attachment_count, images.size).localizedDigits(rtl),
+            onClick = {
+                if (onAdd != null) onAdd() else viewing = images.firstOrNull()?.key
+            },
+            enabled = if (onAdd != null) enabled && images.size < IMAGE_SELECTION_LIMIT else images.isNotEmpty(),
+            accent = accent)
         if (images.isNotEmpty()) LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             itemsIndexed(images, key = { _, image -> image.key }) { index, image ->
                 Box(Modifier.size(96.dp)) {
                     AttachmentImage(image, thumbnail = true, description = stringResource(Res.string.attachment_open, index + 1),
                         modifier = Modifier.fillMaxSize().clip(MaterialTheme.shapes.medium).clickable { viewing = image.key })
-                    IconButton(onClick = { onRemove(image) }, enabled = enabled,
+                    if (onRemove != null) IconButton(onClick = { onRemove(image) }, enabled = enabled,
                         modifier = Modifier.align(Alignment.TopEnd).size(48.dp)) {
                         Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surface.copy(alpha = .92f)) {
                             Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
@@ -55,7 +63,7 @@ fun ImageAttachments(images: List<AttachmentPreview>, accent: Color, enabled: Bo
                 }
             }
         }
-        if (images.size >= IMAGE_SELECTION_LIMIT) AppText(text = Res.string.attachment_limit, color = LiloExtendedTheme.colors.textSupporting)
+        if (onAdd != null && images.size >= IMAGE_SELECTION_LIMIT) AppText(text = Res.string.attachment_limit, color = LiloExtendedTheme.colors.textSupporting)
 
     }
     val index = images.indexOfFirst { it.key == viewing }
@@ -100,5 +108,32 @@ private fun ImageViewer(images: List<AttachmentPreview>, initialPage: Int, onClo
                 }
             }
         }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun ImageAttachmentsFormPreview() {
+    LiloPreviewWrapper {
+        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            ImageAttachments(emptyList(), LiloExtendedTheme.colors.notes.accent, onAdd = {}, onRemove = {})
+            ImageAttachments(
+                images = listOf(AttachmentPreview("sample.jpg", stored = true)),
+                accent = LiloExtendedTheme.colors.notes.accent,
+                onAdd = {},
+                onRemove = {},
+            )
+        }
+    }
+}
+
+@AppPreviews
+@Composable
+private fun ImageAttachmentsReadOnlyPreview() {
+    LiloPreviewWrapper {
+        ImageAttachments(
+            images = listOf("sample.jpg", "another.jpg").map { AttachmentPreview(it, stored = true) },
+            accent = LiloExtendedTheme.colors.notes.accent,
+        )
     }
 }

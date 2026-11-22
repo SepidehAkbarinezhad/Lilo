@@ -12,6 +12,8 @@ import com.sepideh.lilo.core.domain.images.IMAGE_SELECTION_LIMIT
 import com.sepideh.lilo.core.presentation.*
 import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.components.group.GroupOption
+import com.sepideh.lilo.core.presentation.components.form.BottomActionFormScreen
+import com.sepideh.lilo.note.presentation.components.NoteTopAppBar
 import com.sepideh.lilo.core.presentation.components.picker.rememberImagePicker
 import com.sepideh.lilo.core.presentation.images.attachmentPreviews
 import com.sepideh.lilo.note.domain.model.Note
@@ -49,9 +51,12 @@ fun NoteDetailScreenRoot(noteId: Long?, viewModel: NoteDetailViewModel, onNaviga
 @Composable
 fun NoteDetailScreen(state: NoteDetailState, onAction: (BaseAction) -> Unit) {
     val accent = LiloExtendedTheme.colors.notes.accent
-    BaseFormScreen(title = if (state.isEditing) Res.string.edit_note_title else Res.string.add_note_title,
+    val title = if (state.isEditing) Res.string.edit_note_title else Res.string.add_note_title
+    BottomActionFormScreen(title = title,
         featureColors = LiloExtendedTheme.colors.notes, saveEnabled = state.fieldsEnabled, isSaving = state.isSaving,
-        headerColors = LiloExtendedTheme.colors.notes.takeIf { state.isEditing },
+        topBar = {
+            NoteTopAppBar(stringResource(title), onBack = { onAction(NoteDetailAction.Back) }, titleTextType = TextType.ScreenTitle)
+        },
         actionLabel = Res.string.note_save_action,
         onBack = { onAction(NoteDetailAction.Back); true }, onSave = { onAction(NoteDetailAction.Save) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),

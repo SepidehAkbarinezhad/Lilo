@@ -8,9 +8,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.sepideh.lilo.core.presentation.BaseHeader
+import com.sepideh.lilo.core.presentation.icons.LiloIcons
 import org.jetbrains.compose.resources.StringResource
 
 @Composable
@@ -23,13 +25,16 @@ fun BottomActionFormScreen(
     onBack: () -> Boolean,
     onSave: () -> Unit,
     headerColors: FeatureColors? = featureColors,
+    actionIcon: ImageVector = LiloIcons.Check,
+    topBar: (@Composable () -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            Box(Modifier.clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))) {
+            if (topBar != null) topBar()
+            else Box(Modifier.clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))) {
                 BaseHeader(
                     title = title,
                     featureColors = headerColors,
@@ -40,7 +45,7 @@ fun BottomActionFormScreen(
         },
         bottomBar = {
             // Do not attach the action to the keyboard. Fields handle their own IME padding.
-            if (!keyboardVisible) FormSaveButton(featureColors, actionLabel, saveEnabled, isSaving, onSave)
+            if (!keyboardVisible) FormSaveButton(featureColors, actionLabel, saveEnabled, isSaving, onSave, actionIcon)
         },
         content = content,
     )

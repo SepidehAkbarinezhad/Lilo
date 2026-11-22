@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -30,6 +31,7 @@ fun FormSaveButton(
     enabled: Boolean,
     isSaving: Boolean,
     onSave: () -> Unit,
+    actionIcon: ImageVector = LiloIcons.Check,
 ) {
     Box(
         Modifier.fillMaxWidth().navigationBarsPadding()
@@ -52,7 +54,7 @@ fun FormSaveButton(
             if (isSaving) {
                 CircularProgressIndicator(Modifier.size(LiloSize.SmallIcon), color = featureColors.onPrimary, strokeWidth = 2.dp)
             } else {
-                Icon(LiloIcons.Check, contentDescription = null, modifier = Modifier.size(LiloSize.SmallIcon))
+                Icon(actionIcon, contentDescription = null, modifier = Modifier.size(LiloSize.SmallIcon))
             }
             Spacer(Modifier.width(LiloSpacing.Small))
             AppText(text = if (isSaving) Res.string.saving_action else label, textType = TextType.Action, maxLines = 1)
