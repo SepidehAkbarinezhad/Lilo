@@ -4,6 +4,7 @@
     <string name="settings_reminders_description">Turning this option off stops reminder notifications, but your saved reminders are kept.</string>
     <string name="settings_save_error">Couldn’t finish updating settings. Please try again.</string>
     <string name="settings_retry">Try again</string>
+    <string name="settings_app_version">Version %1$s</string>
     <string name="settings_language_fa">فارسی</string>
     <string name="settings_language_en">English</string>
 </resources>

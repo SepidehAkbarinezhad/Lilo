@@ -4,6 +4,7 @@
     <string name="settings_reminders_description">با خاموش کردن این گزینه، اعلان یادآوری‌ها متوقف می‌شود؛ اما یادآوری‌های ثبت‌شده حفظ می‌شوند.</string>
     <string name="settings_save_error">تغییر تنظیمات کامل نشد. دوباره تلاش کن.</string>
     <string name="settings_retry">تلاش دوباره</string>
+    <string name="settings_app_version">نسخه %1$s</string>
     <string name="settings_language_fa">فارسی</string>
     <string name="settings_language_en">English</string>
 </resources>

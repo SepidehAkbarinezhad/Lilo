@@ -6,19 +6,23 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sepideh.lilo.app.navigation.AppRoutes
 import com.sepideh.lilo.core.domain.model.*
 import com.sepideh.lilo.core.presentation.*
 import com.sepideh.lilo.core.presentation.components.*
+import com.sepideh.lilo.core.utils.LiloInfo
 import com.sepideh.lilo.settings.presentation.components.*
 import com.sepideh.lilo.settings.presentation.model.labelRes
 import com.sepideh.lilo.settings.presentation.model.iconRes
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
+import com.sepideh.lilo.ui.theme.LiloSpacing
 import lilo.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.koinInject
 
 @Composable
 fun SettingsScreenRoot(
@@ -27,6 +31,8 @@ fun SettingsScreenRoot(
     onBack: () -> Boolean
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val liloInfo = koinInject<LiloInfo>()
+    val appVersion = remember(liloInfo) { liloInfo.appVersion }
     BaseRoot(
         viewModel = viewModel,
         navigateTo = onNavigateTo,
@@ -35,14 +41,15 @@ fun SettingsScreenRoot(
             SettingsScreen(
                 state = state,
                 onAction = { action -> viewModel.onAction(action) },
-                onBack = onBack
+                onBack = onBack,
+                appVersion = appVersion,
             )
         }
     )
 }
 
 @Composable
-fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onBack: () -> Boolean) {
+fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onBack: () -> Boolean, appVersion: String = "") {
     val colors = LiloExtendedTheme.colors
     BaseScreen(header = { BaseHeader(title = Res.string.setting_task_title, onBackPressed = onBack) }) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
@@ -71,7 +78,16 @@ fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onB
                     AppText(text = Res.string.settings_retry)
                 }
             }
-            Spacer(Modifier.height(8.dp))
+            if (appVersion.isNotBlank()) {
+                AppText(
+                    // Keep dotted version identifiers in LTR order inside Persian text.
+                    text = stringResource(Res.string.settings_app_version, "\u2066$appVersion\u2069"),
+                    textType = TextType.Caption,
+                    color = colors.textSupporting,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = LiloSpacing.Item),
+                )
+            }
         }
     }
 }
@@ -79,14 +95,14 @@ fun SettingsScreen(state: SettingsState, onAction: (SettingsAction) -> Unit, onB
 @AppPreviews
 @Composable
 private fun SettingsPreview() {
-    LiloPreviewWrapper { SettingsScreen(SettingsState(loaded = true), {}, { true }) }
+    LiloPreviewWrapper { SettingsScreen(SettingsState(loaded = true), {}, { true }, appVersion = "1.0.0") }
 }
 
 @AppPreviews
 @Composable
 private fun MutedSettingsPreview() {
     LiloPreviewWrapper {
-        SettingsScreen(SettingsState(userPreferences = com.sepideh.lilo.settings.domain.model.UserPreferences(notificationsEnabled = false), loaded = true), {}, { true })
+        SettingsScreen(SettingsState(userPreferences = com.sepideh.lilo.settings.domain.model.UserPreferences(notificationsEnabled = false), loaded = true), {}, { true }, appVersion = "1.0.0")
     }
 }
 
@@ -94,5 +110,5 @@ private fun MutedSettingsPreview() {
 @androidx.compose.ui.tooling.preview.Preview(widthDp = 320, fontScale = 1.6f, locale = "fa")
 @Composable
 private fun LargeTextSettingsPreview() {
-    LiloPreviewWrapper { SettingsScreen(SettingsState(loaded = true), {}, { true }) }
+    LiloPreviewWrapper { SettingsScreen(SettingsState(loaded = true), {}, { true }, appVersion = "1.0.0") }
 }
