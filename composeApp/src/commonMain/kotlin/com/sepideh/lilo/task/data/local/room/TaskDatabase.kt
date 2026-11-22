@@ -7,7 +7,7 @@ import androidx.room.RoomDatabaseConstructor
 
 @Database(
     entities = [TaskEntity::class, TaskGroupEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @ConstructedBy(DbConstructor::class)
@@ -16,8 +16,8 @@ abstract class TaskDatabase : RoomDatabase(){
     abstract fun taskGroupDao(): TaskGroupDao
 }
 
-// The Room compiler generates the `actual` implementations.
-@Suppress("NO_ACTUAL_FOR_EXPECT")
+// Room/KSP generates the actuals; the IDE inspection cannot see ungenerated targets.
+@Suppress("NO_ACTUAL_FOR_EXPECT", "KotlinNoActualForExpect")
 expect object DbConstructor: RoomDatabaseConstructor<TaskDatabase> {
     override fun initialize(): TaskDatabase
 }

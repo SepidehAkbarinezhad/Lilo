@@ -171,10 +171,42 @@ class TaskDiscardTest {
         assertEquals("Recovered", model.stateValue.value.task.title)
     }
 
+    @Test fun monthlyEditorConfirmationRetainsAnchorAndClearingRemovesIt() = runTest {
+        val model = model(monthlySupported = true)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.stateValue.collect() }
+        val local = kotlinx.datetime.LocalDateTime.parse("2026-01-31T09:15")
+        val anchor = MonthlyAnchor(ReminderCalendarType.JALALI, local)
+        val at = kotlin.time.Instant.parse("2026-01-31T05:45:00Z").toEpochMilliseconds()
+        model.onAction(TaskDetailAction.OnReminderConfirmed(at, RepeatRule.MONTHLY, "Asia/Tehran", anchor))
+        model.onAction(TaskDetailAction.OnTitleChanged("Content edit"))
+        model.onAction(TaskDetailAction.OnDateReminderIcon)
+        model.onAction(TaskDetailAction.OnDismissReminder)
+        runCurrent()
+        assertTrue(model.stateValue.value.monthlyRemindersSupported)
+        assertEquals(anchor, model.stateValue.value.task.monthlyAnchor)
+        assertEquals("Asia/Tehran", model.stateValue.value.task.reminderTimeZoneId)
+        // Switching away from Monthly must clear metadata even if an old callback carries it.
+        model.onAction(TaskDetailAction.OnReminderConfirmed(at, RepeatRule.WEEKLY, "Asia/Tehran", anchor))
+        runCurrent()
+        assertNull(model.stateValue.value.task.monthlyAnchor)
+        model.onAction(TaskDetailAction.OnReminderConfirmed(at, RepeatRule.MONTHLY, "Asia/Tehran", anchor))
+        model.onAction(TaskDetailAction.OnClearReminder)
+        runCurrent()
+        assertNull(model.stateValue.value.task.monthlyAnchor)
+        assertNull(model.stateValue.value.task.reminderAt)
+    }
+
+    @Test fun unsupportedPlatformKeepsMonthlyUnavailableInEditor() = runTest {
+        val model = model()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { model.stateValue.collect() }
+        runCurrent()
+        assertFalse(model.stateValue.value.monthlyRemindersSupported)
+    }
+
     private fun model(missing: Boolean = false, onSave: () -> Unit = { error("Discard must not save") },
         groupFlow: Flow<List<TaskGroup>> = flowOf(emptyList()),
         now: () -> Long = { 10L }, missingPermission: ReminderPermission? = null,
-        findTask: ((Long) -> Task?)? = null): TaskDetailViewModel {
+        findTask: ((Long) -> Task?)? = null, monthlySupported: Boolean = false): TaskDetailViewModel {
         val language = LanguageProvider(UserPreferencesManager(object : UserPreferencesRepository {
             override val userPreferences = flowOf(UserPreferences())
             override suspend fun updateTheme(theme: AppTheme) {}
@@ -196,6 +228,7 @@ class TaskDiscardTest {
             override suspend fun getGroupById(id: Long): TaskGroup? = null
         }
         val scheduler = object : ReminderScheduler {
+            override val supportsMonthlyReminders = monthlySupported
             override suspend fun scheduleReminder(reminder: Reminder) {}
             override suspend fun cancelReminder(taskId: Long) {}
         }

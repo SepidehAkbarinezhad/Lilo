@@ -5,6 +5,7 @@ import com.sepideh.lilo.core.domain.images.ImageSource
 import com.sepideh.lilo.task.domain.model.Task
 import com.sepideh.lilo.task.domain.reminder.asReminder
 import com.sepideh.lilo.task.domain.reminder.nextOccurrence
+import com.sepideh.lilo.task.domain.reminder.RepeatRule
 import com.sepideh.lilo.task.domain.reminder.ReminderScheduler
 import com.sepideh.lilo.task.domain.repository.TaskRepository
 import kotlinx.coroutines.NonCancellable
@@ -30,12 +31,19 @@ class TaskMutations(
     // File imports and cleanup do not participate in this critical section.
     private val mutex = Mutex()
 
+    val supportsMonthlyReminders: Boolean get() = scheduler.supportsMonthlyReminders
+
     fun nextReminderAtForSave(task: Task, previous: Task?): Long? {
         val at = task.reminderAt ?: return null
         val zone = requireNotNull(task.reminderTimeZoneId)
-        val next = nextOccurrence(at, task.repeatRule, zone, now())
         val unchanged = previous?.reminderAt == at && previous.repeatRule == task.repeatRule &&
-            previous.reminderTimeZoneId == zone
+            previous.reminderTimeZoneId == zone && previous.monthlyAnchor == task.monthlyAnchor
+        val next = nextOccurrence(at, task.repeatRule, zone, now(), task.monthlyAnchor)
+        if (task.repeatRule == RepeatRule.MONTHLY && !supportsMonthlyReminders) {
+            // An unsupported platform can retain an existing rule when editing task content.
+            require(unchanged) { "Monthly reminders are not supported on this platform yet" }
+            return null
+        }
         if (next == null && !unchanged) throw ExpiredReminderException()
         return next
     }
@@ -126,6 +134,7 @@ class TaskMutations(
     suspend fun deliverReminder(id: Long, expectedAt: Long, notify: (Task) -> Unit) = mutex.withLock {
         val task = repository.getTaskById(id) ?: return@withLock
         val reminder = task.asReminder() ?: return@withLock
+        if (reminder.repeatRule == RepeatRule.MONTHLY && !supportsMonthlyReminders) return@withLock
         if (task.done || reminder.nextOccurrence(expectedAt - 1) != expectedAt) return@withLock
         // Only a persisted current schedule may re-arm itself.
         try {
@@ -152,6 +161,7 @@ class TaskMutations(
 
     private suspend fun activeReminders() =
         repository.getAllTasks().first().filter { !it.done }.mapNotNull { it.asReminder() }
+            .filter { it.repeatRule != RepeatRule.MONTHLY || supportsMonthlyReminders }
 
     private suspend fun synchronizeAll() {
         scheduler.synchronize(activeReminders())

@@ -1,5 +1,6 @@
 package com.sepideh.lilo.task.domain.model
 
+import com.sepideh.lilo.task.domain.reminder.MonthlyAnchor
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
 
 data class Task(
@@ -16,4 +17,5 @@ data class Task(
     val updatedAt: Long = 0,
     val completedAt: Long? = null,
     val imageNames: List<String> = emptyList(),
+    val monthlyAnchor: MonthlyAnchor? = null,
 )

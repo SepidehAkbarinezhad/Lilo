@@ -9,5 +9,5 @@ fun getTaskDatabaseBuilder(ctx: Context): RoomDatabase.Builder<TaskDatabase> {
     return Room.databaseBuilder<TaskDatabase>(
         context = ctx.applicationContext,
         name = "task.db"
-    ).setDriver(BundledSQLiteDriver()).addCallback(TaskGroupDefaultsCallback)
+    ).setDriver(BundledSQLiteDriver()).addMigrations(TASK_MIGRATION_1_2).addCallback(TaskGroupDefaultsCallback)
 }

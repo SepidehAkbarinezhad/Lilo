@@ -14,7 +14,7 @@ sealed interface TaskDetailAction : BaseAction {
     data object OnCloseManageGroups : TaskDetailAction
     data object OnConfirmGroup : TaskDetailAction
     data object OnDismissReminder : TaskDetailAction
-    data class OnReminderConfirmed(val at: Long, val repeat: com.sepideh.lilo.task.domain.reminder.RepeatRule, val zoneId: String) : TaskDetailAction
+    data class OnReminderConfirmed(val at: Long, val repeat: com.sepideh.lilo.task.domain.reminder.RepeatRule, val zoneId: String, val monthlyAnchor: com.sepideh.lilo.task.domain.reminder.MonthlyAnchor? = null) : TaskDetailAction
     data class OnImagesSelected(val sources: List<com.sepideh.lilo.core.domain.images.ImageSource>) : TaskDetailAction
     data class OnRemoveImage(val image: com.sepideh.lilo.core.presentation.images.AttachmentPreview) : TaskDetailAction
     data object OnClearImages : TaskDetailAction

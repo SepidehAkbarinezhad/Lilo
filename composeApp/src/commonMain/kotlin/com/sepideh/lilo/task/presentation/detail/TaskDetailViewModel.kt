@@ -31,7 +31,7 @@ class TaskDetailViewModel(
     private val mutations: TaskMutations,
     private val permissions: ReminderPermissions,
 ) : BaseViewModel() {
-    private val local = MutableStateFlow(TaskDetailState())
+    private val local = MutableStateFlow(TaskDetailState(monthlyRemindersSupported = mutations.supportsMonthlyReminders))
     private var loadedTaskId: Long? = null
     private var original = local.value.task
     private val refresh = MutableStateFlow(0)
@@ -95,18 +95,19 @@ class TaskDetailViewModel(
             TaskDetailAction.OnDateReminderIcon -> local.update { it.copy(reminderEditorOpen = true) }
             TaskDetailAction.OnDismissReminder -> local.update { it.copy(reminderEditorOpen = false) }
             is TaskDetailAction.OnReminderConfirmed -> local.update {
-                it.copy(task = it.task.copy(reminderAt = action.at, repeatRule = action.repeat, reminderTimeZoneId = action.zoneId),
+                it.copy(task = it.task.copy(reminderAt = action.at, repeatRule = action.repeat, reminderTimeZoneId = action.zoneId,
+                    monthlyAnchor = action.monthlyAnchor.takeIf { action.repeat == RepeatRule.MONTHLY }),
                     reminderEditorOpen = false, reminderExpired = false)
             }
             TaskDetailAction.OnClearReminder -> local.update {
-                it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null), reminderExpired = false)
+                it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null, monthlyAnchor = null), reminderExpired = false)
             }
             is TaskDetailAction.OnAddTaskButton -> save()
             TaskDetailAction.OnAskSaveWithoutReminder -> local.update {
                 it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = true)
             }
             TaskDetailAction.OnSaveWithoutReminder -> {
-                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null),
+                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null, monthlyAnchor = null),
                     reminderExpired = false, missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
                 save()
             }

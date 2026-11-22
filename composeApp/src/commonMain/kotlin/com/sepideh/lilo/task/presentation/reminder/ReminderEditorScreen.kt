@@ -20,6 +20,11 @@ import com.sepideh.lilo.core.presentation.components.*
 import com.sepideh.lilo.core.presentation.components.picker.TimeWheelPicker
 import com.sepideh.lilo.core.presentation.components.picker.ReminderCalendar
 import com.sepideh.lilo.task.domain.reminder.RepeatRule
+import com.sepideh.lilo.task.domain.reminder.MonthlyAnchor
+import com.sepideh.lilo.task.domain.reminder.ReminderCalendarType
+import com.sepideh.lilo.core.domain.model.AppLanguage
+import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
+import org.koin.compose.koinInject
 import kotlinx.datetime.*
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -32,20 +37,22 @@ val RepeatRule.label: StringResource get() = when (this) {
     RepeatRule.NONE -> Res.string.repeat_once
     RepeatRule.DAILY -> Res.string.repeat_daily
     RepeatRule.WEEKLY -> Res.string.repeat_weekly
+    RepeatRule.MONTHLY -> Res.string.repeat_monthly
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReminderEditorSheet(
     reminderAt: Long?, repeatRule: RepeatRule, timeZoneId: String?, accent: Color,
-    onConfirm: (Long, RepeatRule, String) -> Unit, onDismiss: () -> Unit,
+    monthlyAnchor: MonthlyAnchor?, monthlySupported: Boolean,
+    onConfirm: (Long, RepeatRule, String, MonthlyAnchor?) -> Unit, onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(
         onDismissRequest = onDismiss,
         modifier = Modifier.fillMaxHeight(),
         contentWindowInsets = { WindowInsets.safeDrawing },
     ) {
-        ReminderEditorContent(reminderAt, repeatRule, timeZoneId, accent, onConfirm, onDismiss)
+        ReminderEditorContent(reminderAt, repeatRule, timeZoneId, accent, monthlyAnchor, monthlySupported, onConfirm, onDismiss)
     }
 }
 
@@ -53,11 +60,17 @@ fun ReminderEditorSheet(
 @Composable
 private fun ReminderEditorContent(
     reminderAt: Long?, repeatRule: RepeatRule, timeZoneId: String?, accent: Color,
-    onConfirm: (Long, RepeatRule, String) -> Unit, onDismiss: () -> Unit,
+    monthlyAnchor: MonthlyAnchor?, monthlySupported: Boolean,
+    onConfirm: (Long, RepeatRule, String, MonthlyAnchor?) -> Unit, onDismiss: () -> Unit,
 ) {
     val zoneId = rememberSaveable { timeZoneId ?: TimeZone.currentSystemDefault().id }
     val zone = remember(zoneId) { TimeZone.of(zoneId) }
-    val initial = remember { Instant.fromEpochMilliseconds(reminderAt ?: Clock.System.now().toEpochMilliseconds()).toLocalDateTime(zone) }
+    val languageProvider: LanguageProvider = koinInject()
+    val calendarCode = rememberSaveable {
+        (monthlyAnchor?.calendar ?: if (languageProvider.currentLanguage == AppLanguage.FA)
+            ReminderCalendarType.JALALI else ReminderCalendarType.GREGORIAN).name
+    }
+    val initial = remember { monthlyAnchor?.localDateTime ?: Instant.fromEpochMilliseconds(reminderAt ?: Clock.System.now().toEpochMilliseconds()).toLocalDateTime(zone) }
     var day by rememberSaveable { mutableStateOf(initial.date.toString()) }
     var hours by rememberSaveable { mutableStateOf(initial.hour) }
     var minutes by rememberSaveable { mutableStateOf(initial.minute) }
@@ -72,10 +85,13 @@ private fun ReminderEditorContent(
         .padding(bottom = LiloSpacing.Section)) {
         SheetHeader(Res.string.reminder_label, Res.string.confirm_action, accent, valid, onDismiss = onDismiss, onConfirm = {
             if (valid) {
-                val at = LocalDateTime(date, LocalTime(hour, minute)).toInstant(zone).toEpochMilliseconds()
+                val localDateTime = LocalDateTime(date, LocalTime(hour, minute))
+                val at = localDateTime.toInstant(zone).toEpochMilliseconds()
                 // Existing repeats can retain their original anchor. New/edited starts must be future.
                 if (at <= Clock.System.now().toEpochMilliseconds() && !(at == reminderAt && selectedRepeat != RepeatRule.NONE)) error = true
-                else onConfirm(at, selectedRepeat, zoneId)
+                else onConfirm(at, selectedRepeat, zoneId,
+                    if (selectedRepeat == RepeatRule.MONTHLY)
+                        MonthlyAnchor(ReminderCalendarType.valueOf(calendarCode), localDateTime) else null)
             }
         })
         // Reserve exactly the message's measured height, including wrapping at larger font sizes.
@@ -106,9 +122,9 @@ private fun ReminderEditorContent(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(LiloSpacing.Small)) {
                     LiloSelectionChip(stringResource(RepeatRule.WEEKLY.label), selectedRepeat == RepeatRule.WEEKLY, accent,
                         { repeatCode = RepeatRule.WEEKLY.name; error = false }, modifier = Modifier.weight(1f), centerLabel = true)
-                    // Monthly stays unavailable until its persistence and scheduling are supported.
-                    LiloSelectionChip(stringResource(Res.string.repeat_monthly), selected = false, accent = accent,
-                        onClick = {}, modifier = Modifier.weight(1f), enabled = false, centerLabel = true)
+                    LiloSelectionChip(stringResource(Res.string.repeat_monthly), selectedRepeat == RepeatRule.MONTHLY, accent,
+                        { repeatCode = RepeatRule.MONTHLY.name; error = false }, modifier = Modifier.weight(1f),
+                        enabled = monthlySupported, centerLabel = true)
                 }
                 if (selectedRepeat == RepeatRule.WEEKLY) {
                     val weekdays = listOf(Res.string.weekday_mon, Res.string.weekday_tue, Res.string.weekday_wed,
@@ -125,5 +141,5 @@ private fun ReminderEditorContent(
 @AppPreviews
 @Composable
 private fun ReminderEditorPreview() {
-    LiloPreviewWrapper { ReminderEditorContent(null, RepeatRule.NONE, null, LiloExtendedTheme.colors.tasks.accent, { _, _, _ -> }, {}) }
+    LiloPreviewWrapper { ReminderEditorContent(null, RepeatRule.NONE, null, LiloExtendedTheme.colors.tasks.accent, null, true, { _, _, _, _ -> }, {}) }
 }

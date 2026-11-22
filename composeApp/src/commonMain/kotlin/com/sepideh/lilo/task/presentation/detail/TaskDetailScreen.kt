@@ -91,7 +91,8 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
             com.sepideh.lilo.core.presentation.images.attachmentPreviews(task.imageNames, state.removedImageNames, state.selectedImages).size).coerceAtLeast(1))
     if (state.reminderEditorOpen) {
         ReminderEditorSheet(task.reminderAt, task.repeatRule, task.reminderTimeZoneId, accent,
-            onConfirm = { at, repeat, zone -> onAction(TaskDetailAction.OnReminderConfirmed(at, repeat, zone)) },
+            monthlyAnchor = task.monthlyAnchor, monthlySupported = state.monthlyRemindersSupported,
+            onConfirm = { at, repeat, zone, anchor -> onAction(TaskDetailAction.OnReminderConfirmed(at, repeat, zone, anchor)) },
             onDismiss = { onAction(TaskDetailAction.OnDismissReminder) })
     }
     BaseFormScreen(
