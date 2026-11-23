@@ -25,9 +25,7 @@ fun NoteListItem(note: Note, group: String?, onClick: () -> Unit, modifier: Modi
   Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
    AppText(modifier=Modifier.fillMaxWidth(), text=note.title, textType=TextType.BodyLarge, color=LiloExtendedTheme.colors.title, maxLines=1)
    if (note.content.isNotBlank()) AppText(modifier=Modifier.fillMaxWidth(), text=note.content, color=LiloExtendedTheme.colors.textSecondary, maxLines=1)
-   if (!group.isNullOrBlank() || note.imageNames.isNotEmpty() || note.lastModifiedAt > 0) {
-    ItemMetadata(group, note.imageNames.size, trailing = if (note.lastModifiedAt > 0) ({ CreationDateCaption(note.lastModifiedAt, showLabel = false) }) else null)
-   }
+   ItemMetadata(group ?: stringResource(Res.string.no_group_label), note.imageNames.size, trailing = if (note.lastModifiedAt > 0) ({ CreationDateCaption(note.lastModifiedAt, showLabel = false) }) else null)
   }
  }
 }
@@ -44,5 +42,13 @@ private fun NoteItemShortPersianTextPreview() {
     onClick = {},
    )
   }
+ }
+}
+
+@AppPreviews
+@Composable
+private fun NoteItemWithoutGroupPreview() {
+ LiloPreviewWrapper {
+  NoteListItem(Note(title = "A small idea", content = "Make room for creativity."), group = null, onClick = {})
  }
 }
