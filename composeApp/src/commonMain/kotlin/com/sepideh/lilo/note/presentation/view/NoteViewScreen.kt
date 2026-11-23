@@ -85,7 +85,8 @@ fun NoteViewScreen(state: NoteViewState, onAction: (NoteViewAction) -> Unit) {
         Column(
             Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = LiloSpacing.Screen, vertical = LiloSpacing.Small),
+                .padding(horizontal = LiloSpacing.Screen)
+                .padding(top = LiloSpacing.Section, bottom = LiloSpacing.Small),
             verticalArrangement = Arrangement.spacedBy(LiloSpacing.Item),
         ) {
             if (state.isLoading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.accent)
