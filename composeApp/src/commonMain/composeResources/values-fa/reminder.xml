@@ -4,6 +4,7 @@
     <string name="repeat_once">یک‌بار</string>
     <string name="repeat_daily">روزانه</string>
     <string name="repeat_weekly">هفتگی</string>
+    <string name="repeat_monthly">ماهانه</string>
     <string name="repeat_every_weekday">هر %1$s</string>
     <string name="reminder_future_error">تاریخ و ساعت آینده را انتخاب کنید.</string>
     <string name="weekday_mon">دوشنبه</string>

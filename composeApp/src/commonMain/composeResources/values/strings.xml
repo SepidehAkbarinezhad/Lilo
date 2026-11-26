@@ -66,6 +66,9 @@
     <string name="sort_date_label">date</string>
     <string name="add_note_title">Add note</string>
     <string name="edit_note_title">Edit note</string>
+    <string name="note_detail_title">Note</string>
+    <string name="note_edit_action">Edit</string>
+    <string name="note_not_found">This note is no longer available.</string>
     <string name="home_brand_name">lilo</string>
     <string name="note_search_hint">Search notes</string>
     <string name="note_content_label">Content</string>
@@ -135,6 +138,7 @@
     <string name="password_services_all">All services</string>
     <string name="password_filters_reset">Reset filters</string>
     <string name="created_on_date">Created %1$s</string>
+    <string name="last_modified_on_date">Last modified: %1$s</string>
     <string name="edit_cancel_title">Edit</string>
     <string name="edit_cancel_action">Cancel</string>
     <string name="password_identifier_required">At least one of the two fields, title or username, is required.</string>

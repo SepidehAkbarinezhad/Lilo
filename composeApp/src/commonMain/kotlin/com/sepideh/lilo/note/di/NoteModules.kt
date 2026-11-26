@@ -5,6 +5,7 @@ import com.sepideh.lilo.note.domain.repository.*
 import com.sepideh.lilo.note.domain.usecase.NoteMutations
 import com.sepideh.lilo.note.presentation.detail.NoteDetailViewModel
 import com.sepideh.lilo.note.presentation.list.NoteListViewModel
+import com.sepideh.lilo.note.presentation.view.NoteViewViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -19,4 +20,5 @@ val noteModule = module {
  single { NoteMutations(get(), get()) }
  viewModel { NoteListViewModel(get(), get(), get(), get()) }
  viewModel { NoteDetailViewModel(get(), get(), get(), get()) }
+ viewModel { NoteViewViewModel(get(), get()) }
 }

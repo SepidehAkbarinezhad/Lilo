@@ -14,15 +14,12 @@ import com.sepideh.lilo.settings.domain.usecase.LanguageProvider
 import io.github.faridsolgi.date_picker.view.PersianDatePicker
 import io.github.faridsolgi.date_picker.view.PersianDatePickerDefaults
 import io.github.faridsolgi.date_picker.view.rememberPersianDatePickerState
-import io.github.faridsolgi.persiandatetime.extensions.toEpochMilliseconds
+import io.github.faridsolgi.persiandatetime.extensions.toLocalDate
 import io.github.faridsolgi.persiandatetime.extensions.toPersianDateTime
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,12 +48,7 @@ actual fun ReminderCalendar(
 
     LaunchedEffect(state.selectedDate) {
         state.selectedDate?.let {
-            onDateChange(
-                Instant
-                    .fromEpochMilliseconds(it.toEpochMilliseconds())
-                    .toLocalDateTime(TimeZone.currentSystemDefault())
-                    .date
-            )
+            onDateChange(it.toLocalDate())
         }
     }
 

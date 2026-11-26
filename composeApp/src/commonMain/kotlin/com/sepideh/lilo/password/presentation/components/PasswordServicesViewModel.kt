@@ -17,13 +17,14 @@ class PasswordServicesViewModel(private val repository: PasswordServiceRepositor
             is PasswordServicesAction.OnOpen -> open(action.id)
             PasswordServicesAction.OnClose -> close()
             PasswordServicesAction.OnManage -> manage()
-            PasswordServicesAction.OnCloseManagement -> closeManagement()
+            PasswordServicesAction.OnCloseManagement -> close()
             is PasswordServicesAction.OnDraftSelected -> selectDraft(action.id)
             PasswordServicesAction.OnConfirmSelection -> confirmSelection()
             is PasswordServicesAction.OnQueryChanged -> query(action.value)
             is PasswordServicesAction.OnNameChanged -> name(action.value)
             is PasswordServicesAction.OnEdit -> edit(action.service)
             PasswordServicesAction.OnCancelEdit -> cancelEdit()
+            PasswordServicesAction.OnConsumeCreation -> local.update { it.copy(createdId = null) }
             PasswordServicesAction.OnConsumeRemoval -> consumeRemoval()
             PasswordServicesAction.OnSave -> save()
             is PasswordServicesAction.OnDeleteSelected -> askDelete(action.service)
@@ -43,7 +44,6 @@ class PasswordServicesViewModel(private val repository: PasswordServiceRepositor
     private fun open(selectedId: String?) { local.update { it.copy(open = true, managing = false, draftId = selectedId, query = "", error = false, duplicateName = false) } }
     private fun close() { if (!local.value.busy) local.update { it.copy(open = false, managing = false, editorOpen = false, deleting = null) } }
     private fun manage() { local.update { it.copy(managing = true, query = "", editorOpen = false, error = false, duplicateName = false) } }
-    private fun closeManagement() { if (!local.value.busy) local.update { it.copy(managing = false, editorOpen = false, deleting = null, error = false, duplicateName = false) } }
     private fun selectDraft(id: String) { local.update { it.copy(draftId = id) } }
     private fun confirmSelection() { local.update { it.copy(open = false, managing = false) } }
     private fun query(value: String) { local.update { it.copy(query = value) } }
@@ -71,7 +71,8 @@ class PasswordServicesViewModel(private val repository: PasswordServiceRepositor
         operation {
             if (ui.editingId == null) {
                 val created = repository.create(ui.name)
-                local.update { it.copy(draftId = created.id, query = "", editorOpen = false) }
+                local.update { it.copy(draftId = created.id, createdId = created.id,
+                    open = false, managing = false, query = "", editorOpen = false) }
             } else {
                 repository.rename(ui.editingId, ui.name)
                 local.update { it.copy(editorOpen = false) }

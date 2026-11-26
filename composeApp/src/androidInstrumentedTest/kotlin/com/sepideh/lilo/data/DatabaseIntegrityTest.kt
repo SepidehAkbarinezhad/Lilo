@@ -28,7 +28,7 @@ import kotlin.test.*
 class DatabaseIntegrityTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
     private fun taskDb(name: String) = Room.databaseBuilder<TaskDatabase>(context, name)
-        .setDriver(BundledSQLiteDriver()).addCallback(TaskGroupDefaultsCallback).build()
+        .setDriver(BundledSQLiteDriver()).addMigrations(TASK_MIGRATION_1_2).addCallback(TaskGroupDefaultsCallback).build()
     private fun noteDb(name: String) = Room.databaseBuilder<NoteDatabase>(context, name)
         .setDriver(BundledSQLiteDriver()).addCallback(NoteDefaultsCallback).build()
     private fun passwordDb(name: String) = Room.databaseBuilder<PasswordDatabase>(context, name)
@@ -173,7 +173,7 @@ class DatabaseIntegrityTest {
             connection.usePrepared("PRAGMA foreign_keys") { row -> assertTrue(row.step()); assertEquals(1L, row.getLong(0)) }
             connection.usePrepared("PRAGMA foreign_key_check") { row -> assertFalse(row.step()) }
             connection.usePrepared("PRAGMA integrity_check") { row -> assertTrue(row.step()); assertEquals("ok", row.getText(0)) }
-            connection.usePrepared("PRAGMA user_version") { row -> assertTrue(row.step()); assertEquals(1L, row.getLong(0)) }
+            connection.usePrepared("PRAGMA user_version") { row -> assertTrue(row.step()); assertEquals(if (db is TaskDatabase) 2L else 1L, row.getLong(0)) }
         }
     }
 

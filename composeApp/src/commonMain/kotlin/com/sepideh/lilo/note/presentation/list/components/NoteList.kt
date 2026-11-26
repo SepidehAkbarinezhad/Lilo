@@ -25,7 +25,7 @@ import com.sepideh.lilo.note.presentation.list.*
   items(state.notesResult,key={it.id}) { note ->
    SwipeToRevealDelete(enabled=!state.isDeleting,onDelete={onAction(NoteListAction.OnDeleteNoteIcon(note))}) {
     NoteListItem(note,state.groups.firstOrNull { it.id==note.groupId }?.label,
-     onClick={onAction(BaseAction.OnNavigateTo(AppRoutes.Notes.Detail(note.id)))})
+     onClick={onAction(BaseAction.OnNavigateTo(AppRoutes.Notes.View(note.id)))})
    }
   }
  }

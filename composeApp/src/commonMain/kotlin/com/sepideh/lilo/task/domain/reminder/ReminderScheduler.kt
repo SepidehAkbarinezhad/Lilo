@@ -3,6 +3,9 @@ package com.sepideh.lilo.task.domain.reminder
 import kotlinx.coroutines.CancellationException
 
 interface ReminderScheduler {
+    // Opt in only when the platform implements Monthly delivery.
+    val supportsMonthlyReminders: Boolean get() = false
+
     /** Android gates delivery; platforms with OS-delivered notifications rebuild pending requests. */
     suspend fun refreshNotificationPreference(reminders: suspend () -> List<Reminder>) = Unit
 

@@ -9,9 +9,10 @@ data class Reminder(
     val reminderAt: Long,
     val repeatRule: RepeatRule,
     val timeZoneId: String,
+    val monthlyAnchor: MonthlyAnchor? = null,
 )
 
 fun Task.asReminder(): Reminder? {
     val at = reminderAt ?: return null
-    return Reminder(requireNotNull(id), title, description, at, repeatRule, requireNotNull(reminderTimeZoneId))
+    return Reminder(requireNotNull(id), title, description, at, repeatRule, requireNotNull(reminderTimeZoneId), monthlyAnchor)
 }

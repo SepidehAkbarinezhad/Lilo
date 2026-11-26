@@ -25,6 +25,12 @@ import org.jetbrains.compose.resources.stringResource
 fun PasswordDetailScreenRoot(id: String?, viewModel: PasswordDetailViewModel, onNavigateTo: (AppRoutes) -> Unit, onBack: () -> Boolean, servicesModel: PasswordServicesViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val services by servicesModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(services.createdId) {
+        services.createdId?.let { created ->
+            viewModel.onAction(PasswordDetailAction.OnServiceSelected(created))
+            servicesModel.onAction(PasswordServicesAction.OnConsumeCreation)
+        }
+    }
     LaunchedEffect(services.removedId) {
         services.removedId?.let { removed ->
             if (state.record.serviceId == removed) viewModel.onAction(PasswordDetailAction.OnServiceSelected(services.movedToId))
@@ -52,7 +58,7 @@ fun PasswordDetailScreen(state: PasswordDetailState, onAction: (BaseAction) -> U
     } else {
         BaseFormScreen(title = if (!state.isEditing) Res.string.password_add_title else Res.string.password_edit_title,
             featureColors = LiloExtendedTheme.colors.passwords, isSaving = state.saving,
-            headerColors = LiloExtendedTheme.colors.passwords.takeIf { state.isEditing },
+            headerColors = null,
             actionLabel = Res.string.note_save_action, saveEnabled = !state.locked && !state.loading && !state.saving && !state.loadFailed,
             onBack = { onAction(PasswordDetailAction.Back); true }, onSave = { onAction(PasswordDetailAction.OnSave) }) { padding ->
             Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(LiloSpacing.Screen),

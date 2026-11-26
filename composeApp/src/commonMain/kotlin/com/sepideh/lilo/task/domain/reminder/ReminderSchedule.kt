@@ -8,9 +8,15 @@ import kotlin.time.Instant
  * at the earlier offset chosen by kotlinx-datetime.
  */
 fun Reminder.nextOccurrence(afterMillis: Long): Long? =
-    nextOccurrence(reminderAt, repeatRule, timeZoneId, afterMillis)
+    nextOccurrence(reminderAt, repeatRule, timeZoneId, afterMillis, monthlyAnchor)
 
-internal fun nextOccurrence(reminderAt: Long, repeatRule: RepeatRule, timeZoneId: String, afterMillis: Long): Long? {
+internal fun nextOccurrence(
+    reminderAt: Long, repeatRule: RepeatRule, timeZoneId: String, afterMillis: Long,
+    monthlyAnchor: MonthlyAnchor? = null,
+): Long? {
+    if (repeatRule == RepeatRule.MONTHLY) {
+        return requireNotNull(monthlyAnchor).nextOccurrence(reminderAt, TimeZone.of(timeZoneId), afterMillis)
+    }
     if (reminderAt > afterMillis) return reminderAt
     if (repeatRule == RepeatRule.NONE) return null
     val zone = TimeZone.of(timeZoneId)

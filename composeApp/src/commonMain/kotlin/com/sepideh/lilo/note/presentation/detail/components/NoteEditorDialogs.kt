@@ -10,7 +10,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable fun NoteEditorDialogs(state:NoteDetailState,action:(BaseAction)->Unit) {
  val accent=LiloExtendedTheme.colors.notes.accent
  if(state.groupDialogOpen) GroupSelectionSheet(groups=state.groups,selectedId=state.draftGroupId,accent=accent,addedVersion=state.groupAddedVersion,
-  onSelect={action(NoteDetailAction.DraftGroup(it))},onManage={action(NoteDetailAction.ManageGroups)},onConfirm={action(NoteDetailAction.ConfirmGroup)},onDismiss={action(NoteDetailAction.CloseManagement); action(NoteDetailAction.DismissGroups)},
+  onSelect={action(NoteDetailAction.DraftGroup(it))},onManage={action(NoteDetailAction.ManageGroups)},onConfirm={action(NoteDetailAction.ConfirmGroup)},onDismiss={action(NoteDetailAction.DismissGroups)},
   busy=state.isGroupWorking,
   managementContent=if(state.groupManagementOpen) ({ GroupManagementEditor(groups=state.groups,accent=accent,closeActionColor=LiloExtendedTheme.colors.notes.action,selectedId=state.draftGroupId,isAdding=state.isGroupWorking,addedVersion=state.groupAddedVersion,
   onCreate={action(NoteDetailAction.AddGroup(it))},onRename={id,title->action(NoteDetailAction.RenameGroup(id,title))},onDelete={action(NoteDetailAction.DeleteGroup(it))},onDismiss={action(NoteDetailAction.CloseManagement)},

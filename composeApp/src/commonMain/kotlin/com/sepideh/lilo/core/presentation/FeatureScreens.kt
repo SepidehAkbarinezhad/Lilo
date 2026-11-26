@@ -42,7 +42,7 @@ fun BaseFormScreen(
     content: @Composable (PaddingValues) -> Unit,
 ) {
     if (bottomSaveAction) {
-        BottomActionFormScreen(title, featureColors, saveEnabled, isSaving, actionLabel, onBack, onSave, headerColors, content)
+        BottomActionFormScreen(title, featureColors, saveEnabled, isSaving, actionLabel, onBack, onSave, headerColors, content = content)
         return
     }
     Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {

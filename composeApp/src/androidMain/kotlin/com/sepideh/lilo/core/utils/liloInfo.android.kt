@@ -14,6 +14,6 @@ class AndroidLiloInfo(private val context: Context) : LiloInfo {
             } else {
                 @Suppress("DEPRECATION") pm.getPackageInfo(context.packageName, 0)
             }
-            return info.versionName ?: "1.0.0"
+            return info.versionName.orEmpty()
         }
 }

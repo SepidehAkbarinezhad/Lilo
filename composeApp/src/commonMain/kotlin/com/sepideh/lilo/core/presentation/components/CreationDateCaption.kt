@@ -8,12 +8,18 @@ import com.sepideh.lilo.core.presentation.TextType
 import com.sepideh.lilo.core.presentation.format.creationDateLabel
 import com.sepideh.lilo.ui.theme.LiloExtendedTheme
 import lilo.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CreationDateCaption(timestamp: Long, modifier: Modifier = Modifier, showLabel: Boolean = true) {
+fun CreationDateCaption(
+    timestamp: Long,
+    modifier: Modifier = Modifier,
+    showLabel: Boolean = true,
+    label: StringResource = Res.string.created_on_date,
+) {
     val date = creationDateLabel(timestamp, LocalLayoutDirection.current == LayoutDirection.Rtl) ?: return
-    AppText(text = if (showLabel) stringResource(Res.string.created_on_date, date) else date, textType = TextType.Caption,
+    AppText(text = if (showLabel) stringResource(label, date) else date, textType = TextType.Caption,
         color = LiloExtendedTheme.colors.textSupporting, modifier = modifier)
 }
 

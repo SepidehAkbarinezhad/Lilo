@@ -31,7 +31,7 @@ class TaskDetailViewModel(
     private val mutations: TaskMutations,
     private val permissions: ReminderPermissions,
 ) : BaseViewModel() {
-    private val local = MutableStateFlow(TaskDetailState())
+    private val local = MutableStateFlow(TaskDetailState(monthlyRemindersSupported = mutations.supportsMonthlyReminders))
     private var loadedTaskId: Long? = null
     private var original = local.value.task
     private val refresh = MutableStateFlow(0)
@@ -80,7 +80,7 @@ class TaskDetailViewModel(
             is TaskDetailAction.OnTitleChanged -> local.update { it.copy(task = it.task.copy(title = action.title), titleError = it.titleError.copy(isSuccessful = true, messageId = null)) }
             is TaskDetailAction.OnDescriptionChanged -> local.update { it.copy(task = it.task.copy(description = action.description)) }
             TaskDetailAction.OnGroupIcon -> local.update { it.copy(groupDialogOpen = true, draftGroupId = it.task.groupId.takeIf { id -> id != 0L }) }
-            TaskDetailAction.OnDismissGroupDialog -> local.update { it.copy(groupDialogOpen = false) }
+            TaskDetailAction.OnDismissGroupDialog -> closeGroups()
             is TaskDetailAction.OnGroupSelected -> local.update { it.copy(draftGroupId = action.group.id) }
             is TaskDetailAction.OnGroupDraftSelected -> local.update { it.copy(draftGroupId = action.id) }
             TaskDetailAction.OnConfirmGroup -> local.update { it.copy(task = it.task.copy(groupId = it.draftGroupId ?: 0), groupDialogOpen = false) }
@@ -95,18 +95,19 @@ class TaskDetailViewModel(
             TaskDetailAction.OnDateReminderIcon -> local.update { it.copy(reminderEditorOpen = true) }
             TaskDetailAction.OnDismissReminder -> local.update { it.copy(reminderEditorOpen = false) }
             is TaskDetailAction.OnReminderConfirmed -> local.update {
-                it.copy(task = it.task.copy(reminderAt = action.at, repeatRule = action.repeat, reminderTimeZoneId = action.zoneId),
+                it.copy(task = it.task.copy(reminderAt = action.at, repeatRule = action.repeat, reminderTimeZoneId = action.zoneId,
+                    monthlyAnchor = action.monthlyAnchor.takeIf { action.repeat == RepeatRule.MONTHLY }),
                     reminderEditorOpen = false, reminderExpired = false)
             }
             TaskDetailAction.OnClearReminder -> local.update {
-                it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null), reminderExpired = false)
+                it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null, monthlyAnchor = null), reminderExpired = false)
             }
             is TaskDetailAction.OnAddTaskButton -> save()
             TaskDetailAction.OnAskSaveWithoutReminder -> local.update {
                 it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = true)
             }
             TaskDetailAction.OnSaveWithoutReminder -> {
-                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null),
+                local.update { it.copy(task = it.task.copy(reminderAt = null, repeatRule = RepeatRule.NONE, reminderTimeZoneId = null, monthlyAnchor = null),
                     reminderExpired = false, missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
                 save()
             }
@@ -137,16 +138,27 @@ class TaskDetailViewModel(
 
             TaskDetailAction.OnCancelPermissionDialog -> local.update { it.copy(missingPermission = null, awaitingPermissionReturn = false, confirmSaveWithoutReminder = false) }
             TaskDetailAction.OnManageGroups -> local.update { it.copy(groupManagementOpen = true, duplicateGroupName = false) }
-            TaskDetailAction.OnCloseManageGroups -> local.update { it.copy(groupManagementOpen = false, duplicateGroupName = false) }
-            is TaskDetailAction.OnDeleteGroup -> launchOperation {
-                if (stateValue.value.groups.none { it.id == action.groupId && it.isDeletable }) return@launchOperation
-                taskGroupRepository.deleteGroup(action.groupId)
-                if (original.groupId == action.groupId) original = original.copy(groupId = 0)
-                local.update { it.copy(
-                    task = if (it.task.groupId == action.groupId) it.task.copy(groupId = 0) else it.task,
-                    draftGroupId = it.draftGroupId.takeUnless { id -> id == action.groupId },
-                ) }
-            }
+            TaskDetailAction.OnCloseManageGroups -> closeGroups()
+            is TaskDetailAction.OnDeleteGroup -> deleteGroup(action.groupId)
+        }
+    }
+
+    private fun closeGroups() {
+        if (!local.value.isAddingGroup) local.update {
+            it.copy(groupDialogOpen = false, groupManagementOpen = false, draftGroupId = null, duplicateGroupName = false)
+        }
+    }
+
+    private fun deleteGroup(id: Long) {
+        if (local.value.isAddingGroup || stateValue.value.groups.none { it.id == id && it.isDeletable }) return
+        local.update { it.copy(isAddingGroup = true, hasError = false, duplicateGroupName = false) }
+        launchOperation {
+            taskGroupRepository.deleteGroup(id)
+            if (original.groupId == id) original = original.copy(groupId = 0)
+            local.update { it.copy(isAddingGroup = false,
+                task = if (it.task.groupId == id) it.task.copy(groupId = 0) else it.task,
+                draftGroupId = it.draftGroupId.takeUnless { groupId -> groupId == id },
+            ) }
         }
     }
 
@@ -156,7 +168,9 @@ class TaskDetailViewModel(
         launchOperation {
             val normalized = title.trim()
             val id = taskGroupRepository.addGroup(taskGroupFactory.create(normalized))
-            local.update { it.copy(draftGroupId = id, isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
+            local.update { it.copy(task = it.task.copy(groupId = id), draftGroupId = id,
+                groupDialogOpen = false, groupManagementOpen = false,
+                isAddingGroup = false, groupAddedVersion = it.groupAddedVersion + 1) }
         }
     }
 

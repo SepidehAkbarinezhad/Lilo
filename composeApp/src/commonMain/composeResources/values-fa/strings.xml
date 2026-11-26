@@ -65,6 +65,9 @@
     <string name="sort_date_label">تاریخ</string>
     <string name="add_note_title">افزودن یادداشت</string>
     <string name="edit_note_title">ویرایش یادداشت</string>
+    <string name="note_detail_title">یادداشت</string>
+    <string name="note_edit_action">ویرایش</string>
+    <string name="note_not_found">این یادداشت دیگر در دسترس نیست.</string>
     <string name="tasks_list_title">فعالیت‌ها</string>
     <string name="home_brand_name">لیلو</string>
     <string name="note_search_hint">جستجوی یادداشت‌ها</string>
@@ -135,6 +138,7 @@
     <string name="password_services_all">همهٔ سرویس‌ها</string>
     <string name="password_filters_reset">پاک کردن فیلترها</string>
     <string name="created_on_date">تاریخ ایجاد: %1$s</string>
+    <string name="last_modified_on_date">آخرین ویرایش: %1$s</string>
     <string name="edit_cancel_title">ویرایش</string>
     <string name="edit_cancel_action">انصراف</string>
     <string name="password_identifier_required">حداقل یکی از دو فیلد عنوان یا نام کاربری الزامی است.</string>

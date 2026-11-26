@@ -26,5 +26,7 @@ data class TaskEntity(
     val createdAt: Long,
     val updatedAt: Long,
     val completedAt: Long? = null,
-    @androidx.room.ColumnInfo(defaultValue = "'[]'") val imageNames: String = "[]"
+    @androidx.room.ColumnInfo(defaultValue = "'[]'") val imageNames: String = "[]",
+    val reminderCalendar: String? = null,
+    val reminderLocalDateTime: String? = null,
 )

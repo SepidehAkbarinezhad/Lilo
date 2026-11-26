@@ -10,7 +10,7 @@ import kotlin.test.*
 class HomeDetailNavigationTest {
     @Test fun previewRoutesUseItemIdsRatherThanServiceOrGroupIds() {
         assertEquals(AppRoutes.Tasks.Detail(42), taskHomeReport(listOf(Task(id = 42, title = "Task"))).detailRoute())
-        assertEquals(AppRoutes.Notes.Detail(17), noteHomeReport(listOf(Note(id = 17, title = "Note", groupId = 3))).detailRoute())
+        assertEquals(AppRoutes.Notes.View(17), noteHomeReport(listOf(Note(id = 17, title = "Note", groupId = 3))).detailRoute())
         assertEquals(AppRoutes.Passwords.Detail("entry"), passwordHomeReport(listOf(
             Password(id = "entry", serviceId = "github"))).detailRoute())
     }

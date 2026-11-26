@@ -56,10 +56,7 @@ fun TaskDetailScreenRoot(taskId: Long?, viewModel: TaskDetailViewModel, onNaviga
                 onSelect = { viewModel.onAction(TaskDetailAction.OnGroupDraftSelected(it)) },
                 onManage = { viewModel.onAction(TaskDetailAction.OnManageGroups) },
                 onConfirm = { viewModel.onAction(TaskDetailAction.OnConfirmGroup) },
-                onDismiss = {
-                    viewModel.onAction(TaskDetailAction.OnCloseManageGroups)
-                    viewModel.onAction(TaskDetailAction.OnDismissGroupDialog)
-                },
+                onDismiss = { viewModel.onAction(TaskDetailAction.OnDismissGroupDialog) },
                 busy = state.isAddingGroup,
                 managementContent = if (state.groupManagementOpen) ({ GroupManagementEditor(
                     closeActionColor = LiloExtendedTheme.colors.tasks.action,
@@ -91,13 +88,14 @@ fun TaskDetailScreen(state: TaskDetailState, task: Task, onAction: (BaseAction) 
             com.sepideh.lilo.core.presentation.images.attachmentPreviews(task.imageNames, state.removedImageNames, state.selectedImages).size).coerceAtLeast(1))
     if (state.reminderEditorOpen) {
         ReminderEditorSheet(task.reminderAt, task.repeatRule, task.reminderTimeZoneId, accent,
-            onConfirm = { at, repeat, zone -> onAction(TaskDetailAction.OnReminderConfirmed(at, repeat, zone)) },
+            monthlyAnchor = task.monthlyAnchor, monthlySupported = state.monthlyRemindersSupported,
+            onConfirm = { at, repeat, zone, anchor -> onAction(TaskDetailAction.OnReminderConfirmed(at, repeat, zone, anchor)) },
             onDismiss = { onAction(TaskDetailAction.OnDismissReminder) })
     }
     BaseFormScreen(
         title = if (isEditing) Res.string.edit_task_title else Res.string.add_task_title,
         featureColors = LiloExtendedTheme.colors.tasks, isSaving = state.isSaving, saveEnabled = !state.isSaving && !state.isLoading && !state.loadFailed,
-        headerColors = LiloExtendedTheme.colors.tasks.takeIf { isEditing },
+        headerColors = null,
         onBack = { onAction(TaskDetailAction.Back); true }, onSave = { onAction(TaskDetailAction.OnAddTaskButton()) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)

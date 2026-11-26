@@ -22,6 +22,8 @@ import com.sepideh.lilo.task.presentation.detail.TaskDetailViewModel
 import com.sepideh.lilo.task.presentation.list.TaskListScreenRoot
 import com.sepideh.lilo.task.presentation.list.TaskListViewModel
 import com.sepideh.lilo.note.presentation.detail.NoteDetailScreenRoot
+import com.sepideh.lilo.note.presentation.view.NoteViewScreenRoot
+import com.sepideh.lilo.note.presentation.view.NoteViewViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -31,6 +33,12 @@ fun NavigationGraph(navHostController: NavHostController) {
         val onBackPressed = { navHostController.navigateUp() }
         val onNavigate: (AppRoutes) -> Unit =
             { route ->
+                // Home previews also enter through the Notes list, so Back has the same destination.
+                if (route is AppRoutes.Notes.View &&
+                    navHostController.currentDestination?.hasRoute<AppRoutes.Notes.List>() != true
+                ) {
+                    navHostController.navigate(AppRoutes.Notes.List) { launchSingleTop = true }
+                }
                 navHostController.navigate(route = route)
             }
         composable<AppRoutes.SplashScreen>(
@@ -81,6 +89,16 @@ fun NavigationGraph(navHostController: NavHostController) {
                 viewModel = viewModel,
                 onNavigateTo = onNavigate,
                 onBack = onBackPressed
+            )
+        }
+
+        composable<AppRoutes.Notes.View> {
+            val args = it.toRoute<AppRoutes.Notes.View>()
+            NoteViewScreenRoot(
+                noteId = args.noteId,
+                viewModel = koinViewModel<NoteViewViewModel>(),
+                onNavigateTo = onNavigate,
+                onBack = onBackPressed,
             )
         }
 

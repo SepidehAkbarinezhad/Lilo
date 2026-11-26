@@ -4,6 +4,7 @@
     <string name="repeat_once">Once</string>
     <string name="repeat_daily">Daily</string>
     <string name="repeat_weekly">Weekly</string>
+    <string name="repeat_monthly">Monthly</string>
     <string name="repeat_every_weekday">Every %1$s</string>
     <string name="reminder_future_error">Choose a future date and time.</string>
     <string name="weekday_mon">Monday</string>
